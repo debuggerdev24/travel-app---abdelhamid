@@ -37,25 +37,26 @@ class ChatDetailScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 18.h,
-                        horizontal: 27.w,
-                      ),
+                      padding: EdgeInsets.only(left: 18.h, right: 10.w),
                       child: GestureDetector(
                         onTap: () => context.pop(),
                         child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
                       ),
                     ),
-                    AppText(
-                      textAlign: TextAlign.center,
-                      text: name,
-                      style: textStyle32Bold.copyWith(
-                        fontSize: 26.sp,
-                        color: AppColors.secondary,
+                    Expanded(
+                      child: AppText(
+                        textAlign: TextAlign.center,
+                        text: name,
+                        overflow: TextOverflow.ellipsis,
+                        style: textStyle32Bold.copyWith(
+                          fontSize: 26.sp,
+                          color: AppColors.secondary,
+                        ),
                       ),
                     ),
                     if (!isGroup) 35.w.horizontalSpace,
 
+                    SizedBox(width: 10.w),
                     GestureDetector(
                       onTap: () {
                         if (isGroup) {
@@ -73,7 +74,7 @@ class ChatDetailScreen extends StatelessWidget {
                               color: AppColors.greyColor,
                             ),
                     ),
-                    8.w.horizontalSpace,
+                    SizedBox(width: isGroup ? 18.h : 10.w),
                     if (!isGroup)
                       GestureDetector(
                         onTap: () async {
@@ -92,10 +93,13 @@ class ChatDetailScreen extends StatelessWidget {
                             );
                           }
                         },
-                        child: SvgIcon(
-                          AppAssets.location,
-                          size: 24.w,
-                          color: AppColors.greyColor,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 18.h),
+                          child: SvgIcon(
+                            AppAssets.location,
+                            size: 24.w,
+                            color: AppColors.greyColor,
+                          ),
                         ),
                       ),
                   ],
