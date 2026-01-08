@@ -37,8 +37,7 @@ class MyTripProvider extends ChangeNotifier {
 List<Map<String, dynamic>> uploadedDocs = [];
 
 
-  /// Add User Document
-
+/// Add User Document
 Map<String, List<Map<String, dynamic>>> groupDocs(List docs) {
   final Map<String, List<Map<String, dynamic>>> map = {};
 
@@ -51,6 +50,7 @@ Map<String, List<Map<String, dynamic>>> groupDocs(List docs) {
   }
   return map;
 }
+
 void addDocument(String type, File file, String name) {
   uploadedDocs.add({
     "type": type,  

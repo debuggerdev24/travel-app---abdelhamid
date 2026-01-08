@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "416804470692",
+    "project_id": "push-notification-demo-fe62a",
+    "storage_bucket": "push-notification-demo-fe62a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416804470692:android:534c5bc0cd77e243ddcb31",
+        "android_client_info": {
+          "package_name": "com.example.trael_app_abdelhamid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtFphIPB0069unY_uukhlMdK-puecXCbw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
