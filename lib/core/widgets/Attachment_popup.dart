@@ -5,11 +5,7 @@ class AttachmentPopup extends StatelessWidget {
   final VoidCallback? onImageTap;
   final VoidCallback? onCameraTap;
 
-  const AttachmentPopup({
-    super.key,
-    this.onImageTap,
-    this.onCameraTap,
-  });
+  const AttachmentPopup({super.key, this.onImageTap, this.onCameraTap});
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +31,17 @@ class AttachmentPopup extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _item(icon: Icons.image_outlined, label: "Image/Video", onTap: onImageTap),
+                _item(
+                  icon: Icons.image_outlined,
+                  label: "Image/Video",
+                  onTap: onImageTap,
+                ),
                 Divider(),
-                _item(icon: Icons.camera_alt_outlined, label: "Camera", onTap: onCameraTap),
+                _item(
+                  icon: Icons.camera_alt_outlined,
+                  label: "Camera",
+                  onTap: onCameraTap,
+                ),
               ],
             ),
           ),
@@ -46,17 +50,18 @@ class AttachmentPopup extends StatelessWidget {
           Positioned(
             bottom: -10,
             left: 60.w,
-            child: CustomPaint(
-              size: Size(20, 10),
-              painter: _ArrowPainter(),
-            ),
+            child: CustomPaint(size: Size(20, 10), painter: _ArrowPainter()),
           ),
         ],
       ),
     );
   }
 
-  Widget _item({required IconData icon, required String label, VoidCallback? onTap}) {
+  Widget _item({
+    required IconData icon,
+    required String label,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -67,7 +72,11 @@ class AttachmentPopup extends StatelessWidget {
             12.w.horizontalSpace,
             Text(
               label,
-              style: TextStyle(fontSize: 14.sp, color: Colors.black87, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),

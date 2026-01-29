@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
@@ -67,7 +66,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
-                      context.pushNamed(UserAppRoutes.forgotPasswordScreen.name);
+                      context.pushNamed(
+                        UserAppRoutes.forgotPasswordScreen.name,
+                      );
                     },
                     child: AppText(
                       text: "Forgot Password ?",
@@ -78,9 +79,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
                 60.h.verticalSpace,
-                AppButton(title: "Sign Up",onTap: (){
-                  context.pushNamed(UserAppRoutes.tabScreen.name);
-                },),
+                AppButton(
+                  title: "Sign Up",
+                  onTap: () {
+                    context.pushReplacementNamed(UserAppRoutes.tabScreen.name);
+                  },
+                ),
                 10.h.verticalSpace,
                 RichText(
                   text: TextSpan(
@@ -89,9 +93,11 @@ class _SignInScreenState extends State<SignInScreen> {
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-          ..onTap = () {
-            context.pushNamed(UserAppRoutes.signUpScreen.name);
-          },
+                          ..onTap = () {
+                            context.pushReplacementNamed(
+                              UserAppRoutes.signUpScreen.name,
+                            );
+                          },
                         text: "Sign Up",
                         style: textStyle18Bold.copyWith(
                           fontSize: 14.sp,

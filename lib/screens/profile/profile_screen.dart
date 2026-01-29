@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +8,6 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
-import 'package:trael_app_abdelhamid/routes/go_routes.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -97,10 +95,11 @@ class ProfileScreen extends StatelessWidget {
 
               20.h.verticalSpace,
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   context.pushNamed(UserAppRoutes.prayerTimesScreen.name);
                 },
-                child: _menuTile("Prayer Times")),
+                child: _menuTile("Prayer Times"),
+              ),
 
               22.h.verticalSpace,
 
@@ -118,47 +117,47 @@ class ProfileScreen extends StatelessWidget {
               ),
               16.h.verticalSpace,
               _infoCard([
-                _menuitems("FAQs",(){
-                   context.pushNamed(UserAppRoutes.faqScreen.name);
+                _menuitems("FAQs", () {
+                  context.pushNamed(UserAppRoutes.faqScreen.name);
                 }),
                 Divider(color: AppColors.primaryColor.withOpacity(0.2)),
 
-                _menuitems("Social Media Links",(){
+                _menuitems("Social Media Links", () {
                   context.pushNamed(UserAppRoutes.socialMediaScreen.name);
                 }),
                 Divider(color: AppColors.primaryColor.withOpacity(0.2)),
 
-                _menuitems("Terms & Conditions",(){
+                _menuitems("Terms & Conditions", () {
                   context.pushNamed(UserAppRoutes.termsConditionScreen.name);
                 }),
                 Divider(color: AppColors.primaryColor.withOpacity(0.2)),
 
-                _menuitems("Privacy Policy",(){
+                _menuitems("Privacy Policy", () {
                   context.pushNamed(UserAppRoutes.privacyPolicyScreen.name);
                 }),
                 Divider(color: AppColors.primaryColor.withOpacity(0.2)),
 
-                _menuitems("Our Locations",(){
+                _menuitems("Our Locations", () {
                   context.pushNamed(UserAppRoutes.ourLocationsScreen.name);
                 }),
                 Divider(color: AppColors.primaryColor.withOpacity(0.2)),
 
-                _menuitems("Meet Our Team",(){
+                _menuitems("Meet Our Team", () {
                   context.pushNamed(UserAppRoutes.meetOurTeamScreen.name);
                 }),
                 Divider(color: AppColors.primaryColor.withOpacity(0.2)),
 
-                _menuitems("Feedback",(){
+                _menuitems("Feedback", () {
                   context.pushNamed(UserAppRoutes.profileFeedbackScreen.name);
                 }),
                 Divider(color: AppColors.primaryColor.withOpacity(0.2)),
 
-                _menuitems("App Settings",(){
+                _menuitems("App Settings", () {
                   context.pushNamed(UserAppRoutes.appSettignScreen.name);
                 }),
               ]),
 
-20.h.verticalSpace,
+              20.h.verticalSpace,
               _buildNotificationSwitch(),
 
               22.h.verticalSpace,
@@ -197,26 +196,27 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               22.h.verticalSpace,
-AppText(
-                      text: "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.",
-                      style: textStyle14Regular.copyWith(
-                        fontSize: 14.sp,
-                        color: AppColors.primaryColor.withOpacity(0.8),
-                      ),
-                      
-),
-10.h.verticalSpace,
-AppText(
-                      text: "It is strictly prohibited, without prior written permission from Temheed Reizen, to: \n• Copy or reproduce the app, in whole or in part; • Reuse, publish, or distribute any content from the app; • Commercially exploit or imitate any functionalities, concepts, or designs. \nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
-                      style: textStyle14Regular.copyWith(
-                        fontSize: 14.sp,
-                        color: AppColors.primaryColor.withOpacity(0.8),
-                      ),),
-                      10.h.verticalSpace,
+              AppText(
+                text:
+                    "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.",
+                style: textStyle14Regular.copyWith(
+                  fontSize: 14.sp,
+                  color: AppColors.primaryColor.withOpacity(0.8),
+                ),
+              ),
+              10.h.verticalSpace,
+              AppText(
+                text:
+                    "It is strictly prohibited, without prior written permission from Temheed Reizen, to: \n• Copy or reproduce the app, in whole or in part; • Reuse, publish, or distribute any content from the app; • Commercially exploit or imitate any functionalities, concepts, or designs. \nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
+                style: textStyle14Regular.copyWith(
+                  fontSize: 14.sp,
+                  color: AppColors.primaryColor.withOpacity(0.8),
+                ),
+              ),
+              10.h.verticalSpace,
 
-                    
               22.h.verticalSpace,
-        
+
               Row(
                 children: [
                   Expanded(
@@ -235,7 +235,11 @@ AppText(
                       label: "Logout",
                       icon: AppAssets.exit,
                       color: AppColors.redColor,
-                      onTap: () {},
+                      onTap: () {
+                        context.pushReplacementNamed(
+                          UserAppRoutes.signInScreen.name,
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -324,7 +328,7 @@ AppText(
 
               CustomSwitchButton(
                 initialValue: true,
-             
+
                 onChanged: (value) {
                   log("Notification status: $value");
                 },
@@ -336,31 +340,30 @@ AppText(
     );
   }
 
- Widget _menuitems(String title, VoidCallback onTap) {
-  return InkWell(
-    onTap: onTap,
-    child: Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h),
-      child: Row(
-        children: [
-          Expanded(
-            child: AppText(
-              text: title,
-              style: textStyle14Medium.copyWith(color: AppColors.primaryColor),
+  Widget _menuitems(String title, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 4.h),
+        child: Row(
+          children: [
+            Expanded(
+              child: AppText(
+                text: title,
+                style: textStyle14Medium.copyWith(
+                  color: AppColors.primaryColor,
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: SvgIcon(AppAssets.arrow, size: 10.w),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: SvgIcon(AppAssets.arrow, size: 10.w),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-
-
+    );
+  }
 
   BoxDecoration _boxDecoration() {
     return BoxDecoration(

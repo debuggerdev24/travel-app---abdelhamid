@@ -125,7 +125,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                 }
                            
                 final selectedType = provider.seelcteddocumetype.first;
-                final TextEditingController nameController = TextEditingController(); // You should add this field!
+                // final TextEditingController nameController = TextEditingController(); // You should add this field!
                            
                 // Suggestion: Add a text field for name
                 // Or auto-generate name like "My Passport", "Visa Copy"

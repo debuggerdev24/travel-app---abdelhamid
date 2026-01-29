@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
@@ -11,7 +8,6 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
-import 'package:trael_app_abdelhamid/routes/go_routes.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -38,7 +34,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 RichText(
                   text: TextSpan(
                     text: "Create An",
-                    style: textStyle32Bold.copyWith(color: AppColors.primaryColor),
+                    style: textStyle32Bold.copyWith(
+                      color: AppColors.primaryColor,
+                    ),
                     children: [
                       TextSpan(
                         text: " Account",
@@ -51,7 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 6.h.verticalSpace,
                 AppText(
-                    textAlign: TextAlign.center,
+                  textAlign: TextAlign.center,
                   text:
                       "“Start your journey with us – create your account today!”",
                   style: textStyle14Italic,
@@ -69,7 +67,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 AppButton(
                   title: "Sign Up",
                   onTap: () {
-                    context.pushNamed(UserAppRoutes.signInScreen.name);
+                    context.pushReplacementNamed(
+                      UserAppRoutes.signInScreen.name,
+                    );
                   },
                 ),
                 10.h.verticalSpace,
@@ -78,11 +78,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     text: "Already have an account? ",
                     style: textStyle14Regular.copyWith(letterSpacing: 0.4),
                     children: [
-                     TextSpan(
-        recognizer: TapGestureRecognizer()
-          ..onTap = () {
-            context.pushNamed(UserAppRoutes.signInScreen.name);
-          },
+                      TextSpan(
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            context.pushReplacementNamed(
+                              UserAppRoutes.signInScreen.name,
+                            );
+                          },
                         text: "Sign In",
                         style: textStyle18Bold.copyWith(
                           fontSize: 14.sp,

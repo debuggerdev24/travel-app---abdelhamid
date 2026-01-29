@@ -62,7 +62,7 @@ class _TripScreenState extends State<TripScreen> {
                     ),
                   ),
                   Image.asset(
-                    trip!.image,
+                    trip?.image ?? "",
                     height: 250.h,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -73,7 +73,7 @@ class _TripScreenState extends State<TripScreen> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 27.w),
                     child: AppText(
-                      text: trip.title,
+                      text: trip?.title ?? "-",
                       style: textStyle16SemiBold,
                     ),
                   ),
@@ -89,7 +89,7 @@ class _TripScreenState extends State<TripScreen> {
                         14.w.horizontalSpace,
                         Expanded(
                           child: AppText(
-                            text: trip.location,
+                            text: trip?.location ?? "-",
                             style: textStyle14Regular.copyWith(
                               color: AppColors.primaryColor,
                             ),
@@ -99,7 +99,7 @@ class _TripScreenState extends State<TripScreen> {
                         SvgIcon(AppAssets.calendar, size: 22.w),
                         14.w.horizontalSpace,
                         AppText(
-                          text: trip.date,
+                          text: trip?.date ?? "-",
                           style: textStyle14Regular.copyWith(
                             color: AppColors.primaryColor,
                           ),
