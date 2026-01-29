@@ -6,6 +6,7 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:go_router/go_router.dart';
 
@@ -111,14 +112,14 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
               AppText(
                 text: "\"Thank you for booking with us.\"",
                 style: textStyle14Regular.copyWith(
-                  color: AppColors.primaryColor.withOpacity(.5),
+                  color: AppColors.primaryColor.setOpacity(.5),
                 ),
               ),
               SizedBox(height: 4.h),
               AppText(
                 text: "Support: +91 XXXXX XXXXX",
                 style: textStyle14Regular.copyWith(
-                  color: AppColors.primaryColor.withOpacity(.5),
+                  color: AppColors.primaryColor.setOpacity(.5),
                 ),
               ),
             ],
@@ -141,7 +142,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
           margin: EdgeInsets.only(top: 10.h),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+            border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
           ),
           child: Column(
             children: List.generate(
@@ -151,7 +152,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                   rows[i],
                   if (i != rows.length - 1)
                     Divider(
-                      color: AppColors.primaryColor.withOpacity(0.1),
+                      color: AppColors.primaryColor.setOpacity(0.1),
                       height: 10.h,
                     ),
                 ],
@@ -172,7 +173,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: AppColors.primaryColor.withOpacity(0.6),
+                color: AppColors.primaryColor.setOpacity(0.6),
               ),
             ),
           ),

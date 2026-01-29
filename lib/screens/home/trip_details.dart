@@ -11,6 +11,8 @@ import 'package:trael_app_abdelhamid/core/widgets/feed_back_card.dart';
 import 'package:trael_app_abdelhamid/core/widgets/packge_details_card.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class TripDetailsScreen extends StatelessWidget {
   const TripDetailsScreen({super.key});
@@ -21,9 +23,7 @@ class TripDetailsScreen extends StatelessWidget {
     final trip = tripProvider.selectedTrip;
 
     if (trip == null) {
-      return const Scaffold(
-        body: Center(child: Text("No Trip Selected")),
-      );
+      return const Scaffold(body: Center(child: Text("No Trip Selected")));
     }
 
     final isUpcoming = tripProvider.upcomingtripList.contains(trip);
@@ -35,7 +35,6 @@ class TripDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 15.h),
                 child: Row(
@@ -70,10 +69,7 @@ class TripDetailsScreen extends StatelessWidget {
                   children: [
                     12.h.verticalSpace,
 
-                    AppText(
-                      text: trip.title,
-                      style: textStyle16SemiBold,
-                    ),
+                    AppText(text: trip.title, style: textStyle16SemiBold),
 
                     14.h.verticalSpace,
 
@@ -107,7 +103,7 @@ class TripDetailsScreen extends StatelessWidget {
                     AppText(
                       text: trip.description,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.withOpacity(0.5),
+                        color: AppColors.primaryColor.setOpacity(0.5),
                       ),
                     ),
                     22.h.verticalSpace,
@@ -117,17 +113,15 @@ class TripDetailsScreen extends StatelessWidget {
                         style: textStyle16SemiBold,
                       ),
                       PackageDetailsCard(),
-                      AppText(
-                        text: "Note:",
-                        style: textStyle16SemiBold,
-                      ),
+                      AppText(text: "Note:", style: textStyle16SemiBold),
                       8.h.verticalSpace,
                       AppText(
                         text: "Prices may vary depending on airline & hotel:",
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor.withOpacity(0.6),
+                          color: AppColors.primaryColor.setOpacity(0.6),
                         ),
-                      ),42.h.verticalSpace,
+                      ),
+                      42.h.verticalSpace,
                       AppButton(
                         title: "Select Package & Room Type",
                         onTap: () {
@@ -201,8 +195,14 @@ class TripDetailsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          AppText(text: title, style: textStyle14Regular.copyWith(color: AppColors.primaryColor)),
-          AppText(text: value, style: textStyle14Regular.copyWith(color: AppColors.primaryColor)),
+          AppText(
+            text: title,
+            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+          ),
+          AppText(
+            text: value,
+            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+          ),
         ],
       ),
     );
@@ -235,22 +235,23 @@ class TripDetailsScreen extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.1),
+            color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 3,
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title != null) Padding(
-            padding: EdgeInsets.only(bottom: 10),
-            child: AppText(text: title, style: textStyle16SemiBold),
-          ),
+          if (title != null)
+            Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: AppText(text: title, style: textStyle16SemiBold),
+            ),
           ...rows,
         ],
       ),

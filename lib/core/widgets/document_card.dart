@@ -5,15 +5,14 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class DocumentCard extends StatelessWidget {
   final DocumentModel doc;
   final VoidCallback ontap;
 
-  const DocumentCard({
-    super.key,
-    required this.doc, required this.ontap,
-  });
+  const DocumentCard({super.key, required this.doc, required this.ontap});
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
@@ -26,7 +25,7 @@ class DocumentCard extends StatelessWidget {
             child: AppText(
               text: "$label",
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.withOpacity(0.8),
+                color: AppColors.primaryColor.setOpacity(0.8),
                 fontSize: 13.sp,
               ),
             ),
@@ -34,14 +33,14 @@ class DocumentCard extends StatelessWidget {
           AppText(
             text: " :  ",
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
             ),
           ),
           Expanded(
             child: AppText(
               text: value,
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.withOpacity(0.8),
+                color: AppColors.primaryColor.setOpacity(0.8),
               ),
             ),
           ),
@@ -58,10 +57,10 @@ class DocumentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.setOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -89,7 +88,7 @@ class DocumentCard extends StatelessWidget {
                       ),
               ),
 
-14.w.horizontalSpace,
+              14.w.horizontalSpace,
               // Content
               Expanded(
                 child: Column(
@@ -103,39 +102,41 @@ class DocumentCard extends StatelessWidget {
                           color: AppColors.secondary,
                         ),
                       ),
-4.h.verticalSpace,                    ],
+                      4.h.verticalSpace,
+                    ],
 
                     AppText(
                       text: doc.title,
                       style: textStyle16SemiBold.copyWith(fontSize: 16.sp),
                     ),
 
-8.h.verticalSpace,                    if (doc.info != null)
-                      ...doc.info!.entries.map((entry) =>
-                          _buildInfoRow(entry.key, entry.value),
-                      ).toList(),
+                    8.h.verticalSpace,
+                    if (doc.info != null)
+                      ...doc.info!.entries
+                          .map((entry) => _buildInfoRow(entry.key, entry.value))
+                          .toList(),
                   ],
                 ),
               ),
             ],
           ),
           16.h.verticalSpace,
-          
-            Row(
+
+          Row(
             children: [
               Expanded(
                 child: GestureDetector(
-                   onTap: ontap,
+                  onTap: ontap,
                   child: Container(
                     height: 46.h,
                     decoration: BoxDecoration(
-                       boxShadow: [
-                      BoxShadow(
-                        color: AppColors.blueColor.withOpacity(0.4),
-                        blurRadius: 6,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.blueColor.setOpacity(0.4),
+                          blurRadius: 6,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
                       color: AppColors.blueColor,
                       borderRadius: BorderRadius.circular(25.r),
                     ),
@@ -143,8 +144,11 @@ class DocumentCard extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.remove_red_eye_outlined,
-                              color: Colors.white, size: 18),
+                          const Icon(
+                            Icons.remove_red_eye_outlined,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                           12.w.horizontalSpace,
                           AppText(
                             text: doc.button1,
@@ -164,17 +168,17 @@ class DocumentCard extends StatelessWidget {
 
               Expanded(
                 child: GestureDetector(
-                 onTap: ontap,
+                  onTap: ontap,
                   child: Container(
                     height: 46.h,
                     decoration: BoxDecoration(
-                       boxShadow: [
-                      BoxShadow(
-                        color: AppColors.blueColor.withOpacity(0.4),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.blueColor.setOpacity(0.4),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                       color: Colors.white,
                       border: Border.all(
                         color: AppColors.blueColor,

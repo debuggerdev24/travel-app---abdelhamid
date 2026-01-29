@@ -4,6 +4,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class PastPaymentItem extends StatelessWidget {
   final String id;
@@ -48,7 +50,7 @@ class PastPaymentItem extends StatelessWidget {
                   child: AppText(
                     text: "Paid $date",
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor.withOpacity(0.6),
+                      color: AppColors.primaryColor.setOpacity(0.6),
                     ),
                   ),
                 ),

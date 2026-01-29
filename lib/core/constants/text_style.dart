@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'app_colors.dart';
 
 final textStyle32Bold = TextStyle(
@@ -31,13 +31,13 @@ final textStyle14Regular = TextStyle(
   fontSize: 14.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w400,
-  color: AppColors.primaryColor.withOpacity(0.6),
+  color: AppColors.primaryColor.setOpacity(0.6),
 );
 final textStyle14Italic = TextStyle(
   fontSize: 14.sp,
   fontFamily: 'Roboto',
   fontStyle: FontStyle.italic,
-  color: AppColors.primaryColor.withOpacity(0.6),
+  color: AppColors.primaryColor.setOpacity(0.6),
 );
 final textStyle16SemiBold = TextStyle(
   fontSize: 16.sp,
@@ -56,21 +56,21 @@ final textStyle10Regular = TextStyle(
   fontSize: 10.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w400,
-  color: AppColors.primaryColor.withOpacity(0.6),
+  color: AppColors.primaryColor.setOpacity(0.6),
 );
 
 final textStyle12Regular = TextStyle(
   fontSize: 12.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w400,
-  color: AppColors.primaryColor.withOpacity(0.6),
+  color: AppColors.primaryColor.setOpacity(0.6),
 );
 
 // final textStyle14Regular = TextStyle(
 //     fontSize: 14.sp,
 //     fontFamily: 'Jaldi',
 //     fontWeight: FontWeight.normal,
-//     color: AppColors.black.withOpacity(0.8),
+//     color: AppColors.black.setOpacity(0.8),
 //     letterSpacing: 0.1
 //     // letterSpacing: 0.4
 //     );
@@ -87,7 +87,7 @@ final textStyle12Regular = TextStyle(
 //     fontSize: 16.sp,
 //     fontFamily: 'Jaldi',
 //     fontWeight: FontWeight.normal,
-//     color: AppColors.blackColor.withOpacity(0.9),
+//     color: AppColors.blackColor.setOpacity(0.9),
 //     letterSpacing: 0.2
 //     // letterSpacing: 0.4
 //     );

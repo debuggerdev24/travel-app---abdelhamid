@@ -9,6 +9,8 @@ import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class PackageSummaryScreen extends StatefulWidget {
   const PackageSummaryScreen({super.key});
@@ -31,19 +33,16 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
 
-
-
       body: SafeArea(
         child: Column(
           children: [
             /// ---------------- HEADER ----------------
             40.h.verticalSpace,
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w,  ),
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  
                   Align(
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
@@ -109,7 +108,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                           border: Border.all(color: AppColors.blueColor),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primaryColor.withOpacity(0.1),
+                              color: AppColors.primaryColor.setOpacity(0.1),
                               blurRadius: 3,
                               offset: const Offset(0, 2),
                             ),
@@ -154,12 +153,18 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     _priceRow("2 Child", "€2500"),
                     _priceRow("1 Baby", "€500"),
 
-                    Divider(height: 30.h,color: AppColors.primaryColor.withOpacity(0.2),endIndent: 60,),
+                    Divider(
+                      height: 30.h,
+                      color: AppColors.primaryColor.setOpacity(0.2),
+                      endIndent: 60,
+                    ),
                     _priceRow("TOTAL COST", "€10,000"),
                     52.h.verticalSpace,
                     AppButton(
-                      onTap: (){
-                        context.pushNamed(UserAppRoutes.paymentOptionScreen.name);
+                      onTap: () {
+                        context.pushNamed(
+                          UserAppRoutes.paymentOptionScreen.name,
+                        );
                       },
                       title: "Book Now",
                     ),
@@ -206,7 +211,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     child: AppText(
                       text: e,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.withOpacity(0.6),
+                        color: AppColors.primaryColor.setOpacity(0.6),
                       ),
                     ),
                   ),
@@ -222,41 +227,41 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
   /// Price row
   Widget _priceRow(String title, String value) {
     return Padding(
-    padding: EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      children: [
-        SizedBox(
-          width: 140.w, // FIXED WIDTH FOR ALIGNMENT
-          child: AppText(
-            text: title,
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 140.w, // FIXED WIDTH FOR ALIGNMENT
+            child: AppText(
+              text: title,
+              style: textStyle14Medium.copyWith(
+                color: AppColors.primaryColor.setOpacity(0.6),
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+
+          AppText(
+            text: ":",
             style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor.withOpacity(0.6),
+              color: AppColors.primaryColor.setOpacity(0.6),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),
           ),
-        ),
 
-        AppText(
-          text: ":",
-          style: textStyle14Medium.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.6),
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
+          30.w.horizontalSpace, // VALUE
+          AppText(
+            text: value,
+            style: textStyle14Medium.copyWith(
+              color: AppColors.primaryColor,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-
-30.w.horizontalSpace,        // VALUE
-        AppText(
-          text: value,
-          style: textStyle14Medium.copyWith(
-            color: AppColors.primaryColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
   }
 }

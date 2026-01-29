@@ -4,6 +4,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class ItineraryStep extends StatelessWidget {
   final String icon;
@@ -23,8 +25,8 @@ class ItineraryStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color activeColor = AppColors.blueColor.withOpacity(0.8);
-    final Color inactiveColor = AppColors.primaryColor.withOpacity(0.2);
+    final Color activeColor = AppColors.blueColor.setOpacity(0.8);
+    final Color inactiveColor = AppColors.primaryColor.setOpacity(0.2);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +38,9 @@ class ItineraryStep extends StatelessWidget {
             SvgIcon(
               icon,
               size: 32.w,
-              color: isCompleted ? activeColor : AppColors.primaryColor.withOpacity(0.8),
+              color: isCompleted
+                  ? activeColor
+                  : AppColors.primaryColor.setOpacity(0.8),
             ),
 
             /// Connector Line
@@ -62,7 +66,7 @@ class ItineraryStep extends StatelessWidget {
                 style: textStyle14Medium.copyWith(
                   fontWeight: FontWeight.w500,
                   fontSize: 16.sp,
-                  color:  AppColors.primaryColor.withOpacity(0.8),
+                  color: AppColors.primaryColor.setOpacity(0.8),
                 ),
               ),
 
@@ -72,7 +76,7 @@ class ItineraryStep extends StatelessWidget {
                 text: time,
                 style: textStyle14Medium.copyWith(
                   fontSize: 14.sp,
-                  color: AppColors.primaryColor.withOpacity(0.8),
+                  color: AppColors.primaryColor.setOpacity(0.8),
                 ),
               ),
             ],
@@ -80,11 +84,7 @@ class ItineraryStep extends StatelessWidget {
         ),
 
         /// Checkmark on the right if completed
-        if (isCompleted)
-          SvgIcon(
-AppAssets.checkmark,          
-            size: 26.w,
-          ),
+        if (isCompleted) SvgIcon(AppAssets.checkmark, size: 26.w),
       ],
     );
   }

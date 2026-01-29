@@ -8,6 +8,7 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 
@@ -37,30 +38,29 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                   Stack(
-  alignment: Alignment.center,
-  children: [
-    Align(
-      alignment: Alignment.centerLeft,
-      child: GestureDetector(
-        onTap: () => context.pop(),
-        child: SvgPicture.asset(
-          AppAssets.backIcon,
-          width: 28.5.w,
-        ),
-      ),
-    ),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: GestureDetector(
+                              onTap: () => context.pop(),
+                              child: SvgPicture.asset(
+                                AppAssets.backIcon,
+                                width: 28.5.w,
+                              ),
+                            ),
+                          ),
 
-    AppText(
-      text: "Your Feedback",
-      style: textStyle32Bold.copyWith(
-        fontSize: 26.sp,
-        color: AppColors.secondary,
-      ),
-    ),
-  ],
-),
-
+                          AppText(
+                            text: "Your Feedback",
+                            style: textStyle32Bold.copyWith(
+                              fontSize: 26.sp,
+                              color: AppColors.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
 
                       25.h.verticalSpace,
 
@@ -108,7 +108,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                           borderRadius: BorderRadius.circular(6),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.blueColor.withOpacity(0.1),
+                              color: AppColors.blueColor.setOpacity(0.1),
                               blurRadius: 8,
                               offset: Offset(2, 4),
                             ),

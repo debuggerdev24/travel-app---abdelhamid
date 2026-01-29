@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
@@ -26,7 +27,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 27.w), // NOT CHANGED
+          padding: EdgeInsets.symmetric(horizontal: 27.w), // NOT CHANGED
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -125,14 +126,14 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
     required Function(bool) onChanged,
   }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h), 
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.08),
+            color: AppColors.blueColor.setOpacity(0.08),
             blurRadius: 6,
             offset: Offset(0, 2),
           ),
@@ -141,15 +142,10 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          AppText(
-            text: title,
-            style: textStyle16SemiBold.copyWith(
-              
-            ),
-          ),
+          AppText(text: title, style: textStyle16SemiBold.copyWith()),
           CustomSwitchButton(
             initialValue: value,
-                 
+
             onChanged: (v) => onChanged(v),
           ),
         ],

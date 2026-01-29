@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
@@ -17,12 +17,12 @@ class FeedbackReviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.1),
+            color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 3,
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
         color: AppColors.whiteColor,
         borderRadius: BorderRadius.circular(12.r),
       ),
@@ -90,7 +90,7 @@ class FeedbackReviewCard extends StatelessWidget {
           Divider(
             height: 30.h,
             thickness: 1,
-            color: AppColors.primaryColor.withOpacity(0.2),
+            color: AppColors.primaryColor.setOpacity(0.2),
           ),
 
           /// USER REVIEW SECTION
@@ -159,9 +159,7 @@ class FeedbackReviewCard extends StatelessWidget {
             width: 150.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(110.r),
-              border: Border.all(
-                color: AppColors.primaryColor.withOpacity(0.2),
-              ),
+              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(110.r),

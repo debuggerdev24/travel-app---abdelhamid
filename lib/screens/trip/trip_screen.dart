@@ -18,6 +18,7 @@ import 'package:trael_app_abdelhamid/core/widgets/payment_option_card.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
 class TripScreen extends StatefulWidget {
@@ -167,7 +168,7 @@ class _TripScreenState extends State<TripScreen> {
   Widget _getSelectedSection(MyTripProvider provider) {
     switch (selectedIndex) {
       case 0:
-        return _paymentSection(provider); 
+        return _paymentSection(provider);
       case 1:
         return _flightsSection();
       case 2:
@@ -195,15 +196,13 @@ class _TripScreenState extends State<TripScreen> {
               color: AppColors.whiteColor,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryColor.withOpacity(0.2),
+                  color: AppColors.primaryColor.setOpacity(0.2),
                   blurRadius: 1,
                   offset: Offset(0, 1),
                 ),
               ],
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                color: AppColors.primaryColor.withOpacity(0.2),
-              ),
+              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,7 +210,7 @@ class _TripScreenState extends State<TripScreen> {
                 AppText(
                   text: "Premium Package",
                   style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor.withOpacity(0.8),
+                    color: AppColors.primaryColor.setOpacity(0.8),
                     fontSize: 14.sp,
                   ),
                 ),
@@ -542,194 +541,302 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
- Widget _documentsSection() {
-  return Consumer<MyTripProvider>(
-    builder: (context, provider, child) {
-      final docs = provider.uploadedDocs;
+  Widget _documentsSection() {
+    return Consumer<MyTripProvider>(
+      builder: (context, provider, child) {
+        final docs = provider.uploadedDocs;
 
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (!docs.isNotEmpty) _emptyDocumentCard(),
-              if(docs.isNotEmpty)
-              
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: () => context.pushNamed(UserAppRoutes.addDocumentScreen.name),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondary,
-                        borderRadius: BorderRadius.circular(30.r),
-                        boxShadow: [BoxShadow(color: AppColors.secondary.withOpacity(0.3), blurRadius: 8)],
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!docs.isNotEmpty) _emptyDocumentCard(),
+                if (docs.isNotEmpty)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () => context.pushNamed(
+                        UserAppRoutes.addDocumentScreen.name,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SvgIcon(AppAssets.addmore, size: 18.w, color: Colors.white),
-                          SizedBox(width: 8.w),
-                          AppText(text: "Add More", style: textPopinnsMeidium.copyWith(color: Colors.white, fontSize: 14.sp)),
-                        ],
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 10.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(30.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.secondary.setOpacity(0.3),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SvgIcon(
+                              AppAssets.addmore,
+                              size: 18.w,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 8.w),
+                            AppText(
+                              text: "Add More",
+                              style: textPopinnsMeidium.copyWith(
+                                color: Colors.white,
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
+
+                if (docs.isNotEmpty) SizedBox(height: 20.h),
+
+                // === Passport & Visa ===
+                if (docs.any(
+                  (d) => d["type"] == "Passport" || d["type"] == "Visa",
+                )) ...[
+                  AppText(text: "Passport & Visa", style: textStyle16SemiBold),
+                  12.h.verticalSpace,
+                  ...docs
+                      .where(
+                        (d) => d["type"] == "Passport" || d["type"] == "Visa",
+                      )
+                      .map(
+                        (doc) => Padding(
+                          padding: EdgeInsets.only(bottom: 12.h),
+                          child: DocumentCard(
+                            doc: DocumentModel(
+                              image: AppAssets.hotel4,
+                              title: doc["name"],
+                              fileImage: doc["file"],
+                              info: {
+                                "File Type": "PDF",
+                                "Uploaded": doc["date"] ?? "02 Jun 2025",
+                              },
+                              button1: "View",
+                              button2: "Download",
+
+                              icon: AppAssets.save,
+                            ),
+                            ontap: () {
+                              context.pushNamed(
+                                UserAppRoutes.viewDocumetScreen.name,
+                                extra: {
+                                  'file': doc["file"],
+                                  'assetImage': AppAssets.hotel4,
+                                  'title': "${doc["name"]} copy",
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  20.h.verticalSpace,
+                ],
+
+                // === Round Trip Tickets ===
+                if (docs.any((d) => d["type"] == "Flight Ticket")) ...[
+                  AppText(
+                    text: "Round Trip Tickets",
+                    style: textStyle16SemiBold,
+                  ),
+                  SizedBox(height: 12.h),
+                  ...docs
+                      .where((d) => d["type"] == "Flight Ticket")
+                      .map(
+                        (doc) => Padding(
+                          padding: EdgeInsets.only(bottom: 12.h),
+                          child: DocumentCard(
+                            doc: DocumentModel(
+                              subtitle: "Return Ticket",
+                              image: AppAssets.hotel,
+                              title: doc["name"],
+                              fileImage: doc["file"],
+                              info: {
+                                "Airline": " Saudia SV773",
+                                "File Type": "PDF",
+                                "Date": "20 Feb 2025",
+                              },
+                              button1: "View",
+                              button2: "Download",
+                              icon: AppAssets.save,
+                            ),
+                            ontap: () {
+                              context.pushNamed(
+                                UserAppRoutes.viewDocumetScreen.name,
+                                extra: {
+                                  'file': doc["file"], // File
+                                  'assetImage': AppAssets.hotel4, // String only
+                                  'title': "E-ticket",
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  20.h.verticalSpace,
+                ],
+
+                // === Medical Certificate ===
+                if (docs.any((d) => d["type"] == "Medical Certificate")) ...[
+                  AppText(
+                    text: "Medical Certificate",
+                    style: textStyle16SemiBold,
+                  ),
+                  SizedBox(height: 12.h),
+                  ...docs
+                      .where((d) => d["type"] == "Medical Certificate")
+                      .map(
+                        (doc) => Padding(
+                          padding: EdgeInsets.only(bottom: 12.h),
+                          child: DocumentCard(
+                            doc: DocumentModel(
+                              image: AppAssets.hotel2,
+                              title: "Medical Certificate",
+                              fileImage: doc["file"],
+                              info: {"File Type": "JPG"},
+                              button1: "View",
+                              button2: "Download",
+                              icon: AppAssets.call,
+                            ),
+                            ontap: () {
+                              context.pushNamed(
+                                UserAppRoutes.viewDocumetScreen.name,
+                                extra: {
+                                  'file': doc["file"], // File
+                                  'assetImage': AppAssets.hotel4, // String only
+                                  'title': doc["name"],
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  20.h.verticalSpace,
+                ],
+
+                // === Hotel Vouchers ===
+                AppText(text: "Hotel Vouchers", style: textStyle16SemiBold),
+                SizedBox(height: 12.h),
+                DocumentCard(
+                  doc: DocumentModel(
+                    image: AppAssets.hotel1,
+                    title: "Swissotel Makkah",
+                    info: {
+                      "Check-in": "10 Feb",
+                      "Check-out": "15 Feb",
+                      "File Type": "Image (JPG)",
+                    },
+                    button1: "View",
+                    button2: "Open in Map",
+                    icon: AppAssets.map,
+                  ),
+                  ontap: () {
+                    context.pushNamed(
+                      UserAppRoutes.hotelVoucherScreen.name,
+                      extra: {
+                        "imageFile": AppAssets.hotelvoucher,
+                        "hotelName": "Swissotel Makkah",
+                        "address": "Ajyad St, Makkah",
+                      },
+                    );
+                  },
+                ),
+                12.h.verticalSpace,
+                DocumentCard(
+                  doc: DocumentModel(
+                    image: AppAssets.hotel2,
+                    title: "Pullman Zamzam Madinah",
+                    info: {
+                      "Check-in": "15 Feb",
+                      "Check-out": "20 Feb",
+                      "File Type": "Image (JPG)",
+                    },
+                    button1: "View",
+                    button2: "Open in Map",
+                    icon: AppAssets.map,
+                  ),
+                  ontap: () {
+                    context.pushNamed(
+                      UserAppRoutes.hotelVoucherScreen.name,
+                      extra: {
+                        "imageFile": AppAssets.hotelvoucher1,
+                        "hotelName": "Pullman Zamzam Madinah",
+                        "address": "Central Area North, Madinah",
+                      },
+                    );
+                  },
                 ),
 
-              if (docs.isNotEmpty) SizedBox(height: 20.h),
+                SizedBox(height: 20.h),
 
-              // === Passport & Visa ===
-              if (docs.any((d) => d["type"] == "Passport" || d["type"] == "Visa")) ...[
-                AppText(text: "Passport & Visa", style: textStyle16SemiBold),
-12.h.verticalSpace,                ...docs.where((d) => d["type"] == "Passport" || d["type"] == "Visa").map((doc) => Padding(
-                  padding: EdgeInsets.only(bottom: 12.h),
-                  child: DocumentCard(
-                    doc: DocumentModel(
-                      image: AppAssets.hotel4,
-                      title: doc["name"],
-                      fileImage: doc["file"],
-                      info: {"File Type": "PDF","Uploaded": doc["date"] ?? "02 Jun 2025"},
-                      button1: "View",
-                      button2: "Download",
-                      
-                      icon: AppAssets.save, 
-                    ), ontap: () {
-                      context.pushNamed(
-              UserAppRoutes.viewDocumetScreen.name,
-              extra: {
-                    'file': doc["file"],             
-            'assetImage': AppAssets.hotel4,    
-            'title': "${doc["name"]} copy",
-              });  }, 
-                  ),
-                )).toList(),
-20.h.verticalSpace,              ],
-
-              // === Round Trip Tickets ===
-              if (docs.any((d) => d["type"] == "Flight Ticket")) ...[
-                AppText(text: "Round Trip Tickets", style: textStyle16SemiBold),
+                // === Travel Insurance & Checklist ===
+                AppText(text: "Travel Document", style: textStyle16SemiBold),
                 SizedBox(height: 12.h),
-                ...docs.where((d) => d["type"] == "Flight Ticket").map((doc) => Padding(
-                  padding: EdgeInsets.only(bottom: 12.h),
-                  child: DocumentCard(
-                    doc: DocumentModel(
-                      subtitle: "Return Ticket",
-                      image: AppAssets.hotel,
-                      title: doc["name"],
-                      fileImage: doc["file"],
-                      info: {
-                        "Airline" :" Saudia SV773",
-                        "File Type": "PDF",            
-                        "Date": "20 Feb 2025",
+                DocumentCard(
+                  doc: DocumentModel(
+                    image: AppAssets.hotel3,
+                    title: "ICICI Lombard",
+                    subtitle: "Travel Insurance",
+                    info: {"Coverage": "10 Feb – 20 Feb"},
+                    button1: "View",
+                    button2: "Helpline",
+                    icon: AppAssets.call,
+                  ),
+                  ontap: () {
+                    context.pushNamed(
+                      UserAppRoutes.travelInsuranceScreen.name,
+                      extra: {
+                        "imageFile": AppAssets.travelinsurance,
+                        "hotelName": "Pullman Zamzam Madinah",
+                        "address": "Central Area North, Madinah",
                       },
-                      button1: "View",
-                      button2: "Download",
-                      icon: AppAssets.save,
-                    ), ontap: () { 
-                              context.pushNamed(
-              UserAppRoutes.viewDocumetScreen.name,
-              extra: {
-                    'file': doc["file"],              // File
-            'assetImage': AppAssets.hotel4,    // String only
-            'title': "E-ticket",
-              });
-                     },
+                    );
+                  },
+                ),
+                12.h.verticalSpace,
+                DocumentCard(
+                  doc: DocumentModel(
+                    image: AppAssets.hotel3,
+                    title: "Checklist Umrah",
+                    subtitle: "Travel Document",
+                    button1: "View",
+                    button2: "Download",
+                    icon: AppAssets.save,
                   ),
-                )).toList(), 
-20.h.verticalSpace,              ],
-
-              // === Medical Certificate ===
-              if (docs.any((d) => d["type"] == "Medical Certificate")) ...[
-                AppText(text: "Medical Certificate", style: textStyle16SemiBold),
-                SizedBox(height: 12.h),
-                ...docs.where((d) => d["type"] == "Medical Certificate").map((doc) => Padding(
-                  padding: EdgeInsets.only(bottom: 12.h),
-                  child: DocumentCard(
-                    doc: DocumentModel(
-                      image: AppAssets.hotel2,
-                      title: "Medical Certificate",
-                      fileImage: doc["file"],
-                      info: { "File Type": "JPG"},
-                      button1: "View",
-                      button2: "Download",
-                      icon: AppAssets.call, 
-                    ), ontap: () { 
-                                       context.pushNamed(
-              UserAppRoutes.viewDocumetScreen.name,
-              extra: {
-                    'file': doc["file"],              // File
-            'assetImage': AppAssets.hotel4,    // String only
-            'title':doc["name"],
-              });
-                     },
-                  ),
-                )).toList(),
-20.h.verticalSpace,              ],
-
-              // === Hotel Vouchers ===
-              AppText(text: "Hotel Vouchers", style: textStyle16SemiBold),
-              SizedBox(height: 12.h),
-              DocumentCard(doc: DocumentModel(image: AppAssets.hotel1, title: "Swissotel Makkah", info: {"Check-in": "10 Feb", "Check-out": "15 Feb","File Type" : "Image (JPG)"}, button1: "View", button2: "Open in Map", icon: AppAssets.map, ), 
-              ontap: () { 
-                context.pushNamed(UserAppRoutes.hotelVoucherScreen.name,
-          extra: {
-  "imageFile": AppAssets.hotelvoucher,
-  "hotelName": "Swissotel Makkah",
-  "address": "Ajyad St, Makkah",
-
-
-                });
-               },),
-12.h.verticalSpace,              DocumentCard(doc: DocumentModel(image: AppAssets.hotel2, title: "Pullman Zamzam Madinah", info: {"Check-in": "15 Feb", "Check-out": "20 Feb", "File Type" : "Image (JPG)"}, button1: "View", button2: "Open in Map", icon: AppAssets.map, ), ontap: () { 
-                     context.pushNamed(UserAppRoutes.hotelVoucherScreen.name,
-          extra: {
-  "imageFile": AppAssets.hotelvoucher1,
-  "hotelName": "Pullman Zamzam Madinah",
-  "address": "Central Area North, Madinah",
-
-
-                }
-                );
-               },),
-
-              SizedBox(height: 20.h),
-
-              // === Travel Insurance & Checklist ===
-              AppText(text: "Travel Document", style: textStyle16SemiBold),
-              SizedBox(height: 12.h),
-              DocumentCard(doc: DocumentModel(image: AppAssets.hotel3, title: "ICICI Lombard", subtitle: "Travel Insurance", info: {"Coverage": "10 Feb – 20 Feb"}, button1: "View", button2: "Helpline", icon: AppAssets.call, ), ontap: () { 
-                     context.pushNamed(UserAppRoutes.travelInsuranceScreen.name,
-          extra: {
-  "imageFile": AppAssets.travelinsurance,
-  "hotelName": "Pullman Zamzam Madinah",
-  "address": "Central Area North, Madinah",
-
-
-                });
-               },),
-12.h.verticalSpace,              DocumentCard(doc: DocumentModel(image: AppAssets.hotel3, title: "Checklist Umrah", subtitle: "Travel Document", button1: "View", button2: "Download", icon: AppAssets.save, ), ontap: () {  },),
-            ],
+                  ontap: () {},
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-Widget _emptyDocumentCard() {
+        );
+      },
+    );
+  }
+
+  Widget _emptyDocumentCard() {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 32.h),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.setOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -751,7 +858,7 @@ Widget _emptyDocumentCard() {
             text: "Add your Passport, Visa, Tickets here.",
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.6),
+              color: AppColors.primaryColor.setOpacity(0.6),
             ),
           ),
           40.h.verticalSpace,
@@ -765,13 +872,14 @@ Widget _emptyDocumentCard() {
       ),
     );
   }
+
   Widget _priceRow(String title, String value) {
     Color textColor;
 
     if (title == "Paid") {
-      textColor = AppColors.primaryColor.withOpacity(0.6);
+      textColor = AppColors.primaryColor.setOpacity(0.6);
     } else if (title == "Pending") {
-      textColor = AppColors.primaryColor.withOpacity(0.6);
+      textColor = AppColors.primaryColor.setOpacity(0.6);
     } else {
       textColor = AppColors.primaryColor;
     }
@@ -794,7 +902,7 @@ Widget _emptyDocumentCard() {
           AppText(
             text: ":",
             style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor.withOpacity(0.6),
+              color: AppColors.primaryColor.setOpacity(0.6),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),
@@ -822,7 +930,7 @@ Widget _emptyDocumentCard() {
             padding: const EdgeInsets.all(13.0),
             child: SvgIcon(
               AppAssets.creditcard,
-              color: AppColors.primaryColor.withOpacity(0.6),
+              color: AppColors.primaryColor.setOpacity(0.6),
             ),
           ),
           labelText: "Card number",

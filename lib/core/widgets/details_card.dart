@@ -4,17 +4,19 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class TripDetialsCard extends StatelessWidget {
   final String title;
   final Map<String, String> infoMap;
-  final double labelWidth;   // <-- added
+  final double labelWidth; // <-- added
 
   const TripDetialsCard({
     super.key,
     required this.title,
     required this.infoMap,
-    this.labelWidth = 130,   // <-- default same as before
+    this.labelWidth = 130, // <-- default same as before
   });
 
   @override
@@ -24,10 +26,10 @@ class TripDetialsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.1),
+            color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -40,14 +42,8 @@ class TripDetialsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppText(
-                text: title,
-                style: textStyle16SemiBold,
-              ),
-              SvgIcon(
-                AppAssets.download,
-                size: 24.w,
-              ),
+              AppText(text: title, style: textStyle16SemiBold),
+              SvgIcon(AppAssets.download, size: 24.w),
             ],
           ),
           SizedBox(height: 16.h),
@@ -68,12 +64,12 @@ class TripDetialsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: labelWidth.w,    
+            width: labelWidth.w,
             child: AppText(
               text: key,
               style: textStyle14Regular.copyWith(
                 fontSize: 15.sp,
-                color: AppColors.primaryColor.withOpacity(0.8),
+                color: AppColors.primaryColor.setOpacity(0.8),
               ),
             ),
           ),
@@ -81,7 +77,7 @@ class TripDetialsCard extends StatelessWidget {
             text: ":",
             style: TextStyle(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
             ),
           ),
           15.w.horizontalSpace,
@@ -90,7 +86,7 @@ class TripDetialsCard extends StatelessWidget {
               text: value,
               style: textStyle14Regular.copyWith(
                 fontSize: 15.sp,
-                color: AppColors.primaryColor.withOpacity(0.8),
+                color: AppColors.primaryColor.setOpacity(0.8),
               ),
             ),
           ),
@@ -100,16 +96,11 @@ class TripDetialsCard extends StatelessWidget {
   }
 }
 
-
 class EscortContactCard extends StatelessWidget {
   final String name;
   final String phone;
 
-  const EscortContactCard({
-    super.key,
-    required this.name,
-    required this.phone,
-  });
+  const EscortContactCard({super.key, required this.name, required this.phone});
 
   @override
   Widget build(BuildContext context) {
@@ -123,10 +114,7 @@ class EscortContactCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// Title
-          AppText(
-            text: "Escort Contact",
-            style: textStyle16SemiBold,
-          ),
+          AppText(text: "Escort Contact", style: textStyle16SemiBold),
 
           SizedBox(height: 10.h),
 
@@ -140,12 +128,12 @@ class EscortContactCard extends StatelessWidget {
             children: [
               Expanded(child: _buildRow("Phone", phone)),
               SvgIcon(
-               AppAssets.phone,
+                AppAssets.phone,
                 size: 20.sp,
                 color: AppColors.primaryColor,
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -161,7 +149,7 @@ class EscortContactCard extends StatelessWidget {
             text: key,
             style: textStyle14Regular.copyWith(
               fontSize: 15.sp,
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
             ),
           ),
         ),
@@ -169,7 +157,7 @@ class EscortContactCard extends StatelessWidget {
           text: ":",
           style: TextStyle(
             fontSize: 16.sp,
-            color: AppColors.primaryColor.withOpacity(0.8),
+            color: AppColors.primaryColor.setOpacity(0.8),
           ),
         ),
         10.w.horizontalSpace,
@@ -178,7 +166,7 @@ class EscortContactCard extends StatelessWidget {
             text: value,
             style: textStyle14Regular.copyWith(
               fontSize: 15.sp,
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
             ),
           ),
         ),

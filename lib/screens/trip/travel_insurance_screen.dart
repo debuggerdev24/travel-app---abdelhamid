@@ -5,6 +5,7 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:go_router/go_router.dart';
 
 class TravelInsuranceScreen extends StatelessWidget {
@@ -60,7 +61,6 @@ class TravelInsuranceScreen extends StatelessWidget {
 
               18.h.verticalSpace,
 
-
               /// ---------- Policy Number & Coverage ----------
               _infoSmallRow("Policy No.", "TRV2025"),
               _infoSmallRow("Coverage", "10 Feb – 20 Feb 2025"),
@@ -75,10 +75,10 @@ class TravelInsuranceScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.blueColor.withOpacity(0.1),
+                      color: AppColors.blueColor.setOpacity(0.1),
                       blurRadius: 6,
                       offset: const Offset(0, 1),
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -110,10 +110,10 @@ class TravelInsuranceScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.blueColor.withOpacity(0.1),
+                      color: AppColors.blueColor.setOpacity(0.1),
                       blurRadius: 6,
                       offset: Offset(0, 1),
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -135,7 +135,7 @@ class TravelInsuranceScreen extends StatelessWidget {
                           ),
                         ),
                         Spacer(),
-                        SvgIcon(AppAssets.call, size: 20.sp)
+                        SvgIcon(AppAssets.call, size: 20.sp),
                       ],
                     ),
                     8.h.verticalSpace,
@@ -148,7 +148,7 @@ class TravelInsuranceScreen extends StatelessWidget {
                           ),
                         ),
                         Spacer(),
-                        SvgIcon(AppAssets.alarm, size: 20.sp)
+                        SvgIcon(AppAssets.alarm, size: 20.sp),
                       ],
                     ),
                   ],
@@ -167,10 +167,7 @@ class TravelInsuranceScreen extends StatelessWidget {
         child: SizedBox(
           height: 50.h,
           width: double.infinity,
-          child: AppButton(
-            title: "Download",
-            onTap: () {},
-          ),
+          child: AppButton(title: "Download", onTap: () {}),
         ),
       ),
     );
@@ -188,7 +185,7 @@ class TravelInsuranceScreen extends StatelessWidget {
               text: key,
               style: textStyle14Regular.copyWith(
                 fontSize: 14.sp,
-                color: AppColors.primaryColor.withOpacity(0.8),
+                color: AppColors.primaryColor.setOpacity(0.8),
               ),
             ),
           ),
@@ -211,16 +208,14 @@ class TravelInsuranceScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
         children: [
-          SvgIcon(AppAssets.checkmark, size: 18.w, ),
+          SvgIcon(AppAssets.checkmark, size: 18.w),
           10.w.horizontalSpace,
           Expanded(
             child: AppText(
               text: text,
-              style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor,
-              ),
+              style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
             ),
-          )
+          ),
         ],
       ),
     );

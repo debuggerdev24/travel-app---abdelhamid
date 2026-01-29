@@ -8,6 +8,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class FullScreenDocumentViewer extends StatelessWidget {
   final File? file;
@@ -59,46 +61,42 @@ class FullScreenDocumentViewer extends StatelessWidget {
             Container(
               height: 300.h,
               width: 348.w,
-              
+
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+                border: Border.all(
+                  color: AppColors.primaryColor.setOpacity(0.2),
+                ),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.r,),
-                child: _buildViewer(isPdf)),
+                borderRadius: BorderRadius.circular(8.r),
+                child: _buildViewer(isPdf),
+              ),
             ),
             Spacer(),
             Padding(
-                           padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 40.h),
+              padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 40.h),
 
-              child: AppButton(title: "Download",),
-            )
+              child: AppButton(title: "Download"),
+            ),
           ],
         ),
       ),
     );
   }
 
-Widget _buildViewer(bool isPdf) {
-  if (file != null) {
-    if (isPdf) {
-      // ---------- PDF VIEW ----------
-      return SfPdfViewer.file(file!);
+  Widget _buildViewer(bool isPdf) {
+    if (file != null) {
+      if (isPdf) {
+        // ---------- PDF VIEW ----------
+        return SfPdfViewer.file(file!);
+      } else {
+        // ---------- FIT IMAGE INSIDE CONTAINER ----------
+        return Image.file(file!, fit: BoxFit.cover);
+      }
     } else {
-      // ---------- FIT IMAGE INSIDE CONTAINER ----------
-      return Image.file(
-        file!,
-        fit: BoxFit.cover,   
-      );
+      // ---------- FIT ASSET IMAGE ----------
+      return Image.asset(assetImage);
     }
-  } else {
-    // ---------- FIT ASSET IMAGE ----------
-    return Image.asset(
-      assetImage,
-      
-    );
   }
-}
-
 }

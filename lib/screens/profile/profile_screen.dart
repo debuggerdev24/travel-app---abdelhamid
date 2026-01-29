@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -57,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                 text: "Nohakhan@gmail.com",
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
-                  color: AppColors.primaryColor.withOpacity(0.8),
+                  color: AppColors.primaryColor.setOpacity(0.8),
                 ),
               ),
 
@@ -74,21 +75,21 @@ class ProfileScreen extends StatelessWidget {
               10.h.verticalSpace,
               _infoCard([
                 _infoRow("Date of Birth", "20 Jun 1996"),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
                 _infoRow("Age", "28 years (Adult)"),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _infoRow("Gender", "Female"),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _infoRow("Nationality", "India"),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _infoRow("Passport Number", "K002721284"),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _infoRow("Contact", "+91 90999 8989"),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _infoRow("Language", "English"),
               ]),
@@ -120,37 +121,37 @@ class ProfileScreen extends StatelessWidget {
                 _menuitems("FAQs", () {
                   context.pushNamed(UserAppRoutes.faqScreen.name);
                 }),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _menuitems("Social Media Links", () {
                   context.pushNamed(UserAppRoutes.socialMediaScreen.name);
                 }),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _menuitems("Terms & Conditions", () {
                   context.pushNamed(UserAppRoutes.termsConditionScreen.name);
                 }),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _menuitems("Privacy Policy", () {
                   context.pushNamed(UserAppRoutes.privacyPolicyScreen.name);
                 }),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _menuitems("Our Locations", () {
                   context.pushNamed(UserAppRoutes.ourLocationsScreen.name);
                 }),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _menuitems("Meet Our Team", () {
                   context.pushNamed(UserAppRoutes.meetOurTeamScreen.name);
                 }),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _menuitems("Feedback", () {
                   context.pushNamed(UserAppRoutes.profileFeedbackScreen.name);
                 }),
-                Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+                Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
                 _menuitems("App Settings", () {
                   context.pushNamed(UserAppRoutes.appSettignScreen.name);
@@ -189,7 +190,7 @@ class ProfileScreen extends StatelessWidget {
                       text: "Version: 2025",
                       style: textStyle14Medium.copyWith(
                         fontSize: 14.sp,
-                        color: AppColors.primaryColor.withOpacity(0.5),
+                        color: AppColors.primaryColor.setOpacity(0.5),
                       ),
                     ),
                   ],
@@ -201,7 +202,7 @@ class ProfileScreen extends StatelessWidget {
                     "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.",
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
-                  color: AppColors.primaryColor.withOpacity(0.8),
+                  color: AppColors.primaryColor.setOpacity(0.8),
                 ),
               ),
               10.h.verticalSpace,
@@ -210,7 +211,7 @@ class ProfileScreen extends StatelessWidget {
                     "It is strictly prohibited, without prior written permission from Temheed Reizen, to: \n• Copy or reproduce the app, in whole or in part; • Reuse, publish, or distribute any content from the app; • Commercially exploit or imitate any functionalities, concepts, or designs. \nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
-                  color: AppColors.primaryColor.withOpacity(0.8),
+                  color: AppColors.primaryColor.setOpacity(0.8),
                 ),
               ),
               10.h.verticalSpace,
@@ -273,7 +274,7 @@ class ProfileScreen extends StatelessWidget {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: AppColors.primaryColor.withOpacity(0.5),
+                color: AppColors.primaryColor.setOpacity(0.5),
               ),
             ),
           ),
@@ -368,11 +369,11 @@ class ProfileScreen extends StatelessWidget {
   BoxDecoration _boxDecoration() {
     return BoxDecoration(
       color: Colors.white,
-      border: BoxBorder.all(color: AppColors.primaryColor.withOpacity(0.2)),
+      border: BoxBorder.all(color: AppColors.primaryColor.setOpacity(0.2)),
       borderRadius: BorderRadius.circular(12.r),
       boxShadow: [
         BoxShadow(
-          color: AppColors.blueColor.withOpacity(0.1),
+          color: AppColors.blueColor.setOpacity(0.1),
           blurRadius: 6,
           offset: const Offset(0, 2),
         ),

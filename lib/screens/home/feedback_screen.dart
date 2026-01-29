@@ -10,6 +10,8 @@ import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -61,7 +63,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       25.h.verticalSpace,
 
                       AppText(
-                        text: "Give this trip a star rating based on your experience.",
+                        text:
+                            "Give this trip a star rating based on your experience.",
                         style: textStyle16SemiBold,
                       ),
 
@@ -104,7 +107,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           borderRadius: BorderRadius.circular(6),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.blueColor.withOpacity(0.12),
+                              color: AppColors.blueColor.setOpacity(0.12),
                               blurRadius: 8,
                               offset: Offset(2, 4),
                             ),

@@ -9,6 +9,8 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class ChatDetailScreen extends StatelessWidget {
   final String name;
@@ -205,9 +207,9 @@ class ChatDetailScreen extends StatelessWidget {
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: AppColors.primaryColor.withOpacity(0.1),
+                  color: AppColors.primaryColor.setOpacity(0.1),
                 ),
-                color: AppColors.lightgreyColor.withOpacity(0.1),
+                color: AppColors.lightgreyColor.setOpacity(0.1),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12.r),
                   topRight: Radius.circular(12.r),
@@ -256,14 +258,14 @@ class ChatDetailScreen extends StatelessWidget {
         AppText(
           text: msg['message'],
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.8),
+            color: AppColors.primaryColor.setOpacity(0.8),
           ),
         ),
         4.h.verticalSpace,
         AppText(
           text: msg['time'],
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.6),
+            color: AppColors.primaryColor.setOpacity(0.6),
           ),
         ),
       ],
@@ -343,14 +345,14 @@ class ChatDetailScreen extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               decoration: BoxDecoration(
-                color: AppColors.lightgreyColor.withOpacity(0.1),
+                color: AppColors.lightgreyColor.setOpacity(0.1),
                 borderRadius: BorderRadius.circular(25.r),
               ),
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Type Here...',
                   hintStyle: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor.withOpacity(0.6),
+                    color: AppColors.primaryColor.setOpacity(0.6),
                   ),
                   border: InputBorder.none,
                 ),
@@ -382,7 +384,7 @@ class ChatDetailScreen extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
               decoration: BoxDecoration(
-                color: AppColors.primaryColor.withOpacity(0.8),
+                color: AppColors.primaryColor.setOpacity(0.8),
                 borderRadius: BorderRadius.circular(30.r),
               ),
               child: Row(
@@ -410,7 +412,7 @@ class ChatDetailScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.black.withOpacity(0.1),
+                            color: AppColors.black.setOpacity(0.1),
                             spreadRadius: 0,
                             offset: Offset(0, 2),
                           ),
@@ -457,7 +459,7 @@ class ChatDetailScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.setOpacity(0.1),
             blurRadius: 10,
             offset: Offset(0, 5),
           ),

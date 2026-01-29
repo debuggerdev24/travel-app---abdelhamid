@@ -7,6 +7,7 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/screens/home/home_screen.dart';
 import 'package:trael_app_abdelhamid/screens/profile/profile_screen.dart';
 import 'package:trael_app_abdelhamid/screens/trip/trip_screen.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/screens/chat/chat_screen.dart';
 
 class TabScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _TabScreenState extends State<TabScreen> {
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex; 
+    currentIndex = widget.initialIndex;
   }
 
   @override
@@ -93,7 +94,7 @@ class KBottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
+          top: BorderSide(color: Colors.grey.setOpacity(0.3), width: 1),
         ),
       ),
       height: 75.h,

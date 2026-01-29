@@ -8,6 +8,8 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
@@ -74,7 +76,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(08.r),
                       border: Border.all(
-                        color: AppColors.primaryColor.withOpacity(0.2),
+                        color: AppColors.primaryColor.setOpacity(0.2),
                       ),
                     ),
                   ),
@@ -87,7 +89,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.r), // Less Radius
                       border: Border.all(
-                        color: AppColors.primaryColor.withOpacity(0.2),
+                        color: AppColors.primaryColor.setOpacity(0.2),
                         width: 1,
                       ),
                     ),
@@ -101,7 +103,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.r),
                       border: Border.all(
-                        color: AppColors.primaryColor.withOpacity(0.2),
+                        color: AppColors.primaryColor.setOpacity(0.2),
                         width: 1,
                       ),
                     ),
@@ -111,9 +113,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 ),
 
                 40.h.verticalSpace,
-                AppButton(title: "Verify", onTap: () {
-                  context.pushNamed(UserAppRoutes.tabScreen.name);
-                }),
+                AppButton(
+                  title: "Verify",
+                  onTap: () {
+                    context.pushNamed(UserAppRoutes.tabScreen.name);
+                  },
+                ),
                 10.h.verticalSpace,
                 RichText(
                   text: TextSpan(

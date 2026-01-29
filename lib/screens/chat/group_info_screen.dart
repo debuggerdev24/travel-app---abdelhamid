@@ -7,6 +7,8 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class GroupInfoScreen extends StatelessWidget {
   final String name;
@@ -115,7 +117,7 @@ class GroupInfoScreen extends StatelessWidget {
 
               _buildInfoRow("Created By", "Ali Khan (Admin)"),
               5.h.verticalSpace,
-              Divider(color: AppColors.primaryColor.withOpacity(0.2)),
+              Divider(color: AppColors.primaryColor.setOpacity(0.2)),
               5.h.verticalSpace,
               _buildInfoRow("Created On", "01 Jan 2025"),
 
@@ -128,11 +130,11 @@ class GroupInfoScreen extends StatelessWidget {
               _buildSharedMedia(),
 
               25.h.verticalSpace,
-  AppText(
-            text: "Members",
-            style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
-          ),
-          14.h.verticalSpace,
+              AppText(
+                text: "Members",
+                style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
+              ),
+              14.h.verticalSpace,
               _buildMembersList(),
 
               35.h.verticalSpace,
@@ -173,7 +175,7 @@ class GroupInfoScreen extends StatelessWidget {
         AppText(
           text: label,
           style: textStyle14Medium.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.5),
+            color: AppColors.primaryColor.setOpacity(0.5),
             fontSize: 14.sp,
           ),
         ),
@@ -186,7 +188,6 @@ class GroupInfoScreen extends StatelessWidget {
   }
 
   Widget _buildNotificationSwitch() {
-
     return StatefulBuilder(
       builder: (context, setState) {
         return Row(
@@ -197,13 +198,12 @@ class GroupInfoScreen extends StatelessWidget {
               style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
             ),
 
-      CustomSwitchButton(
-  initialValue: true,
-  onChanged: (value) {
-    print("Notification status: $value");
-  },
-),
-
+            CustomSwitchButton(
+              initialValue: true,
+              onChanged: (value) {
+                print("Notification status: $value");
+              },
+            ),
           ],
         );
       },
@@ -226,7 +226,10 @@ class GroupInfoScreen extends StatelessWidget {
           children: [
             AppText(
               text: "Shared Media & Docs",
-              style: textStyle18Bold.copyWith(color: AppColors.primaryColor,fontSize: 18.sp),
+              style: textStyle18Bold.copyWith(
+                color: AppColors.primaryColor,
+                fontSize: 18.sp,
+              ),
             ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
@@ -236,12 +239,15 @@ class GroupInfoScreen extends StatelessWidget {
               ),
               child: AppText(
                 text: "View All",
-                style: textStyle14Medium.copyWith(color: AppColors.secondary,fontSize: 12.sp),
+                style: textStyle14Medium.copyWith(
+                  color: AppColors.secondary,
+                  fontSize: 12.sp,
+                ),
               ),
             ),
           ],
         ),
-       19.h.verticalSpace,
+        19.h.verticalSpace,
 
         SizedBox(
           height: 100.h,
@@ -285,11 +291,11 @@ class GroupInfoScreen extends StatelessWidget {
       padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: BoxBorder.all(color: AppColors.primaryColor.withOpacity(0.2)),
+        border: BoxBorder.all(color: AppColors.primaryColor.setOpacity(0.2)),
         borderRadius: BorderRadius.circular(15.r),
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.1),
+            color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 6,
             offset: Offset(0, 2),
           ),
@@ -298,45 +304,48 @@ class GroupInfoScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        
           ...members.map(
             (member) => Padding(
-              padding:EdgeInsets.only(bottom: 10.h),
+              padding: EdgeInsets.only(bottom: 10.h),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 20.r,
                     backgroundImage: AssetImage(member["image"]!),
                   ),
-              18.w.horizontalSpace,                  Expanded(
+                  18.w.horizontalSpace,
+                  Expanded(
                     child: AppText(
                       text: member["name"]!,
                       style: textStyle12Regular.copyWith(
                         color: AppColors.primaryColor,
-                        fontSize: 16.sp
+                        fontSize: 16.sp,
                       ),
                     ),
                   ),
                   AppText(
                     text: member["role"]!,
-                    style: textStyle14Medium.copyWith(color:AppColors.primaryColor.withOpacity(0.8)),
+                    style: textStyle14Medium.copyWith(
+                      color: AppColors.primaryColor.setOpacity(0.8),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-Divider(indent: 10.w,endIndent: 10.w,),
-10.h.verticalSpace,
+          Divider(indent: 10.w, endIndent: 10.w),
+          10.h.verticalSpace,
           Center(
             child: AppText(
               text: "View All Members",
-              style: textStyle18Bold.copyWith(color: AppColors.blueColor,fontSize: 16.sp),
+              style: textStyle18Bold.copyWith(
+                color: AppColors.blueColor,
+                fontSize: 16.sp,
+              ),
             ),
           ),
         ],
       ),
     );
   }
-
-  
 }

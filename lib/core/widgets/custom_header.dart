@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
@@ -19,12 +19,13 @@ class CustomHeaders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-padding:  EdgeInsets.symmetric(horizontal: 27.w, ),      child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      
+      padding: EdgeInsets.symmetric(horizontal: 27.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
         children: [
-                       SvgIcon(AppAssets.appIcon,size: 52.w,),
-      
+          SvgIcon(AppAssets.appIcon, size: 52.w),
+
           Row(
             children: [
               GestureDetector(
@@ -34,19 +35,14 @@ padding:  EdgeInsets.symmetric(horizontal: 27.w, ),      child: Row(
                   width: 42.w,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.blueColor,
-                      width: 1,
-                    ),
+                    border: Border.all(color: AppColors.blueColor, width: 1),
                   ),
-                  child: CircleAvatar(
-                    
-                    backgroundImage: AssetImage(image),
-                  ),
+                  child: CircleAvatar(backgroundImage: AssetImage(image)),
                 ),
               ),
-          
-16.w.horizontalSpace,          
+
+              16.w.horizontalSpace,
+
               /// ---- Notification Icon ----
               GestureDetector(
                 onTap: onNotificationTap,
@@ -56,13 +52,10 @@ padding:  EdgeInsets.symmetric(horizontal: 27.w, ),      child: Row(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.blueColor.withOpacity(0.2),
-                    border: Border.all(
-                      color:AppColors.blueColor,
-                      width: 1.w,
-                    ),
+                    color: AppColors.blueColor.setOpacity(0.2),
+                    border: Border.all(color: AppColors.blueColor, width: 1.w),
                   ),
-                  child: SvgIcon(AppAssets.notification,size: 14.sp,),
+                  child: SvgIcon(AppAssets.notification, size: 14.sp),
                 ),
               ),
             ],

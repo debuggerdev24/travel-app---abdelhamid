@@ -5,6 +5,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class DuaListScreen extends StatelessWidget {
   const DuaListScreen({super.key});
@@ -32,7 +34,7 @@ class DuaListScreen extends StatelessWidget {
                     ),
                     Spacer(),
                     Align(
-                      alignment:Alignment.center,
+                      alignment: Alignment.center,
                       child: AppText(
                         text: "Dua List",
                         style: textStyle32Bold.copyWith(
@@ -144,7 +146,7 @@ class DuaItem extends StatelessWidget {
           text: arabicText,
           textAlign: TextAlign.right,
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.5),
+            color: AppColors.primaryColor.setOpacity(0.5),
           ),
         ),
         4.h.verticalSpace,
@@ -154,7 +156,7 @@ class DuaItem extends StatelessWidget {
           text: translation,
           textAlign: TextAlign.start,
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.5),
+            color: AppColors.primaryColor.setOpacity(0.5),
           ),
         ),
       ],

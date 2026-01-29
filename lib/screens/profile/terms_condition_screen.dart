@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 
 class TermsConditionScreen extends StatelessWidget {
@@ -16,7 +17,7 @@ class TermsConditionScreen extends StatelessWidget {
         text: title,
         style: textStyle16SemiBold.copyWith(
           fontSize: 16.sp,
-          color: AppColors.primaryColor.withOpacity(0.8),
+          color: AppColors.primaryColor.setOpacity(0.8),
         ),
       ),
     );
@@ -32,7 +33,7 @@ class TermsConditionScreen extends StatelessWidget {
             "•  ",
             style: textStyle14Regular.copyWith(
               fontSize: 14.sp,
-              color: AppColors.textcolor.withOpacity(0.6),
+              color: AppColors.textcolor.setOpacity(0.6),
             ),
           ),
           Expanded(
@@ -40,7 +41,7 @@ class TermsConditionScreen extends StatelessWidget {
               text: text,
               style: textStyle14Regular.copyWith(
                 fontSize: 14.sp,
-                color: AppColors.textcolor.withOpacity(0.6),
+                color: AppColors.textcolor.setOpacity(0.6),
               ),
             ),
           ),
@@ -85,7 +86,7 @@ class TermsConditionScreen extends StatelessWidget {
                     "Welcome to [Agency Name]. By booking or managing your trip through our platform, you agree to the following terms and conditions. Please read them carefully before proceeding.",
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
-                  color: AppColors.textcolor.withOpacity(0.6),
+                  color: AppColors.textcolor.setOpacity(0.6),
                 ),
               ),
 

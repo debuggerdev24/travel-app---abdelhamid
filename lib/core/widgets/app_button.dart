@@ -1,5 +1,4 @@
-
-import 'package:flutter/cupertino.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
@@ -21,7 +20,7 @@ class AppButton extends StatelessWidget {
     this.onTap,
     this.width,
     this.buttonColor,
-    this.child, 
+    this.child,
     this.fontSize,
     this.verticalPadding,
     this.onLongPress,
@@ -42,18 +41,18 @@ class AppButton extends StatelessWidget {
           vertical: verticalPadding == null ? 14.h : verticalPadding!.h,
           horizontal: horizontalPadding == null ? 0 : horizontalPadding!.w,
         ),
-decoration: BoxDecoration(
-  color: buttonColor ?? AppColors.blueColor,
-  borderRadius: BorderRadius.circular(8.r),
-  boxShadow: [
-    BoxShadow(
-      color: AppColors.blueColor.withOpacity(0.1),
-      blurRadius: 3,
-      spreadRadius: 0,
-      offset: Offset(0, 6),
-    ),
-  ],
-),
+        decoration: BoxDecoration(
+          color: buttonColor ?? AppColors.blueColor,
+          borderRadius: BorderRadius.circular(8.r),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.blueColor.setOpacity(0.1),
+              blurRadius: 3,
+              spreadRadius: 0,
+              offset: Offset(0, 6),
+            ),
+          ],
+        ),
 
         child: (title == null)
             ? child
@@ -69,7 +68,6 @@ decoration: BoxDecoration(
     );
   }
 }
-
 
 class AppActionButton extends StatelessWidget {
   final String label;
@@ -99,10 +97,7 @@ class AppActionButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgIcon(
-            icon,
-            size: 24.w,
-          ),
+          SvgIcon(icon, size: 24.w),
           8.w.horizontalSpace,
           AppText(
             text: label,
@@ -113,4 +108,3 @@ class AppActionButton extends StatelessWidget {
     );
   }
 }
-

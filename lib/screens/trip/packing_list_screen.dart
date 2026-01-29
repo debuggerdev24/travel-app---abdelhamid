@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
 
@@ -57,7 +58,7 @@ class PackageListScreen extends StatelessWidget {
                   );
                 }).toList(),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -82,7 +83,7 @@ class PackageListScreen extends StatelessWidget {
               AppText(
                 text: title,
                 style: textStyle16SemiBold.copyWith(
-                  color: AppColors.primaryColor.withOpacity(0.8),
+                  color: AppColors.primaryColor.setOpacity(0.8),
                   fontSize: 18.sp,
                 ),
               ),
@@ -112,7 +113,7 @@ class PackageListScreen extends StatelessWidget {
                       text: "•  ",
                       style: textStyle14Regular.copyWith(
                         fontSize: 16.sp,
-                        color: AppColors.primaryColor.withOpacity(0.6),
+                        color: AppColors.primaryColor.setOpacity(0.6),
                       ),
                     ),
                     Expanded(
@@ -120,7 +121,7 @@ class PackageListScreen extends StatelessWidget {
                         text: item,
                         style: textStyle14Regular.copyWith(
                           fontSize: 16.sp,
-                          color: AppColors.primaryColor.withOpacity(0.6),
+                          color: AppColors.primaryColor.setOpacity(0.6),
                         ),
                       ),
                     ),
@@ -134,4 +135,3 @@ class PackageListScreen extends StatelessWidget {
     );
   }
 }
-

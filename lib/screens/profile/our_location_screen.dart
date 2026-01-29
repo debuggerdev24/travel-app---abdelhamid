@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 
@@ -50,17 +51,17 @@ class OurLocationsScreen extends StatelessWidget {
                 "Rijksweg Zuid 80a, 6161 BP, Geleen",
               ]),
 
-12.h.verticalSpace,
+              12.h.verticalSpace,
               _sectionTitle("Belgium :"),
               _locationCard([
                 "Sint-Bernardsesteenweg 273B, 2660, Hoboken - Antwerp",
                 "Rue d'Ostende 124, 1080, Sint-Jans-Molenbeek, Brussels",
               ]),
 
-12.h.verticalSpace,
+              12.h.verticalSpace,
               _sectionTitle("Morocco :"),
               _locationCard(["84 Ave Mohammed V, Tangier 90000, Marokko"]),
-12.h.verticalSpace,
+              12.h.verticalSpace,
             ],
           ),
         ),
@@ -81,18 +82,21 @@ class OurLocationsScreen extends StatelessWidget {
   Widget _locationCard(List<String> items) {
     return Container(
       decoration: BoxDecoration(
-      color: Colors.white,
-      border: BoxBorder.all(color: AppColors.primaryColor.withOpacity(0.2),width: 0),
-      borderRadius: BorderRadius.circular(12.r),
-      
-      boxShadow: [
-        BoxShadow(
-          color: AppColors.primaryColor.withOpacity(0.1),
-          blurRadius: 2,
-          offset: const Offset(0, 2),
+        color: Colors.white,
+        border: BoxBorder.all(
+          color: AppColors.primaryColor.setOpacity(0.2),
+          width: 0,
         ),
-      ],
-    ),
+        borderRadius: BorderRadius.circular(12.r),
+
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryColor.setOpacity(0.1),
+            blurRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
         child: Column(
@@ -108,7 +112,7 @@ class OurLocationsScreen extends StatelessWidget {
                         text: "•  ",
                         style: textStyle12Regular.copyWith(
                           fontSize: 16.sp,
-                          color: AppColors.primaryColor.withOpacity(0.8),
+                          color: AppColors.primaryColor.setOpacity(0.8),
                         ),
                       ),
                       Expanded(
@@ -116,7 +120,7 @@ class OurLocationsScreen extends StatelessWidget {
                           text: text,
                           style: textStyle12Regular.copyWith(
                             fontSize: 16.sp,
-                          color: AppColors.primaryColor.withOpacity(0.8),
+                            color: AppColors.primaryColor.setOpacity(0.8),
                           ),
                         ),
                       ),

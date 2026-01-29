@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 
 class LocalInformationScreen extends StatelessWidget {
@@ -58,7 +59,7 @@ class LocalInformationScreen extends StatelessWidget {
               text: "",
               style: textStyle14Regular.copyWith(
                 fontSize: 14.sp,
-                color: AppColors.primaryColor.withOpacity(0.8),
+                color: AppColors.primaryColor.setOpacity(0.8),
               ),
             ),
           ],
@@ -85,7 +86,7 @@ class LocalInformationScreen extends StatelessWidget {
                     decoration: TextDecoration.underline,
                     decorationStyle: TextDecorationStyle.solid,
                     decorationThickness: 2,
-                    decorationColor: AppColors.primaryColor.withOpacity(0.2),
+                    decorationColor: AppColors.primaryColor.setOpacity(0.2),
                     color: AppColors.primaryColor,
                     fontSize: 16.sp,
                   ),
@@ -99,7 +100,7 @@ class LocalInformationScreen extends StatelessWidget {
             text: "Haramain High-Speed Train \nwebsite:",
             style: textStyle14Regular.copyWith(
               fontSize: 14.sp,
-              color: AppColors.primaryColor.withOpacity(0.7),
+              color: AppColors.primaryColor.setOpacity(0.7),
             ),
           ),
         ],
@@ -120,7 +121,7 @@ class LocalInformationScreen extends StatelessWidget {
             text: "Auto fetch based on location",
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.65),
+              color: AppColors.primaryColor.setOpacity(0.65),
             ),
           ),
           36.h.verticalSpace,
@@ -131,7 +132,7 @@ class LocalInformationScreen extends StatelessWidget {
             text: "Avg. 25–32°C in Feb",
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.65),
+              color: AppColors.primaryColor.setOpacity(0.65),
             ),
           ),
           36.h.verticalSpace,
@@ -142,7 +143,7 @@ class LocalInformationScreen extends StatelessWidget {
             text: "STC, Mobily (available at airport)",
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.65),
+              color: AppColors.primaryColor.setOpacity(0.65),
             ),
           ),
           36.h.verticalSpace,
@@ -151,7 +152,7 @@ class LocalInformationScreen extends StatelessWidget {
             text: "GMT+3 (2.5 hrs behind IST)",
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.65),
+              color: AppColors.primaryColor.setOpacity(0.65),
             ),
           ),
         ],
@@ -176,7 +177,7 @@ class LocalInformationScreen extends StatelessWidget {
                   text: title,
                   style: textStyle16SemiBold.copyWith(
                     fontSize: 18.sp,
-                    color: AppColors.primaryColor.withOpacity(0.8),
+                    color: AppColors.primaryColor.setOpacity(0.8),
                   ),
                 ),
               ],
@@ -189,16 +190,16 @@ class LocalInformationScreen extends StatelessWidget {
 
   BoxDecoration _boxDecoration() {
     return BoxDecoration(
-    color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.blueColor.withOpacity(0.1),
-              blurRadius: 3,
-              offset: Offset(0, 2),
-            ),
-          ],
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.blueColor.setOpacity(0.1),
+          blurRadius: 3,
+          offset: Offset(0, 2),
+        ),
+      ],
+      borderRadius: BorderRadius.circular(12.r),
+      border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
     );
   }
 }

@@ -11,6 +11,8 @@ import 'package:trael_app_abdelhamid/core/widgets/tab_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/trip_card.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -46,50 +48,50 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 if (selectedTab == 0) 16.h.verticalSpace,
- if (selectedTab == 0)
-                Container(
-                  height: 52.h,
-                  margin: EdgeInsets.symmetric(horizontal: 27.w),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: AppColors.primaryColor.withOpacity(0.2),
+                if (selectedTab == 0)
+                  Container(
+                    height: 52.h,
+                    margin: EdgeInsets.symmetric(horizontal: 27.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.primaryColor.setOpacity(0.2),
+                      ),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Row(
-                    children: [
-                      22.w.horizontalSpace,
-                      AppText(
-                        text: "Next Prayer",
-                        style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor.withOpacity(0.6),
+                    child: Row(
+                      children: [
+                        22.w.horizontalSpace,
+                        AppText(
+                          text: "Next Prayer",
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor.setOpacity(0.6),
+                          ),
                         ),
-                      ),
 
-                      AppText(
-                        text: "  :  ",
-                        style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor.withOpacity(0.6),
+                        AppText(
+                          text: "  :  ",
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor.setOpacity(0.6),
+                          ),
                         ),
-                      ),
-                      AppText(
-                        text: "Dhuhr 12:30 PM",
-                        style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                        AppText(
+                          text: "Dhuhr 12:30 PM",
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor,
+                          ),
                         ),
-                      ),
-                      VerticalDivider(indent: 12.w, endIndent: 12.w),
-                      AppText(
-                        text: "1h 50m",
-                        style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                        VerticalDivider(indent: 12.w, endIndent: 12.w),
+                        AppText(
+                          text: "1h 50m",
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor,
+                          ),
                         ),
-                      ),
-                      12.w.horizontalSpace,
-                      SvgIcon(AppAssets.travel, size: 24.w),
-                    ],
+                        12.w.horizontalSpace,
+                        SvgIcon(AppAssets.travel, size: 24.w),
+                      ],
+                    ),
                   ),
-                ),
 
                 20.h.verticalSpace,
 
@@ -103,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: AppColors.lightblueColor,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
+                          color: Colors.grey.setOpacity(0.2),
                           blurRadius: 5,
                           offset: Offset(0, 3),
                         ),

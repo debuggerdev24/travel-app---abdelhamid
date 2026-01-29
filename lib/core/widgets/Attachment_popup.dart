@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class AttachmentPopup extends StatelessWidget {
   final VoidCallback? onImageTap;
@@ -22,7 +24,7 @@ class AttachmentPopup extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.setOpacity(0.1),
                   blurRadius: 12,
                   offset: Offset(0, 4),
                 ),
@@ -103,7 +105,7 @@ class _ArrowPainter extends CustomPainter {
     canvas.drawPath(path, paint);
 
     // Shadow
-    canvas.drawShadow(path, Colors.black.withOpacity(0.15), 4, false);
+    canvas.drawShadow(path, Colors.black.setOpacity(0.15), 4, false);
   }
 
   @override

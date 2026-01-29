@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
@@ -110,7 +111,7 @@ class UmrahGuideScreen extends StatelessWidget {
               color: AppColors.whiteColor,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.blueColor.withOpacity(0.1),
+                  color: AppColors.blueColor.setOpacity(0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 12),
                 ),
@@ -144,7 +145,7 @@ class UmrahGuideScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.blueColor.withOpacity(0.1),
+                    color: AppColors.blueColor.setOpacity(0.1),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -191,7 +192,7 @@ Widget _step(String title, List<String> bullets) {
                 AppText(
                   text: "•  ",
                   style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor.withOpacity(0.5),
+                    color: AppColors.primaryColor.setOpacity(0.5),
                   ),
                 ),
                 Expanded(child: _colorWords(e)),
@@ -234,7 +235,7 @@ Widget _colorWords(String text) {
         TextSpan(
           text: before,
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.5),
+            color: AppColors.primaryColor.setOpacity(0.5),
           ),
         ),
       );
@@ -250,7 +251,7 @@ Widget _colorWords(String text) {
         TextSpan(
           text: after,
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.5),
+            color: AppColors.primaryColor.setOpacity(0.5),
           ),
         ),
       );
@@ -262,7 +263,7 @@ Widget _colorWords(String text) {
   return AppText(
     text: text,
     style: textStyle14Regular.copyWith(
-      color: AppColors.primaryColor.withOpacity(0.5),
+      color: AppColors.primaryColor.setOpacity(0.5),
     ),
   );
 }

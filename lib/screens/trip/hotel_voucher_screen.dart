@@ -5,6 +5,7 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 
 class HotelVoucherScreen extends StatelessWidget {
@@ -155,13 +156,13 @@ class HotelVoucherScreen extends StatelessWidget {
         color: AppColors.whiteColor,
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.1),
+            color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 1),
           ),
         ],
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +171,7 @@ class HotelVoucherScreen extends StatelessWidget {
             text: title,
             style: textStyle14Regular.copyWith(
               fontSize: 12.sp,
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
             ),
           ),
           8.h.verticalSpace,
@@ -192,13 +193,13 @@ class HotelVoucherScreen extends StatelessWidget {
         color: AppColors.whiteColor,
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.1),
+            color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 1),
           ),
         ],
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +208,7 @@ class HotelVoucherScreen extends StatelessWidget {
             text: "Stay Info",
             style: textStyle14Regular.copyWith(
               fontSize: 12.sp,
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
             ),
           ),
           8.h.verticalSpace,
@@ -257,14 +258,14 @@ class HotelVoucherScreen extends StatelessWidget {
           SvgIcon(
             icon,
             size: 20.sp,
-            color: AppColors.primaryColor.withOpacity(0.8),
+            color: AppColors.primaryColor.setOpacity(0.8),
           ),
           8.w.horizontalSpace,
           AppText(
             text: title,
             style: textStyle14Regular.copyWith(
               fontSize: 14.sp,
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
             ),
           ),
         ],

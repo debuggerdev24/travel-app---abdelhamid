@@ -12,6 +12,8 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/core/widgets/payment_option_card.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class PaymentOptionScreen extends StatefulWidget {
   const PaymentOptionScreen({super.key});
@@ -127,7 +129,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
             padding: const EdgeInsets.all(13.0),
             child: SvgIcon(
               AppAssets.creditcard,
-              color: AppColors.primaryColor.withOpacity(0.6),
+              color: AppColors.primaryColor.setOpacity(0.6),
             ),
           ),
           labelText: "Card number",

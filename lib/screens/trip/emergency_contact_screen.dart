@@ -5,6 +5,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class EmergencyContactsScreen extends StatelessWidget {
   const EmergencyContactsScreen({super.key});
@@ -18,7 +20,7 @@ class EmergencyContactsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-             Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 31.w, vertical: 27.h),
               child: Row(
                 children: [
@@ -44,7 +46,7 @@ class EmergencyContactsScreen extends StatelessWidget {
             // Cards
             Expanded(
               child: ListView(
-                padding:  EdgeInsets.symmetric(horizontal: 27.w,),
+                padding: EdgeInsets.symmetric(horizontal: 27.w),
                 children: [
                   _contactCard(
                     title: "Medical",
@@ -82,14 +84,14 @@ class EmergencyContactsScreen extends StatelessWidget {
   }) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10.h),
-       padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
+      padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.withOpacity(0.1),
+            color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -103,55 +105,56 @@ class EmergencyContactsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppText(
-           text:      title,
+                text: title,
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 18.sp,
-                  color: AppColors.primaryColor.withOpacity(0.8)
+                  color: AppColors.primaryColor.setOpacity(0.8),
                 ),
               ),
-             SvgIcon(AppAssets.phone,color: AppColors.secondary,size: 24.w,),
+              SvgIcon(AppAssets.phone, color: AppColors.secondary, size: 24.w),
             ],
           ),
-12.h.verticalSpace,
+          12.h.verticalSpace,
           // Contact Rows
-...rows.map((e) => Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120.w, // adjust if needed
-            child: AppText(
-              text: e[0],
-              style: textStyle14Regular.copyWith(
-                fontSize: 16.sp,
-                color: AppColors.primaryColor.withOpacity(0.8),
+          ...rows.map(
+            (e) => Padding(
+              padding: EdgeInsets.only(bottom: 12.h),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 120.w, // adjust if needed
+                    child: AppText(
+                      text: e[0],
+                      style: textStyle14Regular.copyWith(
+                        fontSize: 16.sp,
+                        color: AppColors.primaryColor.setOpacity(0.8),
+                      ),
+                    ),
+                  ),
+
+                  // Colon
+                  AppText(
+                    text: " : ",
+                    style: textStyle14Regular.copyWith(
+                      fontSize: 16.sp,
+                      color: AppColors.primaryColor.setOpacity(0.8),
+                    ),
+                  ),
+                  16.w.horizontalSpace,
+                  Expanded(
+                    child: AppText(
+                      text: e[1],
+                      style: textStyle14Regular.copyWith(
+                        fontSize: 16.sp,
+                        color: AppColors.primaryColor.setOpacity(0.8),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-
-          // Colon
-          AppText(
-            text: " : ",
-            style: textStyle14Regular.copyWith(
-              fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.8),
-            ),
-          ),
-16.w.horizontalSpace,
-          Expanded(
-            child: AppText(
-              text: e[1],
-              style: textStyle14Regular.copyWith(
-                fontSize: 16.sp,
-                color: AppColors.primaryColor.withOpacity(0.8),
-              ),
-            ),
-          ),
-        ],
-      ),
-    )),
-
         ],
       ),
     );

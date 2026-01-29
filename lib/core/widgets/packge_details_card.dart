@@ -5,6 +5,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class PackageDetailsCard extends StatelessWidget {
   const PackageDetailsCard({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class PackageDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tripProvider = Provider.of<TripProvider>(context);
-    final packages = tripProvider.packageList; 
+    final packages = tripProvider.packageList;
     final selectedPackage = tripProvider.selectedPackage;
 
     return SingleChildScrollView(
@@ -22,7 +24,7 @@ class PackageDetailsCard extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
-              tripProvider.selectPackage(packageDetails); 
+              tripProvider.selectPackage(packageDetails);
             },
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 14.h),
@@ -31,12 +33,12 @@ class PackageDetailsCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected
-                      ? AppColors.secondary 
-                      : AppColors.primaryColor.withOpacity(0.2), 
+                      ? AppColors.secondary
+                      : AppColors.primaryColor.setOpacity(0.2),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.blueColor.withOpacity(0.1),
+                    color: AppColors.blueColor.setOpacity(0.1),
                     blurRadius: 3,
                     offset: const Offset(0, 2),
                   ),
@@ -119,7 +121,7 @@ class PackageDetailsCard extends StatelessWidget {
                   width: 4.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.6),
+                    color: AppColors.primaryColor.setOpacity(0.6),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -129,7 +131,7 @@ class PackageDetailsCard extends StatelessWidget {
                     text: item,
                     style: textStyle14Regular.copyWith(
                       fontSize: 14,
-                      color: AppColors.primaryColor.withOpacity(0.6),
+                      color: AppColors.primaryColor.setOpacity(0.6),
                     ),
                   ),
                 ),

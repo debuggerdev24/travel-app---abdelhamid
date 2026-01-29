@@ -7,6 +7,8 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class PaymentSuccessfullScreen extends StatelessWidget {
   const PaymentSuccessfullScreen({super.key});
@@ -18,7 +20,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding:EdgeInsetsGeometry.symmetric(horizontal: 27.w),
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 27.w),
             child: Column(
               children: [
                 56.h.verticalSpace,
@@ -33,17 +35,32 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                 42.h.verticalSpace,
                 Image.asset(AppAssets.paymentsuccessfull),
                 52.h.verticalSpace,
-                AppText(text: "We’ve received your payment of €5,000",style: textStyle14Regular.copyWith(color: AppColors.primaryColor,fontSize: 18.sp,),textAlign: TextAlign.center,),
+                AppText(
+                  text: "We’ve received your payment of €5,000",
+                  style: textStyle14Regular.copyWith(
+                    color: AppColors.primaryColor,
+                    fontSize: 18.sp,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 14.h.verticalSpace,
-                              AppText(text: "Thank you for booking with us! Your trip is now confirmed – happy travels ahead!",style: textStyle14Regular.copyWith(color: AppColors.primaryColor.withOpacity(0.6),fontSize: 16.sp),textAlign: TextAlign.center,),
-                              Spacer(),
-                              AppButton(title:"Back to My Trip",
-                              onTap: (){
-                                context.pushNamed(UserAppRoutes.paymentFailedScreen.name);
-                              },
-                              ),
-                              42.h.verticalSpace,
-            
+                AppText(
+                  text:
+                      "Thank you for booking with us! Your trip is now confirmed – happy travels ahead!",
+                  style: textStyle14Regular.copyWith(
+                    color: AppColors.primaryColor.setOpacity(0.6),
+                    fontSize: 16.sp,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Spacer(),
+                AppButton(
+                  title: "Back to My Trip",
+                  onTap: () {
+                    context.pushNamed(UserAppRoutes.paymentFailedScreen.name);
+                  },
+                ),
+                42.h.verticalSpace,
               ],
             ),
           ),

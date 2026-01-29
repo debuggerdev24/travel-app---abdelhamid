@@ -9,6 +9,8 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/model/chat/chat_model.dart';
 import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
@@ -77,7 +79,7 @@ class ChatScreen extends StatelessWidget {
             color: AppColors.lightblueColor,
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.setOpacity(0.2),
                 blurRadius: 5,
                 offset: Offset(0, 3),
               ),
@@ -113,7 +115,7 @@ class ChatScreen extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.01),
+                    color: Colors.black.setOpacity(0.01),
                     blurRadius: 3,
                     offset: Offset(0, 3),
                   ),
@@ -171,7 +173,7 @@ class ChatScreen extends StatelessWidget {
                     AppText(
                       text: data.time,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.withOpacity(0.4),
+                        color: AppColors.primaryColor.setOpacity(0.4),
                       ),
                     ),
                   ],
@@ -184,7 +186,7 @@ class ChatScreen extends StatelessWidget {
                       child: AppText(
                         text: data.message,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor.withOpacity(0.4),
+                          color: AppColors.primaryColor.setOpacity(0.4),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

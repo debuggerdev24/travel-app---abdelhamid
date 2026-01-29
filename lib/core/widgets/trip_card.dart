@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class TripCard extends StatelessWidget {
   final String image;
@@ -32,13 +34,13 @@ class TripCard extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: AppColors.blueColor.withOpacity(0.1),
+              color: AppColors.blueColor.setOpacity(0.1),
               blurRadius: 3,
               offset: Offset(0, 2),
             ),
           ],
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+          border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
         ),
         child: Column(
           children: [
@@ -56,10 +58,7 @@ class TripCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppText(
-                    text: title,
-                    style: textStyle16SemiBold,
-                  ),
+                  AppText(text: title, style: textStyle16SemiBold),
                   12.h.verticalSpace,
 
                   /// Location

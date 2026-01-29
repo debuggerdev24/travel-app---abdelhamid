@@ -5,6 +5,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class CurrencyMoneyScreen extends StatelessWidget {
   const CurrencyMoneyScreen({super.key});
@@ -18,7 +20,7 @@ class CurrencyMoneyScreen extends StatelessWidget {
           children: [
             _header(context),
             Padding(
-      padding: EdgeInsets.symmetric(horizontal: 27.w),
+              padding: EdgeInsets.symmetric(horizontal: 27.w),
               child: _contentSection(),
             ),
             _bullet("ATMs available near Haram", 37.w),
@@ -65,7 +67,7 @@ class CurrencyMoneyScreen extends StatelessWidget {
         AppText(
           text: "Payment Options",
           style: textStyle14Medium.copyWith(
-            color: AppColors.primaryColor.withOpacity(0.8),
+            color: AppColors.primaryColor.setOpacity(0.8),
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -88,7 +90,7 @@ class CurrencyMoneyScreen extends StatelessWidget {
             text: "•  ",
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.withOpacity(0.6),
+              color: AppColors.primaryColor.setOpacity(0.6),
             ),
           ),
           Expanded(
@@ -96,7 +98,7 @@ class CurrencyMoneyScreen extends StatelessWidget {
               text: text,
               style: textStyle14Regular.copyWith(
                 fontSize: 16.sp,
-                color: AppColors.primaryColor.withOpacity(0.6),
+                color: AppColors.primaryColor.setOpacity(0.6),
               ),
             ),
           ),
@@ -107,13 +109,13 @@ class CurrencyMoneyScreen extends StatelessWidget {
 
   Widget _priceRow(String title, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric( vertical: 4.h),
+      padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
         children: [
           AppText(
             text: title,
             style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -122,7 +124,7 @@ class CurrencyMoneyScreen extends StatelessWidget {
           AppText(
             text: ":",
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: AppColors.primaryColor.setOpacity(0.8),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),
@@ -131,7 +133,7 @@ class CurrencyMoneyScreen extends StatelessWidget {
           AppText(
             text: value,
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.withOpacity(0.7),
+              color: AppColors.primaryColor.setOpacity(0.7),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),

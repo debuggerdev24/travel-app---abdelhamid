@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -78,9 +78,12 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                       showRadio: true,
                     ),
                     22.h.verticalSpace,
-                    AppTextField(hintText: "Enter Document Name", labelText: ""),
+                    AppTextField(
+                      hintText: "Enter Document Name",
+                      labelText: "",
+                    ),
                     22.h.verticalSpace,
-            
+
                     GestureDetector(
                       onTap: pickImageFromGallery,
                       child: Container(
@@ -89,7 +92,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
                           border: Border.all(
-                            color: AppColors.primaryColor.withOpacity(0.1),
+                            color: AppColors.primaryColor.setOpacity(0.1),
                             width: 1.w,
                           ),
                         ),
@@ -107,45 +110,57 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               ),
                       ),
                     ),
-            350.h.verticalSpace,
-               AppButton(
-                             title: "Save Document",
-                             onTap: () {
-                if (provider.seelcteddocumetype.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Please select document type")),
-                  );
-                  return;
-                }
-                if (pickedImage == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Please upload document image")),
-                  );
-                  return;
-                }
-                           
-                final selectedType = provider.seelcteddocumetype.first;
-                // final TextEditingController nameController = TextEditingController(); // You should add this field!
-                           
-                // Suggestion: Add a text field for name
-                // Or auto-generate name like "My Passport", "Visa Copy"
-                           
-                String docName = {
-                  "Passport": "Passport",
-                  "Visa": "Visa",
-                  "Flight Ticket": "Mumbai → Jeddah",
-                  "Medical Certificate": "Medical Certificate",
-                }[selectedType] ?? selectedType;
-                           
-                provider.addDocument(selectedType, pickedImage!, docName);
-                           
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Document added successfully!")),
-                );
-                           
-                context.pop();
-                             },
-                           ),
+                    350.h.verticalSpace,
+                    AppButton(
+                      title: "Save Document",
+                      onTap: () {
+                        if (provider.seelcteddocumetype.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please select document type"),
+                            ),
+                          );
+                          return;
+                        }
+                        if (pickedImage == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please upload document image"),
+                            ),
+                          );
+                          return;
+                        }
+
+                        final selectedType = provider.seelcteddocumetype.first;
+                        // final TextEditingController nameController = TextEditingController(); // You should add this field!
+
+                        // Suggestion: Add a text field for name
+                        // Or auto-generate name like "My Passport", "Visa Copy"
+
+                        String docName =
+                            {
+                              "Passport": "Passport",
+                              "Visa": "Visa",
+                              "Flight Ticket": "Mumbai → Jeddah",
+                              "Medical Certificate": "Medical Certificate",
+                            }[selectedType] ??
+                            selectedType;
+
+                        provider.addDocument(
+                          selectedType,
+                          pickedImage!,
+                          docName,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Document added successfully!"),
+                          ),
+                        );
+
+                        context.pop();
+                      },
+                    ),
                   ],
                 ),
               ),

@@ -5,6 +5,8 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+
 
 class SocialMediaScreen extends StatelessWidget {
   SocialMediaScreen({super.key});
@@ -13,27 +15,27 @@ class SocialMediaScreen extends StatelessWidget {
     {
       "icon": AppAssets.instagram,
       "title": "Instagram",
-      "sub": "Follow our travel highlights & stories"
+      "sub": "Follow our travel highlights & stories",
     },
     {
       "icon": AppAssets.tiktok,
       "title": "TikTok",
-      "sub": "Watch short videos & trip moments"
+      "sub": "Watch short videos & trip moments",
     },
     {
       "icon": AppAssets.facebook,
       "title": "Facebook",
-      "sub": "Join our travel community & get updates"
+      "sub": "Join our travel community & get updates",
     },
     {
       "icon": AppAssets.whatsapp,
       "title": "WhatsApp",
-      "sub": "Chat directly with our support team"
+      "sub": "Chat directly with our support team",
     },
     {
       "icon": AppAssets.starfill,
       "title": "Leave us a Google Review",
-      "sub": ""
+      "sub": "",
     },
   ];
 
@@ -45,29 +47,29 @@ class SocialMediaScreen extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
           child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-   Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 35.h),
-                        child: GestureDetector(
-                          onTap: () => context.pop(),
-                          child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
-                        ),
-                      ),
-                      50.w.horizontalSpace,
-                      AppText(
-                        textAlign: TextAlign.center,
-                        text: "Social Media \nLinks",
-                        style: textStyle32Bold.copyWith(
-                          fontSize: 26.sp,
-                          color: AppColors.secondary,
-                        ),
-                      ),
-                    ],
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 35.h),
+                    child: GestureDetector(
+                      onTap: () => context.pop(),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    ),
                   ),
+                  50.w.horizontalSpace,
+                  AppText(
+                    textAlign: TextAlign.center,
+                    text: "Social Media \nLinks",
+                    style: textStyle32Bold.copyWith(
+                      fontSize: 26.sp,
+                      color: AppColors.secondary,
+                    ),
+                  ),
+                ],
+              ),
               12.h.verticalSpace,
 
               AppText(
@@ -75,7 +77,7 @@ class SocialMediaScreen extends StatelessWidget {
                     "“Stay connected with us! Follow our latest updates, photos, and travel stories on social media.”",
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
-                  color: AppColors.textcolor.withOpacity(0.6)
+                  color: AppColors.textcolor.setOpacity(0.6),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -91,14 +93,19 @@ class SocialMediaScreen extends StatelessWidget {
 
                   return Container(
                     margin: EdgeInsets.only(bottom: 16.h),
-                    padding: EdgeInsets.symmetric(vertical: 15.h,horizontal: 20.w),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15.h,
+                      horizontal: 20.w,
+                    ),
                     decoration: BoxDecoration(
-                      border: BoxBorder.all(color: AppColors.primaryColor.withOpacity(0.2)),
+                      border: BoxBorder.all(
+                        color: AppColors.primaryColor.setOpacity(0.2),
+                      ),
                       color: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(12.r),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.blueColor.withOpacity(0.1),
+                          color: AppColors.blueColor.setOpacity(0.1),
                           blurRadius: 1,
                           offset: Offset(0, 2),
                         ),
@@ -107,10 +114,7 @@ class SocialMediaScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         /// ICON
-                        SvgIcon(
-                          item["icon"],
-                          size: 40.w,
-                        ),
+                        SvgIcon(item["icon"], size: 40.w),
 
                         14.w.horizontalSpace,
 
@@ -131,7 +135,9 @@ class SocialMediaScreen extends StatelessWidget {
                                   text: item["sub"],
                                   style: textStyle14Regular.copyWith(
                                     fontSize: 14.sp,
-                                    color:AppColors.primaryColor.withOpacity(0.8)
+                                    color: AppColors.primaryColor.setOpacity(
+                                      0.8,
+                                    ),
                                   ),
                                 ),
                             ],
@@ -146,7 +152,7 @@ class SocialMediaScreen extends StatelessWidget {
                             size: 24.w,
                             color: AppColors.blueColor,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   );
