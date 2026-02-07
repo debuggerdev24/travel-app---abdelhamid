@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
@@ -19,6 +20,18 @@ class BaseApiService {
           HttpHeaders.contentTypeHeader: 'application/json',
         },
         responseType: ResponseType.json,
+      ),
+    );
+
+    _dio.interceptors.add(
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        error: true,
+        compact: true,
+        maxWidth: 90,
       ),
     );
 
@@ -90,6 +103,19 @@ class BaseApiService {
     );
   }
 
+  Future<dynamic> put(
+    String endpoint, {
+    Object? body,
+    Map<String, dynamic>? queryParameters,
+  }) {
+    return _request(
+      method: 'PUT',
+      endpoint: endpoint,
+      body: body,
+      queryParameters: queryParameters,
+    );
+  }
+
   Future<dynamic> delete(
     String endpoint, {
     Object? body,
@@ -131,20 +157,28 @@ class BaseApiService {
     } on DioException catch (error) {
       final statusCode = error.response?.statusCode ?? -1;
       final data = error.response?.data;
+      String message = 'Something went wrong ($statusCode)';
+
+      if (data is Map<String, dynamic> && data.containsKey('message')) {
+        message = data['message'].toString();
+      } else if (data is String && data.isNotEmpty) {
+        message = data;
+      } else if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.receiveTimeout) {
+        message = 'Connection timed out. Please check your internet.';
+      } else if (error.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
 
       if (statusCode == HttpStatus.unauthorized) {
         throw UnauthorizedException(
           statusCode: statusCode,
-          message: 'Session expired. Please sign in again.',
+          message: message,
           data: data,
         );
       }
 
-      throw ApiException(
-        statusCode: statusCode,
-        message: error.message ?? 'Request failed with status $statusCode',
-        data: data,
-      );
+      throw ApiException(statusCode: statusCode, message: message, data: data);
     }
   }
 
@@ -174,7 +208,7 @@ class ApiException implements Exception {
   final dynamic data;
 
   @override
-  String toString() => 'ApiException($statusCode): $message';
+  String toString() => message;
 }
 
 class UnauthorizedException extends ApiException {

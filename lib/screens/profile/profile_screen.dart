@@ -208,7 +208,7 @@ class ProfileScreen extends StatelessWidget {
               10.h.verticalSpace,
               AppText(
                 text:
-                    "It is strictly prohibited, without prior written permission from Temheed Reizen, to: \n• Copy or reproduce the app, in whole or in part; • Reuse, publish, or distribute any content from the app; • Commercially exploit or imitate any functionalities, concepts, or designs. \nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
+                    "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
                   color: AppColors.primaryColor.setOpacity(0.8),

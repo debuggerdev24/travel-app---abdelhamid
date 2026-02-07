@@ -13,11 +13,7 @@ class UserDocument {
 
   var filePath;
 
-  UserDocument({
-    required this.type,
-    required this.name,
-    required this.image,
-  });
+  UserDocument({required this.type, required this.name, required this.image});
 }
 
 class MyTripProvider extends ChangeNotifier {
@@ -34,35 +30,32 @@ class MyTripProvider extends ChangeNotifier {
     seelcteddocumetype = selected;
     notifyListeners();
   }
-List<Map<String, dynamic>> uploadedDocs = [];
 
+  List<Map<String, dynamic>> uploadedDocs = [];
 
-/// Add User Document
-Map<String, List<Map<String, dynamic>>> groupDocs(List docs) {
-  final Map<String, List<Map<String, dynamic>>> map = {};
+  /// Add User Document
+  Map<String, List<Map<String, dynamic>>> groupDocs(List docs) {
+    final Map<String, List<Map<String, dynamic>>> map = {};
 
-  for (var doc in docs) {
-    final type = doc["name"]; // Passport / Visa / Medical / etc.
-    if (!map.containsKey(type)) {
-      map[type] = [];
+    for (var doc in docs) {
+      final type = doc["name"]; // Passport / Visa / Medical / etc.
+      if (!map.containsKey(type)) {
+        map[type] = [];
+      }
+      map[type]!.add(doc);
     }
-    map[type]!.add(doc);
+    return map;
   }
-  return map;
-}
 
-void addDocument(String type, File file, String name) {
-  uploadedDocs.add({
-    "type": type,  
-    "name": name,   // User entered document name
-    "file": file,
-    "time": DateTime.now(),
-  });
-  notifyListeners();
-}
-
-
-  
+  void addDocument(String type, File file, String name) {
+    uploadedDocs.add({
+      "type": type,
+      "name": name, // User entered document name
+      "file": file,
+      "time": DateTime.now(),
+    });
+    notifyListeners();
+  }
 
   /// ===============================
   /// PAYMENT SECTION
@@ -127,11 +120,7 @@ void addDocument(String type, File file, String name) {
       "Universal travel adapter",
       "Mobile with charger",
     ],
-    "Documents": [
-      "Passport copy",
-      "Visa copy",
-      "Travel insurance",
-    ],
+    "Documents": ["Passport copy", "Visa copy", "Travel insurance"],
   };
 
   /// Document Types
@@ -161,4 +150,3 @@ void addDocument(String type, File file, String name) {
     notifyListeners();
   }
 }
-

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/core/theme/app_theme.dart';
+import 'package:trael_app_abdelhamid/provider/auth/auth_provider.dart';
 import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:trael_app_abdelhamid/provider/home/home_provider.dart' as hp;
 import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
 import 'package:trael_app_abdelhamid/routes/go_routes.dart';
@@ -17,10 +18,11 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => TripProvider()),
+        ChangeNotifierProvider(create: (_) => hp.TripProvider()),
         ChangeNotifierProvider(create: (_) => MyTripProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(402, 874),
