@@ -2,14 +2,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/core.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/core/widgets/toast_service.dart';
-import 'package:trael_app_abdelhamid/provider/auth/auth_provider.dart';
+import 'package:trael_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
@@ -81,28 +79,20 @@ class _SignInScreenState extends State<SignInScreen> {
                           AppTextField(
                             controller: personalCodeController,
                             hintText: "Enter Your Personal Code",
+                            validator: (value) =>
+                                Validator.validateEmpty(value, "Personal Code"),
                           ),
                           AppTextField(
                             controller: emailController,
                             hintText: "Email Address / Phone",
                             keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Email or Phone is required";
-                              }
-                              return null;
-                            },
+                            validator: Validator.validateEmailOrMobile,
                           ),
                           AppTextField(
                             controller: passwordController,
                             hintText: "Password",
                             obSecureText: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Password is required";
-                              }
-                              return null;
-                            },
+                            validator: Validator.validatePassword,
                           ),
                         ],
                       ),
@@ -131,10 +121,14 @@ class _SignInScreenState extends State<SignInScreen> {
                             title: "Sign In",
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
-                                authProvider.clearError();
                                 final success = await authProvider.login(
-                                  email: emailController.text.trim(),
+                                  travellerCode: personalCodeController.text
+                                      .trim(),
+                                  emailOrPhone: emailController.text.trim(),
                                   password: passwordController.text.trim(),
+                                  omError: (error) {
+                                    ToastService.showError(error);
+                                  },
                                 );
 
                                 if (success && context.mounted) {
@@ -142,8 +136,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                   context.pushReplacementNamed(
                                     UserAppRoutes.tabScreen.name,
                                   );
-                                } else if (authProvider.error != null) {
-                                  ToastService.showError(authProvider.error!);
                                 }
                               }
                             },

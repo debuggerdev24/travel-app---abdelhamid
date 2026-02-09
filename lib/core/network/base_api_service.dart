@@ -4,7 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:trael_app_abdelhamid/core/core.dart';
+import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
 import 'package:trael_app_abdelhamid/routes/go_routes.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
@@ -38,14 +39,18 @@ class BaseApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final prefs = await SharedPreferences.getInstance();
-          final token = prefs.getString(_authTokenKey);
+          try {
+            final token = PrefHelper.getAccessToken();
 
-          if (token != null && token.isNotEmpty) {
-            options.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
+            if (token != null && token.isNotEmpty) {
+              options.headers[HttpHeaders.authorizationHeader] =
+                  'Bearer $token';
+            }
+
+            handler.next(options);
+          } catch (e) {
+            handler.next(options);
           }
-
-          handler.next(options);
         },
         onError: (DioException error, handler) async {
           final statusCode = error.response?.statusCode;
@@ -188,33 +193,4 @@ class BaseApiService {
 
     UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
   }
-
-  static Future<void> saveAuthToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_authTokenKey, token);
-  }
-
-  static Future<void> clearAuthToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_authTokenKey);
-  }
-}
-
-class ApiException implements Exception {
-  ApiException({required this.statusCode, required this.message, this.data});
-
-  final int statusCode;
-  final String message;
-  final dynamic data;
-
-  @override
-  String toString() => message;
-}
-
-class UnauthorizedException extends ApiException {
-  UnauthorizedException({
-    required super.statusCode,
-    required super.message,
-    super.data,
-  });
 }

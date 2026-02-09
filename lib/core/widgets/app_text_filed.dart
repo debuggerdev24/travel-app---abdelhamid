@@ -142,10 +142,7 @@ class AppTextField extends StatelessWidget {
               hintStyle: hintStyle ?? textStyle14Regular,
               contentPadding:
                   contentPadding ??
-                  EdgeInsets.symmetric(
-                    horizontal: 22.w,
-                    vertical: 17.h,
-                  ), // Fixed: Use EdgeInsets for consistency (REdgeInsets may need import)
+                  EdgeInsets.symmetric(horizontal: 22.w, vertical: 17.h),
               border: InputBorder.none,
               enabledBorder:
                   border ??
@@ -155,7 +152,34 @@ class AppTextField extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
+
+              focusedErrorBorder:
+                  border ??
+                  OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                    borderSide: BorderSide(
+                      color: AppColors.primaryColor.setOpacity(0.2),
+                    ),
+                  ),
               focusedBorder:
+                  border ??
+                  OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                    borderSide: BorderSide(
+                      color: AppColors.primaryColor.setOpacity(0.2),
+                    ),
+                  ),
+
+              disabledBorder:
+                  border ??
+                  OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                    borderSide: BorderSide(
+                      color: AppColors.primaryColor.setOpacity(0.2),
+                    ),
+                  ),
+
+              errorBorder:
                   border ??
                   OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
@@ -165,9 +189,8 @@ class AppTextField extends StatelessWidget {
                   ),
             ),
             onChanged: onChanged,
-            maxLines: maxLines ?? 1, // Optional: Default to 1
-            autovalidateMode:
-                autoValidateMode, // Forward for real-time validation
+            maxLines: maxLines ?? 1,
+            autovalidateMode: autoValidateMode,
           ),
         ),
       ],

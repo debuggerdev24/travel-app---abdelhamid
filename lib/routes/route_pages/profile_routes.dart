@@ -1,16 +1,16 @@
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/screens/profile/app_setting_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/edit_profile_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/faq_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/meet_our_team_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/our_location_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/prayer_time_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/privacy_policy_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/profile_feed_back_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/social_media_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/terms_condition_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/app_setting_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/edit_profile_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/faq_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/meet_our_team_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/our_location_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/prayer_time_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/privacy_policy_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/profile_feed_back_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/social_media_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/terms_condition_screen.dart';
 
 List<RouteBase> get profileRoutes => [
   GoRoute(

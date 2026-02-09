@@ -3,6 +3,7 @@ enum UserAppRoutes {
   signInScreen,
   forgotPasswordScreen,
   verifyOtpScreen,
+  resetPasswordScreen,
   tabScreen,
   tripDetailsScreen,
   feedbackScreen,
@@ -41,6 +42,4 @@ enum UserAppRoutes {
   appSettignScreen,
   profileFeedbackScreen,
   prayerTimesScreen,
-  
-
-  }
+}

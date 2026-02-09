@@ -3,20 +3,20 @@ import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/screens/trip/add_document_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/currency_money_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/dua_list_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/emergency_contact_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/health_saftey_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/hotel_voucher_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/local_information_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/packing_list_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/payment_history.dart';
-import 'package:trael_app_abdelhamid/screens/trip/travel_insurance_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/trip_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/umrah_guide_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/view_receipt_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/view_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/add_document_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/currency_money_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/dua_list_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/emergency_contact_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/health_saftey_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/hotel_voucher_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/local_information_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/packing_list_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/payment_history.dart';
+import 'package:trael_app_abdelhamid/features/trip/travel_insurance_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/trip_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/umrah_guide_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/view_receipt_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/view_screen.dart';
 
 List<RouteBase> get tripRoutes => [
   GoRoute(

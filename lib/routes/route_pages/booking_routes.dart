@@ -1,15 +1,15 @@
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/screens/home/feedback_screen.dart';
-import 'package:trael_app_abdelhamid/screens/home/package_summary_screen.dart';
-import 'package:trael_app_abdelhamid/screens/home/payment_failed_screen.dart';
-import 'package:trael_app_abdelhamid/screens/home/payment_option_screen.dart';
-import 'package:trael_app_abdelhamid/screens/home/payment_successfull_screen.dart';
-import 'package:trael_app_abdelhamid/screens/home/personal_details_screen.dart';
-import 'package:trael_app_abdelhamid/screens/home/personal_details_screen2.dart';
-import 'package:trael_app_abdelhamid/screens/home/room_details_screen.dart';
-import 'package:trael_app_abdelhamid/screens/home/trip_details.dart';
+import 'package:trael_app_abdelhamid/features/home/feedback_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/package_summary_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/payment_failed_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/payment_option_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/payment_successfull_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/personal_details_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/personal_details_screen2.dart';
+import 'package:trael_app_abdelhamid/features/home/room_details_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/trip_details.dart';
 
 List<RouteBase> get bookingRoutes => [
   GoRoute(

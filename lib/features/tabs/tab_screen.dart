@@ -4,11 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/screens/home/home_screen.dart';
-import 'package:trael_app_abdelhamid/screens/profile/profile_screen.dart';
-import 'package:trael_app_abdelhamid/screens/trip/trip_screen.dart';
+import 'package:trael_app_abdelhamid/features/home/home_screen.dart';
+import 'package:trael_app_abdelhamid/features/profile/profile_screen.dart';
+import 'package:trael_app_abdelhamid/features/trip/trip_screen.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/screens/chat/chat_screen.dart';
+import 'package:trael_app_abdelhamid/features/chat/chat_screen.dart';
 
 class TabScreen extends StatefulWidget {
   final int initialIndex;

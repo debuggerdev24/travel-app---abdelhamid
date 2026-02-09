@@ -1,10 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/screens/chat/chat_detail_screen.dart';
-import 'package:trael_app_abdelhamid/screens/chat/chat_screen.dart';
-import 'package:trael_app_abdelhamid/screens/chat/group_info_screen.dart';
-import 'package:trael_app_abdelhamid/screens/chat/live_location_screen.dart';
+import 'package:trael_app_abdelhamid/features/chat/chat_detail_screen.dart';
+import 'package:trael_app_abdelhamid/features/chat/chat_screen.dart';
+import 'package:trael_app_abdelhamid/features/chat/group_info_screen.dart';
+import 'package:trael_app_abdelhamid/features/chat/live_location_screen.dart';
 
 List<RouteBase> get chatRoutes => [
   GoRoute(

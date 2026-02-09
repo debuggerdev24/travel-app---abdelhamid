@@ -2,34 +2,32 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/core.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/core/widgets/toast_service.dart';
-import 'package:trael_app_abdelhamid/provider/auth/auth_provider.dart';
+import 'package:trael_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController personalCodeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
   void dispose() {
+    personalCodeController.dispose();
     emailController.dispose();
-    phoneController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -51,15 +49,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     11.h.verticalSpace,
                     RichText(
                       text: TextSpan(
-                        text: "Create An",
+                        text: "Welcome ",
                         style: textStyle32Bold.copyWith(
-                          color: AppColors.primaryColor,
+                          color: AppColors.secondary,
                         ),
                         children: [
                           TextSpan(
-                            text: " Account",
+                            text: "Back!",
                             style: textStyle32Bold.copyWith(
-                              color: AppColors.secondary,
+                              color: AppColors.primaryColor,
                             ),
                           ),
                         ],
@@ -69,7 +67,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     AppText(
                       textAlign: TextAlign.center,
                       text:
-                          "“Start your journey with us – create your account today!”",
+                          "“Access your trips, bookings, and adventures in one place.”",
                       style: textStyle14Italic,
                     ),
                     36.h.verticalSpace,
@@ -79,79 +77,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         spacing: 22.h,
                         children: [
                           AppTextField(
-                            controller: emailController,
-                            hintText: "Email Address",
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Email is required";
-                              }
-                              if (!RegExp(
-                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                              ).hasMatch(value)) {
-                                return "Invalid email format";
-                              }
-                              return null;
-                            },
+                            controller: personalCodeController,
+                            hintText: "Enter Your Personal Code",
+                            validator: (value) =>
+                                Validator.validateEmpty(value, "Personal Code"),
                           ),
                           AppTextField(
-                            controller: phoneController,
-                            hintText: "Phone Number",
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Phone number is required";
-                              }
-                              if (value.length < 10) {
-                                return "Phone number is too short";
-                              }
-                              return null;
-                            },
+                            controller: emailController,
+                            hintText: "Email Address / Phone",
+                            keyboardType: TextInputType.emailAddress,
+                            validator: Validator.validateEmailOrMobile,
                           ),
                           AppTextField(
                             controller: passwordController,
                             hintText: "Password",
                             obSecureText: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Password is required";
-                              }
-                              if (value.length < 6) {
-                                return "Password must be at least 6 characters";
-                              }
-                              return null;
-                            },
+                            validator: Validator.validatePassword,
                           ),
                         ],
                       ),
                     ),
-                    66.h.verticalSpace,
+                    8.h.verticalSpace,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          context.pushNamed(
+                            UserAppRoutes.forgotPasswordScreen.name,
+                          );
+                        },
+                        child: AppText(
+                          text: "Forgot Password ?",
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.secondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    60.h.verticalSpace,
                     authProvider.isLoading
                         ? const CircularProgressIndicator()
                         : AppButton(
-                            title: "Sign Up",
+                            title: "Sign In",
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
-                                authProvider.clearError();
-                                final success = await authProvider.register(
-                                  email: emailController.text.trim(),
-                                  phoneNumber: phoneController.text.trim(),
+                                final success = await authProvider.login(
+                                  travellerCode: personalCodeController.text
+                                      .trim(),
+                                  emailOrPhone: emailController.text.trim(),
                                   password: passwordController.text.trim(),
                                   omError: (error) {
-                                    print(error);
                                     ToastService.showError(error);
                                   },
                                 );
 
                                 if (success && context.mounted) {
-                                  ToastService.showSuccess(
-                                    "Verification code sent!",
+                                  ToastService.showSuccess("Welcome back!");
+                                  context.pushReplacementNamed(
+                                    UserAppRoutes.tabScreen.name,
                                   );
-                                  context.pushNamed(
-                                    UserAppRoutes.verifyOtpScreen.name,
-                                  );
-                                } else if (authProvider.error != null) {
-                                  ToastService.showError(authProvider.error!);
                                 }
                               }
                             },
@@ -159,17 +143,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     10.h.verticalSpace,
                     RichText(
                       text: TextSpan(
-                        text: "Already have an account? ",
+                        text: "Don’t have an account? ",
                         style: textStyle14Regular.copyWith(letterSpacing: 0.4),
                         children: [
                           TextSpan(
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 context.pushReplacementNamed(
-                                  UserAppRoutes.signInScreen.name,
+                                  UserAppRoutes.signUpScreen.name,
                                 );
                               },
-                            text: "Sign In",
+                            text: "Sign Up",
                             style: textStyle18Bold.copyWith(
                               fontSize: 14.sp,
                               color: AppColors.secondary,

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:trael_app_abdelhamid/core/core.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -236,7 +237,8 @@ class ProfileScreen extends StatelessWidget {
                       label: "Logout",
                       icon: AppAssets.exit,
                       color: AppColors.redColor,
-                      onTap: () {
+                      onTap: () async {
+                        await PrefHelper.clearTokens();
                         context.pushReplacementNamed(
                           UserAppRoutes.signInScreen.name,
                         );

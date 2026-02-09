@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/core/theme/app_theme.dart';
-import 'package:trael_app_abdelhamid/provider/auth/auth_provider.dart';
+import 'package:trael_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart' as hp;
 import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';

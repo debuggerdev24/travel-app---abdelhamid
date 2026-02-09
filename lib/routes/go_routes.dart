@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:trael_app_abdelhamid/core/core.dart';
 import 'package:trael_app_abdelhamid/routes/route_pages/auth_routes.dart';
 import 'package:trael_app_abdelhamid/routes/route_pages/booking_routes.dart';
 import 'package:trael_app_abdelhamid/routes/route_pages/chat_routes.dart';
@@ -11,7 +11,9 @@ import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 /// Route definitions are split by feature in [route_pages/].
 class UserAppRoute {
   static final GoRouter goRouter = GoRouter(
-    initialLocation: UserAppRoutes.signUpScreen.path,
+    initialLocation: PrefHelper.isLoggedIn()
+        ? UserAppRoutes.tabScreen.path
+        : UserAppRoutes.signInScreen.path,
     routes: [
       ...authRoutes,
       ...bookingRoutes,
