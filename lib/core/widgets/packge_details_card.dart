@@ -1,92 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-
+import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
 
 class PackageDetailsCard extends StatelessWidget {
-  const PackageDetailsCard({Key? key}) : super(key: key);
+  final PackageDetails package;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const PackageDetailsCard({
+    super.key,
+    required this.package,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final tripProvider = Provider.of<TripProvider>(context);
-    final packages = tripProvider.packageList;
-    final selectedPackage = tripProvider.selectedPackage;
-
-    return SingleChildScrollView(
-      child: Column(
-        children: packages.map((packageDetails) {
-          final isSelected = selectedPackage == packageDetails;
-
-          return GestureDetector(
-            onTap: () {
-              tripProvider.selectPackage(packageDetails);
-            },
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 14.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.secondary
-                      : AppColors.primaryColor.setOpacity(0.2),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.blueColor.setOpacity(0.1),
-                    blurRadius: 3,
-                    offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.secondary
+                : AppColors.primaryColor.setOpacity(0.2),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.blueColor.setOpacity(0.1),
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  AppText(
+                    text: package.title,
+                    style: textStyle16SemiBold.copyWith(
+                      color: AppColors.secondary,
+                    ),
                   ),
                 ],
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      children: [
-                        AppText(
-                          text: packageDetails.title,
-                          style: textStyle16SemiBold.copyWith(
-                            color: AppColors.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
 
-                    _buildSection(
-                      title: 'Room Options :',
-                      items: packageDetails.roomOptions,
-                    ),
-
-                    _buildSection(
-                      title: 'Child Prices :',
-                      items: packageDetails.childPrices,
-                    ),
-
-                    _buildSection(
-                      title: 'Inclusions :',
-                      items: packageDetails.inclusions,
-                    ),
-
-                    _buildSection(
-                      title: 'Exclusions:',
-                      items: packageDetails.exclusions,
-                      isLast: true,
-                    ),
-                  ],
+              if (package.roomOptions.isNotEmpty)
+                _buildSection(
+                  title: 'Room Options :',
+                  items: package.roomOptions,
                 ),
-              ),
-            ),
-          );
-        }).toList(),
+
+              if (package.childPrices.isNotEmpty)
+                _buildSection(
+                  title: 'Child Prices :',
+                  items: package.childPrices,
+                ),
+
+              if (package.inclusions.isNotEmpty)
+                _buildSection(title: 'Inclusions :', items: package.inclusions),
+
+              if (package.exclusions.isNotEmpty)
+                _buildSection(
+                  title: 'Exclusions:',
+                  items: package.exclusions,
+                  isLast: true,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

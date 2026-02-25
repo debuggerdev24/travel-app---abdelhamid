@@ -4,8 +4,6 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-
 
 class DropdownController {
   static _CustomMultiSelectDropdownState? openedDropdown;
@@ -26,9 +24,8 @@ class CustomMultiSelectDropdown extends StatefulWidget {
   final ValueChanged<List<String>> onChanged;
   final Widget? prefixIcon;
   final String titletext;
-
-  /// NEW: option to show radio buttons
   final bool showRadio;
+  final String? errorText;
 
   const CustomMultiSelectDropdown({
     super.key,
@@ -40,6 +37,7 @@ class CustomMultiSelectDropdown extends StatefulWidget {
     required this.titletext,
     this.prefixIcon,
     this.showRadio = false,
+    this.errorText,
   });
 
   @override
@@ -63,20 +61,21 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.labelText ?? "",
-          style: textStyle14Medium.copyWith(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
+        if (widget.labelText != null)
+          Text(
+            widget.labelText!,
+            style: textStyle14Medium.copyWith(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        // 10.h.verticalSpace,
+
+        SizedBox(height: 5.h),
 
         // TextField UI
         GestureDetector(
           onTap: () {
             DropdownController.closeOthers(this);
-
             setState(() => isExpanded = !isExpanded);
           },
           child: Container(
@@ -84,14 +83,18 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.setOpacity(0.1),
+                  color: Colors.grey.withOpacity(0.1),
                   blurRadius: 1,
                   offset: const Offset(0, 2),
                 ),
               ],
               borderRadius: BorderRadius.circular(8.r),
               color: Colors.white,
-              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
+              border: Border.all(
+                color: widget.errorText != null
+                    ? Colors.red.withOpacity(0.5)
+                    : AppColors.primaryColor.withOpacity(0.2),
+              ),
             ),
             child: Row(
               children: [
@@ -102,7 +105,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                         : widget.selectedItems.join(", "),
                     style: textStyle14Regular.copyWith(
                       color: widget.selectedItems.isEmpty
-                          ? AppColors.primaryColor.setOpacity(0.6)
+                          ? AppColors.primaryColor.withOpacity(0.6)
                           : AppColors.primaryColor,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -118,13 +121,24 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
           ),
         ),
 
+        if (widget.errorText != null)
+          Padding(
+            padding: EdgeInsets.only(top: 8.h, left: 12.w),
+            child: Text(
+              widget.errorText!,
+              style: TextStyle(color: Colors.red, fontSize: 12.sp),
+            ),
+          ),
+
         // Dropdown
         if (isExpanded)
           Container(
             margin: EdgeInsets.only(top: 6.h),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
+              border: Border.all(
+                color: AppColors.primaryColor.withOpacity(0.2),
+              ),
               color: Colors.white,
             ),
             child: Column(
@@ -140,13 +154,13 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                     text: widget.titletext,
                     style: textStyle18Bold.copyWith(
                       fontSize: 14.sp,
-                      color: AppColors.primaryColor.setOpacity(0.6),
+                      color: AppColors.primaryColor.withOpacity(0.6),
                     ),
                   ),
                 ),
 
-                Divider(height: 2),
-                5.h.verticalSpace,
+                const Divider(height: 2),
+                SizedBox(height: 5.h),
                 // Items List
                 ...widget.items.map((item) {
                   final isSelected = widget.selectedItems.contains(item);
@@ -155,12 +169,11 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                     onTap: () {
                       setState(() {
                         if (widget.showRadio) {
-                          // radio mode → only one selected
                           widget.selectedItems
                             ..clear()
                             ..add(item);
+                          isExpanded = false;
                         } else {
-                          // checkbox mode
                           if (isSelected) {
                             widget.selectedItems.remove(item);
                           } else {
@@ -179,8 +192,6 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AppText(text: item, style: textStyle14Regular),
-
-                          /// NEW: Radio or Checkbox condition
                           widget.showRadio
                               ? Radio<String>(
                                   activeColor: AppColors.blueColor,
@@ -189,12 +200,15 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                                       ? widget.selectedItems.first
                                       : null,
                                   onChanged: (val) {
-                                    setState(() {
-                                      widget.selectedItems
-                                        ..clear()
-                                        ..add(val!);
-                                    });
-                                    widget.onChanged(widget.selectedItems);
+                                    if (val != null) {
+                                      setState(() {
+                                        widget.selectedItems
+                                          ..clear()
+                                          ..add(val);
+                                        isExpanded = false;
+                                      });
+                                      widget.onChanged(widget.selectedItems);
+                                    }
                                   },
                                 )
                               : SvgIcon(
@@ -208,7 +222,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                     ),
                   );
                 }).toList(),
-                5.h.verticalSpace,
+                SizedBox(height: 5.h),
               ],
             ),
           ),

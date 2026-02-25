@@ -62,12 +62,26 @@ class _TripScreenState extends State<TripScreen> {
                       ),
                     ),
                   ),
-                  Image.asset(
-                    trip?.image ?? "",
-                    height: 250.h,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  if (trip != null)
+                    trip.image.startsWith('assets')
+                        ? Image.asset(
+                            trip.image,
+                            height: 250.h,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            trip.imageUrl,
+                            height: 250.h,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  height: 250.h,
+                                  color: Colors.grey[300],
+                                  child: const Icon(Icons.broken_image),
+                                ),
+                          ),
 
                   // Trip title and location
                   12.h.verticalSpace,

@@ -7,6 +7,7 @@ class AppText extends StatelessWidget {
   final TextAlign? textAlign;
   final TextOverflow? overflow;
   final TextDecoration? textDecoration;
+  final int? maxLines;
 
   const AppText({
     super.key,
@@ -15,6 +16,7 @@ class AppText extends StatelessWidget {
     this.textAlign,
     this.textDecoration,
     this.overflow,
+    this.maxLines,
   });
 
   @override
@@ -23,6 +25,7 @@ class AppText extends StatelessWidget {
       text,
       textAlign: textAlign,
       overflow: overflow,
+      maxLines: maxLines,
       style: style != null
           ? style!.copyWith(decoration: textDecoration)
           : textStyle14Regular.copyWith(),

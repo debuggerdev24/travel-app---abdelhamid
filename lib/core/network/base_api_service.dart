@@ -4,7 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/core.dart';
+import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:trael_app_abdelhamid/core/utils/pref_helper.dart';
+import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
 import 'package:trael_app_abdelhamid/routes/go_routes.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
@@ -74,11 +77,13 @@ class BaseApiService {
   Future<dynamic> get(
     String endpoint, {
     Map<String, dynamic>? queryParameters,
+    bool showErrorToast = false,
   }) {
     return _request(
       method: 'GET',
       endpoint: endpoint,
       queryParameters: queryParameters,
+      showErrorToast: showErrorToast,
     );
   }
 
@@ -86,12 +91,14 @@ class BaseApiService {
     String endpoint, {
     Object? body,
     Map<String, dynamic>? queryParameters,
+    bool showErrorToast = true,
   }) {
     return _request(
       method: 'POST',
       endpoint: endpoint,
       body: body,
       queryParameters: queryParameters,
+      showErrorToast: showErrorToast,
     );
   }
 
@@ -99,12 +106,14 @@ class BaseApiService {
     String endpoint, {
     Object? body,
     Map<String, dynamic>? queryParameters,
+    bool showErrorToast = true,
   }) {
     return _request(
       method: 'PATCH',
       endpoint: endpoint,
       body: body,
       queryParameters: queryParameters,
+      showErrorToast: showErrorToast,
     );
   }
 
@@ -112,12 +121,14 @@ class BaseApiService {
     String endpoint, {
     Object? body,
     Map<String, dynamic>? queryParameters,
+    bool showErrorToast = true,
   }) {
     return _request(
       method: 'PUT',
       endpoint: endpoint,
       body: body,
       queryParameters: queryParameters,
+      showErrorToast: showErrorToast,
     );
   }
 
@@ -125,12 +136,14 @@ class BaseApiService {
     String endpoint, {
     Object? body,
     Map<String, dynamic>? queryParameters,
+    bool showErrorToast = true,
   }) {
     return _request(
       method: 'DELETE',
       endpoint: endpoint,
       body: body,
       queryParameters: queryParameters,
+      showErrorToast: showErrorToast,
     );
   }
 
@@ -139,6 +152,7 @@ class BaseApiService {
     required String endpoint,
     Object? body,
     Map<String, dynamic>? queryParameters,
+    bool showErrorToast = false,
   }) async {
     try {
       final response = await _dio.request<dynamic>(
@@ -162,17 +176,50 @@ class BaseApiService {
     } on DioException catch (error) {
       final statusCode = error.response?.statusCode ?? -1;
       final data = error.response?.data;
-      String message = 'Something went wrong ($statusCode)';
+      String message = 'Something went wrong';
 
-      if (data is Map<String, dynamic> && data.containsKey('message')) {
-        message = data['message'].toString();
+      // Parse error message from response
+      if (data is Map<String, dynamic>) {
+        if (data.containsKey('message') && data['message'] != null) {
+          message = data['message'].toString();
+        } else if (data.containsKey('error') && data['error'] != null) {
+          message = data['error'].toString();
+        }
       } else if (data is String && data.isNotEmpty) {
         message = data;
-      } else if (error.type == DioExceptionType.connectionTimeout ||
-          error.type == DioExceptionType.receiveTimeout) {
-        message = 'Connection timed out. Please check your internet.';
-      } else if (error.type == DioExceptionType.connectionError) {
-        message = 'No internet connection.';
+      } else {
+        // Map DioException types to human-readable messages
+        switch (error.type) {
+          case DioExceptionType.connectionTimeout:
+          case DioExceptionType.sendTimeout:
+          case DioExceptionType.receiveTimeout:
+            message = 'Connection timed out. Please try again later.';
+            break;
+          case DioExceptionType.connectionError:
+            message =
+                'Unable to connect to the server. Please check your internet.';
+            break;
+          case DioExceptionType.badResponse:
+            message = 'Server responded with an error ($statusCode).';
+            break;
+          case DioExceptionType.cancel:
+            message = 'Request was cancelled.';
+            break;
+          default:
+            message = 'A network error occurred. Please try again.';
+        }
+      }
+
+      // Explicit log in terminal
+      LogHelper.instance.error(
+        "API Error: $method $endpoint",
+        "[$statusCode] $message",
+        error.stackTrace,
+      );
+
+      if (showErrorToast) {
+        // Show human readable message to user
+        ToastHelper.showError(message);
       }
 
       if (statusCode == HttpStatus.unauthorized) {
@@ -184,6 +231,16 @@ class BaseApiService {
       }
 
       throw ApiException(statusCode: statusCode, message: message, data: data);
+    } catch (e, stackTrace) {
+      LogHelper.instance.error(
+        "Unexpected Error during $method $endpoint",
+        e,
+        stackTrace,
+      );
+      if (showErrorToast) {
+        ToastHelper.showError("An unexpected error occurred.");
+      }
+      rethrow;
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:trael_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart' as hp;
 import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';
+import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
 import 'package:trael_app_abdelhamid/routes/go_routes.dart';
 
@@ -23,6 +24,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => TripBookingProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(402, 874),

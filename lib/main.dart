@@ -27,3 +27,16 @@ void main() async {
 
   runApp(const App());
 }
+
+
+// someday is not a day in the week
+
+/*
+
+{
+    "travellerCode":"TRV-2026-A6B668",
+    "identifier":"demouser@mailinator.com",
+    "password":"Pass@123"
+}
+
+*/

@@ -121,7 +121,7 @@ class AppTextField extends StatelessWidget {
             controller: controller,
             obscureText: obSecureText ?? false,
             cursorColor: AppColors.primaryColor,
-            showCursor: true,
+            showCursor: !readOnly,
             style: textStyle14Regular.copyWith(
               color: AppColors.black,
               decoration: TextDecoration.none,

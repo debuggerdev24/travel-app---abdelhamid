@@ -5,7 +5,6 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class TripCard extends StatelessWidget {
   final String image;
   final String title;
@@ -15,14 +14,14 @@ class TripCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const TripCard({
-    Key? key,
+    super.key,
     required this.image,
     required this.title,
     required this.location,
     required this.date,
     required this.status,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +45,28 @@ class TripCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-              child: Image.asset(
-                image,
-                height: 200.h,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              child: image.startsWith('assets')
+                  ? Image.asset(
+                      image,
+                      height: 200.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      image.startsWith('http')
+                          ? image
+                          : image.startsWith('/')
+                          ? 'http://192.168.1.51:3000$image'
+                          : 'http://192.168.1.51:3000/uploads/$image',
+                      height: 200.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 200.h,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.broken_image),
+                      ),
+                    ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),

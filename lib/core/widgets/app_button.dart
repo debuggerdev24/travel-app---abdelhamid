@@ -13,6 +13,8 @@ class AppButton extends StatelessWidget {
   final Color? buttonColor, titleColor;
   final VoidCallback? onTap, onLongPress;
   final Widget? child;
+  final bool isLoading;
+
   const AppButton({
     super.key,
     this.title,
@@ -26,13 +28,14 @@ class AppButton extends StatelessWidget {
     this.onLongPress,
     this.horizontalPadding,
     this.titleColor,
+    this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: onLongPress,
-      onTap: onTap,
+      onLongPress: isLoading ? null : onLongPress,
+      onTap: isLoading ? null : onTap,
       child: Container(
         width: width ?? double.infinity,
         alignment: Alignment.center,
@@ -42,19 +45,29 @@ class AppButton extends StatelessWidget {
           horizontal: horizontalPadding == null ? 0 : horizontalPadding!.w,
         ),
         decoration: BoxDecoration(
-          color: buttonColor ?? AppColors.blueColor,
+          color: (isLoading || onTap == null)
+              ? (buttonColor ?? AppColors.blueColor).setOpacity(0.6)
+              : buttonColor ?? AppColors.blueColor,
           borderRadius: BorderRadius.circular(8.r),
           boxShadow: [
             BoxShadow(
               color: AppColors.blueColor.setOpacity(0.1),
               blurRadius: 3,
               spreadRadius: 0,
-              offset: Offset(0, 6),
+              offset: const Offset(0, 6),
             ),
           ],
         ),
-
-        child: (title == null)
+        child: isLoading
+            ? SizedBox(
+                height: 20.h,
+                width: 20.h,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : (title == null)
             ? child
             : AppText(
                 overflow: TextOverflow.ellipsis,

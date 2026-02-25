@@ -13,7 +13,6 @@ import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -23,6 +22,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedTab = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<TripProvider>().fetchTrips();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Builder(
                     builder: (context) {
+                      if (provider.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primaryColor,
+                          ),
+                        );
+                      }
                       final trips = selectedTab == 0
                           ? provider.upcomingtripList
                           : provider.tripList;
