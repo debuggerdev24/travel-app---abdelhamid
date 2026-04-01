@@ -1,6 +1,7 @@
 import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
 import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
+import 'package:trael_app_abdelhamid/model/user_flight_model.dart';
 
 enum TripsType { upcoming, past }
 
@@ -57,22 +58,37 @@ class TripsService {
     try {
       final response = await BaseApiService.instance.get(
         Endpoints.getTrips,
-        queryParameters: {
-          'type': type == TripsType.upcoming ? 'upcoming' : 'past',
-        },
         showErrorToast: showErrorToast,
       );
 
-      if (response['data'] != null && response['data'] is List) {
-        final List<dynamic> data = response['data'];
-        return data.map((json) => TripModel.fromJson(json)).toList();
+      final data = response['data'];
+      if (data != null && data is Map) {
+        final key = type == TripsType.upcoming ? 'upcoming' : 'past';
+        final List<dynamic> list = data[key] ?? [];
+        return list.map((json) => TripModel.fromJson(json)).toList();
       } else {
-        throw Exception('Invalid or null response data');
+        return [];
       }
     } catch (e) {
       rethrow;
     }
   }
+
+   Future<Map<String, dynamic>> savePersonDetail(
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      final response = await BaseApiService.instance.post(
+        Endpoints.savePersonDetail,
+        body: body,
+        showErrorToast: true,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+ 
 
   Future<Map<String, dynamic>> addBookingPackage(
     String tripId,
@@ -103,6 +119,63 @@ class TripsService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> saveFamilyDetails({
+  required String bookingId,
+  required Map<String, dynamic> body,
+}) async {
+  try {
+    final response = await BaseApiService.instance.post(
+      Endpoints.saveFamilyDetails,
+      queryParameters: {'bookingId': bookingId},
+      body: body,
+      showErrorToast: true,
+    );
+    return response;
+  } catch (e) {
+    rethrow;
+  }
+}
+
+Future<FlightDetailsModel> getMyFlights(String tripId) async {
+  try {
+    final response = await BaseApiService.instance.get(
+      Endpoints.myFlights,
+      queryParameters: {'tripId': tripId},
+      showErrorToast: true,
+    );
+
+    if (response['data'] != null) {
+      return FlightDetailsModel.fromJson(response['data']);
+    } else {
+      throw Exception('Flight details not found');
+    }
+  } catch (e) {
+    rethrow;
+  }
+}
+
+
+//   Future<TripPaymentDetails> getPaymentDetails(
+//   String tripId, {
+//   bool showErrorToast = true,
+// }) async {
+//   try {
+//     final response = await BaseApiService.instance.get(
+//       Endpoints.getPaymentDetails, // add this in endpoints.dart manually
+//       queryParameters: {'tripId': tripId},
+//       showErrorToast: showErrorToast,
+//     );
+
+//     if (response['data'] != null) {
+//       return TripPaymentDetails.fromJson(response['data']);
+//     } else {
+//       throw Exception('Payment details not found');
+//     }
+//   } catch (e) {
+//     rethrow;
+//   }
+// }
 
   Future<Map<String, dynamic>> saveRoomPreference(
     Map<String, dynamic> data,

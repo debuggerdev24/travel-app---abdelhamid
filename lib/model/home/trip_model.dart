@@ -292,3 +292,31 @@ class DocumentModel {
     required this.icon,
   });
 }
+
+
+class TripPaymentDetails {
+  final String packageName;
+  final double totalAmount;
+  final double paidAmount;
+  final double pendingAmount;
+  final bool isFullyPaid;
+
+  TripPaymentDetails({
+    required this.packageName,
+    required this.totalAmount,
+    required this.paidAmount,
+    required this.pendingAmount,
+    required this.isFullyPaid,
+  });
+
+  factory TripPaymentDetails.fromJson(Map<String, dynamic> json) {
+    final summary = json['paymentSummary'];
+    return TripPaymentDetails(
+      packageName: summary['packageName'] ?? '',
+      totalAmount: (summary['totalAmount'] ?? 0).toDouble(),
+      paidAmount: (summary['paidAmount'] ?? 0).toDouble(),
+      pendingAmount: (summary['pendingAmount'] ?? 0).toDouble(),
+      isFullyPaid: summary['isFullyPaid'] ?? false,
+    );
+  }
+}

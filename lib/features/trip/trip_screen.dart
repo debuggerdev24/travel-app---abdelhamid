@@ -16,7 +16,9 @@ import 'package:trael_app_abdelhamid/core/widgets/itinerarystep_card.dart';
 import 'package:trael_app_abdelhamid/core/widgets/past_payment_item.dart';
 import 'package:trael_app_abdelhamid/core/widgets/payment_option_card.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
+import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:trael_app_abdelhamid/provider/home/user_flight_provider.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
@@ -149,14 +151,14 @@ class _TripScreenState extends State<TripScreen> {
                   _getSelectedSection(provider),
 
                   // Proceed Button (optional, only for Payment maybe)
-                  if (selectedIndex == 0)
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 27.w,
-                        vertical: 20.h,
-                      ),
-                      child: AppButton(title: "Proceed to Pay"),
-                    ),
+                  // if (selectedIndex == 0)
+                  //   Padding(
+                  //     padding: EdgeInsets.symmetric(
+                  //       horizontal: 27.w,
+                  //       vertical: 20.h,
+                  //     ),
+                  //     child: AppButton(title: "Proceed to Pay"),
+                  //   ),
                 ],
               ),
             ),
@@ -199,6 +201,10 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   Widget _paymentSection(MyTripProvider provider) {
+    final tripProvider = context.read<TripProvider>();
+    final payment = tripProvider.paymentDetails;
+    final isPaymentLoading = tripProvider.isPaymentLoading;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -218,176 +224,186 @@ class _TripScreenState extends State<TripScreen> {
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  text: "Premium Package",
-                  style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor.setOpacity(0.8),
-                    fontSize: 14.sp,
+            child: isPaymentLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        text: payment?.packageName ?? '-',
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor.setOpacity(0.8),
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      12.h.verticalSpace,
+                      _priceRow(
+                        "Total",
+                        "€${payment?.totalAmount.toStringAsFixed(0) ?? '-'}",
+                      ),
+                      4.h.verticalSpace,
+                      _priceRow(
+                        "Paid",
+                        "€${payment?.paidAmount.toStringAsFixed(0) ?? '-'}",
+                      ),
+                      4.h.verticalSpace,
+                      _priceRow(
+                        "Pending",
+                        "€${payment?.pendingAmount.toStringAsFixed(0) ?? '-'}",
+                      ),
+                    ],
                   ),
-                ),
-                12.h.verticalSpace,
-                _priceRow("Total", "€10,000"),
-                4.h.verticalSpace,
-                _priceRow("Paid", "€5,000"),
-                4.h.verticalSpace,
-                _priceRow("Pending", "€5,000"),
-              ],
-            ),
+            // child: Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     // AppText(
+            //     //   text: "Premium Package",
+            //     //   style: textStyle14Regular.copyWith(
+            //     //     color: AppColors.primaryColor.setOpacity(0.8),
+            //     //     fontSize: 14.sp,
+            //     //   ),
+            //     // ),
+            //     // 12.h.verticalSpace,
+            //     // _priceRow("Total", "€10,000"),
+            //     // 4.h.verticalSpace,
+            //     // _priceRow("Paid", "€5,000"),
+            //     // 4.h.verticalSpace,
+            //     // _priceRow("Pending", "€5,000"),
+            //   ],
+            // ),
           ),
         ),
-
-        if (!provider.hidePaymentMethods)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(text: "Payment Method", style: textStyle16SemiBold),
-                16.h.verticalSpace,
-                PaymentOption(
-                  onSelect: (value) => provider.changeSelectedMethod(value),
-                  value: PaymentMethosEnum.googlePay,
-                  selectedValue: provider.selectedMethod,
-                ),
-                PaymentOption(
-                  onSelect: (value) => provider.changeSelectedMethod(value),
-                  value: PaymentMethosEnum.applepay,
-                  selectedValue: provider.selectedMethod,
-                ),
-                PaymentOption(
-                  onSelect: (value) => provider.changeSelectedMethod(value),
-                  value: PaymentMethosEnum.idealpay,
-                  selectedValue: provider.selectedMethod,
-                ),
-                PaymentOption(
-                  onSelect: (value) => provider.changeSelectedMethod(value),
-                  value: PaymentMethosEnum.cash,
-                  selectedValue: provider.selectedMethod,
-                ),
-                PaymentOption(
-                  onSelect: (value) => provider.changeSelectedMethod(value),
-                  value: PaymentMethosEnum.creditCard,
-                  selectedValue: provider.selectedMethod,
-                ),
-                if (provider.selectedMethod == PaymentMethosEnum.creditCard)
-                  _cardDetailsSection(),
-                PaymentOption(
-                  onSelect: (value) => provider.changeSelectedMethod(value),
-                  value: PaymentMethosEnum.paypal,
-                  selectedValue: provider.selectedMethod,
-                ),
-              ],
-            ),
-          ),
 
         // Past Payments
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 10.h),
-          child: Row(
-            children: [
-              AppText(text: "Past Payment", style: textStyle16SemiBold),
-              Spacer(),
-              GestureDetector(
-                onTap: () =>
-                    context.pushNamed(UserAppRoutes.paymentHistoryScreen.name),
-                child: AppText(
-                  text: "View All",
-                  style: textStyle16SemiBold.copyWith(
-                    color: AppColors.blueColor,
-                    fontSize: 14.sp,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        PastPaymentItem(
-          id: "#TRX001",
-          amount: "250,000",
-          date: "02 Jan 2024",
-          onViewReceiptTap: () {},
-        ),
-        PastPaymentItem(
-          id: "#TRX002",
-          amount: "250,000",
-          date: "22 Dec 2024",
-          onViewReceiptTap: () {},
-        ),
-        PastPaymentItem(
-          id: "#TRX003",
-          amount: "250,000",
-          date: "31 May 2023",
-          onViewReceiptTap: () {},
-        ),
+        // Padding(
+        //   padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 10.h),
+        //   child: Row(
+        //     children: [
+        //       AppText(text: "Past Payment", style: textStyle16SemiBold),
+        //       Spacer(),
+        //       GestureDetector(
+        //         onTap: () =>
+        //             context.pushNamed(UserAppRoutes.paymentHistoryScreen.name),
+        //         child: AppText(
+        //           text: "View All",
+        //           style: textStyle16SemiBold.copyWith(
+        //             color: AppColors.blueColor,
+        //             fontSize: 14.sp,
+        //             decoration: TextDecoration.underline,
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // PastPaymentItem(
+        //   id: "#TRX001",
+        //   amount: "250,000",
+        //   date: "02 Jan 2024",
+        //   onViewReceiptTap: () {},
+        // ),
+        // PastPaymentItem(
+        //   id: "#TRX002",
+        //   amount: "250,000",
+        //   date: "22 Dec 2024",
+        //   onViewReceiptTap: () {},
+        // ),
+        // PastPaymentItem(
+        //   id: "#TRX003",
+        //   amount: "250,000",
+        //   date: "31 May 2023",
+        //   onViewReceiptTap: () {},
+        // ),
       ],
     );
   }
 
   Widget _flightsSection() {
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 10.h),
-        child: Column(
-          children: [
-            TripDetialsCard(
-              title: "Outbound Flight",
-              infoMap: {
-                "Flight": "SV772 (Saudi Airlines)",
-                "Route": "Mumbai (BOM - T2) → Jeddah (JED)",
-                "Date": "10 Feb 2025",
-                "Departure": "02:30 AM",
-                "Arrival": "05:45 AM",
-                "Duration": "5h 15m",
-                "Seat": "24A (Window)",
-                "Baggage": "2 Bags (23kg each)",
-                "Airline Contact": "+966 9200 22222",
-                "Desk No": "A18",
-                "Email": "support@saudia.com",
-                "Status": "Confirmed",
-              },
-            ),
+    final flightProvider = context.read<FlightProvider>();
+    // final tripId = context.read<TripProvider>().selectedTrip?.id;
+    // final tripId = context.read<TripBookingProvider>().tripDetails?.id;
+    final tripId = context.read<TripProvider>().selectedTrip?.id;
+    debugPrint(
+      '🔵 [TripScreen] selectedTrip: ${context.read<TripProvider>().selectedTrip?.id}',
+    );
+    debugPrint(
+      '🔵 [TripScreen] selectedTrip title: ${context.read<TripProvider>().selectedTrip?.title}',
+    );
+    // Fetch only if not already loaded
+    if (flightProvider.flightDetails == null && !flightProvider.isLoading) {
+      if (tripId != null && tripId.isNotEmpty) {
+        debugPrint('🔵 [TripScreen] Fetching flights for tripId: $tripId');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          flightProvider.fetchMyFlights(tripId);
+        });
+      } else {
+        debugPrint('❌ [TripScreen] tripId is null — cannot fetch flights');
+      }
+    }
 
-            SizedBox(height: 20.h),
-            TripDetialsCard(
-              title: "Outbound Flight",
-              infoMap: {
-                "Flight": "SV772 (Saudi Airlines)",
-                "Route": "Mumbai (BOM - T2) → Jeddah (JED)",
-                "Date": "10 Feb 2025",
-                "Departure": "02:30 AM",
-                "Arrival": "05:45 AM",
-                "Duration": "5h 15m",
-                "Seat": "24A (Window)",
-                "Baggage": "2 Bags (23kg each)",
-                "Airline Contact": "+966 9200 22222",
-                "Desk No": "A18",
-                "Email": "support@saudia.com",
-                "Status": "Confirmed",
-              },
-            ),
-            // TripDetialsCard(
-            //   flight: FlightModel(title: "Return Flight",
-            //   flightNumber: "SV773 (Saudi Airlines)",
-            //   route: "Jeddah (JED) → Mumbai (BOM - Terminal 2)",
-            //   date: "20 Feb 2025",
-            //   departure: "09:30 AM",
-            //   arrival: "04:15 PM",
-            //   duration: "5h 45m",
-            //   seat: "24B (Aisle)",
-            //   baggage: "2 Bags (23kg each)",
-            //   airlineContact: "+966 9200 22222",
-            //   deskNo: "A18",
-            //   email: "support@saudia.com",
-            //   status: "Awaiting Confirmation",),
+    return Consumer<FlightProvider>(
+      builder: (context, provider, child) {
+        debugPrint(
+          '🔵 [TripScreen] _flightsSection build — isLoading: ${provider.isLoading}',
+        );
+        debugPrint(
+          '🔵 [TripScreen] flights count: ${provider.flightDetails?.flights.length}',
+        );
 
-            // ),
-          ],
-        ),
-      ),
+        if (provider.isLoading) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 40.h),
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final flights = provider.flightDetails?.flights ?? [];
+
+        if (flights.isEmpty) {
+          debugPrint('❌ [TripScreen] No flights found');
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 40.h),
+            child: Center(
+              child: AppText(
+                text: "No flight details available",
+                style: textStyle14Regular.copyWith(
+                  color: AppColors.primaryColor,
+                ),
+              ),
+            ),
+          );
+        }
+
+        return SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 10.h),
+            child: Column(
+              children: flights.asMap().entries.map((entry) {
+                final index = entry.key;
+                final flight = entry.value;
+                debugPrint(
+                  '🔵 [TripScreen] Flight[$index]: ${flight.flightName} — ${flight.flightType}',
+                );
+                return Column(
+                  children: [
+                    TripDetialsCard(
+                      title: flight.flightType == 'outbound'
+                          ? 'Outbound Flight'
+                          : 'Return Flight',
+                      infoMap: flight.infoMap,
+                    ),
+                    if (index < flights.length - 1) SizedBox(height: 20.h),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 

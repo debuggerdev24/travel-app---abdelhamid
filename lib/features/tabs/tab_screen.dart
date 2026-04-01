@@ -18,15 +18,31 @@ class TabScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _TabScreenState();
 }
 
+// class _TabScreenState extends State<TabScreen> {
+//   late int currentIndex;
+
+//   final List<Widget> screens = [
+//     HomeScreen(),
+//     TripScreen(),
+//     ChatScreen(),
+//     ProfileScreen(),
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     currentIndex = widget.initialIndex;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: screens[currentIndex],
+//       bottomNavigationBar: bottomNavigationBar(),
+//     );
+//   }
 class _TabScreenState extends State<TabScreen> {
   late int currentIndex;
-
-  final List<Widget> screens = [
-    HomeScreen(),
-    TripScreen(),
-    ChatScreen(),
-    ProfileScreen(),
-  ];
 
   @override
   void initState() {
@@ -37,11 +53,15 @@ class _TabScreenState extends State<TabScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[currentIndex],
+      body: IndexedStack(
+        index: currentIndex,
+        children: [HomeScreen(), TripScreen(), ChatScreen(), ProfileScreen()],
+      ),
       bottomNavigationBar: bottomNavigationBar(),
     );
   }
 
+  // ... rest of code unchanged
   Widget bottomNavigationBar() {
     return KBottomNavBar(
       currentIndex: currentIndex,

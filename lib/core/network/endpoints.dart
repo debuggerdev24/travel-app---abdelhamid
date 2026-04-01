@@ -10,4 +10,8 @@ class Endpoints {
   static const String addBookingPackage = '/booking/add-package';
   static const String getPackageOptions = '/booking/get-package-options';
   static const String saveRoomPreference = '/booking/save-room-preference';
+  // static const String getPaymentDetails = '/user-payment/my-trip';
+  static const String savePersonDetail = '/booking/save-person-details';
+  static const String saveFamilyDetails = '/booking/add-family-member';
+  static const String myFlights = '/flights/my-flights';
 }

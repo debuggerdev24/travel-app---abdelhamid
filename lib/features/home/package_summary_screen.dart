@@ -7,10 +7,9 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-
 
 class PackageSummaryScreen extends StatefulWidget {
   const PackageSummaryScreen({super.key});
@@ -20,11 +19,38 @@ class PackageSummaryScreen extends StatefulWidget {
 }
 
 class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<TripBookingProvider>();
+      final tripId = provider.tripDetails?.id;
+
+      debugPrint('✅ [PackageSummaryScreen] initState called');
+      debugPrint('🔵 [PackageSummaryScreen] tripId: $tripId');
+
+      if (tripId != null && tripId.isNotEmpty) {
+        debugPrint('🔵 [PackageSummaryScreen] Fetching package options...');
+        provider.fetchPackageOptions(tripId);
+      } else {
+        debugPrint('❌ [PackageSummaryScreen] tripId is null — cannot fetch package options');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<TripProvider>();
-    final trip = provider.selectedTrip;
+    final provider = context.watch<TripBookingProvider>();
+    final trip = provider.tripDetails;
     final selectedPackage = provider.selectedPackage;
+
+    debugPrint('🔵 [PackageSummaryScreen] build — isLoading: ${provider.isLoading}');
+    debugPrint('🔵 [PackageSummaryScreen] selectedPackage: ${selectedPackage?.title}');
+    debugPrint('🔵 [PackageSummaryScreen] roomOptions: ${selectedPackage?.roomOptions}');
+    debugPrint('🔵 [PackageSummaryScreen] childPrices: ${selectedPackage?.childPrices}');
+    debugPrint('🔵 [PackageSummaryScreen] inclusions: ${selectedPackage?.inclusions}');
+    debugPrint('🔵 [PackageSummaryScreen] exclusions: ${selectedPackage?.exclusions}');
 
     if (trip == null) {
       return const Scaffold(body: Center(child: Text("No Trip Selected")));
@@ -32,7 +58,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
-
       body: SafeArea(
         child: Column(
           children: [
@@ -50,7 +75,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       child: SvgIcon(AppAssets.backIcon, size: 26.w),
                     ),
                   ),
-
                   AppText(
                     text: "Umrah Trip 2025",
                     style: textStyle32Bold.copyWith(
@@ -125,7 +149,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                 fontSize: 17.sp,
                               ),
                             ),
-
                             _buildSection(
                               title: 'Room Options :',
                               items: selectedPackage.roomOptions,
@@ -162,6 +185,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     52.h.verticalSpace,
                     AppButton(
                       onTap: () {
+                        debugPrint('🔵 [PackageSummaryScreen] Book Now tapped');
                         context.pushNamed(
                           UserAppRoutes.paymentOptionScreen.name,
                         );
@@ -231,7 +255,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       child: Row(
         children: [
           SizedBox(
-            width: 140.w, // FIXED WIDTH FOR ALIGNMENT
+            width: 140.w,
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
@@ -241,7 +265,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
               ),
             ),
           ),
-
           AppText(
             text: ":",
             style: textStyle14Medium.copyWith(
@@ -250,8 +273,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
               fontWeight: FontWeight.w500,
             ),
           ),
-
-          30.w.horizontalSpace, // VALUE
+          30.w.horizontalSpace,
           AppText(
             text: value,
             style: textStyle14Medium.copyWith(

@@ -2,6 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
+import 'package:trael_app_abdelhamid/services/trips_service.dart';
+
+
+
+
 
 /// ===============================
 ///  USER DOCUMENT MODEL
@@ -16,9 +21,16 @@ class UserDocument {
   UserDocument({required this.type, required this.name, required this.image});
 }
 
+
 class MyTripProvider extends ChangeNotifier {
   bool hidePaymentMethods = false;
   int bottomTabIndex = 0;
+
+  // TripPaymentDetails? _paymentDetails;
+  // TripPaymentDetails? get paymentDetails => _paymentDetails;
+
+  // bool _isPaymentLoading = false;
+  // bool get isPaymentLoading => _isPaymentLoading;
 
   /// Selected Document Type
   List<String> seelcteddocumetype = [];
@@ -26,6 +38,22 @@ class MyTripProvider extends ChangeNotifier {
   /// Uploaded User Documents
 
   /// Set selected document type
+  /// 
+  /// 
+  // Future<void> fetchPaymentDetails(String tripId) async {
+  //   _isPaymentLoading = true;
+  //   _paymentDetails = null;
+  //   notifyListeners();
+  //   try {
+  //     _paymentDetails = await TripsService.instance.getPaymentDetails(tripId);
+  //   } catch (e) {
+  //     // handled by BaseApiService
+  //   } finally {
+  //     _isPaymentLoading = false;
+  //     notifyListeners();
+  //   }
+  // }
+
   void selcteddocumetype(List<String> selected) {
     seelcteddocumetype = selected;
     notifyListeners();

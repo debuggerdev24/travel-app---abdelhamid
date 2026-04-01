@@ -121,10 +121,39 @@ class TripProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectTrip(TripModel trip) {
-    selectedTrip = trip;
+  // void selectTrip(TripModel trip) {
+  //   selectedTrip = trip;
+  //   notifyListeners();
+  // }
+
+
+TripPaymentDetails? _paymentDetails;
+TripPaymentDetails? get paymentDetails => _paymentDetails;
+
+bool _isPaymentLoading = false;
+bool get isPaymentLoading => _isPaymentLoading;
+
+Future<void> fetchPaymentDetails(String tripId) async {
+  _isPaymentLoading = true;
+  _paymentDetails = null;
+  notifyListeners();
+  try {
+    // _paymentDetails = await TripsService.instance.getPaymentDetails(tripId);
+  } catch (e) {
+    // handled by BaseApiService
+  } finally {
+    _isPaymentLoading = false;
     notifyListeners();
   }
+}
+  void selectTrip(TripModel trip) {
+  selectedTrip = trip;
+  notifyListeners();
+  if (trip.id != null) {
+    fetchPaymentDetails(trip.id!);
+  }
+}
+
 
   void setRating(int value) {
     rating = value;
@@ -193,4 +222,6 @@ class TripProvider extends ChangeNotifier {
   final List<String> babyOptions = ["Baby (0–2 yrs) No Bed - €500"];
 
   final List<String> numberOfBaby = ["00", "01", "02"];
+  
+  
 }
