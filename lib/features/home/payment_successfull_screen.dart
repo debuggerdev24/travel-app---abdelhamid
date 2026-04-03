@@ -9,7 +9,6 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class PaymentSuccessfullScreen extends StatelessWidget {
   const PaymentSuccessfullScreen({super.key});
 
@@ -33,7 +32,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                   ),
                 ),
                 42.h.verticalSpace,
-                Image.asset(AppAssets.paymentsuccessfull),
+                Image.asset(AppAssets.paymentSuccessful),
                 52.h.verticalSpace,
                 AppText(
                   text: "We’ve received your payment of €5,000",

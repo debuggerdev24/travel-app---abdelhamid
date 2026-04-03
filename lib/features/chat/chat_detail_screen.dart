@@ -11,7 +11,6 @@ import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class ChatDetailScreen extends StatelessWidget {
   final String name;
   final String image;
@@ -153,7 +152,7 @@ class ChatDetailScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 22.r,
-                    backgroundImage: AssetImage(AppAssets.profilephoto),
+                    backgroundImage: AssetImage(AppAssets.profilePhoto),
                   ),
                   10.w.horizontalSpace,
                 ],
@@ -171,7 +170,7 @@ class ChatDetailScreen extends StatelessWidget {
                   10.w.horizontalSpace,
                   CircleAvatar(
                     radius: 22.r,
-                    backgroundImage: AssetImage(AppAssets.profilephoto),
+                    backgroundImage: AssetImage(AppAssets.profilePhoto),
                   ),
                 ],
               ),
@@ -195,7 +194,7 @@ class ChatDetailScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 22.r,
-                  backgroundImage: AssetImage(AppAssets.profilephoto),
+                  backgroundImage: AssetImage(AppAssets.profilePhoto),
                 ),
                 10.w.horizontalSpace,
               ],
@@ -231,7 +230,7 @@ class ChatDetailScreen extends StatelessWidget {
                 10.w.horizontalSpace,
                 CircleAvatar(
                   radius: 22.r,
-                  backgroundImage: AssetImage(AppAssets.profilephoto),
+                  backgroundImage: AssetImage(AppAssets.profilePhoto),
                 ),
               ],
             ),
@@ -367,7 +366,7 @@ class ChatDetailScreen extends StatelessWidget {
           10.w.horizontalSpace,
           GestureDetector(
             onTap: provider.startRecording,
-            child: SvgIcon(AppAssets.micphone, size: 48.w),
+            child: SvgIcon(AppAssets.microphone, size: 48.w),
           ),
         ],
       ),

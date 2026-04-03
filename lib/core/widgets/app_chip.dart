@@ -6,7 +6,6 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class AppChip extends StatelessWidget {
   final bool isSelected;
   final String title;
@@ -50,7 +49,7 @@ class AppChip extends StatelessWidget {
             10.w.horizontalSpace,
             AppText(
               text: title,
-              style: textPopinnsMeidium.copyWith(
+              style: textPoppinsMedium.copyWith(
                 color: isSelected
                     ? AppColors.secondary
                     : AppColors.primaryColor.setOpacity(0.8),

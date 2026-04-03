@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/features/trip/add_document_screen.dart';
@@ -17,6 +19,13 @@ import 'package:trael_app_abdelhamid/features/trip/trip_screen.dart';
 import 'package:trael_app_abdelhamid/features/trip/umrah_guide_screen.dart';
 import 'package:trael_app_abdelhamid/features/trip/view_receipt_screen.dart';
 import 'package:trael_app_abdelhamid/features/trip/view_screen.dart';
+
+/// When [GoRouterState.extra] is an [int] from [freshRouteNonce], forces a new
+/// widget [State] so essentials detail screens refetch on every navigation.
+Key? _navigationKey(GoRouterState state) {
+  final extra = state.extra;
+  return extra is int ? ValueKey<int>(extra) : null;
+}
 
 List<RouteBase> get tripRoutes => [
   GoRoute(
@@ -37,52 +46,64 @@ List<RouteBase> get tripRoutes => [
   GoRoute(
     path: UserAppRoutes.packageListScreen.path,
     name: UserAppRoutes.packageListScreen.name,
-    builder: (context, state) => PackageListScreen(),
+    builder: (context, state) =>
+        PackageListScreen(key: _navigationKey(state)),
   ),
   GoRoute(
     path: UserAppRoutes.currencyMoneyScreen.path,
     name: UserAppRoutes.currencyMoneyScreen.name,
-    builder: (context, state) => CurrencyMoneyScreen(),
+    builder: (context, state) =>
+        CurrencyMoneyScreen(key: _navigationKey(state)),
   ),
   GoRoute(
     path: UserAppRoutes.emergencyContactScreen.path,
     name: UserAppRoutes.emergencyContactScreen.name,
-    builder: (context, state) => EmergencyContactsScreen(),
+    builder: (context, state) =>
+        EmergencyContactsScreen(key: _navigationKey(state)),
   ),
   GoRoute(
     path: UserAppRoutes.localInformationScreen.path,
     name: UserAppRoutes.localInformationScreen.name,
-    builder: (context, state) => LocalInformationScreen(),
+    builder: (context, state) =>
+        LocalInformationScreen(key: _navigationKey(state)),
   ),
   GoRoute(
     path: UserAppRoutes.umrahGuideScreen.path,
     name: UserAppRoutes.umrahGuideScreen.name,
-    builder: (context, state) => UmrahGuideScreen(),
+    builder: (context, state) => UmrahGuideScreen(key: _navigationKey(state)),
   ),
   GoRoute(
     path: UserAppRoutes.duaListScreen.path,
     name: UserAppRoutes.duaListScreen.name,
-    builder: (context, state) => DuaListScreen(),
+    builder: (context, state) => DuaListScreen(key: _navigationKey(state)),
   ),
   GoRoute(
     path: UserAppRoutes.healthSafteyScreen.path,
     name: UserAppRoutes.healthSafteyScreen.name,
-    builder: (context, state) => HealthSafetyScreen(),
+    builder: (context, state) =>
+        HealthSafetyScreen(key: _navigationKey(state)),
   ),
   GoRoute(
     path: UserAppRoutes.addDocumentScreen.path,
     name: UserAppRoutes.addDocumentScreen.name,
-    builder: (context, state) => AddDocumentScreen(),
+    builder: (context, state) {
+      final extra = state.extra;
+      final tripId = extra is Map<String, dynamic>
+          ? extra['tripId'] as String?
+          : null;
+      return AddDocumentScreen(tripId: tripId);
+    },
   ),
   GoRoute(
-    path: UserAppRoutes.viewDocumetScreen.path,
-    name: UserAppRoutes.viewDocumetScreen.name,
+    path: UserAppRoutes.viewDocumentScreen.path,
+    name: UserAppRoutes.viewDocumentScreen.name,
     builder: (context, state) {
       final data = state.extra as Map<String, dynamic>;
       return FullScreenDocumentViewer(
         file: data['file'] as File?,
-        assetImage: data['assetImage'] as String,
-        title: data['title'] as String,
+        networkFileUrl: data['networkFileUrl'] as String?,
+        assetImage: (data['assetImage'] as String?) ?? AppAssets.hotel4,
+        title: (data['title'] as String?) ?? '',
       );
     },
   ),
@@ -93,6 +114,7 @@ List<RouteBase> get tripRoutes => [
       final data = state.extra as Map<String, dynamic>;
       return HotelVoucherScreen(
         imageFile: data['imageFile'] as String?,
+        networkImageUrl: data['networkImageUrl'] as String?,
         hotelName: data['hotelName'] as String,
         address: data['address'] as String,
       );

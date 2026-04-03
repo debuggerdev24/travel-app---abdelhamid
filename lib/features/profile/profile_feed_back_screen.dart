@@ -83,10 +83,10 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                               padding: EdgeInsets.only(right: 20.r),
                               child: SvgPicture.asset(
                                 index < ratingProvider.rating
-                                    ? AppAssets.starfill
+                                    ? AppAssets.starFill
                                     : AppAssets.star,
                                 width: 49.w,
-                                color: AppColors.lightyellowColor,
+                                color: AppColors.lightYellowColor,
                               ),
                             ),
                           ),

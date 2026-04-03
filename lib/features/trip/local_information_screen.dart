@@ -5,10 +5,51 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/model/essential/local_info_model.dart';
+import 'package:trael_app_abdelhamid/services/essential_service.dart';
 
-class LocalInformationScreen extends StatelessWidget {
+class LocalInformationScreen extends StatefulWidget {
   const LocalInformationScreen({super.key});
+
+  @override
+  State<LocalInformationScreen> createState() => _LocalInformationScreenState();
+}
+
+class _LocalInformationScreenState extends State<LocalInformationScreen> {
+  bool _loading = true;
+  String? _error;
+  List<LocalInfoItem> _items = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final items = await EssentialService.instance.getLocalInfo(
+        showErrorToast: false,
+      );
+      if (!mounted) return;
+      setState(() {
+        _items = items;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = userFacingApiError(e);
+        _loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +59,6 @@ class LocalInformationScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ---------------- Header ----------------
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 31.w, vertical: 27.h),
               child: Row(
@@ -41,148 +81,132 @@ class LocalInformationScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 27.w),
-                children: [
-                  // ---------------- Link Card ----------------
-                  _linkCard(),
-
-                  20.h.verticalSpace,
-
-                  // ---------------- Info Card ----------------
-                  _infoCard(),
-                ],
-              ),
-            ),
-            AppText(
-              text: "",
-              style: textStyle14Regular.copyWith(
-                fontSize: 14.sp,
-                color: AppColors.primaryColor.setOpacity(0.8),
-              ),
-            ),
+            Expanded(child: _body()),
           ],
         ),
       ),
     );
   }
 
-  // ------------------------- LINK CARD -------------------------
-  Widget _linkCard() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
-      decoration: _boxDecoration(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: AppText(
-                  text: "https://sar.hhr.sa/timetable.",
-                  style: textStyle16SemiBold.copyWith(
-                    decoration: TextDecoration.underline,
-                    decorationStyle: TextDecorationStyle.solid,
-                    decorationThickness: 2,
-                    decorationColor: AppColors.primaryColor.setOpacity(0.2),
-                    color: AppColors.primaryColor,
-                    fontSize: 16.sp,
+  Widget _body() {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 27.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppText(
+              text: "Couldn't load local information",
+              textAlign: TextAlign.center,
+              style: textStyle14Medium.copyWith(
+                color: AppColors.primaryColor.setOpacity(0.85),
+              ),
+            ),
+            10.h.verticalSpace,
+            AppText(
+              text: _error!,
+              textAlign: TextAlign.center,
+              style: textStyle14Regular.copyWith(
+                color: AppColors.primaryColor.setOpacity(0.65),
+              ),
+            ),
+            16.h.verticalSpace,
+            TextButton(
+              onPressed: _load,
+              child: AppText(
+                text: "Retry",
+                style: textStyle14Medium.copyWith(color: AppColors.secondary),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_items.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _load,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 27.w),
+                    child: AppText(
+                      text: "No local information available",
+                      textAlign: TextAlign.center,
+                      style: textStyle14Regular.copyWith(
+                        color: AppColors.primaryColor.setOpacity(0.7),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              SvgIcon(AppAssets.share, size: 24.w),
-            ],
-          ),
-          8.h.verticalSpace,
-          AppText(
-            text: "Haramain High-Speed Train \nwebsite:",
-            style: textStyle14Regular.copyWith(
-              fontSize: 14.sp,
-              color: AppColors.primaryColor.setOpacity(0.7),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 8.h),
+        itemCount: _items.length,
+        separatorBuilder: (_, __) => SizedBox(height: 20.h),
+        itemBuilder: (context, index) {
+          final item = _items[index];
+          return _infoCard(item);
+        },
       ),
     );
   }
 
-  // ------------------------- INFO CARD -------------------------
-  Widget _infoCard() {
+  Widget _infoCard(LocalInfoItem item) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
       decoration: _boxDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _infoRow(AppAssets.landmark, "Prayer Times"),
-          AppText(
-            text: "Auto fetch based on location",
-            style: textStyle14Regular.copyWith(
-              fontSize: 16.sp,
-              color: AppColors.primaryColor.setOpacity(0.65),
+          if (item.title.isNotEmpty)
+            AppText(
+              text: item.title,
+              style: textStyle16SemiBold.copyWith(
+                fontSize: 18.sp,
+                color: AppColors.primaryColor.setOpacity(0.85),
+              ),
             ),
-          ),
-          36.h.verticalSpace,
-
-          _infoRow(AppAssets.weather, "Weather"),
-
-          AppText(
-            text: "Avg. 25–32°C in Feb",
-            style: textStyle14Regular.copyWith(
-              fontSize: 16.sp,
-              color: AppColors.primaryColor.setOpacity(0.65),
+          if (item.shortDescription != null &&
+              item.shortDescription!.trim().isNotEmpty) ...[
+            10.h.verticalSpace,
+            AppText(
+              text: item.shortDescription!,
+              style: textStyle14Regular.copyWith(
+                fontSize: 15.sp,
+                color: AppColors.primaryColor.setOpacity(0.75),
+              ),
             ),
-          ),
-          36.h.verticalSpace,
-
-          _infoRow(AppAssets.sim, "SIM Cards"),
-
-          AppText(
-            text: "STC, Mobily (available at airport)",
-            style: textStyle14Regular.copyWith(
-              fontSize: 16.sp,
-              color: AppColors.primaryColor.setOpacity(0.65),
+          ],
+          if (item.description != null &&
+              item.description!.trim().isNotEmpty) ...[
+            12.h.verticalSpace,
+            AppText(
+              text: item.description!,
+              style: textStyle14Regular.copyWith(
+                fontSize: 16.sp,
+                height: 1.45,
+                color: AppColors.primaryColor.setOpacity(0.65),
+              ),
             ),
-          ),
-          36.h.verticalSpace,
-          _infoRow(AppAssets.alarm, "Time Zone"),
-          AppText(
-            text: "GMT+3 (2.5 hrs behind IST)",
-            style: textStyle14Regular.copyWith(
-              fontSize: 16.sp,
-              color: AppColors.primaryColor.setOpacity(0.65),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ------------------------- INFO ROW -------------------------
-  Widget _infoRow(String icon, String title) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SvgIcon(icon, size: 24.w),
-          14.w.horizontalSpace,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  text: title,
-                  style: textStyle16SemiBold.copyWith(
-                    fontSize: 18.sp,
-                    color: AppColors.primaryColor.setOpacity(0.8),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ],
         ],
       ),
     );
@@ -195,7 +219,7 @@ class LocalInformationScreen extends StatelessWidget {
         BoxShadow(
           color: AppColors.blueColor.setOpacity(0.1),
           blurRadius: 3,
-          offset: Offset(0, 2),
+          offset: const Offset(0, 2),
         ),
       ],
       borderRadius: BorderRadius.circular(12.r),

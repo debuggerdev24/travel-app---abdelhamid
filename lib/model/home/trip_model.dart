@@ -43,11 +43,38 @@ class TripModel {
   String get imageUrl {
     if (image.isEmpty) return '';
     if (image.startsWith('http')) return image;
+
     final baseUrl = AppConstants.imageBaseUrl;
-    if (image.startsWith('/')) {
-      return '$baseUrl$image';
+    final normalized = _normalizeUploadPath(image);
+
+    if (normalized.startsWith('/')) {
+      return '$baseUrl$normalized';
     }
-    return '$baseUrl/uploads/$image';
+    return '$baseUrl/uploads/$normalized';
+  }
+
+  /// Backend sometimes sends a full Windows path like:
+  /// `C:\...\uploads\bannerImage-123.png`
+  /// We normalize it to a usable public path/filename.
+  static String _normalizeUploadPath(String raw) {
+    var v = raw.trim();
+    if (v.isEmpty) return v;
+
+    // Convert windows separators to forward slashes.
+    v = v.replaceAll('\\', '/');
+
+    // If it already contains `/uploads/`, keep only the public part.
+    final idx = v.lastIndexOf('/uploads/');
+    if (idx != -1) {
+      return v.substring(idx); // starts with /uploads/...
+    }
+
+    // Otherwise keep just the filename (covers absolute paths).
+    final lastSlash = v.lastIndexOf('/');
+    if (lastSlash != -1 && lastSlash < v.length - 1) {
+      return v.substring(lastSlash + 1);
+    }
+    return v;
   }
 
   static String _formatDate(dynamic start, dynamic end) {
@@ -275,6 +302,10 @@ class DocumentModel {
   final String image;
   final String title;
   final File? fileImage;
+  /// Shown when [fileImage] is null (remote documents).
+  final String? networkThumbnailUrl;
+  /// Full file URL for View / PDF (optional).
+  final String? networkFileUrl;
   final String? subtitle;
   final Map<String, String>? info;
   final String button1;
@@ -285,6 +316,8 @@ class DocumentModel {
     required this.image,
     required this.title,
     this.fileImage,
+    this.networkThumbnailUrl,
+    this.networkFileUrl,
     this.subtitle,
     this.info,
     required this.button1,

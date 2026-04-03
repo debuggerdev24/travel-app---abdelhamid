@@ -54,7 +54,7 @@ class FeedbackReviewCard extends StatelessWidget {
                       5,
                       (_) => Icon(
                         Icons.star,
-                        color: AppColors.lightyellowColor,
+                        color: AppColors.lightYellowColor,
                         size: 18.sp,
                       ),
                     ),
@@ -99,7 +99,7 @@ class FeedbackReviewCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24.r,
-                backgroundImage: AssetImage(AppAssets.profilephoto),
+                backgroundImage: AssetImage(AppAssets.profilePhoto),
               ),
 
               12.horizontalSpace,
@@ -165,7 +165,7 @@ class FeedbackReviewCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(110.r),
               child: LinearProgressIndicator(
                 value: fill,
-                valueColor: AlwaysStoppedAnimation(AppColors.lightyellowColor),
+                valueColor: AlwaysStoppedAnimation(AppColors.lightYellowColor),
                 backgroundColor: Colors.transparent,
                 minHeight: 6.h,
               ),

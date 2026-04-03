@@ -25,7 +25,7 @@ enum UserAppRoutes {
   duaListScreen,
   healthSafteyScreen,
   addDocumentScreen,
-  viewDocumetScreen,
+  viewDocumentScreen,
   hotelVoucherScreen,
   travelInsuranceScreen,
   chatScreen,

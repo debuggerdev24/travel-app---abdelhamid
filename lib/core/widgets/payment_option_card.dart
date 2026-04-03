@@ -7,13 +7,13 @@ import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class PaymentOption extends StatelessWidget {
-  final PaymentMethosEnum value;
-  final PaymentMethosEnum selectedValue;
-  final Function(PaymentMethosEnum) onSelect;
+  final PaymentMethodEnum value;
+  final PaymentMethodEnum selectedValue;
+  final Function(PaymentMethodEnum) onSelect;
 
   const PaymentOption({
+    super.key,
     required this.onSelect,
     required this.value,
     required this.selectedValue,
@@ -37,7 +37,7 @@ class PaymentOption extends StatelessWidget {
             style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
           ),
           Spacer(),
-          Radio<PaymentMethosEnum>(
+          Radio<PaymentMethodEnum>(
             side: BorderSide(
               width: 0.7,
               color: AppColors.primaryColor.setOpacity(0.5),

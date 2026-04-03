@@ -12,7 +12,6 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
 
@@ -82,10 +81,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               padding: EdgeInsets.only(right: 12.r),
                               child: SvgPicture.asset(
                                 index < ratingProvider.rating
-                                    ? AppAssets.starfill
+                                    ? AppAssets.starFill
                                     : AppAssets.star,
                                 width: 49.w,
-                                color: AppColors.lightyellowColor,
+                                color: AppColors.lightYellowColor,
                               ),
                             ),
                           ),

@@ -9,7 +9,6 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class GroupInfoScreen extends StatelessWidget {
   final String name;
   final String image;
@@ -72,7 +71,7 @@ class GroupInfoScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AppText(
-                          text: "${name} - Group",
+                          text: "$name - Group",
                           style: textStyle18Bold.copyWith(
                             fontSize: 18.sp,
                             color: AppColors.primaryColor,
@@ -119,7 +118,7 @@ class GroupInfoScreen extends StatelessWidget {
               5.h.verticalSpace,
               Divider(color: AppColors.primaryColor.setOpacity(0.2)),
               5.h.verticalSpace,
-              _buildInfoRow("Created On", "01 Jan 2025"),
+              _buildInfoRow("Created On", "01 Jan 2025"),    
 
               20.h.verticalSpace,
 
@@ -278,12 +277,12 @@ class GroupInfoScreen extends StatelessWidget {
   // --------------------------
   Widget _buildMembersList() {
     final members = [
-      {"name": "Ali Khan", "role": "Admin", "image": AppAssets.profilephoto},
-      {"name": "Ahmed Khan", "role": "Guide", "image": AppAssets.profilephoto},
+      {"name": "Ali Khan", "role": "Admin", "image": AppAssets.profilePhoto},
+      {"name": "Ahmed Khan", "role": "Guide", "image": AppAssets.profilePhoto},
       {
         "name": "Support Team",
         "role": "Support Team",
-        "image": AppAssets.profilephoto,
+        "image": AppAssets.profilePhoto,
       },
     ];
 

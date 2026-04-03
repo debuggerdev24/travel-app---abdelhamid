@@ -6,28 +6,64 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/utils/document_download_helper.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
 
-class FullScreenDocumentViewer extends StatelessWidget {
+class FullScreenDocumentViewer extends StatefulWidget {
   final File? file;
+  /// Remote PDF or image URL (e.g. from [serverMediaUrl]).
+  final String? networkFileUrl;
   final String assetImage;
   final String title;
 
   const FullScreenDocumentViewer({
     super.key,
     this.file,
+    this.networkFileUrl,
     required this.assetImage,
     required this.title,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final bool hasFile = file != null;
-    final bool isPdf = hasFile && file!.path.toLowerCase().endsWith('.pdf');
+  State<FullScreenDocumentViewer> createState() =>
+      _FullScreenDocumentViewerState();
+}
 
+class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
+  bool _downloading = false;
+
+  Future<void> _onDownload() async {
+    if (_downloading) return;
+    final hasLocal = widget.file != null && widget.file!.existsSync();
+    final hasNet =
+        widget.networkFileUrl != null && widget.networkFileUrl!.trim().isNotEmpty;
+    if (!hasLocal && !hasNet) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No downloadable file for this document.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _downloading = true);
+    try {
+      await shareDocumentFile(
+        context: context,
+        localFile: widget.file,
+        networkUrl: widget.networkFileUrl,
+        label: widget.title.trim().isNotEmpty ? widget.title : 'Document',
+      );
+    } finally {
+      if (mounted) setState(() => _downloading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: SafeArea(
@@ -47,7 +83,7 @@ class FullScreenDocumentViewer extends StatelessWidget {
                     ),
                   ),
                   AppText(
-                    text: title,
+                    text: widget.title,
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: AppColors.secondary,
@@ -70,14 +106,18 @@ class FullScreenDocumentViewer extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: _buildViewer(isPdf),
+                child: _buildViewer(),
               ),
             ),
             Spacer(),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 40.h),
 
-              child: AppButton(title: "Download"),
+              child: AppButton(
+                title: "Download",
+                isLoading: _downloading,
+                onTap: _onDownload,
+              ),
             ),
           ],
         ),
@@ -85,18 +125,30 @@ class FullScreenDocumentViewer extends StatelessWidget {
     );
   }
 
-  Widget _buildViewer(bool isPdf) {
-    if (file != null) {
+  Widget _buildViewer() {
+    final net = widget.networkFileUrl;
+    if (net != null && net.isNotEmpty) {
+      final pathLower = net.toLowerCase().split('?').first;
+      final isNetPdf = pathLower.endsWith('.pdf');
+      if (isNetPdf) {
+        return SfPdfViewer.network(net);
+      }
+      return Image.network(
+        net,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) =>
+            Image.asset(widget.assetImage, fit: BoxFit.cover),
+      );
+    }
+    if (widget.file != null) {
+      final isPdf = widget.file!.path.toLowerCase().endsWith('.pdf');
       if (isPdf) {
-        // ---------- PDF VIEW ----------
-        return SfPdfViewer.file(file!);
+        return SfPdfViewer.file(widget.file!);
       } else {
-        // ---------- FIT IMAGE INSIDE CONTAINER ----------
-        return Image.file(file!, fit: BoxFit.cover);
+        return Image.file(widget.file!, fit: BoxFit.cover);
       }
     } else {
-      // ---------- FIT ASSET IMAGE ----------
-      return Image.asset(assetImage);
+      return Image.asset(widget.assetImage);
     }
   }
 }

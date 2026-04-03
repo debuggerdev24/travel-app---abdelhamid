@@ -12,10 +12,14 @@ import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
+import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
 
 class AddDocumentScreen extends StatefulWidget {
-  const AddDocumentScreen({super.key});
+  const AddDocumentScreen({super.key, this.tripId});
+
+  /// Preferred; falls back to [TripProvider.selectedTrip] if null.
+  final String? tripId;
 
   @override
   State<AddDocumentScreen> createState() => _AddDocumentScreenState();
@@ -23,6 +27,13 @@ class AddDocumentScreen extends StatefulWidget {
 
 class _AddDocumentScreenState extends State<AddDocumentScreen> {
   File? pickedImage;
+  final TextEditingController _documentNameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _documentNameController.dispose();
+    super.dispose();
+  }
 
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
@@ -35,12 +46,24 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
     }
   }
 
+  String _defaultNameForType(String selectedType) {
+    return {
+          "Passport": "Passport",
+          "Visa": "Visa",
+          "Medical Certificate": "Medical Certificate",
+        }[selectedType] ??
+        selectedType;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Consumer<MyTripProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<MyTripProvider, TripProvider>(
+        builder: (context, myTrip, trip, child) {
+          final resolvedTripId =
+              widget.tripId ?? trip.selectedTrip?.id ?? '';
+
           return SingleChildScrollView(
             child: SafeArea(
               child: Padding(
@@ -71,16 +94,17 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                     CustomMultiSelectDropdown(
                       labelText: "",
                       hintText: "Select Document Type",
-                      items: provider.documenttypes,
-                      selectedItems: provider.seelcteddocumetype,
-                      onChanged: provider.selcteddocumetype,
-                      titletext: "Select Document Type",
+                      items: myTrip.documentTypes,
+                      selectedItems: myTrip.selectedDocumentType,
+                      onChanged: myTrip.selectDocumentType,
+                      titleText: "Select Document Type",
                       showRadio: true,
                     ),
                     22.h.verticalSpace,
                     AppTextField(
                       hintText: "Enter Document Name",
                       labelText: "",
+                      controller: _documentNameController,
                     ),
                     22.h.verticalSpace,
 
@@ -99,7 +123,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                         child: pickedImage == null
                             ? Padding(
                                 padding: const EdgeInsets.all(36),
-                                child: SvgIcon(AppAssets.imagepicker),
+                                child: SvgIcon(AppAssets.imagePicker),
                               )
                             : ClipRRect(
                                 borderRadius: BorderRadius.circular(8.r),
@@ -113,53 +137,73 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                     350.h.verticalSpace,
                     AppButton(
                       title: "Save Document",
-                      onTap: () {
-                        if (provider.seelcteddocumetype.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please select document type"),
-                            ),
-                          );
-                          return;
-                        }
-                        if (pickedImage == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please upload document image"),
-                            ),
-                          );
-                          return;
-                        }
+                      isLoading: myTrip.isUploadingDocument,
+                      onTap: myTrip.isUploadingDocument
+                          ? null
+                          : () async {
+                              if (resolvedTripId.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "No trip selected. Open this screen from My Trips.",
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (myTrip.selectedDocumentType.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Please select document type"),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (pickedImage == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Please upload document image",
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
 
-                        final selectedType = provider.seelcteddocumetype.first;
-                        // final TextEditingController nameController = TextEditingController(); // You should add this field!
+                              final selectedType =
+                                  myTrip.selectedDocumentType.first;
+                              final rawName = _documentNameController.text
+                                  .trim();
+                              final docName = rawName.isNotEmpty
+                                  ? rawName
+                                  : _defaultNameForType(selectedType);
 
-                        // Suggestion: Add a text field for name
-                        // Or auto-generate name like "My Passport", "Visa Copy"
+                              final err = await myTrip.uploadUserDocument(
+                                tripId: resolvedTripId,
+                                uiDocumentType: selectedType,
+                                file: pickedImage!,
+                                documentName: docName,
+                              );
 
-                        String docName =
-                            {
-                              "Passport": "Passport",
-                              "Visa": "Visa",
-                              "Flight Ticket": "Mumbai → Jeddah",
-                              "Medical Certificate": "Medical Certificate",
-                            }[selectedType] ??
-                            selectedType;
+                              if (!context.mounted) return;
 
-                        provider.addDocument(
-                          selectedType,
-                          pickedImage!,
-                          docName,
-                        );
+                              if (err != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(err)),
+                                );
+                                return;
+                              }
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Document added successfully!"),
-                          ),
-                        );
+                              _documentNameController.clear();
+                              setState(() => pickedImage = null);
 
-                        context.pop();
-                      },
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Document added successfully!"),
+                                ),
+                              );
+                              context.pop();
+                            },
                     ),
                   ],
                 ),

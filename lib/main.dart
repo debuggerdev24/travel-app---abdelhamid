@@ -29,14 +29,10 @@ void main() async {
 }
 
 
-// someday is not a day in the week
-
 /*
 
-{
-    "travellerCode":"TRV-2026-A6B668",
-    "identifier":"demouser@mailinator.com",
-    "password":"Pass@123"
-}
+TRV-2026-1B9E29
+demouser@mailinator.com
+Pass@123
 
 */

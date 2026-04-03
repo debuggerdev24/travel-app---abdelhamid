@@ -1,10 +1,91 @@
 import 'package:flutter/widgets.dart';
 import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
+import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
+import 'package:trael_app_abdelhamid/model/home/user_itinerary_model.dart';
 import 'package:trael_app_abdelhamid/services/trips_service.dart';
 
 class TripProvider extends ChangeNotifier {
   TripModel? selectedTrip;
+
+  // -------------------------------
+  // Hotel voucher (current enrolled trip hotel details)
+  // -------------------------------
+  List<HotelVoucherModel> _hotelVouchers = [];
+  List<HotelVoucherModel> get hotelVouchers => _hotelVouchers;
+
+  bool _isHotelVoucherLoading = false;
+  bool get isHotelVoucherLoading => _isHotelVoucherLoading;
+
+  String? _hotelVoucherError;
+  String? get hotelVoucherError => _hotelVoucherError;
+  bool _hasFetchedHotelVouchers = false;
+  bool get hasFetchedHotelVouchers => _hasFetchedHotelVouchers;
+
+  Future<void> fetchHotelVoucherDetails(
+    String tripId, {
+    bool force = false,
+  }) async {
+    if (_isHotelVoucherLoading) return;
+    // If we already tried once (even if empty), don't keep calling.
+    if (!force && _hasFetchedHotelVouchers) return;
+
+    _isHotelVoucherLoading = true;
+    _hotelVoucherError = null;
+    notifyListeners();
+
+    try {
+      _hotelVouchers = await TripsService.instance.getHotelVoucherDetails(
+        tripId,
+        showErrorToast: false,
+      );
+      _hasFetchedHotelVouchers = true;
+    } catch (e) {
+      _hotelVoucherError = e.toString();
+      _hotelVouchers = [];
+      _hasFetchedHotelVouchers = true;
+    } finally {
+      _isHotelVoucherLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // -------------------------------
+  // Itinerary (today / relevant day)
+  // -------------------------------
+  UserItineraryResponseModel? _todayItinerary;
+  UserItineraryResponseModel? get todayItinerary => _todayItinerary;
+
+  bool _isItineraryLoading = false;
+  bool get isItineraryLoading => _isItineraryLoading;
+
+  String? _itineraryError;
+  String? get itineraryError => _itineraryError;
+  bool _hasFetchedItinerary = false;
+  bool get hasFetchedItinerary => _hasFetchedItinerary;
+
+  Future<void> fetchTodayItinerary(String tripId, {bool force = false}) async {
+    if (_isItineraryLoading) return;
+    if (!force && _hasFetchedItinerary) return;
+
+    _isItineraryLoading = true;
+    _itineraryError = null;
+    notifyListeners();
+
+    try {
+      _todayItinerary = await TripsService.instance.getTodayItinerary(
+        tripId,
+        showErrorToast: false,
+      );
+    } catch (e) {
+      _itineraryError = e.toString();
+      _todayItinerary = null;
+    } finally {
+      _hasFetchedItinerary = true;
+      _isItineraryLoading = false;
+      notifyListeners();
+    }
+  }
 
   int rating = 0;
   String reviewText = "";
@@ -27,10 +108,26 @@ class TripProvider extends ChangeNotifier {
   List<TripModel> _upcomingtripList = [];
 
   List<TripModel> get tripList => _pasttripList;
-  List<TripModel> get upcomingtripList => _upcomingtripList;
+  List<TripModel> get upcomingTripList => _upcomingtripList;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  /// Ensures `selectedTrip` is set using the first upcoming trip.
+  /// Does not override an existing selection.
+  Future<void> ensureSelectedTripFromUpcoming() async {
+    if (selectedTrip != null) return;
+
+    if (upcomingTripList.isEmpty && !_isLoading) {
+      await fetchTrips();
+    }
+
+    if (selectedTrip != null) return;
+
+    if (upcomingTripList.isNotEmpty) {
+      selectTrip(upcomingTripList.first);
+    }
+  }
 
   Future<void> fetchTrips() async {
     _isLoading = true;
@@ -42,6 +139,12 @@ class TripProvider extends ChangeNotifier {
       ]);
       _upcomingtripList = results[0];
       _pasttripList = results[1];
+
+      // Auto-pick the first upcoming trip once trips are loaded.
+      // Do not override a user-selected trip.
+      if (selectedTrip == null && _upcomingtripList.isNotEmpty) {
+        selectTrip(_upcomingtripList.first);
+      }
     } catch (e) {
       // Errors are handled by BaseApiService and logged
     } finally {
@@ -50,9 +153,9 @@ class TripProvider extends ChangeNotifier {
     }
   }
 
-  PaymentMethosEnum selectedMethod = PaymentMethosEnum.googlePay;
+  PaymentMethodEnum selectedMethod = PaymentMethodEnum.googlePay;
 
-  void changeSelectedMethod(PaymentMethosEnum method) {
+  void changeSelectedMethod(PaymentMethodEnum method) {
     selectedMethod = method;
     notifyListeners();
   }
@@ -126,34 +229,33 @@ class TripProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
+  TripPaymentDetails? _paymentDetails;
+  TripPaymentDetails? get paymentDetails => _paymentDetails;
 
-TripPaymentDetails? _paymentDetails;
-TripPaymentDetails? get paymentDetails => _paymentDetails;
+  bool _isPaymentLoading = false;
+  bool get isPaymentLoading => _isPaymentLoading;
 
-bool _isPaymentLoading = false;
-bool get isPaymentLoading => _isPaymentLoading;
-
-Future<void> fetchPaymentDetails(String tripId) async {
-  _isPaymentLoading = true;
-  _paymentDetails = null;
-  notifyListeners();
-  try {
-    // _paymentDetails = await TripsService.instance.getPaymentDetails(tripId);
-  } catch (e) {
-    // handled by BaseApiService
-  } finally {
-    _isPaymentLoading = false;
+  Future<void> fetchPaymentDetails(String tripId) async {
+    _isPaymentLoading = true;
+    _paymentDetails = null;
     notifyListeners();
+    try {
+      // _paymentDetails = await TripsService.instance.getPaymentDetails(tripId);
+    } catch (e) {
+      // handled by BaseApiService
+    } finally {
+      _isPaymentLoading = false;
+      notifyListeners();
+    }
   }
-}
-  void selectTrip(TripModel trip) {
-  selectedTrip = trip;
-  notifyListeners();
-  if (trip.id != null) {
-    fetchPaymentDetails(trip.id!);
-  }
-}
 
+  void selectTrip(TripModel trip) {
+    selectedTrip = trip;
+    notifyListeners();
+    if (trip.id != null) {
+      fetchPaymentDetails(trip.id!);
+    }
+  }
 
   void setRating(int value) {
     rating = value;
@@ -222,6 +324,4 @@ Future<void> fetchPaymentDetails(String tripId) async {
   final List<String> babyOptions = ["Baby (0–2 yrs) No Bed - €500"];
 
   final List<String> numberOfBaby = ["00", "01", "02"];
-  
-  
 }

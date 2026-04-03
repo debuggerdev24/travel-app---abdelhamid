@@ -1,8 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 
 class DropdownController {
@@ -23,7 +26,7 @@ class CustomMultiSelectDropdown extends StatefulWidget {
   final List<String> selectedItems;
   final ValueChanged<List<String>> onChanged;
   final Widget? prefixIcon;
-  final String titletext;
+  final String titleText;
   final bool showRadio;
   final String? errorText;
 
@@ -34,7 +37,7 @@ class CustomMultiSelectDropdown extends StatefulWidget {
     required this.items,
     required this.selectedItems,
     required this.onChanged,
-    required this.titletext,
+    required this.titleText,
     this.prefixIcon,
     this.showRadio = false,
     this.errorText,
@@ -83,7 +86,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.setOpacity(0.1),
                   blurRadius: 1,
                   offset: const Offset(0, 2),
                 ),
@@ -92,8 +95,8 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
               color: Colors.white,
               border: Border.all(
                 color: widget.errorText != null
-                    ? Colors.red.withOpacity(0.5)
-                    : AppColors.primaryColor.withOpacity(0.2),
+                    ? Colors.red.setOpacity(0.5)
+                    : AppColors.primaryColor.setOpacity(0.2),
               ),
             ),
             child: Row(
@@ -105,7 +108,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                         : widget.selectedItems.join(", "),
                     style: textStyle14Regular.copyWith(
                       color: widget.selectedItems.isEmpty
-                          ? AppColors.primaryColor.withOpacity(0.6)
+                          ? AppColors.primaryColor.setOpacity(0.6)
                           : AppColors.primaryColor,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -136,9 +139,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             margin: EdgeInsets.only(top: 6.h),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(
-                color: AppColors.primaryColor.withOpacity(0.2),
-              ),
+              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
               color: Colors.white,
             ),
             child: Column(
@@ -151,10 +152,10 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                     vertical: 16.h,
                   ),
                   child: AppText(
-                    text: widget.titletext,
+                    text: widget.titleText,
                     style: textStyle18Bold.copyWith(
                       fontSize: 14.sp,
-                      color: AppColors.primaryColor.withOpacity(0.6),
+                      color: AppColors.primaryColor.setOpacity(0.6),
                     ),
                   ),
                 ),
@@ -213,7 +214,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                                 )
                               : SvgIcon(
                                   isSelected
-                                      ? AppAssets.checkfill
+                                      ? AppAssets.checkFill
                                       : AppAssets.checkbox,
                                   size: 22.w,
                                 ),
@@ -221,7 +222,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
                 SizedBox(height: 5.h),
               ],
             ),

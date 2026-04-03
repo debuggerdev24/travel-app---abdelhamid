@@ -6,17 +6,16 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
-class TripDetialsCard extends StatelessWidget {
+class TripDetailsCard extends StatelessWidget {
   final String title;
   final Map<String, String> infoMap;
-  final double labelWidth; // <-- added
+  final double labelWidth;
 
-  const TripDetialsCard({
+  const TripDetailsCard({
     super.key,
     required this.title,
     required this.infoMap,
-    this.labelWidth = 130, // <-- default same as before
+    this.labelWidth = 130,
   });
 
   @override
@@ -51,7 +50,7 @@ class TripDetialsCard extends StatelessWidget {
           /// Show rows
           ...infoMap.entries.map((entry) {
             return buildRow(entry.key, entry.value);
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -174,3 +173,4 @@ class EscortContactCard extends StatelessWidget {
     );
   }
 }
+

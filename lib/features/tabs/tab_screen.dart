@@ -19,7 +19,7 @@ class TabScreen extends StatefulWidget {
 }
 
 // class _TabScreenState extends State<TabScreen> {
-//   late int currentIndex;
+//   late int currentIndex; 
 
 //   final List<Widget> screens = [
 //     HomeScreen(),
@@ -131,11 +131,11 @@ class KBottomNavBar extends StatelessWidget {
 
 class BottomNavItem extends StatelessWidget {
   const BottomNavItem({
-    Key? key,
+    super.key,
     required this.icon,
     this.label,
     this.isSelected = false,
-  }) : super(key: key);
+  });
 
   final String icon;
   final String? label;
@@ -143,7 +143,7 @@ class BottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = isSelected ? AppColors.secondary : AppColors.tabcolor;
+    final Color color = isSelected ? AppColors.secondary : AppColors.tabColor;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30.w),

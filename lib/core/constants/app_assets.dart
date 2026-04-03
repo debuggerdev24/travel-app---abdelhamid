@@ -16,10 +16,10 @@ class AppAssets {
   static const pin = "$_iconPath/pin.svg";
   static const phone = "$_iconPath/phone.svg";
   static const star = "$_iconPath/star.svg";
-  static const starfill = "$_iconPath/starfill.svg";
+  static const starFill = "$_iconPath/starfill.svg";
   static const dropdown = "$_iconPath/dropdown.svg";
   static const checkbox = "$_iconPath/checkbox.svg";
-  static const checkfill = "$_iconPath/checkfill.svg";
+  static const checkFill = "$_iconPath/checkfill.svg";
   static const date = "$_iconPath/date.svg";
   static const check = "$_iconPath/check.svg";
   static const travel = "$_iconPath/travel.svg";
@@ -42,7 +42,7 @@ class AppAssets {
   static const itinerary = "$_iconPath/itinerary.svg";
   static const document = "$_iconPath/document.svg";
   static const essential = "$_iconPath/essential.svg";
-  static const pastcheck = "$_iconPath/pastcheck.svg";
+  static const pastCheck = "$_iconPath/pastcheck.svg";
   static const download = "$_iconPath/downlaod.svg";
   static const plane = "$_iconPath/plane.svg";
   static const truck = "$_iconPath/truck.svg";
@@ -58,14 +58,14 @@ class AppAssets {
   static const call = "$_iconPath/call.svg";
   static const eye = "$_iconPath/eye.svg";
   static const play = "$_iconPath/play.svg";
-  static const imagepicker = "$_iconPath/imagepicker.svg";
-  static const addmore = "$_iconPath/addmore.svg";
+  static const imagePicker = "$_iconPath/imagepicker.svg";
+  static const addMore = "$_iconPath/addmore.svg";
   static const address = "$_iconPath/address.svg";
   static const wifi = "$_iconPath/wifi.svg";
   static const kitchen = "$_iconPath/kitchen.svg";
   static const breakfast = "$_iconPath/breakfast.svg";
   static const search = "$_iconPath/search.svg";
-  static const micphone = "$_iconPath/micphone.svg";
+  static const microphone = "$_iconPath/micphone.svg";
   static const exit = "$_iconPath/exit.svg";
   static const delete = "$_iconPath/delete.svg";
   static const send = "$_iconPath/send.svg";
@@ -80,14 +80,14 @@ class AppAssets {
 
   // images
   static const _imagePath = "assets/images";
-  static const profilephoto = "$_imagePath/profile.png";
+  static const profilePhoto = "$_imagePath/profile.png";
   static const trip1 = "$_imagePath/trip1.png";
   static const trip2 = "$_imagePath/trip2.png";
   static const currency = "$_imagePath/currency.png";
   static const trip3 = "$_imagePath/trip3.png";
   static const trip4 = "$_imagePath/trip4.png";
-  static const paymentfailed = "$_imagePath/paymentfailed.png";
-  static const paymentsuccessfull = "$_imagePath/paymentsuccessfull.png";
+  static const paymentFailed = "$_imagePath/paymentfailed.png";
+  static const paymentSuccessful = "$_imagePath/paymentsuccessfull.png";
   static const health1 = "$_imagePath/health1.png";
   static const health2 = "$_imagePath/health2.png";
   static const health3 = "$_imagePath/health3.png";
@@ -97,9 +97,9 @@ class AppAssets {
   static const hotel3 = "$_imagePath/hotel3.png";
   static const hotel4 = "$_imagePath/hotel4.png";
   static const upload = "$_imagePath/upload.png";
-  static const hotelvoucher = "$_imagePath/hotelvoucher.png";
-  static const hotelvoucher1 = "$_imagePath/hotelvoucher1.png";
-  static const travelinsurance = "$_imagePath/travelinsurance.png";
+  static const hotelVoucher = "$_imagePath/hotelvoucher.png";
+  static const hotelVoucher1 = "$_imagePath/hotelvoucher1.png";
+  static const travelInsurance = "$_imagePath/travelinsurance.png";
   static const profile1 = "$_imagePath/profile1.png";
   static const profile2 = "$_imagePath/profile2.png";
   static const profile3 = "$_imagePath/profile3.png";
@@ -122,7 +122,9 @@ class SvgIcon extends StatelessWidget {
       iconPath,
       width: width,
       height: height,
-      color: color,
+      colorFilter: color != null
+          ? ColorFilter.mode(color!, BlendMode.srcIn)
+          : null,
     );
   }
 }

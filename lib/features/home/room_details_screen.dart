@@ -165,7 +165,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 }
                               }
                             },
-                            titletext: "Room Type",
+                            titleText: "Room Type",
                             showRadio: true,
                           ),
                           SizedBox(height: 22.h),
@@ -198,7 +198,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 setState(() => _bedTypeError = null);
                               }
                             },
-                            titletext: "Bed Type",
+                            titleText: "Bed Type",
                             showRadio: true,
                           ),
                           SizedBox(height: 22.h),
@@ -246,7 +246,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 }
                               }
                             },
-                            titletext: "Child",
+                            titleText: "Child",
                             showRadio: true,
                           ),
                           SizedBox(height: 22.h),
@@ -266,7 +266,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 );
                               }
                             },
-                            titletext: "Select Child Count",
+                            titleText: "Select Child Count",
                             showRadio: true,
                           ),
                           SizedBox(height: 22.h),
@@ -292,7 +292,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             items: tripProvider.babyOptions,
                             selectedItems: tripProvider.selectedBabyTypes,
                             onChanged: tripProvider.updateBabyTypes,
-                            titletext: "Baby",
+                            titleText: "Baby",
                             showRadio: true,
                           ),
                           SizedBox(height: 22.h),
@@ -313,7 +313,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 );
                               }
                             },
-                            titletext: "Select Baby Count",
+                            titleText: "Select Baby Count",
                             showRadio: true,
                           ),
                           SizedBox(height: 22.h),

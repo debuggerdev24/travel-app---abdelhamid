@@ -49,7 +49,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     CircleAvatar(
                       radius: 55.r,
-                      backgroundImage: AssetImage(AppAssets.profilephoto),
+                      backgroundImage: AssetImage(AppAssets.profilePhoto),
                     ),
                     6.h.verticalSpace,
                     AppText(
@@ -104,14 +104,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               items: provider.languageOptions,
                               selectedItems: provider.selectedLanguages,
                               onChanged: provider.updateSelectedLanguages,
-                              titletext: "Language",
+                              titleText: "Language",
                             ),
                           ],
                         ),
                         42.h.verticalSpace,
-                        AppButton(title: "Save", onTap: () {
-
-                        }),
+                        AppButton(title: "Save", onTap: () {}),
                       ],
                     ),
                   ],

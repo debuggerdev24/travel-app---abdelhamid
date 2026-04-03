@@ -9,12 +9,26 @@ import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
 
-class PackageListScreen extends StatelessWidget {
+class PackageListScreen extends StatefulWidget {
   const PackageListScreen({super.key});
 
   @override
+  State<PackageListScreen> createState() => _PackageListScreenState();
+}
+
+class _PackageListScreenState extends State<PackageListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<MyTripProvider>().fetchPackingList(force: true);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MyTripProvider>(context);
+    final provider = context.watch<MyTripProvider>();
 
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
@@ -46,17 +60,65 @@ class PackageListScreen extends StatelessWidget {
 
             /// List
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 27.w),
-                children: provider.packingData.entries.map((e) {
-                  return buildCategory(
-                    context,
-                    title: e.key,
-                    items: e.value,
-                    checked: provider.categoryChecked[e.key] ?? false,
-                    onTapCheck: () => provider.toggleCategory(e.key),
+              child: Builder(
+                builder: (context) {
+                  if (provider.isPackingLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (provider.packingError != null) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 27.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AppText(
+                            text: "Failed to load packing list",
+                            style: textStyle14Regular.copyWith(
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                          12.h.verticalSpace,
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () => context
+                                  .read<MyTripProvider>()
+                                  .fetchPackingList(force: true),
+                              child: const Text("Retry"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (provider.packingCategories.isEmpty) {
+                    return Center(
+                      child: AppText(
+                        text: "No packing list available",
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView(
+                    padding: EdgeInsets.symmetric(horizontal: 27.w),
+                    children: provider.packingCategories.map((cat) {
+                      final items = cat.items.map((i) => i.name).toList();
+                      final key = cat.title;
+                      return buildCategory(
+                        context,
+                        title: key,
+                        items: items,
+                        checked: provider.categoryChecked[key] ?? false,
+                        onTapCheck: () => provider.toggleCategory(key),
+                      );
+                    }).toList(),
                   );
-                }).toList(),
+                },
               ),
             ),
           ],
@@ -91,7 +153,7 @@ class PackageListScreen extends StatelessWidget {
               GestureDetector(
                 onTap: onTapCheck,
                 child: SvgIcon(
-                  checked ? AppAssets.checkbox : AppAssets.checkfill,
+                  checked ? AppAssets.checkbox : AppAssets.checkFill,
                   size: 24.w,
                 ),
               ),

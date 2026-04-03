@@ -12,9 +12,9 @@ final textStyle12semiBold = TextStyle(
   fontSize: 12.sp,
   fontFamily: 'Poppins',
   fontWeight: FontWeight.w600,
-  color: AppColors.tabtextcolor,
+  color: AppColors.tabTextColor,
 );
-final textPopinnsMeidium = TextStyle(
+final textPoppinsMedium = TextStyle(
   fontSize: 12.sp,
   fontFamily: 'Poppins',
   fontWeight: FontWeight.w500,
@@ -113,7 +113,7 @@ final textStyle12Regular = TextStyle(
 //     fontFamily: 'Jaldi',
 //     color: AppColors.primaryColor);
 
-final textStylesubtitleBold = TextStyle(
+final textStyleSubtitleBold = TextStyle(
   fontSize: 22.sp,
   fontWeight: FontWeight.w400,
   color: AppColors.black,

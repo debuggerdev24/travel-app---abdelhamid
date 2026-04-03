@@ -14,7 +14,6 @@ import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class PaymentOptionScreen extends StatefulWidget {
   const PaymentOptionScreen({super.key});
 
@@ -67,46 +66,46 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
                         onSelect: (value) {
                           provider.changeSelectedMethod(value);
                         },
-                        value: PaymentMethosEnum.googlePay,
+                        value: PaymentMethodEnum.googlePay,
                         selectedValue: provider.selectedMethod,
                       ),
                       PaymentOption(
                         onSelect: (value) {
                           provider.changeSelectedMethod(value);
                         },
-                        value: PaymentMethosEnum.applepay,
+                        value: PaymentMethodEnum.applepay,
                         selectedValue: provider.selectedMethod,
                       ),
                       PaymentOption(
                         onSelect: (value) {
                           provider.changeSelectedMethod(value);
                         },
-                        value: PaymentMethosEnum.idealpay,
+                        value: PaymentMethodEnum.idealpay,
                         selectedValue: provider.selectedMethod,
                       ),
                       PaymentOption(
                         onSelect: (value) {
                           provider.changeSelectedMethod(value);
                         },
-                        value: PaymentMethosEnum.cash,
+                        value: PaymentMethodEnum.cash,
                         selectedValue: provider.selectedMethod,
                       ),
                       PaymentOption(
                         onSelect: (value) {
                           provider.changeSelectedMethod(value);
                         },
-                        value: PaymentMethosEnum.creditCard,
+                        value: PaymentMethodEnum.creditCard,
                         selectedValue: provider.selectedMethod,
                       ),
                       PaymentOption(
                         onSelect: (value) {
                           provider.changeSelectedMethod(value);
                         },
-                        value: PaymentMethosEnum.paypal,
+                        value: PaymentMethodEnum.paypal,
                         selectedValue: provider.selectedMethod,
                       ),
                       if (provider.selectedMethod ==
-                          PaymentMethosEnum.creditCard)
+                          PaymentMethodEnum.creditCard)
                         _cardDetailsSection(),
                     ],
                   ),

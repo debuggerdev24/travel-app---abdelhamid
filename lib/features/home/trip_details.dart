@@ -44,7 +44,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       return const Scaffold(body: Center(child: Text("No Trip Selected")));
     }
 
-    final isUpcoming = tripProvider.upcomingtripList.contains(trip);
+    final isUpcoming = tripProvider.upcomingTripList.contains(trip);
     final details = bookingProvider.tripDetails;
 
     return Scaffold(
@@ -328,7 +328,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           10.w.horizontalSpace,
           AppText(
             text: status,
-            style: textPopinnsMeidium.copyWith(color: AppColors.secondary),
+            style: textPoppinsMedium.copyWith(color: AppColors.secondary),
           ),
         ],
       ),

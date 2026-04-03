@@ -10,11 +10,7 @@ class ChatProvider extends ChangeNotifier {
 
   void sendTextMessage(String text) {
     chatDetailList.add(
-      ChatMessage(
-        type: MessageType.text,
-        text: text,
-        time: "Now",
-      ),
+      ChatMessage(type: MessageType.text, text: text, time: "Now"),
     );
     notifyListeners();
   }
@@ -29,18 +25,18 @@ class ChatProvider extends ChangeNotifier {
     );
     notifyListeners();
   }
+
   void addLocationMessage({required double lat, required double lng}) {
-  messages.add({
-    "type": "location",
-    "lat": lat,
-    "lng": lng,
-    "isMe": true,
-    "time": "${DateTime.now().hour}:${DateTime.now().minute}",
-  });
+    messages.add({
+      "type": "location",
+      "lat": lat,
+      "lng": lng,
+      "isMe": true,
+      "time": "${DateTime.now().hour}:${DateTime.now().minute}",
+    });
 
-  notifyListeners();
-}
-
+    notifyListeners();
+  }
 
   final List<ChatModel> _chatList = [
     ChatModel(
@@ -48,7 +44,7 @@ class ChatProvider extends ChangeNotifier {
       message: 'See you at hotel lobby at 5 PM',
       time: '10.20 AM',
       unread: 3,
-      image: AppAssets.profilephoto,
+      image: AppAssets.profilePhoto,
       isGroup: true,
     ),
     ChatModel(
@@ -56,7 +52,7 @@ class ChatProvider extends ChangeNotifier {
       message: 'Your transport is ready',
       time: 'Yesterday',
       unread: 2,
-      image: AppAssets.profilephoto,
+      image: AppAssets.profilePhoto,
       isGroup: false,
     ),
     ChatModel(
@@ -64,7 +60,7 @@ class ChatProvider extends ChangeNotifier {
       message: 'Invoice has been mailed',
       time: '22 Sep',
       unread: 0,
-      image: AppAssets.profilephoto,
+      image: AppAssets.profilePhoto,
       isGroup: false,
     ),
     ChatModel(
@@ -72,7 +68,7 @@ class ChatProvider extends ChangeNotifier {
       message: 'Shall we meet after dinner?',
       time: '21 Sep',
       unread: 0,
-      image: AppAssets.profilephoto,
+      image: AppAssets.profilePhoto,
       isGroup: false,
     ),
   ];
@@ -85,12 +81,12 @@ class ChatProvider extends ChangeNotifier {
     return _chatList.where((c) => !c.isGroup).toList();
   }
 
-
   void changeTab(int index) {
     selectedTabIndex = index;
     notifyListeners();
   }
-   final List<Map<String, dynamic>> _messages = [
+
+  final List<Map<String, dynamic>> _messages = [
     {
       'isMe': false,
       'message': 'Salam, what time is Ziyarat tomorrow?',
@@ -140,12 +136,12 @@ class ChatProvider extends ChangeNotifier {
     _isRecording = !_isRecording;
     notifyListeners();
   }
+
   void startRecording() {
     _isRecording = true;
     _showAttachmentMenu = false;
     notifyListeners();
   }
-
 
   void stopRecording() {
     _isRecording = false;

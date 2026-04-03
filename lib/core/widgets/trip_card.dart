@@ -4,6 +4,7 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
 
 class TripCard extends StatelessWidget {
   final String image;
@@ -25,6 +26,7 @@ class TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedImageUrl = serverMediaUrl(image);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -52,21 +54,25 @@ class TripCard extends StatelessWidget {
                       width: double.infinity,
                       fit: BoxFit.cover,
                     )
-                  : Image.network(
-                      image.startsWith('http')
-                          ? image
-                          : image.startsWith('/')
-                          ? 'http://192.168.1.51:3000$image'
-                          : 'http://192.168.1.51:3000/uploads/$image',
-                      height: 200.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        height: 200.h,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.broken_image),
-                      ),
-                    ),
+                  : (resolvedImageUrl == null || resolvedImageUrl.isEmpty)
+                      ? Container(
+                          height: 200.h,
+                          width: double.infinity,
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.broken_image),
+                        )
+                      : Image.network(
+                          resolvedImageUrl,
+                          height: 200.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                            height: 200.h,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.broken_image),
+                          ),
+                        ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),

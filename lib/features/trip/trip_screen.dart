@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -5,23 +7,25 @@ import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_chip.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/core/widgets/details_card.dart';
 import 'package:trael_app_abdelhamid/core/widgets/document_card.dart';
 import 'package:trael_app_abdelhamid/core/widgets/itinerarystep_card.dart';
-import 'package:trael_app_abdelhamid/core/widgets/past_payment_item.dart';
-import 'package:trael_app_abdelhamid/core/widgets/payment_option_card.dart';
+import 'package:trael_app_abdelhamid/core/utils/document_download_helper.dart';
+import 'package:trael_app_abdelhamid/core/utils/trip_detail_refresh.dart';
+import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
-import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
+import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
+import 'package:trael_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/provider/home/user_flight_provider.dart';
 import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TripScreen extends StatefulWidget {
   const TripScreen({super.key});
@@ -34,10 +38,39 @@ class _TripScreenState extends State<TripScreen> {
   String selectedMethod = "Credit/Debit Card";
   int selectedIndex = 0;
 
+  /// Last trip id we ran [refreshAllTripScopedData] for (avoids duplicate work).
+  String? _lastRefreshedTripId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await context.read<TripProvider>().ensureSelectedTripFromUpcoming();
+    });
+  }
+
+  void _scheduleRefreshIfTripChanged(String? tripId) {
+    if (tripId == null || tripId.isEmpty) {
+      _lastRefreshedTripId = null;
+      return;
+    }
+    if (tripId == _lastRefreshedTripId) return;
+    _lastRefreshedTripId = tripId;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final current = context.read<TripProvider>().selectedTrip?.id;
+      if (current != tripId) return;
+      await refreshAllTripScopedData(context, tripId);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final tripProvider = context.watch<TripProvider>();
     final trip = tripProvider.selectedTrip;
+
+    _scheduleRefreshIfTripChanged(trip?.id);
 
     return Consumer<MyTripProvider>(
       builder: (context, provider, child) {
@@ -56,7 +89,7 @@ class _TripScreenState extends State<TripScreen> {
                     ),
                     child: Center(
                       child: AppText(
-                        text: "Makkah skyline",
+                        text: trip?.title ?? "",
                         style: textStyle32Bold.copyWith(
                           fontSize: 26.sp,
                           color: AppColors.secondary,
@@ -177,6 +210,36 @@ class _TripScreenState extends State<TripScreen> {
         setState(() {
           selectedIndex = index;
         });
+
+        // Refetch APIs whenever the user selects these tabs (fresh data each visit).
+        if (index == 1) {
+          final tripProvider = context.read<TripProvider>();
+          final tripId = tripProvider.selectedTrip?.id;
+          if (tripId != null && tripId.isNotEmpty) {
+            context.read<FlightProvider>().fetchMyFlights(tripId, force: true);
+          }
+        } else if (index == 2) {
+          final tripProvider = context.read<TripProvider>();
+          final tripId = tripProvider.selectedTrip?.id;
+          if (tripId != null && tripId.isNotEmpty) {
+            tripProvider.fetchHotelVoucherDetails(tripId, force: true);
+          }
+        } else if (index == 3) {
+          final tripProvider = context.read<TripProvider>();
+          final tripId = tripProvider.selectedTrip?.id;
+          if (tripId != null && tripId.isNotEmpty) {
+            tripProvider.fetchTodayItinerary(tripId, force: true);
+          }
+        } else if (index == 4) {
+          context.read<MyTripProvider>().refreshEssentialsTab();
+        } else if (index == 5) {
+          final tripProvider = context.read<TripProvider>();
+          final tripId = tripProvider.selectedTrip?.id;
+          if (tripId != null && tripId.isNotEmpty) {
+            tripProvider.fetchHotelVoucherDetails(tripId, force: true);
+            context.read<MyTripProvider>().refreshDocumentsTab(tripId);
+          }
+        }
       },
     );
   }
@@ -333,7 +396,7 @@ class _TripScreenState extends State<TripScreen> {
     debugPrint(
       '🔵 [TripScreen] selectedTrip title: ${context.read<TripProvider>().selectedTrip?.title}',
     );
-    // Fetch only if not already loaded
+    // First visit / edge cases: load once if still empty (tab tap uses force refresh).
     if (flightProvider.flightDetails == null && !flightProvider.isLoading) {
       if (tripId != null && tripId.isNotEmpty) {
         debugPrint('🔵 [TripScreen] Fetching flights for tripId: $tripId');
@@ -390,7 +453,7 @@ class _TripScreenState extends State<TripScreen> {
                 );
                 return Column(
                   children: [
-                    TripDetialsCard(
+                    TripDetailsCard(
                       title: flight.flightType == 'outbound'
                           ? 'Outbound Flight'
                           : 'Return Flight',
@@ -408,55 +471,119 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   Widget _hotelsSection() {
+    final tripProvider = context.watch<TripProvider>();
+    final tripId = tripProvider.selectedTrip?.id;
+    final isLoading = tripProvider.isHotelVoucherLoading;
+    final error = tripProvider.hotelVoucherError;
+    final vouchers = tripProvider.hotelVouchers;
+    final hasFetched = tripProvider.hasFetchedHotelVouchers;
+
+    // Static escort details for now (as requested).
+    final escortCard = Column(
+      children: [
+        EscortContactCard(name: "Ahmed Khan", phone: "+966 55 123 4567"),
+        SizedBox(height: 16.h),
+      ],
+    );
+
+    if (tripId != null &&
+        tripId.isNotEmpty &&
+        vouchers.isEmpty &&
+        !isLoading &&
+        error == null &&
+        !hasFetched) {
+      // If user lands here via deep link / restore, ensure we load once.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<TripProvider>().fetchHotelVoucherDetails(tripId);
+        }
+      });
+    }
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 10.h),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Column(
-              children: [
-                EscortContactCard(
-                  name: "Ahmed Khan",
-                  phone: "+966 55 123 4567",
+            escortCard,
+            if (isLoading)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 40.h),
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            else if (error != null)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 24.h),
+                child: Column(
+                  children: [
+                    AppText(
+                      text: "Failed to load hotel details",
+                      style: textStyle14Regular.copyWith(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                    12.h.verticalSpace,
+                    AppButton(
+                      title: "Retry",
+                      onTap: tripId == null || tripId.isEmpty
+                          ? null
+                          : () => context
+                                .read<TripProvider>()
+                                .fetchHotelVoucherDetails(tripId, force: true),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16.h),
-              ],
-            ),
-            TripDetialsCard(
-              labelWidth: 90.w, // wider
+              )
+            else if (vouchers.isEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 24.h),
+                child: AppText(
+                  text: "No hotel details available",
+                  style: textStyle14Regular.copyWith(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              )
+            else
+              ...vouchers.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final hotel = entry.value;
+                final room = hotel.rooms.isNotEmpty ? hotel.rooms.first : null;
+                final facilities = hotel.facilities.join(', ');
 
-              title: "Hotel 1",
-              infoMap: {
-                "Name": "Swissotel Makkah",
-                "Address": "Ajyad St, Makkah",
-                "Phone": "+966 12 571 8000",
-                "Check-in": "10 Feb 2025, 2:00 PM",
-                "Check-out": "15 Feb 2025, 11:00 AM",
-                "Room Type": "Double Deluxe",
-                "Room No": "302 (With roommate: Ali Khan)",
-                "Facilities": "Free WiFi, Breakfast Included",
-                "Status": "Confirmed",
-              },
-            ),
+                final info = <String, String>{
+                  "Name": hotel.hotelName.isEmpty ? "-" : hotel.hotelName,
+                  "Address": hotel.hotelAddress.isEmpty
+                      ? "-"
+                      : hotel.hotelAddress,
+                  "Phone": hotel.hotelContact.isEmpty
+                      ? "-"
+                      : hotel.hotelContact,
+                  "Check-in": hotel.stayInfo.checkIn ?? "-",
+                  "Check-out": hotel.stayInfo.checkOut ?? "-",
+                  if (room != null)
+                    "Room Type": room.roomType.isEmpty ? "-" : room.roomType,
+                  if (room != null)
+                    "Room No": room.roomNumber.isEmpty ? "-" : room.roomNumber,
+                  if (room != null && room.guests.isNotEmpty)
+                    "Guests": room.guests.join(', '),
+                  if (facilities.isNotEmpty) "Facilities": facilities,
+                };
 
-            SizedBox(height: 20.h),
-
-            TripDetialsCard(
-              labelWidth: 90.w, // wider
-
-              title: "Hotel 2",
-              infoMap: {
-                "Name": "Anwar Al Madinah Mövenpick",
-                "Address": "Central Area, Madinah",
-                "Phone": "+966 14 818 1000",
-                "Check-in": "15 Feb 2025, 3:00 PM",
-                "Check-out": "20 Feb 2025, 12:00 PM",
-                "Room Type": "Triple Standard",
-                "Room No": "514 (With roommates: Ahmed, Sameer)",
-                "Facilities": "WiFi, Dinner Buffet, Close to Haram",
-                "Status": "Pending Confirmation",
-              },
-            ),
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: idx == vouchers.length - 1 ? 0 : 20.h,
+                  ),
+                  child: TripDetailsCard(
+                    labelWidth: 90.w,
+                    title: hotel.hotelName.isEmpty
+                        ? "Hotel ${idx + 1}"
+                        : hotel.hotelName,
+                    infoMap: info,
+                  ),
+                );
+              }),
           ],
         ),
       ),
@@ -464,47 +591,123 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   Widget _itinerarySection() {
+    final tripProvider = context.watch<TripProvider>();
+    final tripId = tripProvider.selectedTrip?.id;
+    final isLoading = tripProvider.isItineraryLoading;
+    final error = tripProvider.itineraryError;
+    final today = tripProvider.todayItinerary;
+    final hasFetched = tripProvider.hasFetchedItinerary;
+
+    if (tripId != null &&
+        tripId.isNotEmpty &&
+        today == null &&
+        !isLoading &&
+        error == null &&
+        !hasFetched) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<TripProvider>().fetchTodayItinerary(tripId);
+        }
+      });
+    }
+
+    final activities = (today?.itinerary.activities ?? []).toList()
+      ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            children: [
-              Column(
-                children: [
-                  ItineraryStep(
-                    icon: AppAssets.plane,
-                    title: "Arrival at Jeddah Airport",
-                    time: "05:45 AM",
-                    isCompleted: true,
+      child: isLoading
+          ? Padding(
+              padding: EdgeInsets.symmetric(vertical: 40.h),
+              child: const Center(child: CircularProgressIndicator()),
+            )
+          : error != null
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppText(
+                  text: "Failed to load itinerary",
+                  style: textStyle14Regular.copyWith(
+                    color: AppColors.primaryColor,
                   ),
-                  ItineraryStep(
-                    icon: AppAssets.truck,
-                    title: "Transfer to Makkah Hotel",
-                    time: "07:00 AM",
-                    isCompleted: true,
+                ),
+                12.h.verticalSpace,
+                AppButton(
+                  title: "Retry",
+                  onTap: tripId == null || tripId.isEmpty
+                      ? null
+                      : () => context.read<TripProvider>().fetchTodayItinerary(
+                          tripId,
+                          force: true,
+                        ),
+                ),
+              ],
+            )
+          : activities.isEmpty
+          ? AppText(
+              text: "No itinerary available",
+              style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if ((today?.itinerary.dayTitle ?? '').isNotEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 12.h),
+                    child: AppText(
+                      text: today!.itinerary.dayTitle,
+                      style: textStyle16SemiBold.copyWith(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
                   ),
-                  ItineraryStep(
-                    icon: AppAssets.location,
-                    title: "Umrah Ritual – Tawaf & Sa’i",
-                    time: "08:30 – 11:30 AM",
-                    isCompleted: false,
+                if ((today?.itinerary.notes ?? '').trim().isNotEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 16.h),
+                    child: AppText(
+                      text: today!.itinerary.notes!.trim(),
+                      style: textStyle14Regular.copyWith(
+                        color: AppColors.primaryColor.setOpacity(0.7),
+                      ),
+                    ),
                   ),
-                ],
-              ),
-
-              ItineraryStep(
-                icon: AppAssets.truck,
-                title: "Departure from Makkah",
-                time: "11:00 AM",
-                isLast: true,
-              ),
-            ],
-          ),
-        ],
-      ),
+                ...activities.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final a = entry.value;
+                  final isLast = idx == activities.length - 1;
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: isLast ? 0 : 18.h),
+                    child: ItineraryStep(
+                      icon: _iconForItinerary(a.icon),
+                      title: a.activityTitle,
+                      time: a.times,
+                      isCompleted:
+                          (today?.itinerary.status ?? '') == 'completed',
+                      isLast: isLast,
+                    ),
+                  );
+                }),
+              ],
+            ),
     );
+  }
+
+  String _iconForItinerary(String rawIcon) {
+    switch (rawIcon.toLowerCase()) {
+      case 'plane':
+        return AppAssets.plane;
+      case 'bus':
+      case 'truck':
+        return AppAssets.truck;
+      case 'hotel':
+        return AppAssets.hotel;
+      case 'mosque':
+      case 'landmark':
+        return AppAssets.landmark;
+      case 'location':
+      default:
+        return AppAssets.location;
+    }
   }
 
   Widget _essentialsSection() {
@@ -528,25 +731,46 @@ class _TripScreenState extends State<TripScreen> {
         return GestureDetector(
           onTap: () {
             if (index == 0) {
-              context.pushNamed(UserAppRoutes.packageListScreen.name);
+              context.pushNamed(
+                UserAppRoutes.packageListScreen.name,
+                extra: freshRouteNonce(),
+              );
             }
             if (index == 1) {
-              context.pushNamed(UserAppRoutes.currencyMoneyScreen.name);
+              context.pushNamed(
+                UserAppRoutes.currencyMoneyScreen.name,
+                extra: freshRouteNonce(),
+              );
             }
             if (index == 2) {
-              context.pushNamed(UserAppRoutes.emergencyContactScreen.name);
+              context.pushNamed(
+                UserAppRoutes.emergencyContactScreen.name,
+                extra: freshRouteNonce(),
+              );
             }
             if (index == 3) {
-              context.pushNamed(UserAppRoutes.localInformationScreen.name);
+              context.pushNamed(
+                UserAppRoutes.localInformationScreen.name,
+                extra: freshRouteNonce(),
+              );
             }
             if (index == 4) {
-              context.pushNamed(UserAppRoutes.healthSafteyScreen.name);
+              context.pushNamed(
+                UserAppRoutes.healthSafteyScreen.name,
+                extra: freshRouteNonce(),
+              );
             }
             if (index == 5) {
-              context.pushNamed(UserAppRoutes.umrahGuideScreen.name);
+              context.pushNamed(
+                UserAppRoutes.umrahGuideScreen.name,
+                extra: freshRouteNonce(),
+              );
             }
             if (index == 6) {
-              context.pushNamed(UserAppRoutes.duaListScreen.name);
+              context.pushNamed(
+                UserAppRoutes.duaListScreen.name,
+                extra: freshRouteNonce(),
+              );
             }
           },
           child: Row(
@@ -571,10 +795,437 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
+  Future<void> _launchOptionalUrl(String? raw) async {
+    if (raw == null || raw.trim().isEmpty) return;
+    final uri = Uri.tryParse(raw.trim());
+    if (uri == null) return;
+    if (!await canLaunchUrl(uri)) return;
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _dialOptional(String? raw) async {
+    if (raw == null || raw.trim().isEmpty) return;
+    final digits = raw.replaceAll(RegExp(r'[^\d+]'), '');
+    if (digits.isEmpty) return;
+    final uri = Uri.parse('tel:$digits');
+    if (!await canLaunchUrl(uri)) return;
+    await launchUrl(uri);
+  }
+
+  Future<void> _shareDocument(
+    BuildContext context, {
+    File? file,
+    String? networkUrl,
+    required String title,
+  }) async {
+    await shareDocumentFile(
+      context: context,
+      localFile: file,
+      networkUrl: networkUrl,
+      label: title,
+    );
+  }
+
+  Widget _buildApiPersonalDocCard(
+    BuildContext context, {
+    required PersonalDoc doc,
+    required String typeLabel,
+    required String memberName,
+    required bool showMemberName,
+  }) {
+    final info = <String, String>{
+      'File Type': doc.fileType ?? '—',
+      if (doc.uploadedDate != null && doc.uploadedDate!.isNotEmpty)
+        'Uploaded': doc.uploadedDate!,
+    };
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: DocumentCard(
+        doc: DocumentModel(
+          image: AppAssets.hotel4,
+          networkThumbnailUrl: doc.resolvedViewUrl,
+          title: doc.documentName,
+          subtitle: showMemberName ? '$typeLabel · $memberName' : typeLabel,
+          info: info,
+          button1: 'View',
+          button2: 'Download',
+          icon: AppAssets.save,
+        ),
+        onTap: () {
+          final url = doc.resolvedViewUrl;
+          if (url == null || url.isEmpty) return;
+          context.pushNamed(
+            UserAppRoutes.viewDocumentScreen.name,
+            extra: {
+              'file': null,
+              'networkFileUrl': url,
+              'assetImage': AppAssets.hotel4,
+              'title': doc.documentName,
+            },
+          );
+        },
+        onSecondaryTap: () => _shareDocument(
+          context,
+          networkUrl: doc.resolvedViewUrl,
+          title: doc.documentName,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildApiFlightTicketCard(
+    BuildContext context, {
+    required FlightTicketDoc ticket,
+    required String memberName,
+    required bool showMemberName,
+  }) {
+    final info = <String, String>{
+      if (ticket.flightName != null && ticket.flightName!.isNotEmpty)
+        'Flight': ticket.flightName!,
+      if (ticket.date != null && ticket.date!.isNotEmpty) 'Date': ticket.date!,
+      'File Type': ticket.fileType ?? '—',
+    };
+    final title = showMemberName
+        ? 'E-ticket · $memberName'
+        : (ticket.flightName ?? 'Flight ticket');
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: DocumentCard(
+        doc: DocumentModel(
+          subtitle: 'Flight Ticket',
+          image: AppAssets.hotel,
+          title: title,
+          networkThumbnailUrl: ticket.resolvedTicketUrl,
+          info: info,
+          button1: 'View',
+          button2: 'Download',
+          icon: AppAssets.save,
+        ),
+        onTap: () {
+          final url = ticket.resolvedTicketUrl;
+          if (url == null || url.isEmpty) return;
+          context.pushNamed(
+            UserAppRoutes.viewDocumentScreen.name,
+            extra: {
+              'file': null,
+              'networkFileUrl': url,
+              'assetImage': AppAssets.hotel4,
+              'title': 'E-ticket',
+            },
+          );
+        },
+        onSecondaryTap: () => _shareDocument(
+          context,
+          networkUrl: ticket.resolvedTicketUrl,
+          title: title,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBundleHotelDocCard(BuildContext context, BundleHotelDoc h) {
+    final thumb = h.resolvedImageUrl ?? '';
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: DocumentCard(
+        doc: DocumentModel(
+          image: AppAssets.hotel1,
+          networkThumbnailUrl: thumb.isNotEmpty ? thumb : null,
+          title: h.hotelName,
+          info: {
+            'Check-in': h.checkIn ?? '—',
+            'Check-out': h.checkOut ?? '—',
+            'File Type': h.fileType ?? 'Image',
+          },
+          button1: 'View',
+          button2: 'Open in Map',
+          icon: AppAssets.map,
+        ),
+        onTap: () {
+          context.pushNamed(
+            UserAppRoutes.hotelVoucherScreen.name,
+            extra: {
+              'imageFile': null,
+              'networkImageUrl': thumb.isNotEmpty ? thumb : null,
+              'hotelName': h.hotelName,
+              'address': h.hotelName,
+            },
+          );
+        },
+        onSecondaryTap: () async {
+          final q = Uri.encodeComponent(h.hotelName);
+          await _launchOptionalUrl(
+            'https://www.google.com/maps/search/?api=1&query=$q',
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBundleInsuranceCard(
+    BuildContext context,
+    BundleInsuranceDoc d,
+  ) {
+    final info = <String, String>{
+      if (d.coverage != null && d.coverage!.isNotEmpty)
+        'Coverage': d.coverage!,
+      if (d.uploadedDate != null && d.uploadedDate!.isNotEmpty)
+        'Uploaded': d.uploadedDate!,
+    };
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: DocumentCard(
+        doc: DocumentModel(
+          image: AppAssets.hotel3,
+          networkThumbnailUrl: d.resolvedThumbnailUrl,
+          title: d.policyName ?? 'Travel Insurance',
+          subtitle: 'Travel Insurance',
+          info: info,
+          button1: 'View',
+          button2: 'Helpline',
+          icon: AppAssets.call,
+        ),
+        onTap: () {
+          final url = d.resolvedPrimaryFileUrl ?? d.resolvedThumbnailUrl;
+          if (url == null || url.isEmpty) return;
+          context.pushNamed(
+            UserAppRoutes.viewDocumentScreen.name,
+            extra: {
+              'file': null,
+              'networkFileUrl': url,
+              'assetImage': AppAssets.hotel4,
+              'title': d.policyName ?? 'Insurance',
+            },
+          );
+        },
+        onSecondaryTap: () => _dialOptional(d.emergencyDetails),
+      ),
+    );
+  }
+
+  Widget _buildBundleChecklistCard(
+    BuildContext context,
+    BundleChecklistDoc d,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: DocumentCard(
+        doc: DocumentModel(
+          image: AppAssets.hotel3,
+          networkThumbnailUrl: d.resolvedThumbnailUrl,
+          title: 'Checklist',
+          subtitle: 'Travel Document',
+          info: {
+            if (d.fileType != null) 'File Type': d.fileType!,
+            if (d.uploadedDate != null) 'Uploaded': d.uploadedDate!,
+          },
+          button1: 'View',
+          button2: 'Download',
+          icon: AppAssets.save,
+        ),
+        onTap: () {
+          final url = d.resolvedPrimaryFileUrl ?? d.resolvedThumbnailUrl;
+          if (url == null || url.isEmpty) return;
+          context.pushNamed(
+            UserAppRoutes.viewDocumentScreen.name,
+            extra: {
+              'file': null,
+              'networkFileUrl': url,
+              'assetImage': AppAssets.hotel4,
+              'title': 'Checklist',
+            },
+          );
+        },
+        onSecondaryTap: () {
+          final url = d.resolvedPrimaryFileUrl ?? d.resolvedThumbnailUrl;
+          _shareDocument(
+            context,
+            networkUrl: url,
+            title: 'Checklist',
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildHotelVoucherDocumentCard(
+    BuildContext context,
+    HotelVoucherModel h,
+  ) {
+    final thumb = serverMediaUrl(h.hotelImage) ?? '';
+    final checkIn = h.stayInfo.checkIn ?? '-';
+    final checkOut = h.stayInfo.checkOut ?? '-';
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: DocumentCard(
+        doc: DocumentModel(
+          image: AppAssets.hotel1,
+          networkThumbnailUrl: thumb.isNotEmpty ? thumb : null,
+          title: h.hotelName.isEmpty ? 'Hotel' : h.hotelName,
+          info: {
+            'Check-in': checkIn,
+            'Check-out': checkOut,
+            'File Type': 'Image (JPG)',
+          },
+          button1: 'View',
+          button2: 'Open in Map',
+          icon: AppAssets.map,
+        ),
+        onTap: () {
+          context.pushNamed(
+            UserAppRoutes.hotelVoucherScreen.name,
+            extra: {
+              'imageFile': null,
+              'networkImageUrl': thumb.isNotEmpty ? thumb : null,
+              'hotelName': h.hotelName,
+              'address': h.hotelAddress,
+            },
+          );
+        },
+        onSecondaryTap: () async {
+          final u = h.locationUrl;
+          if (u != null && u.trim().isNotEmpty) {
+            await _launchOptionalUrl(u);
+          } else {
+            final q = Uri.encodeComponent(h.hotelAddress);
+            await _launchOptionalUrl(
+              'https://www.google.com/maps/search/?api=1&query=$q',
+            );
+          }
+        },
+      ),
+    );
+  }
+
   Widget _documentsSection() {
-    return Consumer<MyTripProvider>(
-      builder: (context, provider, child) {
-        final docs = provider.uploadedDocs;
+    return Consumer2<MyTripProvider, TripProvider>(
+      builder: (context, myTrip, trip, _) {
+        final tripId = trip.selectedTrip?.id;
+        final docs = myTrip.uploadedDocs;
+        final bundle = myTrip.tripDocumentsBundle;
+        final loading = myTrip.isTripDocumentsLoading;
+        final err = myTrip.tripDocumentsError;
+        final hotels = trip.hotelVouchers;
+
+        final multiMember = (bundle?.memberDocuments.length ?? 0) > 1;
+
+        var hasPassVisaApi = false;
+        var hasFlightApi = false;
+        var hasMedApi = false;
+        if (bundle != null) {
+          for (final m in bundle.memberDocuments) {
+            final d = m.documents;
+            if (d.visa != null || d.passport != null) {
+              hasPassVisaApi = true;
+            }
+            if (d.flightTickets.isNotEmpty) hasFlightApi = true;
+            if (d.medicalCertificate != null) hasMedApi = true;
+          }
+        }
+
+        final bundleHotel = bundle?.tripDocuments.hotel;
+        final insurance = bundle?.tripDocuments.insurance;
+        final checklist = bundle?.tripDocuments.checklist;
+
+        final hasLocal = docs.isNotEmpty;
+        final hasRemote = bundle?.hasAnyRemoteContent ?? false;
+        final hasHotelRows = hotels.isNotEmpty || bundleHotel != null;
+        final hasTravelAdmin = insurance != null || checklist != null;
+
+        if (loading) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 48.h),
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (err != null) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppText(
+                  text: err,
+                  style: textStyle14Regular.copyWith(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+                16.h.verticalSpace,
+                AppButton(
+                  title: 'Retry',
+                  onTap: tripId == null || tripId.isEmpty
+                      ? null
+                      : () async {
+                          await trip.fetchHotelVoucherDetails(
+                            tripId,
+                            force: true,
+                          );
+                          await myTrip.fetchTripDocuments(tripId, force: true);
+                        },
+                ),
+              ],
+            ),
+          );
+        }
+
+        final showEmpty = !hasLocal &&
+            !hasRemote &&
+            !hasHotelRows &&
+            !hasTravelAdmin;
+
+        final apiPassVisaWidgets = <Widget>[];
+        final apiFlightWidgets = <Widget>[];
+        final apiMedWidgets = <Widget>[];
+        if (bundle != null) {
+          for (final m in bundle.memberDocuments) {
+            final d = m.documents;
+            if (d.visa != null) {
+              apiPassVisaWidgets.add(
+                _buildApiPersonalDocCard(
+                  context,
+                  doc: d.visa!,
+                  typeLabel: 'Visa',
+                  memberName: m.name,
+                  showMemberName: multiMember,
+                ),
+              );
+            }
+            if (d.passport != null) {
+              apiPassVisaWidgets.add(
+                _buildApiPersonalDocCard(
+                  context,
+                  doc: d.passport!,
+                  typeLabel: 'Passport',
+                  memberName: m.name,
+                  showMemberName: multiMember,
+                ),
+              );
+            }
+            for (final t in d.flightTickets) {
+              apiFlightWidgets.add(
+                _buildApiFlightTicketCard(
+                  context,
+                  ticket: t,
+                  memberName: m.name,
+                  showMemberName: multiMember,
+                ),
+              );
+            }
+            if (d.medicalCertificate != null) {
+              apiMedWidgets.add(
+                _buildApiPersonalDocCard(
+                  context,
+                  doc: d.medicalCertificate!,
+                  typeLabel: 'Medical Certificate',
+                  memberName: m.name,
+                  showMemberName: multiMember,
+                ),
+              );
+            }
+          }
+        }
 
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
@@ -582,13 +1233,16 @@ class _TripScreenState extends State<TripScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!docs.isNotEmpty) _emptyDocumentCard(),
-                if (docs.isNotEmpty)
+                if (showEmpty) _emptyDocumentCard(tripId),
+                if (!showEmpty) ...[
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () => context.pushNamed(
                         UserAppRoutes.addDocumentScreen.name,
+                        extra: tripId == null || tripId.isEmpty
+                            ? null
+                            : {'tripId': tripId},
                       ),
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -609,14 +1263,14 @@ class _TripScreenState extends State<TripScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             SvgIcon(
-                              AppAssets.addmore,
+                              AppAssets.addMore,
                               size: 18.w,
                               color: Colors.white,
                             ),
                             SizedBox(width: 8.w),
                             AppText(
                               text: "Add More",
-                              style: textPopinnsMeidium.copyWith(
+                              style: textPoppinsMedium.copyWith(
                                 color: Colors.white,
                                 fontSize: 14.sp,
                               ),
@@ -626,18 +1280,20 @@ class _TripScreenState extends State<TripScreen> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 20.h),
+                ],
 
-                if (docs.isNotEmpty) SizedBox(height: 20.h),
-
-                // === Passport & Visa ===
                 if (docs.any(
-                  (d) => d["type"] == "Passport" || d["type"] == "Visa",
-                )) ...[
+                      (d) =>
+                          d["type"] == "Passport" || d["type"] == "Visa",
+                    ) ||
+                    hasPassVisaApi) ...[
                   AppText(text: "Passport & Visa", style: textStyle16SemiBold),
                   12.h.verticalSpace,
                   ...docs
                       .where(
-                        (d) => d["type"] == "Passport" || d["type"] == "Visa",
+                        (d) =>
+                            d["type"] == "Passport" || d["type"] == "Visa",
                       )
                       .map(
                         (doc) => Padding(
@@ -653,12 +1309,11 @@ class _TripScreenState extends State<TripScreen> {
                               },
                               button1: "View",
                               button2: "Download",
-
                               icon: AppAssets.save,
                             ),
-                            ontap: () {
+                            onTap: () {
                               context.pushNamed(
-                                UserAppRoutes.viewDocumetScreen.name,
+                                UserAppRoutes.viewDocumentScreen.name,
                                 extra: {
                                   'file': doc["file"],
                                   'assetImage': AppAssets.hotel4,
@@ -666,15 +1321,20 @@ class _TripScreenState extends State<TripScreen> {
                                 },
                               );
                             },
+                            onSecondaryTap: () => _shareDocument(
+                              context,
+                              file: doc["file"] as File?,
+                              title: doc["name"]?.toString() ?? 'Document',
+                            ),
                           ),
                         ),
-                      )
-                      .toList(),
+                      ),
+                  ...apiPassVisaWidgets,
                   20.h.verticalSpace,
                 ],
 
-                // === Round Trip Tickets ===
-                if (docs.any((d) => d["type"] == "Flight Ticket")) ...[
+                if (docs.any((d) => d["type"] == "Flight Ticket") ||
+                    hasFlightApi) ...[
                   AppText(
                     text: "Round Trip Tickets",
                     style: textStyle16SemiBold,
@@ -700,25 +1360,30 @@ class _TripScreenState extends State<TripScreen> {
                               button2: "Download",
                               icon: AppAssets.save,
                             ),
-                            ontap: () {
+                            onTap: () {
                               context.pushNamed(
-                                UserAppRoutes.viewDocumetScreen.name,
+                                UserAppRoutes.viewDocumentScreen.name,
                                 extra: {
-                                  'file': doc["file"], // File
-                                  'assetImage': AppAssets.hotel4, // String only
+                                  'file': doc["file"],
+                                  'assetImage': AppAssets.hotel4,
                                   'title': "E-ticket",
                                 },
                               );
                             },
+                            onSecondaryTap: () => _shareDocument(
+                              context,
+                              file: doc["file"] as File?,
+                              title: doc["name"]?.toString() ?? 'E-ticket',
+                            ),
                           ),
                         ),
-                      )
-                      .toList(),
+                      ),
+                  ...apiFlightWidgets,
                   20.h.verticalSpace,
                 ],
 
-                // === Medical Certificate ===
-                if (docs.any((d) => d["type"] == "Medical Certificate")) ...[
+                if (docs.any((d) => d["type"] == "Medical Certificate") ||
+                    hasMedApi) ...[
                   AppText(
                     text: "Medical Certificate",
                     style: textStyle16SemiBold,
@@ -739,114 +1404,47 @@ class _TripScreenState extends State<TripScreen> {
                               button2: "Download",
                               icon: AppAssets.call,
                             ),
-                            ontap: () {
+                            onTap: () {
                               context.pushNamed(
-                                UserAppRoutes.viewDocumetScreen.name,
+                                UserAppRoutes.viewDocumentScreen.name,
                                 extra: {
-                                  'file': doc["file"], // File
-                                  'assetImage': AppAssets.hotel4, // String only
+                                  'file': doc["file"],
+                                  'assetImage': AppAssets.hotel4,
                                   'title': doc["name"],
                                 },
                               );
                             },
+                            onSecondaryTap: () => _shareDocument(
+                              context,
+                              file: doc["file"] as File?,
+                              title: doc["name"]?.toString() ?? 'Medical',
+                            ),
                           ),
                         ),
-                      )
-                      .toList(),
+                      ),
+                  ...apiMedWidgets,
                   20.h.verticalSpace,
                 ],
 
-                // === Hotel Vouchers ===
-                AppText(text: "Hotel Vouchers", style: textStyle16SemiBold),
-                SizedBox(height: 12.h),
-                DocumentCard(
-                  doc: DocumentModel(
-                    image: AppAssets.hotel1,
-                    title: "Swissotel Makkah",
-                    info: {
-                      "Check-in": "10 Feb",
-                      "Check-out": "15 Feb",
-                      "File Type": "Image (JPG)",
-                    },
-                    button1: "View",
-                    button2: "Open in Map",
-                    icon: AppAssets.map,
+                if (hasHotelRows) ...[
+                  AppText(text: "Hotel Vouchers", style: textStyle16SemiBold),
+                  SizedBox(height: 12.h),
+                  if (bundleHotel != null)
+                    _buildBundleHotelDocCard(context, bundleHotel),
+                  ...hotels.map(
+                    (h) => _buildHotelVoucherDocumentCard(context, h),
                   ),
-                  ontap: () {
-                    context.pushNamed(
-                      UserAppRoutes.hotelVoucherScreen.name,
-                      extra: {
-                        "imageFile": AppAssets.hotelvoucher,
-                        "hotelName": "Swissotel Makkah",
-                        "address": "Ajyad St, Makkah",
-                      },
-                    );
-                  },
-                ),
-                12.h.verticalSpace,
-                DocumentCard(
-                  doc: DocumentModel(
-                    image: AppAssets.hotel2,
-                    title: "Pullman Zamzam Madinah",
-                    info: {
-                      "Check-in": "15 Feb",
-                      "Check-out": "20 Feb",
-                      "File Type": "Image (JPG)",
-                    },
-                    button1: "View",
-                    button2: "Open in Map",
-                    icon: AppAssets.map,
-                  ),
-                  ontap: () {
-                    context.pushNamed(
-                      UserAppRoutes.hotelVoucherScreen.name,
-                      extra: {
-                        "imageFile": AppAssets.hotelvoucher1,
-                        "hotelName": "Pullman Zamzam Madinah",
-                        "address": "Central Area North, Madinah",
-                      },
-                    );
-                  },
-                ),
+                  SizedBox(height: 20.h),
+                ],
 
-                SizedBox(height: 20.h),
-
-                // === Travel Insurance & Checklist ===
-                AppText(text: "Travel Document", style: textStyle16SemiBold),
-                SizedBox(height: 12.h),
-                DocumentCard(
-                  doc: DocumentModel(
-                    image: AppAssets.hotel3,
-                    title: "ICICI Lombard",
-                    subtitle: "Travel Insurance",
-                    info: {"Coverage": "10 Feb – 20 Feb"},
-                    button1: "View",
-                    button2: "Helpline",
-                    icon: AppAssets.call,
-                  ),
-                  ontap: () {
-                    context.pushNamed(
-                      UserAppRoutes.travelInsuranceScreen.name,
-                      extra: {
-                        "imageFile": AppAssets.travelinsurance,
-                        "hotelName": "Pullman Zamzam Madinah",
-                        "address": "Central Area North, Madinah",
-                      },
-                    );
-                  },
-                ),
-                12.h.verticalSpace,
-                DocumentCard(
-                  doc: DocumentModel(
-                    image: AppAssets.hotel3,
-                    title: "Checklist Umrah",
-                    subtitle: "Travel Document",
-                    button1: "View",
-                    button2: "Download",
-                    icon: AppAssets.save,
-                  ),
-                  ontap: () {},
-                ),
+                if (hasTravelAdmin) ...[
+                  AppText(text: "Travel Document", style: textStyle16SemiBold),
+                  SizedBox(height: 12.h),
+                  if (insurance != null)
+                    _buildBundleInsuranceCard(context, insurance),
+                  if (checklist != null)
+                    _buildBundleChecklistCard(context, checklist),
+                ],
               ],
             ),
           ),
@@ -855,7 +1453,7 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  Widget _emptyDocumentCard() {
+  Widget _emptyDocumentCard(String? tripId) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 32.h),
@@ -895,7 +1493,12 @@ class _TripScreenState extends State<TripScreen> {
           AppButton(
             title: "Add New Document",
             onTap: () {
-              context.pushNamed(UserAppRoutes.addDocumentScreen.name);
+              context.pushNamed(
+                UserAppRoutes.addDocumentScreen.name,
+                extra: tripId == null || tripId.isEmpty
+                    ? null
+                    : {'tripId': tripId},
+              );
             },
           ),
         ],
@@ -951,37 +1554,5 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  Widget _cardDetailsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppTextField(
-          prefixIcon: Padding(
-            padding: const EdgeInsets.all(13.0),
-            child: SvgIcon(
-              AppAssets.creditcard,
-              color: AppColors.primaryColor.setOpacity(0.6),
-            ),
-          ),
-          labelText: "Card number",
-          hintText: "0000 0000 0000",
-        ),
-
-        15.h.verticalSpace,
-
-        Row(
-          children: [
-            Expanded(
-              child: AppTextField(labelText: "CVC", hintText: "CVV"),
-            ),
-            10.w.horizontalSpace,
-            Expanded(
-              child: AppTextField(labelText: "Expiry date", hintText: "MM/YY"),
-            ),
-          ],
-        ),
-        16.h.verticalSpace,
-      ],
-    );
-  }
+  // (removed unused _cardDetailsSection)
 }

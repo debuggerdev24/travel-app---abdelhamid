@@ -14,7 +14,7 @@ import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 27.h.verticalSpace,
-                CustomHeaders(image: AppAssets.profilephoto),
+                CustomHeaders(image: AppAssets.profilePhoto),
 
                 16.h.verticalSpace,
                 Center(
@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       children: [
                         CustomTabButton(
-                          text: "Upcoming",
+                          text: "Current",
                           index: 0,
                           selectedTab: selectedTab,
                           onTap: () => setState(() => selectedTab = 0),
@@ -150,13 +150,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
                       final trips = selectedTab == 0
-                          ? provider.upcomingtripList
+                          ? provider.upcomingTripList
                           : provider.tripList;
                       if (trips.isEmpty) {
                         return Center(
                           child: AppText(
                             text: selectedTab == 0
-                                ? "No Upcoming Trips"
+                                ? "No Current Trips"
                                 : "No Past Trips",
                             style: textStyle16SemiBold.copyWith(
                               color: AppColors.primaryColor,

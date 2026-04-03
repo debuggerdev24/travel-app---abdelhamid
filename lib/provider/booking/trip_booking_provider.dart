@@ -186,7 +186,7 @@ class TripBookingProvider extends ChangeNotifier {
 
       if (response['status'] == 1 && response['data'] != null) {
         _bookingId = response['data']['_id'];
-        LogHelper.instance.info("Booking ID: ${_bookingId}");
+        LogHelper.instance.info("Booking ID: $_bookingId");
         return true;
       }
       return false;

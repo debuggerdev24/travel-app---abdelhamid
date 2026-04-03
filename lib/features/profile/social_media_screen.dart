@@ -7,7 +7,6 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class SocialMediaScreen extends StatelessWidget {
   SocialMediaScreen({super.key});
 
@@ -33,7 +32,7 @@ class SocialMediaScreen extends StatelessWidget {
       "sub": "Chat directly with our support team",
     },
     {
-      "icon": AppAssets.starfill,
+      "icon": AppAssets.starFill,
       "title": "Leave us a Google Review",
       "sub": "",
     },

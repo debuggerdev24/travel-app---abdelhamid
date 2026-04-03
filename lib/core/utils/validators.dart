@@ -3,12 +3,75 @@ class Validator {
 
   /// Validates email address
   static String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) {
       return 'Email is required';
     }
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) {
+    if (!emailRegex.hasMatch(v)) {
       return 'Enter a valid email address';
+    }
+    return null;
+  }
+
+  /// First name / surname — letters, spaces, hyphens, apostrophes (Latin extended).
+  static String? validatePersonName(String? value, String fieldName) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) return '$fieldName is required';
+    if (v.length < 2) return '$fieldName must be at least 2 characters';
+    if (v.length > 60) return '$fieldName is too long';
+    if (!RegExp(r"^[a-zA-ZÀ-ÿ\s'\-]+$").hasMatch(v)) {
+      return 'Use only letters for $fieldName';
+    }
+    return null;
+  }
+
+  /// Free text (address, place, nationality) with sensible length bounds.
+  static String? validateRequiredText(
+    String? value,
+    String fieldName, {
+    int minLen = 2,
+    int maxLen = 300,
+  }) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) return '$fieldName is required';
+    if (v.length < minLen) {
+      return '$fieldName must be at least $minLen characters';
+    }
+    if (v.length > maxLen) return '$fieldName is too long';
+    return null;
+  }
+
+  /// Expects YYYY-MM-DD (same as UI hint).
+  static String? validateIsoDateOfBirth(String? value) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) return 'Date of birth is required';
+    if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(v)) {
+      return 'Use format YYYY-MM-DD';
+    }
+    final parts = v.split('-');
+    final y = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    final d = int.tryParse(parts[2]);
+    if (y == null || m == null || d == null) return 'Enter a valid date';
+    final dt = DateTime(y, m, d);
+    if (dt.year != y || dt.month != m || dt.day != d) {
+      return 'Enter a valid date';
+    }
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    if (dt.isAfter(todayDate)) return 'Date cannot be in the future';
+    if (today.year - y > 120) return 'Please check the year';
+    return null;
+  }
+
+  /// Phone with spaces, dashes, or country code; 7–15 digits required.
+  static String? validatePersonPhoneFlexible(String? value) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) return 'Phone number is required';
+    final digits = v.replaceAll(RegExp(r'\D'), '');
+    if (digits.length < 10 || digits.length > 15) {
+      return 'Enter a valid phone number (10–15 digits)';
     }
     return null;
   }

@@ -6,7 +6,6 @@ import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class PastPaymentItem extends StatelessWidget {
   final String id;
   final String amount;
@@ -34,7 +33,7 @@ class PastPaymentItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    SvgIcon(AppAssets.pastcheck, size: 18.w),
+                    SvgIcon(AppAssets.pastCheck, size: 18.w),
                     15.w.horizontalSpace,
                     AppText(
                       text: "$id - $amount",

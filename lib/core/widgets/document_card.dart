@@ -7,12 +7,53 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
 class DocumentCard extends StatelessWidget {
   final DocumentModel doc;
-  final VoidCallback ontap;
+  /// Primary action (View).
+  final VoidCallback onTap;
+  /// Secondary action (Map / Helpline / Download). Defaults to [onTap].
+  final VoidCallback? onSecondaryTap;
 
-  const DocumentCard({super.key, required this.doc, required this.ontap});
+  const DocumentCard({
+    super.key,
+    required this.doc,
+    required this.onTap,
+    this.onSecondaryTap,
+  });
+
+  Widget _buildThumbnail() {
+    final w = 140.w;
+    final h = 126.h;
+    if (doc.fileImage != null) {
+      return Image.file(
+        doc.fileImage!,
+        width: w,
+        height: h,
+        fit: BoxFit.cover,
+      );
+    }
+    final url = doc.networkThumbnailUrl;
+    if (url != null && url.isNotEmpty) {
+      return Image.network(
+        url,
+        width: w,
+        height: h,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Image.asset(
+          doc.image,
+          width: w,
+          height: h,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    return Image.asset(
+      doc.image,
+      width: w,
+      height: h,
+      fit: BoxFit.cover,
+    );
+  }
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
@@ -23,7 +64,7 @@ class DocumentCard extends StatelessWidget {
           SizedBox(
             width: 70.w,
             child: AppText(
-              text: "$label",
+              text: label,
               style: textStyle14Regular.copyWith(
                 color: AppColors.primaryColor.setOpacity(0.8),
                 fontSize: 13.sp,
@@ -73,19 +114,7 @@ class DocumentCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.r),
-                child: doc.fileImage != null
-                    ? Image.file(
-                        doc.fileImage!,
-                        width: 140.w,
-                        height: 126.h,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        doc.image,
-                        width: 140.w,
-                        height: 126.h,
-                        fit: BoxFit.cover,
-                      ),
+                child: _buildThumbnail(),
               ),
 
               14.w.horizontalSpace,
@@ -113,8 +142,7 @@ class DocumentCard extends StatelessWidget {
                     8.h.verticalSpace,
                     if (doc.info != null)
                       ...doc.info!.entries
-                          .map((entry) => _buildInfoRow(entry.key, entry.value))
-                          .toList(),
+                          .map((entry) => _buildInfoRow(entry.key, entry.value)),
                   ],
                 ),
               ),
@@ -126,7 +154,7 @@ class DocumentCard extends StatelessWidget {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: ontap,
+                  onTap: onTap,
                   child: Container(
                     height: 46.h,
                     decoration: BoxDecoration(
@@ -168,7 +196,7 @@ class DocumentCard extends StatelessWidget {
 
               Expanded(
                 child: GestureDetector(
-                  onTap: ontap,
+                  onTap: onSecondaryTap ?? onTap,
                   child: Container(
                     height: 46.h,
                     decoration: BoxDecoration(

@@ -31,7 +31,7 @@ class PaymentFailedScreen extends StatelessWidget {
                   ),
                 ),
                 42.h.verticalSpace,
-                Image.asset(AppAssets.paymentfailed),
+                Image.asset(AppAssets.paymentFailed),
                 52.h.verticalSpace,
                 AppText(
                   text:
@@ -44,10 +44,12 @@ class PaymentFailedScreen extends StatelessWidget {
                 ),
 
                 Spacer(),
-                AppButton(title: "Try Again", onTap: () {
-                  context.pushNamed(UserAppRoutes.tabScreen.name
-                  );
-                }),
+                AppButton(
+                  title: "Try Again",
+                  onTap: () {
+                    context.pushNamed(UserAppRoutes.tabScreen.name);
+                  },
+                ),
                 42.h.verticalSpace,
               ],
             ),

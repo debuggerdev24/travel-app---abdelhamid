@@ -10,12 +10,15 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 
 class HotelVoucherScreen extends StatelessWidget {
   final String? imageFile;
+  /// Full URL for hotel thumbnail (preferred over [imageFile] when set).
+  final String? networkImageUrl;
   final String hotelName;
   final String address;
 
   const HotelVoucherScreen({
     super.key,
     this.imageFile,
+    this.networkImageUrl,
     required this.hotelName,
     required this.address,
   });
@@ -57,11 +60,22 @@ class HotelVoucherScreen extends StatelessWidget {
               // Hotel Image
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: Image.asset(
-                  imageFile ?? AppAssets.hotelvoucher,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: (networkImageUrl != null && networkImageUrl!.trim().isNotEmpty)
+                    ? Image.network(
+                        networkImageUrl!.trim(),
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Image.asset(
+                          imageFile ?? AppAssets.hotelVoucher,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Image.asset(
+                        imageFile ?? AppAssets.hotelVoucher,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
               ),
 
               10.h.verticalSpace,
@@ -231,7 +245,7 @@ class HotelVoucherScreen extends StatelessWidget {
           SizedBox(
             width: 70.w,
             child: AppText(
-              text: "$label",
+              text: label,
               style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
             ),
           ),

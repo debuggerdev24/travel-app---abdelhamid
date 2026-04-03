@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -66,7 +65,9 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
 
     /// Clip image in circle shape
     final Path clipPath = Path()
-      ..addOval(Rect.fromCircle(center: Offset(radius, radius), radius: radius));
+      ..addOval(
+        Rect.fromCircle(center: Offset(radius, radius), radius: radius),
+      );
 
     canvas.clipPath(clipPath);
 
@@ -76,11 +77,14 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
     /// Draw circle border
     canvas.drawCircle(Offset(radius, radius), radius, borderPaint);
 
-    final ui.Image finalImage =
-        await recorder.endRecording().toImage(size, size);
+    final ui.Image finalImage = await recorder.endRecording().toImage(
+      size,
+      size,
+    );
 
-    final ByteData? pngBytes =
-        await finalImage.toByteData(format: ui.ImageByteFormat.png);
+    final ByteData? pngBytes = await finalImage.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
 
     return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
   }
@@ -88,14 +92,14 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
   /// 🔥 Load custom circular markers
   Future<void> loadMarkerImages() async {
     userIconRed = await createCircularMarker(
-      AppAssets.profilephoto,
+      AppAssets.profilePhoto,
       size: 80,
-      borderColor:AppColors.redColor,
+      borderColor: AppColors.redColor,
       borderWidth: 4,
     );
 
     userIconGreen = await createCircularMarker(
-      AppAssets.profilephoto,
+      AppAssets.profilePhoto,
       size: 80,
       borderColor: Colors.green,
       borderWidth: 4,
@@ -166,15 +170,14 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
               child: AppButton(
-  title: "Share My Location",
-  onTap: () {
-    context.pop({
-      "lat": currentLocation.latitude,
-      "lng": currentLocation.longitude,
-    });
-  },
-),
-
+                title: "Share My Location",
+                onTap: () {
+                  context.pop({
+                    "lat": currentLocation.latitude,
+                    "lng": currentLocation.longitude,
+                  });
+                },
+              ),
             ),
           ],
         ),

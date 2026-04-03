@@ -55,7 +55,7 @@ class TravelInsuranceScreen extends StatelessWidget {
 
               Image.asset(
                 height: 300.h,
-                imageFile ?? AppAssets.hotelvoucher,
+                imageFile ?? AppAssets.hotelVoucher,
                 width: double.infinity,
               ),
 

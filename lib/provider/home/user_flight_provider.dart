@@ -12,7 +12,19 @@ class FlightProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
-  Future<void> fetchMyFlights(String tripId) async {
+  /// Clears cached flights so the UI does not briefly show the previous trip.
+  void clearFlightCache() {
+    _flightDetails = null;
+    _error = null;
+    notifyListeners();
+  }
+
+  /// When [force] is true, calls the API again even if flights were already loaded
+  /// (e.g. user re-opens the Trip **Flights** tab).
+  Future<void> fetchMyFlights(String tripId, {bool force = false}) async {
+    if (_isLoading) return;
+    if (!force && _flightDetails != null) return;
+
     _isLoading = true;
     _error = null;
     notifyListeners();

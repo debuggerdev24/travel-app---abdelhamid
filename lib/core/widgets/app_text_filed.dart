@@ -71,8 +71,23 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final InputBorder normalBorder = border ??
+        outlineInputBorder ??
+        OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.primaryColor.setOpacity(0.2),
+          ),
+          borderRadius: BorderRadius.circular(8.r),
+        );
+    final InputBorder invalidBorder = errorBorder ??
+        OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: const BorderSide(color: AppColors.redColor),
+        );
+
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (labelText?.isNotEmpty ?? false)
           Container(
@@ -140,59 +155,36 @@ class AppTextField extends StatelessWidget {
               prefix: prefix,
               hintText: hintText,
               hintStyle: hintStyle ?? textStyle14Regular,
+              errorStyle: textStyle14Regular.copyWith(
+                color: AppColors.redColor,
+                fontSize: 12.sp,
+              ),
               contentPadding:
                   contentPadding ??
                   EdgeInsets.symmetric(horizontal: 22.w, vertical: 17.h),
               border: InputBorder.none,
-              enabledBorder:
-                  border ??
-                  OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: AppColors.primaryColor.setOpacity(0.2),
-                    ),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-
-              focusedErrorBorder:
-                  border ??
-                  OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide(
-                      color: AppColors.primaryColor.setOpacity(0.2),
-                    ),
-                  ),
-              focusedBorder:
-                  border ??
-                  OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide(
-                      color: AppColors.primaryColor.setOpacity(0.2),
-                    ),
-                  ),
-
-              disabledBorder:
-                  border ??
-                  OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide(
-                      color: AppColors.primaryColor.setOpacity(0.2),
-                    ),
-                  ),
-
-              errorBorder:
-                  border ??
-                  OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide(
-                      color: AppColors.primaryColor.setOpacity(0.2),
-                    ),
-                  ),
+              enabledBorder: normalBorder,
+              focusedErrorBorder: invalidBorder,
+              focusedBorder: normalBorder,
+              disabledBorder: normalBorder,
+              errorBorder: invalidBorder,
             ),
             onChanged: onChanged,
             maxLines: maxLines ?? 1,
             autovalidateMode: autoValidateMode,
           ),
         ),
+        if (bottomText != null) ...[
+          SizedBox(height: 4.h),
+          Text(
+            bottomText!,
+            style: bottomTextStyle ??
+                textStyle14Regular.copyWith(
+                  color: AppColors.greyColor,
+                  fontSize: 12.sp,
+                ),
+          ),
+        ],
       ],
     );
   }

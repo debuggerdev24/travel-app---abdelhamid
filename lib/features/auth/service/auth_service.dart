@@ -68,7 +68,7 @@ class AuthService {
   Future<void> forgetPasswrod({required String email}) async {
     try {
       final response = await _apiService.post(
-        Endpoints.forgetPaswrod,
+        Endpoints.forgetPassword,
         body: {'email': email},
       );
 
