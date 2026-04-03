@@ -33,7 +33,8 @@ class BaseApiService {
         requestBody: true,
         responseBody: true,
         responseHeader: false,
-        error: true,
+        // Off: expected 404s (e.g. empty CMS) still throw; LogHelper logs them without this noise.
+        error: false,
         compact: true,
         maxWidth: 90,
       ),
@@ -332,10 +333,11 @@ class BaseApiService {
         }
       }
 
-      // 400 + no toast: often "no data" from CMS endpoints; avoid ERROR-level noise
-      if (!showErrorToast && statusCode == 400) {
+      // 400 / 404 + no toast: CMS "not found" or empty content; avoid ERROR-level noise
+      if (!showErrorToast &&
+          (statusCode == 400 || statusCode == 404)) {
         LogHelper.instance.debug(
-          'API $method $endpoint → 400 $message',
+          'API $method $endpoint → $statusCode $message',
         );
       } else {
         LogHelper.instance.error(

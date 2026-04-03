@@ -21,12 +21,12 @@ List<RouteBase> get profileRoutes => [
   GoRoute(
     path: UserAppRoutes.faqScreen.path,
     name: UserAppRoutes.faqScreen.name,
-    builder: (context, state) => FaqScreen(),
+    builder: (context, state) => const FaqScreen(),
   ),
   GoRoute(
     path: UserAppRoutes.socialMediaScreen.path,
     name: UserAppRoutes.socialMediaScreen.name,
-    builder: (context, state) => SocialMediaScreen(),
+    builder: (context, state) => const SocialMediaScreen(),
   ),
   GoRoute(
     path: UserAppRoutes.termsConditionScreen.path,
@@ -36,7 +36,7 @@ List<RouteBase> get profileRoutes => [
   GoRoute(
     path: UserAppRoutes.privacyPolicyScreen.path,
     name: UserAppRoutes.privacyPolicyScreen.name,
-    builder: (context, state) => PrivacyPolicyScreen(),
+    builder: (context, state) => const PrivacyPolicyScreen(),
   ),
   GoRoute(
     path: UserAppRoutes.ourLocationsScreen.path,

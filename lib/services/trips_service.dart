@@ -15,6 +15,7 @@ class TripsService {
   TripsService._internal();
   static final TripsService instance = TripsService._internal();
 
+  /// Backend: `GET /api/user/trips/list?type=upcoming` → `data` is a JSON array.
   Future<List<TripModel>> getUpcomingTrips({
     bool showErrorToast = false,
   }) async {
@@ -28,6 +29,7 @@ class TripsService {
     }
   }
 
+  /// Backend: `GET /api/user/trips/list?type=past` → `data` is a JSON array.
   Future<List<TripModel>> getPastTrips({bool showErrorToast = false}) async {
     try {
       return await _getTrips(TripsType.past, showErrorToast: showErrorToast);
@@ -204,7 +206,7 @@ class TripsService {
     }
   }
 
-  /// Trip documents bundle: `memberDocuments` + `tripDocuments` (hotel, insurance, checklist).
+  /// Trip d ocuments bundle: `memberDocuments` + `tripDocuments` (hotel, insurance, checklist).
   /// Backend: `GET /api/user/trip-documents?tripId=`.
   Future<TripDocumentsBundle> getTripDocuments(
     String tripId, {

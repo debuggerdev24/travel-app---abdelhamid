@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:trael_app_abdelhamid/provider/home/prayer_times_provider.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
@@ -69,6 +71,12 @@ class _TabScreenState extends State<TabScreen> {
         setState(() {
           currentIndex = index;
         });
+        if (index == 0) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            context.read<PrayerTimesProvider>().fetchPrayerTimes();
+          });
+        }
       },
       items: [
         BottomNavItem(

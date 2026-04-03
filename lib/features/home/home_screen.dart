@@ -10,6 +10,7 @@ import 'package:trael_app_abdelhamid/core/widgets/custom_header.dart';
 import 'package:trael_app_abdelhamid/core/widgets/tab_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/trip_card.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:trael_app_abdelhamid/provider/home/prayer_times_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.microtask(() {
       if (mounted) {
         context.read<TripProvider>().fetchTrips();
+        context.read<PrayerTimesProvider>().fetchPrayerTimes();
       }
     });
   }
@@ -37,8 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Consumer<TripProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<TripProvider, PrayerTimesProvider>(
+        builder: (context, provider, prayer, child) {
           return SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,47 +60,75 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 if (selectedTab == 0) 16.h.verticalSpace,
                 if (selectedTab == 0)
-                  Container(
-                    height: 52.h,
-                    margin: EdgeInsets.symmetric(horizontal: 27.w),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.primaryColor.setOpacity(0.2),
+                  GestureDetector(
+                    onTap: () async {
+                      await context.pushNamed(
+                        UserAppRoutes.prayerTimesScreen.name,
+                      );
+                      if (!context.mounted) return;
+                      await context.read<PrayerTimesProvider>().fetchPrayerTimes();
+                    },
+                    child: Container(
+                      height: 52.h,
+                      margin: EdgeInsets.symmetric(horizontal: 27.w),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.primaryColor.setOpacity(0.2),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Row(
-                      children: [
-                        22.w.horizontalSpace,
-                        AppText(
-                          text: "Next Prayer",
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor.setOpacity(0.6),
+                      child: Row(
+                        children: [
+                          16.w.horizontalSpace,
+                          AppText(
+                            text: "Next Prayer",
+                            style: textStyle14Regular.copyWith(
+                              color: AppColors.primaryColor.setOpacity(0.6),
+                            ),
                           ),
-                        ),
-
-                        AppText(
-                          text: "  :  ",
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor.setOpacity(0.6),
+                          AppText(
+                            text: "  :  ",
+                            style: textStyle14Regular.copyWith(
+                              color: AppColors.primaryColor.setOpacity(0.6),
+                            ),
                           ),
-                        ),
-                        AppText(
-                          text: "Dhuhr 12:30 PM",
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                        VerticalDivider(indent: 12.w, endIndent: 12.w),
-                        AppText(
-                          text: "1h 50m",
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                        12.w.horizontalSpace,
-                        SvgIcon(AppAssets.travel, size: 24.w),
-                      ],
+                          if (prayer.showHomePrayerLoading)
+                            SizedBox(
+                              width: 18.w,
+                              height: 18.w,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.primaryColor,
+                              ),
+                            )
+                          else ...[
+                            Expanded(
+                              child: AppText(
+                                text: prayer.homePrayerLine,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textStyle14Regular.copyWith(
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                            VerticalDivider(
+                              indent: 12.w,
+                              endIndent: 12.w,
+                              color: AppColors.primaryColor.setOpacity(0.2),
+                            ),
+                            AppText(
+                              text: prayer.homeCountdownLine,
+                              style: textStyle14Regular.copyWith(
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ],
+                          8.w.horizontalSpace,
+                          SvgIcon(AppAssets.travel, size: 24.w),
+                          8.w.horizontalSpace,
+                        ],
+                      ),
                     ),
                   ),
 
@@ -153,39 +183,68 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? provider.upcomingTripList
                           : provider.tripList;
                       if (trips.isEmpty) {
-                        return Center(
-                          child: AppText(
-                            text: selectedTab == 0
-                                ? "No Current Trips"
-                                : "No Past Trips",
-                            style: textStyle16SemiBold.copyWith(
-                              color: AppColors.primaryColor,
+                        return RefreshIndicator(
+                          color: AppColors.primaryColor,
+                          onRefresh: () async {
+                            await provider.fetchTrips(showGlobalLoading: false);
+                            if (context.mounted) {
+                              await context
+                                  .read<PrayerTimesProvider>()
+                                  .fetchPrayerTimes();
+                            }
+                          },
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.5,
+                              child: Center(
+                                child: AppText(
+                                  text: selectedTab == 0
+                                      ? "No Current Trips"
+                                      : "No Past Trips",
+                                  style: textStyle16SemiBold.copyWith(
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         );
                       }
-                      return ListView.builder(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 27.w,
-                          vertical: 24.h,
-                        ),
-                        itemCount: trips.length,
-                        itemBuilder: (context, index) {
-                          final item = trips[index];
-                          return TripCard(
-                            image: item.image,
-                            title: item.title,
-                            location: item.location,
-                            date: item.date,
-                            status: item.status,
-                            onTap: () {
-                              provider.selectTrip(item);
-                              context.pushNamed(
-                                UserAppRoutes.tripDetailsScreen.name,
-                              );
-                            },
-                          );
+                      return RefreshIndicator(
+                        color: AppColors.primaryColor,
+                        onRefresh: () async {
+                          await provider.fetchTrips(showGlobalLoading: false);
+                          if (context.mounted) {
+                            await context
+                                .read<PrayerTimesProvider>()
+                                .fetchPrayerTimes();
+                          }
                         },
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 27.w,
+                            vertical: 24.h,
+                          ),
+                          itemCount: trips.length,
+                          itemBuilder: (context, index) {
+                            final item = trips[index];
+                            return TripCard(
+                              image: item.image,
+                              title: item.title,
+                              location: item.location,
+                              date: item.date,
+                              status: item.status,
+                              onTap: () {
+                                provider.selectTrip(item);
+                                context.pushNamed(
+                                  UserAppRoutes.tripDetailsScreen.name,
+                                );
+                              },
+                            );
+                          },
+                        ),
                       );
                     },
                   ),

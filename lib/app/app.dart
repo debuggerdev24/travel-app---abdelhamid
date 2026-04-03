@@ -5,6 +5,7 @@ import 'package:trael_app_abdelhamid/core/theme/app_theme.dart';
 import 'package:trael_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart' as hp;
+import 'package:trael_app_abdelhamid/provider/home/prayer_times_provider.dart';
 import 'package:trael_app_abdelhamid/provider/home/user_flight_provider.dart';
 import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
@@ -21,6 +22,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => hp.TripProvider()),
+        ChangeNotifierProvider(create: (_) => PrayerTimesProvider()),
         ChangeNotifierProvider(create: (_) => MyTripProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),

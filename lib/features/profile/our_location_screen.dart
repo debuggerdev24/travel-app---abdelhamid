@@ -5,10 +5,51 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/model/profile/office_location_model.dart';
+import 'package:trael_app_abdelhamid/services/profile_content_service.dart';
 
-class OurLocationsScreen extends StatelessWidget {
+class OurLocationsScreen extends StatefulWidget {
   const OurLocationsScreen({super.key});
+
+  @override
+  State<OurLocationsScreen> createState() => _OurLocationsScreenState();
+}
+
+class _OurLocationsScreenState extends State<OurLocationsScreen> {
+  bool _loading = true;
+  String? _error;
+  Map<String, List<OfficeLocation>> _byCountry = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final map = await ProfileContentService.instance.getLocations(
+        showErrorToast: false,
+      );
+      if (!mounted) return;
+      setState(() {
+        _byCountry = map;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = userFacingApiError(e);
+        _loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +63,6 @@ class OurLocationsScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 20.h),
-
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -43,25 +83,98 @@ class OurLocationsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              _sectionTitle("The Netherlands :"),
-              _locationCard([
-                "Edisonplein 7, 4816 AM, Breda",
-                "Jan Rebelstraat 18b, 1069 CC, Amsterdam",
-                "Van Bijinkershoeklaan 405, 3527 XK, Utrecht",
-                "Rijksweg Zuid 80a, 6161 BP, Geleen",
-              ]),
+              if (_loading)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 48.h),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                )
+              else if (_error != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        text: _error!,
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _load,
+                        child: AppText(
+                          text: "Retry",
+                          style: textStyle14Medium.copyWith(
+                            color: AppColors.blueColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else if (_byCountry.isEmpty)
+                _emptyState()
+              else
+                ..._buildCountrySections(),
+              12.h.verticalSpace,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-              12.h.verticalSpace,
-              _sectionTitle("Belgium :"),
-              _locationCard([
-                "Sint-Bernardsesteenweg 273B, 2660, Hoboken - Antwerp",
-                "Rue d'Ostende 124, 1080, Sint-Jans-Molenbeek, Brussels",
-              ]),
+  List<Widget> _buildCountrySections() {
+    final keys = _byCountry.keys.toList()..sort();
+    final out = <Widget>[];
+    for (final country in keys) {
+      final list = _byCountry[country] ?? [];
+      out.add(_sectionTitle("$country :"));
+      for (final loc in list) {
+        out.add(_locationCard(loc));
+        out.add(12.h.verticalSpace);
+      }
+    }
+    return out;
+  }
 
-              12.h.verticalSpace,
-              _sectionTitle("Morocco :"),
-              _locationCard(["84 Ave Mohammed V, Tangier 90000, Marokko"]),
-              12.h.verticalSpace,
+  Widget _emptyState() {
+    return Padding(
+      padding: EdgeInsets.only(top: 48.h, bottom: 32.h),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 320.w),
+          child: Column(
+            children: [
+              Icon(
+                Icons.location_on_outlined,
+                size: 56.sp,
+                color: AppColors.primaryColor.setOpacity(0.35),
+              ),
+              20.h.verticalSpace,
+              AppText(
+                textAlign: TextAlign.center,
+                text: 'No office locations yet',
+                style: textStyle16SemiBold.copyWith(
+                  fontSize: 17.sp,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              14.h.verticalSpace,
+              AppText(
+                textAlign: TextAlign.center,
+                text:
+                    'Locations will appear here once they are added in the admin panel.',
+                style: textStyle14Regular.copyWith(
+                  height: 1.5,
+                  fontSize: 14.sp,
+                  color: AppColors.primaryColor.setOpacity(0.72),
+                ),
+              ),
             ],
           ),
         ),
@@ -79,16 +192,23 @@ class OurLocationsScreen extends StatelessWidget {
     );
   }
 
-  Widget _locationCard(List<String> items) {
+  Widget _locationCard(OfficeLocation loc) {
+    final lines = <String>[
+      if (loc.name.trim().isNotEmpty) loc.name.trim(),
+      loc.address.trim(),
+      if (loc.contact.trim().isNotEmpty) 'Tel: ${loc.contact}',
+      if (loc.workingHours.trim().isNotEmpty) loc.workingHours.trim(),
+      if (loc.email.trim().isNotEmpty) loc.email.trim(),
+    ].where((s) => s.isNotEmpty).toList();
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        border: BoxBorder.all(
+        border: Border.all(
           color: AppColors.primaryColor.setOpacity(0.2),
           width: 0,
         ),
         borderRadius: BorderRadius.circular(12.r),
-
         boxShadow: [
           BoxShadow(
             color: AppColors.primaryColor.setOpacity(0.1),
@@ -101,7 +221,7 @@ class OurLocationsScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: items
+          children: lines
               .map(
                 (text) => Padding(
                   padding: EdgeInsets.only(bottom: 8.h),

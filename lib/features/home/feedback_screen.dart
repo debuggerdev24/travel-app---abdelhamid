@@ -11,6 +11,8 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:trael_app_abdelhamid/services/profile_content_service.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -21,6 +23,51 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   final TextEditingController reviewController = TextEditingController();
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    reviewController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit(BuildContext context, TripProvider ratingProvider) async {
+    if (_submitting) return;
+    final tripId = ratingProvider.selectedTrip?.id;
+    if (tripId == null || tripId.isEmpty) {
+      ToastHelper.showError('Select a trip first, then try again.');
+      return;
+    }
+    final rating = ratingProvider.rating;
+    if (rating < 1) {
+      ToastHelper.showError('Please select a star rating.');
+      return;
+    }
+    final text = reviewController.text.trim();
+    if (text.isEmpty) {
+      ToastHelper.showError('Please enter your review.');
+      return;
+    }
+    setState(() => _submitting = true);
+    try {
+      await ProfileContentService.instance.submitReview(
+        forTrip: true,
+        rating: rating,
+        review: text,
+        tripId: tripId,
+        showErrorToast: true,
+      );
+      if (!context.mounted) return;
+      ratingProvider.setReview(text);
+      ratingProvider.submitReview();
+      ToastHelper.showSuccess('Thank you for your review!');
+      context.pop();
+    } catch (_) {
+      // Error toast from API layer
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,11 +174,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
               AppButton(
                 title: "Done",
-                onTap: () {
-                  ratingProvider.setReview(reviewController.text);
-                  ratingProvider.submitReview();
-                  context.pop();
-                },
+                isLoading: _submitting,
+                onTap: () => _submit(context, ratingProvider),
               ),
             ],
           ),

@@ -5,7 +5,10 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/model/cms/cms_models.dart';
+import 'package:trael_app_abdelhamid/services/cms_content_service.dart';
 
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
@@ -15,55 +18,43 @@ class FaqScreen extends StatefulWidget {
 }
 
 class _FaqScreenState extends State<FaqScreen> {
-  final List<Map<String, dynamic>> faqList = [
-    {
-      "question": "How can I book a trip?",
-      "answer":
-          "From the Home screen, choose your desired package, tap “Book Now”, complete payment, and the trip will automatically appear in “My Trips.”",
-      "isExpanded": true,
-    },
-    {
-      "question": "What payment methods are accepted?",
-      "answer": "We accept credit cards, debit cards, UPI, and net banking.",
-      "isExpanded": false,
-    },
-    {
-      "question": "How do I upload my documents?",
-      "answer": "You can upload documents from the “My Trips” section.",
-      "isExpanded": false,
-    },
-    {
-      "question": "Can I access my trip details offline?",
-      "answer":
-          "Yes, once downloaded, your trip details can be accessed offline.",
-      "isExpanded": false,
-    },
-    {
-      "question": "How do I see my hotel and flight details?",
-      "answer": "Go to your trip overview page to view all details.",
-      "isExpanded": false,
-    },
-    {
-      "question": "Can I chat with my guide or group?",
-      "answer": "Yes, in-app chat is available for your guide and group.",
-      "isExpanded": false,
-    },
-    {
-      "question": "How do I share my live location?",
-      "answer": "Tap “Share Location” on the home screen.",
-      "isExpanded": false,
-    },
-    {
-      "question": "What if I forget my personal login code?",
-      "answer": "Click “Forgot Code” on the login page to reset.",
-      "isExpanded": false,
-    },
-    {
-      "question": "How do I contact support during my trip?",
-      "answer": "Support is available inside the app 24/7.",
-      "isExpanded": false,
-    },
-  ];
+  bool _loading = true;
+  String? _error;
+  List<FaqItem> _faqs = [];
+  List<bool> _expanded = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final list = await CmsContentService.instance.getFaqs(
+        showErrorToast: false,
+      );
+      if (!mounted) return;
+      setState(() {
+        _faqs = list;
+        _expanded = List<bool>.generate(
+          list.length,
+          (i) => i == 0,
+        );
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = userFacingApiError(e);
+        _loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,24 +116,25 @@ class _FaqScreenState extends State<FaqScreen> {
                       child: SvgIcon(AppAssets.faq, size: 34.w),
                     ),
                     12.w.horizontalSpace,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText(
-                          text: "Travel-related FAQs:",
-                          style: textStyle16SemiBold.copyWith(
-                            fontSize: 18.sp,
-                            color: AppColors.primaryColor,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText(
+                            text: "Travel-related FAQs",
+                            style: textStyle16SemiBold.copyWith(
+                              fontSize: 18.sp,
+                              color: AppColors.primaryColor,
+                            ),
                           ),
-                        ),
-                        AppText(
-                          text: "https://temheed.nl/faqs/",
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.blueColor,
-                            decoration: TextDecoration.underline,
+                          AppText(
+                            text: "Answers from your travel team",
+                            style: textStyle14Regular.copyWith(
+                              color: AppColors.primaryColor.setOpacity(0.6),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -150,78 +142,123 @@ class _FaqScreenState extends State<FaqScreen> {
 
               20.h.verticalSpace,
 
-              // ---------------- FAQ List ----------------
-              ListView.builder(
-                itemCount: faqList.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  bool isExpanded = faqList[index]["isExpanded"];
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              if (_loading)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 48.h),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                )
+              else if (_error != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.h),
+                  child: Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            faqList[index]["isExpanded"] = !isExpanded;
-                          });
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: AppText(
-                                  text: faqList[index]["question"],
-                                  style: textStyle16SemiBold.copyWith(
-                                    fontSize: 16.sp,
-                                    color: AppColors.primaryColor.setOpacity(
-                                      0.8,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: 32.w,
-                                height: 32.w,
-                                decoration: BoxDecoration(
-                                  color: AppColors.whiteColor,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppColors.blueColor,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    isExpanded ? Icons.remove : Icons.add,
-                                    size: 18.w,
-                                    color: AppColors.blueColor,
-                                  ),
-                                ),
-                              ),
-                            ],
+                      AppText(
+                        text: _error!,
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      16.h.verticalSpace,
+                      TextButton(
+                        onPressed: _load,
+                        child: AppText(
+                          text: "Retry",
+                          style: textStyle14Medium.copyWith(
+                            color: AppColors.blueColor,
                           ),
                         ),
                       ),
+                    ],
+                  ),
+                )
+              else if (_faqs.isEmpty)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32.h),
+                  child: AppText(
+                    text: "No FAQs available yet.",
+                    style: textStyle14Regular.copyWith(
+                      color: AppColors.primaryColor.setOpacity(0.6),
+                    ),
+                  ),
+                )
+              else
+                ListView.builder(
+                  itemCount: _faqs.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final faq = _faqs[index];
+                    final isExpanded = index < _expanded.length
+                        ? _expanded[index]
+                        : false;
 
-                      // ANSWER SECTION
-                      if (isExpanded)
-                        AppText(
-                          text: faqList[index]["answer"],
-                          style: textStyle14Regular.copyWith(
-                            fontSize: 14.sp,
-                            color: AppColors.textcolor.setOpacity(0.6),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (index < _expanded.length) {
+                                _expanded[index] = !isExpanded;
+                              }
+                            });
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: AppText(
+                                    text: faq.question,
+                                    style: textStyle16SemiBold.copyWith(
+                                      fontSize: 16.sp,
+                                      color: AppColors.primaryColor.setOpacity(
+                                        0.8,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 32.w,
+                                  height: 32.w,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.blueColor,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      isExpanded ? Icons.remove : Icons.add,
+                                      size: 18.w,
+                                      color: AppColors.blueColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-
-                      Divider(color: Colors.black12, thickness: 1),
-                    ],
-                  );
-                },
-              ),
+                        if (isExpanded)
+                          AppText(
+                            text: faq.answer,
+                            style: textStyle14Regular.copyWith(
+                              fontSize: 14.sp,
+                              color: AppColors.textcolor.setOpacity(0.6),
+                            ),
+                          ),
+                        const Divider(color: Colors.black12, thickness: 1),
+                      ],
+                    );
+                  },
+                ),
             ],
           ),
         ),

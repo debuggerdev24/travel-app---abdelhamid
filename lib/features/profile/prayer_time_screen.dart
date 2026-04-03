@@ -2,15 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
+import 'package:trael_app_abdelhamid/provider/home/prayer_times_provider.dart';
 
-class PrayerTimesScreen extends StatelessWidget {
+class PrayerTimesScreen extends StatefulWidget {
   const PrayerTimesScreen({super.key});
+
+  @override
+  State<PrayerTimesScreen> createState() => _PrayerTimesScreenState();
+}
+
+class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<PrayerTimesProvider>().fetchPrayerTimes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,36 +64,54 @@ class PrayerTimesScreen extends StatelessWidget {
 
               30.h.verticalSpace,
 
-              /// ---- PRAYER LIST ----
-              PrayerTile(
-                prayer: "Fajr",
-                time: "05:23 AM",
-                initialValue: true,
-                onChanged: (v) {},
-              ),
-              PrayerTile(
-                prayer: "Dhuhr",
-                time: "12:31 PM",
-                initialValue: false,
-                onChanged: (v) {},
-              ),
-              PrayerTile(
-                prayer: "Asr",
-                time: "03:56 PM",
-                initialValue: true,
-                onChanged: (v) {},
-              ),
-              PrayerTile(
-                prayer: "Maghrib",
-                time: "06:12 PM",
-                initialValue: false,
-                onChanged: (v) {},
-              ),
-              PrayerTile(
-                prayer: "Isha",
-                time: "07:31 PM",
-                initialValue: true,
-                onChanged: (v) {},
+              Expanded(
+                child: Consumer<PrayerTimesProvider>(
+                  builder: (context, prayer, _) {
+                    if (prayer.isLoading && prayer.items.isEmpty) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                        ),
+                      );
+                    }
+                    if (prayer.error != null && prayer.items.isEmpty) {
+                      return Center(
+                        child: AppText(
+                          textAlign: TextAlign.center,
+                          text:
+                              'Could not load prayer times. Pull to refresh from home or try again later.',
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor.setOpacity(0.8),
+                          ),
+                        ),
+                      );
+                    }
+                    if (prayer.items.isEmpty) {
+                      return Center(
+                        child: AppText(
+                          textAlign: TextAlign.center,
+                          text:
+                              'No prayer times have been set yet. They can be added from the admin panel.',
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor.setOpacity(0.8),
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: prayer.items.length,
+                      itemBuilder: (context, index) {
+                        final p = prayer.items[index];
+                        return PrayerTile(
+                          prayer: p.name,
+                          time: p.time,
+                          initialValue: false,
+                          onChanged: (_) {},
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -127,15 +161,14 @@ class _PrayerTileState extends State<PrayerTile> {
           BoxShadow(
             color: AppColors.blueColor.setOpacity(0.08),
             blurRadius: 6,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Row(
         children: [
-          /// Prayer Name with fixed width
           SizedBox(
-            width: 65.w, // adjust width as needed
+            width: 65.w,
             child: AppText(
               text: widget.prayer,
               style: textStyle16SemiBold.copyWith(fontSize: 16.sp),
@@ -151,13 +184,12 @@ class _PrayerTileState extends State<PrayerTile> {
             ),
           ),
 
-          /// Time
           AppText(
             text: widget.time,
             style: textStyle16SemiBold.copyWith(fontSize: 16.sp),
           ),
 
-          Spacer(),
+          const Spacer(),
 
           CustomSwitchButton(
             initialValue: isOn,

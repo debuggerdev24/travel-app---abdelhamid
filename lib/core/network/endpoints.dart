@@ -39,4 +39,21 @@ class Endpoints {
 
   static const String tourGuideFetchDetails =
       '/api/tour-guide/fetch-guide-details';
+
+  // --- CMS (`/api/...`, use with [AppConstants.apiPublicRoot]) ---
+  static const String faqList = '/faq/get-faqs';
+  static const String socialList = '/social/get-socials';
+  static const String rulesGet = '/rules/get-rules';
+
+  /// `GET` — Bearer auth; response `data` is map of country → list of locations.
+  static const String locationGetList = '/location/get-locations';
+
+  /// `GET` — Bearer auth; list of team members with photos.
+  static const String teamGetMembers = '/team/get-members';
+
+  /// `POST` — body: `purpose`, `rating`, `review`; optional query `tripId` for trip reviews.
+  static const String reviewsNewReview = '/reviews/new-review';
+
+  /// `GET` — Bearer auth; list of `{ name, time }` prayer rows.
+  static const String prayerDetails = '/prayer/prayer-details';
 }

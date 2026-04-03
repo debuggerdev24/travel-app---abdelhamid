@@ -129,9 +129,13 @@ class TripProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchTrips() async {
-    _isLoading = true;
-    notifyListeners();
+  /// Loads home lists from `GET /api/user/trips/list?type=upcoming` and `?type=past`.
+  /// [showGlobalLoading] false for pull-to-refresh (keeps list visible; only the indicator shows).
+  Future<void> fetchTrips({bool showGlobalLoading = true}) async {
+    if (showGlobalLoading) {
+      _isLoading = true;
+      notifyListeners();
+    }
     try {
       final results = await Future.wait([
         TripsService.instance.getUpcomingTrips(showErrorToast: true),
@@ -148,7 +152,9 @@ class TripProvider extends ChangeNotifier {
     } catch (e) {
       // Errors are handled by BaseApiService and logged
     } finally {
-      _isLoading = false;
+      if (showGlobalLoading) {
+        _isLoading = false;
+      }
       notifyListeners();
     }
   }

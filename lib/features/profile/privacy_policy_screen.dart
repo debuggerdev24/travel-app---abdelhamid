@@ -5,12 +5,104 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/model/cms/cms_models.dart';
+import 'package:trael_app_abdelhamid/services/cms_content_service.dart';
 
-class PrivacyPolicyScreen extends StatelessWidget {
+class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({super.key});
 
-  Widget sectionTitle(String title) {
+  @override
+  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+}
+
+class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+  bool _loading = true;
+  String? _error;
+  List<RuleSection> _sections = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final list = await CmsContentService.instance.getRules(
+        'privacy',
+        showErrorToast: false,
+      );
+      if (!mounted) return;
+      setState(() {
+        _sections = list;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = userFacingApiError(e);
+        _loading = false;
+      });
+    }
+  }
+
+  bool _hasRenderableContent() {
+    for (final s in _sections) {
+      if (s.title.trim().isNotEmpty) return true;
+      for (final t in s.terms) {
+        if (t.trim().isNotEmpty) return true;
+      }
+    }
+    return false;
+  }
+
+  Widget _emptyState() {
+    return Padding(
+      padding: EdgeInsets.only(top: 48.h, bottom: 32.h),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 320.w),
+          child: Column(
+            children: [
+              Icon(
+                Icons.privacy_tip_outlined,
+                size: 56.sp,
+                color: AppColors.primaryColor.setOpacity(0.35),
+              ),
+              20.h.verticalSpace,
+              AppText(
+                textAlign: TextAlign.center,
+                text: 'Privacy policy is not available yet',
+                style: textStyle16SemiBold.copyWith(
+                  fontSize: 17.sp,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              14.h.verticalSpace,
+              AppText(
+                textAlign: TextAlign.center,
+                text:
+                    'We could not load any privacy policy from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need details on how we handle your data.',
+                style: textStyle14Regular.copyWith(
+                  height: 1.5,
+                  fontSize: 14.sp,
+                  color: AppColors.primaryColor.setOpacity(0.72),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(String title) {
     return Padding(
       padding: EdgeInsetsGeometry.symmetric(vertical: 12.h),
       child: AppText(
@@ -23,7 +115,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 
-  Widget bullet(String text) {
+  Widget _bullet(String text) {
     return Padding(
       padding: EdgeInsets.only(bottom: 3.h),
       child: Row(
@@ -78,101 +170,48 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
-              /// ---------------- Introduction ----------------
-              sectionTitle("Introduction"),
-
-              bullet("Full Name: Ahmed Khan"),
-              bullet("Email Address: Ahmed.khan@temheed.com"),
-              bullet("Phone Number: +34 945 678 1230"),
-              bullet(
-                "Passport & Visa Details for travel documentation and trip processing.",
-              ),
-              bullet(
-                "Flights & Hotel Bookings to show your complete itinerary and confirmations.",
-              ),
-              bullet(
-                "Uploaded Travel Documents (E.g. flight tickets, hotel vouchers, insurance PDFs).",
-              ),
-              bullet(
-                "Optional Preferences (Luggage, meal choice, or special assistance requests).",
-              ),
-
-              /// ---------------- How We Use Your Information ----------------
-              sectionTitle("How We Use Your Information"),
-
-              bullet(
-                "We use your data only to make your trip effortless and safe.",
-              ),
-              bullet("To confirm and manage your bookings."),
-              bullet(
-                "To show your trip details (flights, hotels, itinerary, documents).",
-              ),
-              bullet("To send you important notifications and updates."),
-              bullet("To provide customer support during your journey."),
-              bullet(
-                "To ensure legal compliance for visas and travel regulations.",
-              ),
-
-              /// ---------------- Data Protection ----------------
-              sectionTitle("Data Protection & Security"),
-
-              bullet(
-                "Your safety comes first.  We use encryption and secure servers to protect your documents and data.  Only authorized travel staff can access your information when required.  Your data is automatically removed after your trip is completed.",
-              ),
-
-              /// ---------------- Sharing Information ----------------
-              sectionTitle("Sharing of Information"),
-
-              bullet("We only share necessary information only with:"),
-              bullet(
-                "- Airline and hotel providers (for booking confirmation)",
-              ),
-              bullet("- Visa or insurance providers (for documentation)"),
-              bullet("- Authorized guides or group leaders (for coordination)"),
-              bullet("We never sell your personal data to anyone."),
-
-              /// ---------------- Rights & Choices ----------------
-              sectionTitle("Your Rights & Choices"),
-
-              bullet("You are always in control of your data."),
-              bullet("View or update your personal information anytime."),
-              bullet("Request removal of your data after your trip."),
-              bullet("Choose to opt out of marketing notifications."),
-              bullet("For any privacy-related issues, simply email us."),
-
-              /// ---------------- Contact Us ----------------
-              sectionTitle("Contact Us"),
-
-              bullet(
-                "If you have any questions about your data or this Privacy Policy, reach out to us:",
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 12.w),
-                child: AppText(
-                  text: "Email: info@example.com",
-                  style: textStyle16SemiBold.copyWith(
-                    fontSize: 14.sp,
-                    color: AppColors.blueColor,
+              if (_loading)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 48.h),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 12.w),
-                child: AppText(
-                  text: "Website: www.example.com",
-                  style: textStyle16SemiBold.copyWith(
-                    fontSize: 14.sp,
-                    color: AppColors.blueColor,
+                )
+              else if (_error != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        text: _error!,
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _load,
+                        child: AppText(
+                          text: "Retry",
+                          style: textStyle14Medium.copyWith(
+                            color: AppColors.blueColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-
-              sectionTitle("Thank You for Trusting Us"),
-              bullet(
-                "Your journey is sacred to us — and so is your privacy.  We’re here to ensure that your travel experience remains peaceful, secure, and worry-free.",
-              ),
-
+                )
+              else if (!_hasRenderableContent())
+                _emptyState()
+              else
+                ..._sections.expand((section) {
+                  return [
+                    _sectionTitle(section.title),
+                    ...section.terms.map(_bullet),
+                  ];
+                }),
               40.h.verticalSpace,
             ],
           ),

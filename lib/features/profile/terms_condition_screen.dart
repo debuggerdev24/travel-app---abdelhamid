@@ -5,12 +5,104 @@ import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:trael_app_abdelhamid/model/cms/cms_models.dart';
+import 'package:trael_app_abdelhamid/services/cms_content_service.dart';
 
-class TermsConditionScreen extends StatelessWidget {
+class TermsConditionScreen extends StatefulWidget {
   const TermsConditionScreen({super.key});
 
-  Widget sectionTitle(String title) {
+  @override
+  State<TermsConditionScreen> createState() => _TermsConditionScreenState();
+}
+
+class _TermsConditionScreenState extends State<TermsConditionScreen> {
+  bool _loading = true;
+  String? _error;
+  List<RuleSection> _sections = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final list = await CmsContentService.instance.getRules(
+        'terms',
+        showErrorToast: false,
+      );
+      if (!mounted) return;
+      setState(() {
+        _sections = list;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = userFacingApiError(e);
+        _loading = false;
+      });
+    }
+  }
+
+  bool _hasRenderableContent() {
+    for (final s in _sections) {
+      if (s.title.trim().isNotEmpty) return true;
+      for (final t in s.terms) {
+        if (t.trim().isNotEmpty) return true;
+      }
+    }
+    return false;
+  }
+
+  Widget _emptyState() {
+    return Padding(
+      padding: EdgeInsets.only(top: 48.h, bottom: 32.h),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 320.w),
+          child: Column(
+            children: [
+              Icon(
+                Icons.gavel_outlined,
+                size: 56.sp,
+                color: AppColors.primaryColor.setOpacity(0.35),
+              ),
+              20.h.verticalSpace,
+              AppText(
+                textAlign: TextAlign.center,
+                text: 'Terms & conditions are not available yet',
+                style: textStyle16SemiBold.copyWith(
+                  fontSize: 17.sp,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              14.h.verticalSpace,
+              AppText(
+                textAlign: TextAlign.center,
+                text:
+                    'We could not load any terms from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need a copy of the terms.',
+                style: textStyle14Regular.copyWith(
+                  height: 1.5,
+                  fontSize: 14.sp,
+                  color: AppColors.primaryColor.setOpacity(0.72),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(String title) {
     return Padding(
       padding: EdgeInsetsGeometry.symmetric(vertical: 12.h),
       child: AppText(
@@ -23,7 +115,7 @@ class TermsConditionScreen extends StatelessWidget {
     );
   }
 
-  Widget bullet(String text) {
+  Widget _bullet(String text) {
     return Padding(
       padding: EdgeInsets.only(bottom: 6.h),
       child: Row(
@@ -80,117 +172,48 @@ class TermsConditionScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              sectionTitle("Introduction"),
-              AppText(
-                text:
-                    "Welcome to [Agency Name]. By booking or managing your trip through our platform, you agree to the following terms and conditions. Please read them carefully before proceeding.",
-                style: textStyle14Regular.copyWith(
-                  fontSize: 14.sp,
-                  color: AppColors.textcolor.setOpacity(0.6),
-                ),
-              ),
-
-              // ---------- SECTION: Definitions ----------
-              sectionTitle("Definitions"),
-              bullet("“Agency” refers to [Agency Name], the service provider."),
-              bullet("“Traveller” means the person booking or joining a trip."),
-              bullet(
-                "“Service” includes booking, support, and travel assistance.",
-              ),
-              bullet(
-                "“Platform” refers to the website or mobile application used for booking and management.”",
-              ),
-
-              // ---------- SECTION: Booking Policy ----------
-              sectionTitle("Booking & Payment Policy"),
-              bullet(
-                "Full payment must be completed within 24 hours of booking.",
-              ),
-              bullet("Failure to pay may result in booking cancellation."),
-              bullet(
-                "All payments are non-refundable unless stated otherwise.",
-              ),
-              bullet("Prices may vary depending on availability and season."),
-
-              // ---------- SECTION: Pricing ----------
-              sectionTitle("Pricing & Packages"),
-              AppText(
-                text:
-                    "All prices mentioned are inclusive of applicable taxes unless specified. The final amount will be displayed during checkout.",
-                style: textStyle14Regular.copyWith(
-                  fontSize: 13.sp,
-                  height: 1.4,
-                ),
-              ),
-
-              // ---------- SECTION: Cancellation ----------
-              sectionTitle("Cancellation & Refund Policy"),
-              bullet("Cancellations must be made through the app."),
-              bullet("Refund eligibility depends on package terms."),
-              bullet("Non-refundable bookings cannot be cancelled."),
-              bullet("Refunds may take 5–7 business days to process."),
-
-              // ---------- SECTION: Travel Documents ----------
-              sectionTitle("Travel Documents"),
-              bullet(
-                "Travellers are responsible for ensuring valid passports, visas, and medical documents.  The agency may assist but is not liable for visa rejections or delays.",
-              ),
-
-              // ---------- SECTION: Liability ----------
-              sectionTitle("Liability & Responsibilities"),
-              bullet(
-                "The agency acts as an intermediary and is not liable for delays, loss of property, or injuries during travel.",
-              ),
-              bullet(
-                "Travellers must follow local laws and respect group schedules and tour guides.",
-              ),
-
-              // ---------- SECTION: Insurance ----------
-              sectionTitle("Insurance"),
-              bullet(
-                "All travellers are strongly advised to obtain comprehensive travel insurance covering medical emergencies, cancellations, and personal belongings.",
-              ),
-
-              // ---------- SECTION: Data Privacy ----------
-              sectionTitle("Data Privacy"),
-              bullet(
-                "Personal data collected (such as name, passport number, and contact details) will only be used for booking and visa purposes.",
-              ),
-              bullet(
-                "The agency complies with GDPR and data protection regulations.",
-              ),
-
-              // ---------- SECTION: Changes ----------
-              sectionTitle("Changes & Updates"),
-              bullet(
-                "The agency reserves the right to amend these Terms & Conditions at any time. Updated terms will be published on this page with the latest revision date.",
-              ),
-
-              // ---------- SECTION: Contact ----------
-              sectionTitle("Contact Information"),
-              bullet("For questions about these terms, please contact us at:"),
-
-              Padding(
-                padding: EdgeInsets.only(left: 12.w),
-                child: AppText(
-                  text: "Email: info@example.com",
-                  style: textStyle16SemiBold.copyWith(
-                    fontSize: 14.sp,
-                    color: AppColors.blueColor,
+              if (_loading)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 48.h),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 12.w),
-                child: AppText(
-                  text: "Website: www.example.com",
-                  style: textStyle16SemiBold.copyWith(
-                    fontSize: 14.sp,
-                    color: AppColors.blueColor,
+                )
+              else if (_error != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        text: _error!,
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _load,
+                        child: AppText(
+                          text: "Retry",
+                          style: textStyle14Medium.copyWith(
+                            color: AppColors.blueColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-
+                )
+              else if (!_hasRenderableContent())
+                _emptyState()
+              else
+                ..._sections.expand((section) {
+                  return [
+                    _sectionTitle(section.title),
+                    ...section.terms.map(_bullet),
+                  ];
+                }),
               40.h.verticalSpace,
             ],
           ),

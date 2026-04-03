@@ -24,8 +24,9 @@ class TripModel {
   });
 
   factory TripModel.fromJson(Map<String, dynamic> json) {
+    final rawId = json['_id'];
     return TripModel(
-      id: json['_id'],
+      id: rawId == null ? null : rawId.toString(),
       title: json['tripName'] ?? '',
       location: json['location'] ?? '',
       image: json['bannerImage'] ?? '',
