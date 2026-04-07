@@ -11,17 +11,63 @@ import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-class ChatDetailScreen extends StatelessWidget {
+class ChatDetailScreen extends StatefulWidget {
+  final String chatId;
   final String name;
   final String image;
+  final String? avatarUrl;
   final bool isGroup;
 
   const ChatDetailScreen({
     super.key,
+    required this.chatId,
     required this.name,
     required this.image,
+    this.avatarUrl,
     this.isGroup = false,
   });
+
+  @override
+  State<ChatDetailScreen> createState() => _ChatDetailScreenState();
+}
+
+class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  final TextEditingController _textController = TextEditingController();
+  ChatProvider? _chat;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _chat ??= context.read<ChatProvider>();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final p = context.read<ChatProvider>();
+      await p.enterChatRoom(
+        chatId: widget.chatId,
+        title: widget.name,
+        avatarUrl: widget.avatarUrl,
+        isGroup: widget.isGroup,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _chat?.leaveChatRoom();
+    super.dispose();
+  }
+
+  void _sendText() {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+    context.read<ChatProvider>().sendSocketText(text);
+    _textController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +93,7 @@ class ChatDetailScreen extends StatelessWidget {
                     Expanded(
                       child: AppText(
                         textAlign: TextAlign.center,
-                        text: name,
+                        text: widget.name,
                         overflow: TextOverflow.ellipsis,
                         style: textStyle32Bold.copyWith(
                           fontSize: 26.sp,
@@ -55,19 +101,22 @@ class ChatDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (!isGroup) 35.w.horizontalSpace,
+                    if (!widget.isGroup) 35.w.horizontalSpace,
 
                     SizedBox(width: 10.w),
                     GestureDetector(
                       onTap: () {
-                        if (isGroup) {
+                        if (widget.isGroup) {
                           context.pushNamed(
                             UserAppRoutes.groupInfoScreen.name,
-                            extra: {'name': name, 'image': image},
+                            extra: {
+                              'name': widget.name,
+                              'image': widget.image,
+                            },
                           );
                         } else {}
                       },
-                      child: isGroup
+                      child: widget.isGroup
                           ? SvgIcon(AppAssets.info, size: 24.w)
                           : SvgIcon(
                               AppAssets.call,
@@ -75,8 +124,8 @@ class ChatDetailScreen extends StatelessWidget {
                               color: AppColors.greyColor,
                             ),
                     ),
-                    SizedBox(width: isGroup ? 18.h : 10.w),
-                    if (!isGroup)
+                    SizedBox(width: widget.isGroup ? 18.h : 10.w),
+                    if (!widget.isGroup)
                       GestureDetector(
                         onTap: () async {
                           final result = await context.pushNamed(
@@ -84,13 +133,13 @@ class ChatDetailScreen extends StatelessWidget {
                           );
 
                           if (result != null && result is Map) {
-                            // ignore: use_build_context_synchronously
-                            Provider.of<ChatProvider>(
+                            if (!context.mounted) return;
+                            await Provider.of<ChatProvider>(
                               context,
                               listen: false,
-                            ).addLocationMessage(
-                              lat: result["lat"],
-                              lng: result["lng"],
+                            ).sharePinnedLocation(
+                              lat: (result['lat'] as num).toDouble(),
+                              lng: (result['lng'] as num).toDouble(),
                             );
                           }
                         },
@@ -107,16 +156,18 @@ class ChatDetailScreen extends StatelessWidget {
                 ),
 
                 Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 18.h,
-                      horizontal: 27.w,
-                    ),
-                    itemCount: provider.messages.length,
-                    itemBuilder: (context, index) {
-                      return _buildMessageItem(provider.messages[index]);
-                    },
-                  ),
+                  child: provider.loadingMessages
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 18.h,
+                            horizontal: 27.w,
+                          ),
+                          itemCount: provider.messages.length,
+                          itemBuilder: (context, index) {
+                            return _buildMessageItem(provider.messages[index]);
+                          },
+                        ),
                 ),
 
                 _buildBottomInput(provider),
@@ -138,7 +189,6 @@ class ChatDetailScreen extends StatelessWidget {
   Widget _buildMessageItem(Map<String, dynamic> message) {
     final isMe = message['isMe'] as bool;
 
-    /// NEW: If message type is LOCATION
     if (message['type'] == 'location') {
       return Padding(
         padding: EdgeInsets.only(bottom: 20.h),
@@ -150,10 +200,7 @@ class ChatDetailScreen extends StatelessWidget {
             if (!isMe)
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 22.r,
-                    backgroundImage: AssetImage(AppAssets.profilePhoto),
-                  ),
+                  _bubbleAvatar(isMe),
                   10.w.horizontalSpace,
                 ],
               ),
@@ -168,10 +215,7 @@ class ChatDetailScreen extends StatelessWidget {
               Row(
                 children: [
                   10.w.horizontalSpace,
-                  CircleAvatar(
-                    radius: 22.r,
-                    backgroundImage: AssetImage(AppAssets.profilePhoto),
-                  ),
+                  _bubbleAvatar(isMe),
                 ],
               ),
           ],
@@ -179,7 +223,6 @@ class ChatDetailScreen extends StatelessWidget {
       );
     }
 
-    /// ELSE → Normal TEXT / AUDIO message
     final isAudio = message['type'] == 'audio';
 
     return Padding(
@@ -192,10 +235,7 @@ class ChatDetailScreen extends StatelessWidget {
           if (!isMe)
             Row(
               children: [
-                CircleAvatar(
-                  radius: 22.r,
-                  backgroundImage: AssetImage(AppAssets.profilePhoto),
-                ),
+                _bubbleAvatar(isMe),
                 10.w.horizontalSpace,
               ],
             ),
@@ -228,14 +268,34 @@ class ChatDetailScreen extends StatelessWidget {
             Row(
               children: [
                 10.w.horizontalSpace,
-                CircleAvatar(
-                  radius: 22.r,
-                  backgroundImage: AssetImage(AppAssets.profilePhoto),
-                ),
+                _bubbleAvatar(isMe),
               ],
             ),
         ],
       ),
+    );
+  }
+
+  Widget _bubbleAvatar(bool isMe) {
+    final url = widget.avatarUrl;
+    if (url != null && url.isNotEmpty && isMe) {
+      return CircleAvatar(
+        radius: 22.r,
+        backgroundImage: NetworkImage(url),
+        backgroundColor: Colors.grey,
+      );
+    }
+    if (!isMe) {
+      return CircleAvatar(
+        radius: 22.r,
+        backgroundImage: AssetImage(AppAssets.profilePhoto),
+        backgroundColor: Colors.grey,
+      );
+    }
+    return CircleAvatar(
+      radius: 22.r,
+      backgroundImage: AssetImage(widget.image),
+      backgroundColor: Colors.grey,
     );
   }
 
@@ -247,7 +307,7 @@ class ChatDetailScreen extends StatelessWidget {
           Align(
             alignment: Alignment.topLeft,
             child: AppText(
-              text: msg['sender'],
+              text: msg['sender']?.toString() ?? '',
               style: textStyle16SemiBold.copyWith(
                 color: AppColors.primaryColor,
               ),
@@ -255,14 +315,14 @@ class ChatDetailScreen extends StatelessWidget {
           ),
         if (!isMe) 4.h.verticalSpace,
         AppText(
-          text: msg['message'],
+          text: msg['message']?.toString() ?? '',
           style: textStyle14Regular.copyWith(
             color: AppColors.primaryColor.setOpacity(0.8),
           ),
         ),
         4.h.verticalSpace,
         AppText(
-          text: msg['time'],
+          text: msg['time']?.toString() ?? '',
           style: textStyle14Regular.copyWith(
             color: AppColors.primaryColor.setOpacity(0.6),
           ),
@@ -293,7 +353,7 @@ class ChatDetailScreen extends StatelessWidget {
           ),
         ),
         AppText(
-          text: message['duration'],
+          text: message['duration']?.toString() ?? '00:00',
           style: textStyle12semiBold.copyWith(color: Colors.black),
         ),
       ],
@@ -348,6 +408,7 @@ class ChatDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25.r),
               ),
               child: TextField(
+                controller: _textController,
                 decoration: InputDecoration(
                   hintText: 'Type Here...',
                   hintStyle: textStyle14Regular.copyWith(
@@ -355,8 +416,15 @@ class ChatDetailScreen extends StatelessWidget {
                   ),
                   border: InputBorder.none,
                 ),
+                textInputAction: TextInputAction.send,
+                onSubmitted: (_) => _sendText(),
               ),
             ),
+          ),
+          10.w.horizontalSpace,
+          GestureDetector(
+            onTap: _sendText,
+            child: SvgIcon(AppAssets.send, size: 28.w, color: AppColors.blueColor),
           ),
           10.w.horizontalSpace,
           GestureDetector(

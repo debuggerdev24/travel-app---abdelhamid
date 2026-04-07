@@ -1,4 +1,6 @@
 class LoginResponseModel {
+  /// Mongo user id (backend field `_id`).
+  final String id;
   final String email;
   final String phoneNumber;
   final String travellerCode;
@@ -6,6 +8,7 @@ class LoginResponseModel {
   final String refreshToken;
 
   LoginResponseModel({
+    required this.id,
     required this.email,
     required this.phoneNumber,
     required this.travellerCode,
@@ -15,11 +18,12 @@ class LoginResponseModel {
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     return LoginResponseModel(
-      email: json['email'],
-      phoneNumber: json['phoneNumber'],
-      travellerCode: json['travellerCode'],
-      accessToken: json['accessToken'],
-      refreshToken: json['refreshToken'],
+      id: json['_id']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phoneNumber: json['phoneNumber']?.toString() ?? '',
+      travellerCode: json['travellerCode']?.toString() ?? '',
+      accessToken: json['accessToken']?.toString() ?? '',
+      refreshToken: json['refreshToken']?.toString() ?? '',
     );
   }
 }

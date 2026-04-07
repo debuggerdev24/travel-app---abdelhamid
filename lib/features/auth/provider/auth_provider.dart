@@ -55,6 +55,9 @@ class AuthProvider extends ChangeNotifier {
       );
       PrefHelper.saveAccessToken(response.accessToken);
       PrefHelper.saveRefreshToken(response.refreshToken);
+      if (response.id.isNotEmpty) {
+        await PrefHelper.saveUserId(response.id);
+      }
       _setLoading(false);
       return true;
     } catch (e) {

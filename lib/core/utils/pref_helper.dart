@@ -4,6 +4,7 @@ class PrefHelper {
   static late SharedPreferences _prefs;
   static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
+  static const String _userIdKey = 'user_id';
 
   /// Initialize the shared preferences instance
   static Future<void> init() async {
@@ -30,9 +31,18 @@ class PrefHelper {
     return _prefs.getString(_refreshTokenKey);
   }
 
+  static Future<bool> saveUserId(String id) async {
+    return await _prefs.setString(_userIdKey, id);
+  }
+
+  static String? getUserId() {
+    return _prefs.getString(_userIdKey);
+  }
+
   /// Clears both access and refresh tokens (useful for logout)
   static Future<void> clearTokens() async {
     await _prefs.remove(_accessTokenKey);
+    await _prefs.remove(_userIdKey);
   }
 
   /// Checks if the user is logged in by checking for an access token

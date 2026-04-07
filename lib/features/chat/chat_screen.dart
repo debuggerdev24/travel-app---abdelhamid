@@ -11,9 +11,21 @@ import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 
-
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChatProvider>().loadConversations();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +42,60 @@ class ChatScreen extends StatelessWidget {
             Expanded(
               child: Consumer<ChatProvider>(
                 builder: (context, provider, child) {
-                  return ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    itemCount: provider.chatList.length,
-                    separatorBuilder: (context, index) => 20.h.verticalSpace,
-                    itemBuilder: (context, index) {
-                      return _buildChatItem(context, provider.chatList[index]);
-                    },
+                  if (provider.loadingConversations &&
+                      provider.chatList.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (provider.conversationsError != null &&
+                      provider.chatList.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: AppText(
+                          textAlign: TextAlign.center,
+                          text: provider.conversationsError!,
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor.setOpacity(0.6),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  if (!provider.loadingConversations &&
+                      provider.chatList.isEmpty) {
+                    return RefreshIndicator(
+                      onRefresh: () => provider.loadConversations(),
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(height: 120.h),
+                          Center(
+                            child: AppText(
+                              textAlign: TextAlign.center,
+                              text: 'No conversations yet.',
+                              style: textStyle14Regular.copyWith(
+                                color: AppColors.primaryColor.setOpacity(0.5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () => provider.loadConversations(),
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      itemCount: provider.chatList.length,
+                      separatorBuilder: (context, index) => 20.h.verticalSpace,
+                      itemBuilder: (context, index) {
+                        return _buildChatItem(
+                          context,
+                          provider.chatList[index],
+                        );
+                      },
+                    ),
                   );
                 },
               ),
@@ -142,19 +201,17 @@ class ChatScreen extends StatelessWidget {
         context.pushNamed(
           UserAppRoutes.chatDetailScreen.name,
           extra: {
+            'chatId': data.chatId,
             'name': data.name,
             'image': data.image,
+            'avatarUrl': data.avatarUrl,
             'isGroup': data.isGroup,
           },
         );
       },
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24.r,
-            backgroundImage: AssetImage(data.image),
-            backgroundColor: Colors.grey,
-          ),
+          _avatar(data),
           15.w.horizontalSpace,
           Expanded(
             child: Column(
@@ -213,6 +270,22 @@ class ChatScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _avatar(ChatModel data) {
+    final url = data.avatarUrl;
+    if (url != null && url.isNotEmpty) {
+      return CircleAvatar(
+        radius: 24.r,
+        backgroundColor: Colors.grey.shade300,
+        backgroundImage: NetworkImage(url),
+      );
+    }
+    return CircleAvatar(
+      radius: 24.r,
+      backgroundImage: AssetImage(data.image),
+      backgroundColor: Colors.grey,
     );
   }
 }

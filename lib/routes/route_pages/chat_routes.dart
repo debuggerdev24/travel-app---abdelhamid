@@ -18,8 +18,10 @@ List<RouteBase> get chatRoutes => [
     builder: (context, state) {
       final data = state.extra as Map<String, dynamic>;
       return ChatDetailScreen(
-        name: data['name'],
-        image: data['image'],
+        chatId: data['chatId'] as String,
+        name: data['name'] as String,
+        image: data['image'] as String,
+        avatarUrl: data['avatarUrl'] as String?,
         isGroup: data['isGroup'] ?? false,
       );
     },
