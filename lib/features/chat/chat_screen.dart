@@ -197,17 +197,27 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildChatItem(BuildContext context, ChatModel data) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
-        context.pushNamed(
-          UserAppRoutes.chatDetailScreen.name,
-          extra: {
-            'chatId': data.chatId,
-            'name': data.name,
-            'image': data.image,
-            'avatarUrl': data.avatarUrl,
-            'isGroup': data.isGroup,
-          },
-        );
+        // Defer push to after this frame so the scroll view / RefreshIndicator
+        // gesture arena has settled. In release, an immediate push can appear
+        // "stuck" until another gesture (e.g. pull-to-refresh) triggers a frame.
+        final chatProvider = context.read<ChatProvider>();
+        final extra = <String, Object?>{
+          'chatId': data.chatId,
+          'name': data.name,
+          'image': data.image,
+          'avatarUrl': data.avatarUrl,
+          'isGroup': data.isGroup,
+        };
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          chatProvider.primeChatOpen(data.chatId);
+          context.pushNamed(
+            UserAppRoutes.chatDetailScreen.name,
+            extra: extra,
+          );
+        });
       },
       child: Row(
         children: [
@@ -250,16 +260,21 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     if (data.unread > 0)
                       Container(
-                        padding: EdgeInsets.all(5.w),
+                        constraints: BoxConstraints(minWidth: 22.w, minHeight: 22.w),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: data.unread > 9 ? 7.w : 6.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.blueColor,
-                          shape: BoxShape.circle,
+                          borderRadius: BorderRadius.circular(11.r),
                         ),
+                        alignment: Alignment.center,
                         child: AppText(
-                          text: data.unread.toString(),
+                          text: data.unread > 99 ? '99+' : '${data.unread}',
                           style: textStyle18Bold.copyWith(
                             color: Colors.white,
-                            fontSize: 12.sp,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ),

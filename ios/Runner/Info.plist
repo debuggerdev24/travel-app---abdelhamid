@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to take photos to send in chat.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to attach images in chat.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app may save images you share to your photo library.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs your location to share your current or live position in chat.</string>
 </dict>
 </plist>

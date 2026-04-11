@@ -15,6 +15,7 @@ import 'package:trael_app_abdelhamid/core/widgets/document_card.dart';
 import 'package:trael_app_abdelhamid/core/widgets/itinerarystep_card.dart';
 import 'package:trael_app_abdelhamid/core/utils/document_download_helper.dart';
 import 'package:trael_app_abdelhamid/core/utils/trip_detail_refresh.dart';
+import 'package:trael_app_abdelhamid/features/trip/widgets/trip_payment_section.dart';
 import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
 import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
@@ -46,7 +47,10 @@ class _TripScreenState extends State<TripScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await context.read<TripProvider>().ensureSelectedTripFromUpcoming();
+      final tripProvider = context.read<TripProvider>();
+      await tripProvider.loadEnrolledTripForTripsTab();
+      if (!mounted) return;
+      await tripProvider.ensureSelectedTripFromUpcoming();
     });
   }
 
@@ -59,7 +63,7 @@ class _TripScreenState extends State<TripScreen> {
     _lastRefreshedTripId = tripId;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      final current = context.read<TripProvider>().selectedTrip?.id;
+      final current = context.read<TripProvider>().tripForTripsTab?.id;
       if (current != tripId) return;
       await refreshAllTripScopedData(context, tripId);
     });
@@ -68,7 +72,7 @@ class _TripScreenState extends State<TripScreen> {
   @override
   Widget build(BuildContext context) {
     final tripProvider = context.watch<TripProvider>();
-    final trip = tripProvider.selectedTrip;
+    final trip = tripProvider.tripForTripsTab;
 
     _scheduleRefreshIfTripChanged(trip?.id);
 
@@ -212,21 +216,26 @@ class _TripScreenState extends State<TripScreen> {
         });
 
         // Refetch APIs whenever the user selects these tabs (fresh data each visit).
-        if (index == 1) {
+        if (index == 0) {
           final tripProvider = context.read<TripProvider>();
-          final tripId = tripProvider.selectedTrip?.id;
+          final bookingId = tripProvider.enrolledBookingId;
+          tripProvider.loadEnrolledTripForTripsTab(bookingId: bookingId);
+          tripProvider.notifyPaymentHistoryRefresh();
+        } else if (index == 1) {
+          final tripProvider = context.read<TripProvider>();
+          final tripId = tripProvider.tripForTripsTab?.id;
           if (tripId != null && tripId.isNotEmpty) {
             context.read<FlightProvider>().fetchMyFlights(tripId, force: true);
           }
         } else if (index == 2) {
           final tripProvider = context.read<TripProvider>();
-          final tripId = tripProvider.selectedTrip?.id;
+          final tripId = tripProvider.tripForTripsTab?.id;
           if (tripId != null && tripId.isNotEmpty) {
             tripProvider.fetchHotelVoucherDetails(tripId, force: true);
           }
         } else if (index == 3) {
           final tripProvider = context.read<TripProvider>();
-          final tripId = tripProvider.selectedTrip?.id;
+          final tripId = tripProvider.tripForTripsTab?.id;
           if (tripId != null && tripId.isNotEmpty) {
             tripProvider.fetchTodayItinerary(tripId, force: true);
           }
@@ -234,7 +243,7 @@ class _TripScreenState extends State<TripScreen> {
           context.read<MyTripProvider>().refreshEssentialsTab();
         } else if (index == 5) {
           final tripProvider = context.read<TripProvider>();
-          final tripId = tripProvider.selectedTrip?.id;
+          final tripId = tripProvider.tripForTripsTab?.id;
           if (tripId != null && tripId.isNotEmpty) {
             tripProvider.fetchHotelVoucherDetails(tripId, force: true);
             context.read<MyTripProvider>().refreshDocumentsTab(tripId);
@@ -264,137 +273,17 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   Widget _paymentSection(MyTripProvider provider) {
-    final tripProvider = context.read<TripProvider>();
-    final payment = tripProvider.paymentDetails;
-    final isPaymentLoading = tripProvider.isPaymentLoading;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primaryColor.setOpacity(0.2),
-                  blurRadius: 1,
-                  offset: Offset(0, 1),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
-            ),
-            child: isPaymentLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
-                    ),
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText(
-                        text: payment?.packageName ?? '-',
-                        style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor.setOpacity(0.8),
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                      12.h.verticalSpace,
-                      _priceRow(
-                        "Total",
-                        "€${payment?.totalAmount.toStringAsFixed(0) ?? '-'}",
-                      ),
-                      4.h.verticalSpace,
-                      _priceRow(
-                        "Paid",
-                        "€${payment?.paidAmount.toStringAsFixed(0) ?? '-'}",
-                      ),
-                      4.h.verticalSpace,
-                      _priceRow(
-                        "Pending",
-                        "€${payment?.pendingAmount.toStringAsFixed(0) ?? '-'}",
-                      ),
-                    ],
-                  ),
-            // child: Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     // AppText(
-            //     //   text: "Premium Package",
-            //     //   style: textStyle14Regular.copyWith(
-            //     //     color: AppColors.primaryColor.setOpacity(0.8),
-            //     //     fontSize: 14.sp,
-            //     //   ),
-            //     // ),
-            //     // 12.h.verticalSpace,
-            //     // _priceRow("Total", "€10,000"),
-            //     // 4.h.verticalSpace,
-            //     // _priceRow("Paid", "€5,000"),
-            //     // 4.h.verticalSpace,
-            //     // _priceRow("Pending", "€5,000"),
-            //   ],
-            // ),
-          ),
-        ),
-
-        // Past Payments
-        // Padding(
-        //   padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 10.h),
-        //   child: Row(
-        //     children: [
-        //       AppText(text: "Past Payment", style: textStyle16SemiBold),
-        //       Spacer(),
-        //       GestureDetector(
-        //         onTap: () =>
-        //             context.pushNamed(UserAppRoutes.paymentHistoryScreen.name),
-        //         child: AppText(
-        //           text: "View All",
-        //           style: textStyle16SemiBold.copyWith(
-        //             color: AppColors.blueColor,
-        //             fontSize: 14.sp,
-        //             decoration: TextDecoration.underline,
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-        // PastPaymentItem(
-        //   id: "#TRX001",
-        //   amount: "250,000",
-        //   date: "02 Jan 2024",
-        //   onViewReceiptTap: () {},
-        // ),
-        // PastPaymentItem(
-        //   id: "#TRX002",
-        //   amount: "250,000",
-        //   date: "22 Dec 2024",
-        //   onViewReceiptTap: () {},
-        // ),
-        // PastPaymentItem(
-        //   id: "#TRX003",
-        //   amount: "250,000",
-        //   date: "31 May 2023",
-        //   onViewReceiptTap: () {},
-        // ),
-      ],
-    );
+    return const TripPaymentSection();
   }
 
   Widget _flightsSection() {
     final flightProvider = context.read<FlightProvider>();
-    // final tripId = context.read<TripProvider>().selectedTrip?.id;
-    // final tripId = context.read<TripBookingProvider>().tripDetails?.id;
-    final tripId = context.read<TripProvider>().selectedTrip?.id;
+    final tripId = context.read<TripProvider>().tripForTripsTab?.id;
     debugPrint(
-      '🔵 [TripScreen] selectedTrip: ${context.read<TripProvider>().selectedTrip?.id}',
+      '🔵 [TripScreen] tripForTripsTab: ${context.read<TripProvider>().tripForTripsTab?.id}',
     );
     debugPrint(
-      '🔵 [TripScreen] selectedTrip title: ${context.read<TripProvider>().selectedTrip?.title}',
+      '🔵 [TripScreen] tripForTripsTab title: ${context.read<TripProvider>().tripForTripsTab?.title}',
     );
     // First visit / edge cases: load once if still empty (tab tap uses force refresh).
     if (flightProvider.flightDetails == null && !flightProvider.isLoading) {
@@ -472,7 +361,7 @@ class _TripScreenState extends State<TripScreen> {
 
   Widget _hotelsSection() {
     final tripProvider = context.watch<TripProvider>();
-    final tripId = tripProvider.selectedTrip?.id;
+    final tripId = tripProvider.tripForTripsTab?.id;
     final isLoading = tripProvider.isHotelVoucherLoading;
     final error = tripProvider.hotelVoucherError;
     final vouchers = tripProvider.hotelVouchers;
@@ -592,7 +481,7 @@ class _TripScreenState extends State<TripScreen> {
 
   Widget _itinerarySection() {
     final tripProvider = context.watch<TripProvider>();
-    final tripId = tripProvider.selectedTrip?.id;
+    final tripId = tripProvider.tripForTripsTab?.id;
     final isLoading = tripProvider.isItineraryLoading;
     final error = tripProvider.itineraryError;
     final today = tripProvider.todayItinerary;
@@ -1101,7 +990,7 @@ class _TripScreenState extends State<TripScreen> {
   Widget _documentsSection() {
     return Consumer2<MyTripProvider, TripProvider>(
       builder: (context, myTrip, trip, _) {
-        final tripId = trip.selectedTrip?.id;
+        final tripId = trip.tripForTripsTab?.id;
         final docs = myTrip.uploadedDocs;
         final bundle = myTrip.tripDocumentsBundle;
         final loading = myTrip.isTripDocumentsLoading;
@@ -1500,54 +1389,6 @@ class _TripScreenState extends State<TripScreen> {
                     : {'tripId': tripId},
               );
             },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _priceRow(String title, String value) {
-    Color textColor;
-
-    if (title == "Paid") {
-      textColor = AppColors.primaryColor.setOpacity(0.6);
-    } else if (title == "Pending") {
-      textColor = AppColors.primaryColor.setOpacity(0.6);
-    } else {
-      textColor = AppColors.primaryColor;
-    }
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
-      child: Row(
-        children: [
-          Expanded(
-            child: AppText(
-              text: title,
-              style: textStyle14Medium.copyWith(
-                color: textColor,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Spacer(),
-          AppText(
-            text: ":",
-            style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.6),
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          24.w.horizontalSpace,
-          AppText(
-            text: value,
-            style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-            ),
           ),
         ],
       ),

@@ -66,7 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         UserAppRoutes.prayerTimesScreen.name,
                       );
                       if (!context.mounted) return;
-                      await context.read<PrayerTimesProvider>().fetchPrayerTimes();
+                      await context
+                          .read<PrayerTimesProvider>()
+                          .fetchPrayerTimes();
                     },
                     child: Container(
                       height: 52.h,

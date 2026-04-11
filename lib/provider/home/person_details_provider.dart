@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trael_app_abdelhamid/model/home/family_details_model.dart';
 import 'package:trael_app_abdelhamid/model/person_details_model.dart';
+import 'package:trael_app_abdelhamid/model/profile/user_profile_model.dart';
 import 'package:trael_app_abdelhamid/services/trips_service.dart';
 
 class PersonDetailsProvider extends ChangeNotifier {
@@ -35,6 +36,52 @@ class PersonDetailsProvider extends ChangeNotifier {
 
   bool _isFamilyLoading = false;
   bool get isFamilyLoading => _isFamilyLoading;
+
+  /// Prefill main booker fields from user profile (Get User Details API).
+  /// Only fills fields that are currently empty, so it won't overwrite typing.
+  void prefillFromUserProfile(UserProfile p) {
+    if (firstNameController.text.trim().isEmpty && p.firstName.trim().isNotEmpty) {
+      firstNameController.text = p.firstName.trim();
+    }
+    if (surnameController.text.trim().isEmpty && p.surName.trim().isNotEmpty) {
+      surnameController.text = p.surName.trim();
+    }
+    if (dateOfBirthController.text.trim().isEmpty &&
+        p.dateOfBirth.trim().isNotEmpty) {
+      dateOfBirthController.text = p.dateOfBirth.trim();
+    }
+    if (nationalityController.text.trim().isEmpty &&
+        p.nationality.trim().isNotEmpty) {
+      nationalityController.text = p.nationality.trim();
+    }
+    if (phoneNumberController.text.trim().isEmpty &&
+        p.phoneNumber.trim().isNotEmpty) {
+      phoneNumberController.text = p.phoneNumber.trim();
+    }
+    if (emailController.text.trim().isEmpty && p.email.trim().isNotEmpty) {
+      emailController.text = p.email.trim();
+    }
+    if (placeOfBirthController.text.trim().isEmpty &&
+        p.placeOfBirth.trim().isNotEmpty) {
+      placeOfBirthController.text = p.placeOfBirth.trim();
+    }
+    if (addressController.text.trim().isEmpty && p.address.trim().isNotEmpty) {
+      addressController.text = p.address.trim();
+    }
+    if (houseNumberController.text.trim().isEmpty &&
+        p.houseNumber.trim().isNotEmpty) {
+      houseNumberController.text = p.houseNumber.trim();
+    }
+    if (postalCodeController.text.trim().isEmpty &&
+        p.postalCode.trim().isNotEmpty) {
+      postalCodeController.text = p.postalCode.trim();
+    }
+    if (placeOfResidenceController.text.trim().isEmpty &&
+        p.placeOfResidence.trim().isNotEmpty) {
+      placeOfResidenceController.text = p.placeOfResidence.trim();
+    }
+    notifyListeners();
+  }
 
   // ─── Save Personal Details ───────────────────────────────────────────────────
   Future<bool> savePersonDetails() async {

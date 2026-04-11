@@ -32,7 +32,7 @@ class ChatSocketService {
     disconnect();
 
     final socket = io.io(
-      AppConstants.imageBaseUrl,
+      AppConstants.chatSocketBaseUrl,
       io.OptionBuilder()
           .setTransports(['websocket'])
           .enableReconnection()

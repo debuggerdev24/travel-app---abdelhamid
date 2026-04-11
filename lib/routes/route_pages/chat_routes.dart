@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
@@ -17,8 +18,10 @@ List<RouteBase> get chatRoutes => [
     name: UserAppRoutes.chatDetailScreen.name,
     builder: (context, state) {
       final data = state.extra as Map<String, dynamic>;
+      final chatId = data['chatId'] as String;
       return ChatDetailScreen(
-        chatId: data['chatId'] as String,
+        key: ValueKey<String>('chat_detail_$chatId'),
+        chatId: chatId,
         name: data['name'] as String,
         image: data['image'] as String,
         avatarUrl: data['avatarUrl'] as String?,

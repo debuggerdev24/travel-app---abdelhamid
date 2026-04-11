@@ -25,7 +25,10 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PrayerTimesProvider()),
         ChangeNotifierProvider(create: (_) => MyTripProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
-        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        // Load profile once at app startup (Bearer token must exist in PrefHelper).
+        ChangeNotifierProvider(
+          create: (_) => ProfileProvider()..loadProfile(force: true),
+        ),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => TripBookingProvider()),
         ChangeNotifierProvider(create: (_) => FlightProvider()),

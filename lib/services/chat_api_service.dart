@@ -100,4 +100,87 @@ class ChatApiService {
     if (data is Map) return Map<String, dynamic>.from(data);
     throw ApiException(statusCode: 0, message: 'Invalid location response.');
   }
+
+  /// `POST /api/chat/location/live/start` — WhatsApp-style live location.
+  Future<Map<String, dynamic>> startLiveLocation({
+    required String chatId,
+    required String userId,
+    required double latitude,
+    required double longitude,
+    int durationMinutes = 60,
+    String? address,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.post(
+      '$_root/location/live/start',
+      body: {
+        'chatId': chatId,
+        'senderId': userId,
+        'latitude': latitude,
+        'longitude': longitude,
+        'durationMinutes': durationMinutes,
+        if (address != null && address.isNotEmpty) 'address': address,
+      },
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+    final data = response['data'];
+    if (data is Map) return Map<String, dynamic>.from(data);
+    throw ApiException(statusCode: 0, message: 'Invalid live location response.');
+  }
+
+  /// `PATCH /api/chat/message/:messageId` — text only, sender only.
+  Future<Map<String, dynamic>> editMessage({
+    required String messageId,
+    required String userId,
+    required String text,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.patch(
+      '$_root/message/$messageId',
+      body: {'userId': userId, 'text': text},
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+    final data = response['data'];
+    if (data is Map) return Map<String, dynamic>.from(data);
+    throw ApiException(statusCode: 0, message: 'Invalid edit response.');
+  }
+
+  /// `DELETE /api/chat/message/:messageId` body: userId — sender only.
+  Future<void> deleteMessage({
+    required String messageId,
+    required String userId,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.delete(
+      '$_root/message/$messageId',
+      body: {'userId': userId},
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+  }
+
+  /// `POST /api/chat/upload` multipart — field [file]; form fields chatId, senderId.
+  Future<Map<String, dynamic>> uploadChatFile({
+    required String chatId,
+    required String senderId,
+    required String filePath,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.postMultipart(
+      '$_root/upload',
+      fields: {
+        'chatId': chatId,
+        'senderId': senderId,
+      },
+      fileFieldName: 'file',
+      filePath: filePath,
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+    final data = response['data'];
+    if (data is Map) return Map<String, dynamic>.from(data);
+    throw ApiException(statusCode: 0, message: 'Invalid upload response.');
+  }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
+import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:trael_app_abdelhamid/provider/home/prayer_times_provider.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
@@ -50,6 +52,17 @@ class _TabScreenState extends State<TabScreen> {
   void initState() {
     super.initState();
     currentIndex = widget.initialIndex;
+    if (currentIndex == 1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        context.read<TripProvider>().loadEnrolledTripForTripsTab();
+      });
+    } else if (currentIndex == 2) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        context.read<ChatProvider>().loadConversations(silent: true);
+      });
+    }
   }
 
   @override
@@ -75,6 +88,16 @@ class _TabScreenState extends State<TabScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
             context.read<PrayerTimesProvider>().fetchPrayerTimes();
+          });
+        } else if (index == 1) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            context.read<TripProvider>().loadEnrolledTripForTripsTab();
+          });
+        } else if (index == 2) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            context.read<ChatProvider>().loadConversations(silent: true);
           });
         }
       },

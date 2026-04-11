@@ -6,22 +6,38 @@ import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+
+/// Passed as [GoRouterState.extra] when opening [PaymentSuccessfullScreen].
+class PaymentSuccessRouteExtra {
+  const PaymentSuccessRouteExtra({required this.amountEur});
+
+  final double amountEur;
+}
 
 class PaymentSuccessfullScreen extends StatelessWidget {
-  const PaymentSuccessfullScreen({super.key});
+  const PaymentSuccessfullScreen({super.key, this.amountEur});
+
+  /// Amount received (e.g. from Stripe / booking). Null → generic copy.
+  final double? amountEur;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.whiteColor,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 27.w),
-            child: Column(
-              children: [
+    final amountLine = amountEur != null
+        ? "We've received your payment of €${amountEur!.toStringAsFixed(2)}"
+        : "We've received your payment.";
+
+    return PopScope(
+      canPop: true,
+      child: Scaffold(
+        backgroundColor: AppColors.whiteColor,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsetsGeometry.symmetric(horizontal: 27.w),
+              child: Column(
+                children: [
                 56.h.verticalSpace,
                 AppText(
                   textAlign: TextAlign.center,
@@ -35,7 +51,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                 Image.asset(AppAssets.paymentSuccessful),
                 52.h.verticalSpace,
                 AppText(
-                  text: "We’ve received your payment of €5,000",
+                  text: amountLine,
                   style: textStyle14Regular.copyWith(
                     color: AppColors.primaryColor,
                     fontSize: 18.sp,
@@ -56,11 +72,20 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                 AppButton(
                   title: "Back to My Trip",
                   onTap: () {
-                    context.pushNamed(UserAppRoutes.paymentFailedScreen.name);
+                    // Pop first so callers awaiting [pushNamed] to this screen complete,
+                    // then replace stack to the Trips tab.
+                    if (context.canPop()) {
+                      context.pop(true);
+                    }
+                    context.goNamed(
+                      UserAppRoutes.tabScreen.name,
+                      queryParameters: const {'tab': '1'},
+                    );
                   },
                 ),
                 42.h.verticalSpace,
-              ],
+                ],
+              ),
             ),
           ),
         ),

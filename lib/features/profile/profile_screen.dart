@@ -4,9 +4,13 @@ import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
+import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:trael_app_abdelhamid/core/widgets/shimmer_box.dart';
+import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -40,28 +44,49 @@ class ProfileScreen extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 27.w),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundImage: AssetImage(AppAssets.profilePhoto),
-                    ),
-                    10.h.verticalSpace,
-                    AppText(
-                      text: "Noha Khan",
-                      style: textStyle16SemiBold.copyWith(
-                        fontSize: 18.sp,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                    4.h.verticalSpace,
-                    AppText(
-                      text: "Nohakhan@gmail.com",
-                      style: textStyle14Regular.copyWith(
-                        fontSize: 14.sp,
-                        color: AppColors.primaryColor.setOpacity(0.8),
-                      ),
-                    ),
+                child: Consumer<ProfileProvider>(
+                  builder: (context, provider, _) {
+                    final p = provider.profile;
+                    final name =
+                        p?.fullName.isNotEmpty == true ? p!.fullName : '—';
+                    final email = p?.email.isNotEmpty == true ? p!.email : '—';
+
+                    ImageProvider avatarImage =
+                        const AssetImage(AppAssets.profilePhoto);
+                    final raw = p?.profileImageRaw.trim();
+                    if (raw != null && raw.isNotEmpty) {
+                      avatarImage = NetworkImage(serverMediaUrl(raw) ?? raw);
+                    }
+
+                    return Column(
+                      children: [
+                        if (provider.isLoading && p == null)
+                          ShimmerBox(
+                            width: (50.r * 2),
+                            height: (50.r * 2),
+                            shape: BoxShape.circle,
+                          )
+                        else
+                          CircleAvatar(
+                            radius: 50.r,
+                            backgroundImage: avatarImage,
+                          ),
+                        10.h.verticalSpace,
+                        AppText(
+                          text: name,
+                          style: textStyle16SemiBold.copyWith(
+                            fontSize: 18.sp,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        4.h.verticalSpace,
+                        AppText(
+                          text: provider.isLoading && p == null ? '—' : email,
+                          style: textStyle14Regular.copyWith(
+                            fontSize: 14.sp,
+                            color: AppColors.primaryColor.setOpacity(0.8),
+                          ),
+                        ),
 
                     24.h.verticalSpace,
                     Align(
@@ -75,24 +100,48 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     10.h.verticalSpace,
                     _infoCard([
-                      _infoRow("Date of Birth", "20 Jun 1996"),
+                      _infoRow(
+                        "Date of Birth",
+                        p?.dateOfBirth.isNotEmpty == true ? p!.dateOfBirth : "—",
+                      ),
                       Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-                      _infoRow("Age", "28 years (Adult)"),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _infoRow("Gender", "Female"),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _infoRow("Nationality", "India"),
+                      _infoRow("Age", "—"),
                       Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
-                      _infoRow("Passport Number", "K002721284"),
+                      _infoRow(
+                        "Gender",
+                        p?.gender.isNotEmpty == true ? p!.gender : "—",
+                      ),
                       Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
-                      _infoRow("Contact", "+91 90999 8989"),
+                      _infoRow(
+                        "Nationality",
+                        p?.nationality.isNotEmpty == true
+                            ? p!.nationality
+                            : "—",
+                      ),
                       Divider(color: AppColors.primaryColor.setOpacity(0.2)),
 
-                      _infoRow("Language", "English"),
+                      _infoRow(
+                        "Passport Number",
+                        p?.passportNumber.isNotEmpty == true
+                            ? p!.passportNumber
+                            : "—",
+                      ),
+                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
+
+                      _infoRow(
+                        "Contact",
+                        p?.phoneNumber.isNotEmpty == true ? p!.phoneNumber : "—",
+                      ),
+                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
+
+                      _infoRow(
+                        "Language",
+                        p?.languages.isNotEmpty == true
+                            ? p!.languages.join(', ')
+                            : "—",
+                      ),
                     ]),
 
                     20.h.verticalSpace,
@@ -262,7 +311,9 @@ class ProfileScreen extends StatelessWidget {
                     ),
 
                     SizedBox(height: 40.h),
-                  ],
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

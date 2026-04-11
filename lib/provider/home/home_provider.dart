@@ -1,12 +1,22 @@
 import 'package:flutter/widgets.dart';
 import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
+import 'package:trael_app_abdelhamid/core/utils/payment_flow_log.dart';
 import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
 import 'package:trael_app_abdelhamid/model/home/user_itinerary_model.dart';
 import 'package:trael_app_abdelhamid/services/trips_service.dart';
 
 class TripProvider extends ChangeNotifier {
+  /// Last trip the user chose on Home (lists / trip-details navigation).
   TripModel? selectedTrip;
+
+  /// Trip resolved from `GET /api/user-payment/my-trip` (user’s enrolled booking).
+  /// The Trips tab uses [tripForTripsTab], not [selectedTrip], so Home selection does not override enrollment.
+  TripModel? _enrolledTrip;
+  TripModel? get enrolledTrip => _enrolledTrip;
+
+  /// What the Trips tab should display: enrolled trip when present, otherwise Home selection.
+  TripModel? get tripForTripsTab => _enrolledTrip ?? selectedTrip;
 
   // -------------------------------
   // Hotel voucher (current enrolled trip hotel details)
@@ -114,7 +124,7 @@ class TripProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   /// Ensures `selectedTrip` is set using the first upcoming trip.
-  /// Does not override an existing selection.
+  /// Does not override an existing selection (e.g. after [loadEnrolledTripForTripsTab]).
   Future<void> ensureSelectedTripFromUpcoming() async {
     if (selectedTrip != null) return;
 
@@ -128,6 +138,87 @@ class TripProvider extends ChangeNotifier {
       selectTrip(upcomingTripList.first);
     }
   }
+
+  /// Booking id from the user’s **most recent successful Stripe payment** (checkout or Trips tab).
+  /// Used for `GET /user-payment/my-trip?bookingId=` when no explicit id is passed.
+  String? _latestPaymentBookingId;
+
+  /// Call after a payment succeeds so [loadEnrolledTripForTripsTab] without args uses this id.
+  void rememberLatestPaymentBookingId(String? bookingId) {
+    if (bookingId == null || bookingId.isEmpty) return;
+    _latestPaymentBookingId = bookingId;
+    PaymentFlowLog.log('TripProvider: latest payment booking id', {
+      'bookingId': bookingId,
+    });
+  }
+
+  /// Bumped after a successful payment so [TripPaymentSection] can re-fetch payment history
+  /// even when [enrolledBookingId] is unchanged.
+  int _paymentHistoryRefreshToken = 0;
+  int get paymentHistoryRefreshToken => _paymentHistoryRefreshToken;
+
+  void notifyPaymentHistoryRefresh() {
+    _paymentHistoryRefreshToken++;
+    notifyListeners();
+  }
+
+  /// Latest active/pending booking from `GET /api/user-payment/my-trip` + full trip details.
+  /// Updates [_enrolledTrip] and payment fields only — does not change [selectedTrip] (Home).
+  ///
+  /// [bookingId] overrides; otherwise uses [rememberLatestPaymentBookingId], then last my-trip id.
+  Future<void> loadEnrolledTripForTripsTab({String? bookingId}) async {
+    _isEnrolledTripLoading = true;
+    _isPaymentLoading = true;
+    notifyListeners();
+    try {
+      final String? effectiveId;
+      if (bookingId != null && bookingId.isNotEmpty) {
+        effectiveId = bookingId;
+      } else if (_latestPaymentBookingId != null &&
+          _latestPaymentBookingId!.isNotEmpty) {
+        effectiveId = _latestPaymentBookingId;
+      } else {
+        effectiveId = _enrolledBookingId;
+      }
+      PaymentFlowLog.log('loadEnrolledTripForTripsTab: my-trip query', {
+        'effectiveBookingId': effectiveId ?? '(none)',
+      });
+      final ctx = await TripsService.instance.fetchEnrolledTripContext(
+        bookingId: effectiveId,
+      );
+      if (ctx != null) {
+        _enrolledTrip = ctx.trip;
+        _paymentDetails = ctx.paymentDetails;
+        _enrolledBookingId = ctx.bookingId;
+        PaymentFlowLog.log('loadEnrolledTripForTripsTab: state updated', {
+          'bookingId': _enrolledBookingId,
+          'pendingAmount': _paymentDetails?.pendingAmount,
+          'paidAmount': _paymentDetails?.paidAmount,
+          'isFullyPaid': _paymentDetails?.isFullyPaid,
+        });
+      } else {
+        _enrolledTrip = null;
+        _paymentDetails = null;
+        _enrolledBookingId = null;
+        PaymentFlowLog.log(
+          'loadEnrolledTripForTripsTab: no enrolled context (null)',
+        );
+      }
+    } catch (_) {
+      // Keep prior enrolled state on errors; BaseApiService may toast.
+    } finally {
+      _isEnrolledTripLoading = false;
+      _isPaymentLoading = false;
+      notifyListeners();
+    }
+  }
+
+  bool _isEnrolledTripLoading = false;
+  bool get isEnrolledTripLoading => _isEnrolledTripLoading;
+
+  /// Booking id from [loadEnrolledTripForTripsTab], when applicable.
+  String? _enrolledBookingId;
+  String? get enrolledBookingId => _enrolledBookingId;
 
   /// Loads home lists from `GET /api/user/trips/list?type=upcoming` and `?type=past`.
   /// [showGlobalLoading] false for pull-to-refresh (keeps list visible; only the indicator shows).
@@ -159,7 +250,7 @@ class TripProvider extends ChangeNotifier {
     }
   }
 
-  PaymentMethodEnum selectedMethod = PaymentMethodEnum.googlePay;
+  PaymentMethodEnum selectedMethod = PaymentMethodEnum.creditCard;
 
   void changeSelectedMethod(PaymentMethodEnum method) {
     selectedMethod = method;
@@ -243,10 +334,9 @@ class TripProvider extends ChangeNotifier {
 
   Future<void> fetchPaymentDetails(String tripId) async {
     _isPaymentLoading = true;
-    _paymentDetails = null;
     notifyListeners();
     try {
-      // _paymentDetails = await TripsService.instance.getPaymentDetails(tripId);
+      // Optional: per-trip payment API when not using enrollment summary.
     } catch (e) {
       // handled by BaseApiService
     } finally {
