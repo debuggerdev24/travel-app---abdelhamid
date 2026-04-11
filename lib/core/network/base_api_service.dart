@@ -264,6 +264,116 @@ class BaseApiService {
     }
   }
 
+  /// Multipart PATCH (e.g. profile image update).
+  Future<dynamic> patchMultipart(
+    String endpoint, {
+    required Map<String, String> fields,
+    required String fileFieldName,
+    required String filePath,
+    Map<String, dynamic>? queryParameters,
+    bool showErrorToast = true,
+  }) async {
+    try {
+      final multipartFile = await MultipartFile.fromFile(
+        filePath,
+        filename: _basenameFromPath(filePath),
+      );
+      final formData = FormData.fromMap({
+        ...fields,
+        fileFieldName: multipartFile,
+      });
+
+      final response = await _dio.patch<dynamic>(
+        endpoint,
+        data: formData,
+        queryParameters: queryParameters,
+        options: Options(
+          contentType: null,
+          headers: <String, dynamic>{
+            HttpHeaders.acceptHeader: 'application/json',
+          },
+        ),
+      );
+
+      final statusCode = response.statusCode ?? 0;
+      if (statusCode < 200 || statusCode >= 300) {
+        throw ApiException(
+          statusCode: statusCode,
+          message: 'Request failed with status $statusCode',
+          data: response.data,
+        );
+      }
+      return response.data;
+    } on DioException catch (error) {
+      final statusCode = error.response?.statusCode ?? -1;
+      final data = error.response?.data;
+      String message = 'Something went wrong';
+
+      if (data is Map) {
+        final map = Map<String, dynamic>.from(data);
+        if (map['message'] != null) {
+          message = map['message'].toString();
+        } else if (map['error'] != null) {
+          message = map['error'].toString();
+        }
+      } else if (data is String && data.isNotEmpty) {
+        message = data;
+      } else {
+        switch (error.type) {
+          case DioExceptionType.connectionTimeout:
+          case DioExceptionType.sendTimeout:
+          case DioExceptionType.receiveTimeout:
+            message = 'Connection timed out. Please try again later.';
+            break;
+          case DioExceptionType.connectionError:
+            message =
+                'Unable to connect to the server. Please check your internet.';
+            break;
+          case DioExceptionType.badResponse:
+            message = 'Server responded with an error ($statusCode).';
+            break;
+          case DioExceptionType.cancel:
+            message = 'Request was cancelled.';
+            break;
+          default:
+            message = 'A network error occurred. Please try again.';
+        }
+      }
+
+      LogHelper.instance.error(
+        "API Error: PATCH multipart $endpoint",
+        "[$statusCode] $message",
+        error.stackTrace,
+      );
+
+      if (showErrorToast) {
+        ToastHelper.showError(message);
+      }
+
+      if (statusCode == HttpStatus.unauthorized) {
+        throw UnauthorizedException(
+          statusCode: statusCode,
+          message: message,
+          data: data,
+        );
+      }
+
+      throw ApiException(statusCode: statusCode, message: message, data: data);
+    } on ApiException {
+      rethrow;
+    } catch (e, stackTrace) {
+      LogHelper.instance.error(
+        "Unexpected Error during PATCH multipart $endpoint",
+        e,
+        stackTrace,
+      );
+      if (showErrorToast) {
+        ToastHelper.showError("An unexpected error occurred.");
+      }
+      rethrow;
+    }
+  }
+
   static String _basenameFromPath(String path) {
     final i = path.replaceAll('\\', '/').lastIndexOf('/');
     return i >= 0 ? path.substring(i + 1) : path;

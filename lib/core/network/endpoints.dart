@@ -16,6 +16,15 @@ class Endpoints {
   static const String savePersonDetail = '/booking/save-person-details';
   static const String saveFamilyDetails = '/booking/add-family-member';
 
+  /// `GET ?bookingId=` — booking + populated trip (used to resolve `tripId` after `/user-payment/my-trip`).
+  static const String bookingGetPackageDetails = '/booking/get-package-details';
+  static const String bookingGetUserDetails = '/booking/get-user-details';
+  static const String bookingEditProfile = '/booking/edit-profile';
+  static const String bookingChangeProfileImage = '/booking/change-profile-image';
+
+  /// `PATCH ?bookingId=` — sets booking `active` and adds user to trip chat group.
+  static const String bookingBookingStatus = '/booking/booking-status';
+
   static const String myFlights = '/flights/my-flights';
   static const String hotelVoucherDetails = '/hotel/voucher';
   static const String todayItinerary = '/itinerary/today';
@@ -26,7 +35,14 @@ class Endpoints {
   /// `POST ?tripId=` — multipart: `documentType`, `documentName`, optional `memberId`, file `photo`.
   static const String addUserDocument = '/documents/add-document';
 
-  // static const String getPaymentDetails = '/user-payment/my-trip';
+  /// `GET` — Bearer auth; latest active/pending booking + payment summary. Base: [AppConstants.apiPublicRoot].
+  static const String userPaymentMyTripPath = '/user-payment/my-trip';
+
+  /// `GET ?bookingId=` — optional; payment rows for user. Base: [AppConstants.apiPublicRoot].
+  static const String userPaymentHistoryPath = '/user-payment/history';
+
+  /// `GET ?paymentId=` — receipt detail. Base: [AppConstants.apiPublicRoot].
+  static const String userPaymentReceiptPath = '/user-payment/receipt';
 
   static const String essentialPackingList = '/api/essential/get-packing-list';
   static const String essentialCurrencyInfo = '/api/essential/get-currency-info';

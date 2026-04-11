@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:trael_app_abdelhamid/core/utils/jwt_user_id.dart';
 import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
 import 'package:trael_app_abdelhamid/core/utils/media_url.dart';
+import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:trael_app_abdelhamid/model/chat/chat_model.dart';
 import 'package:trael_app_abdelhamid/services/chat_api_service.dart';
 import 'package:trael_app_abdelhamid/services/chat_socket_service.dart';
@@ -22,6 +24,14 @@ class ChatProvider extends ChangeNotifier {
 
   final List<StreamSubscription<dynamic>> _socketSubs = [];
 
+  /// Debounced reload of the conversation list while the user is inside a chat
+  /// (so last-message preview stays in sync with socket events).
+  Timer? _conversationListRefreshDebounce;
+
+  /// Deduplicates [enterChatRoom] when both list tap and detail screen call it.
+  Future<void>? _roomLoadFuture;
+  String? _roomLoadFutureChatId;
+
   List<Map<String, dynamic>> get messages => _messages;
   String? get activeChatId => _activeChatId;
 
@@ -36,6 +46,22 @@ class ChatProvider extends ChangeNotifier {
   void changeTab(int index) {
     selectedTabIndex = index;
     notifyListeners();
+  }
+
+  /// Prepares state for [enterChatRoom] **without** [notifyListeners].
+  ///
+  /// Call from the chat list **before** [context.push]. Skipping notification
+  /// avoids rebuilding the whole [ChatScreen] [Consumer] (and other listeners)
+  /// on the same frame as the tap, which was delaying the transition. The
+  /// detail screen reads this state on its first [build].
+  void primeChatOpen(String chatId) {
+    if (chatId.isEmpty) return;
+    _roomLoadFuture = null;
+    _roomLoadFutureChatId = null;
+    _detachSocketListeners();
+    _activeChatId = chatId;
+    _messages = [];
+    loadingMessages = true;
   }
 
   Future<void> loadConversations({bool silent = false}) async {
@@ -66,34 +92,62 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
+  /// Loads history + socket for [chatId]. Called from [ChatDetailScreen]
+  /// [didChangeDependencies]. The same in-flight [Future] is reused if invoked twice.
   Future<void> enterChatRoom({
     required String chatId,
     required String title,
     String? avatarUrl,
     required bool isGroup,
-  }) async {
-    _detachSocketListeners();
-    _activeChatId = chatId;
-    _messages = [];
-    loadingMessages = true;
-    notifyListeners();
+  }) {
+    if (_roomLoadFutureChatId == chatId && _roomLoadFuture != null) {
+      return _roomLoadFuture!;
+    }
+
+    final future = _enterChatRoomImpl(chatId: chatId);
+    _roomLoadFutureChatId = chatId;
+    _roomLoadFuture = future;
+    future.whenComplete(() {
+      if (_roomLoadFutureChatId == chatId) {
+        _roomLoadFuture = null;
+        _roomLoadFutureChatId = null;
+      }
+    });
+    return future;
+  }
+
+  Future<void> _enterChatRoomImpl({required String chatId}) async {
+    if (_activeChatId != chatId) {
+      _detachSocketListeners();
+      _activeChatId = chatId;
+      _messages = [];
+      loadingMessages = true;
+      notifyListeners();
+    }
 
     final uid = currentUserIdOrNull();
     if (uid == null) {
-      loadingMessages = false;
-      notifyListeners();
+      if (_activeChatId == chatId) {
+        loadingMessages = false;
+        notifyListeners();
+      }
       return;
     }
 
+    final historyFuture = ChatApiService.instance.getChatHistory(
+      chatId: chatId,
+      userId: uid,
+      showErrorToast: true,
+    );
+
     await ChatSocketService.instance.connect(uid);
+    if (_activeChatId != chatId) return;
+
     _attachSocketListeners();
 
     try {
-      final raw = await ChatApiService.instance.getChatHistory(
-        chatId: chatId,
-        userId: uid,
-        showErrorToast: true,
-      );
+      final raw = await historyFuture;
+      if (_activeChatId != chatId) return;
       final list = raw['messages'];
       if (list is List) {
         _messages = list
@@ -105,18 +159,40 @@ class ChatProvider extends ChangeNotifier {
             .toList();
       }
     } catch (e, st) {
-      LogHelper.instance.error('enterChatRoom history', e, st);
+      if (_activeChatId == chatId) {
+        LogHelper.instance.error('enterChatRoom history', e, st);
+      }
     } finally {
-      loadingMessages = false;
-      notifyListeners();
+      if (_activeChatId == chatId) {
+        loadingMessages = false;
+        notifyListeners();
+      }
     }
   }
 
   void leaveChatRoom() {
+    _roomLoadFuture = null;
+    _roomLoadFutureChatId = null;
+    _conversationListRefreshDebounce?.cancel();
+    _conversationListRefreshDebounce = null;
     _detachSocketListeners();
     _activeChatId = null;
     _messages = [];
     notifyListeners();
+    // List was stale while messages arrived over the socket; sync from API
+    // after the detail route is popped (dispose runs leaveChatRoom).
+    loadConversations(silent: true);
+  }
+
+  void _scheduleConversationListRefreshFromSocket() {
+    _conversationListRefreshDebounce?.cancel();
+    _conversationListRefreshDebounce = Timer(
+      const Duration(milliseconds: 400),
+      () {
+        _conversationListRefreshDebounce = null;
+        loadConversations(silent: true);
+      },
+    );
   }
 
   void sendSocketText(String trimmed) {
@@ -144,9 +220,160 @@ class ChatProvider extends ChangeNotifier {
         latitude: lat,
         longitude: lng,
       );
+      await refreshActiveChatMessages();
       await loadConversations(silent: true);
     } catch (e, st) {
       LogHelper.instance.error('sharePinnedLocation', e, st);
+    }
+  }
+
+  Future<bool> _ensureLocationReady() async {
+    final serviceOn = await Geolocator.isLocationServiceEnabled();
+    if (!serviceOn) {
+      ToastHelper.showError('Please turn on location services.');
+      return false;
+    }
+    var perm = await Geolocator.checkPermission();
+    if (perm == LocationPermission.denied) {
+      perm = await Geolocator.requestPermission();
+    }
+    if (perm == LocationPermission.denied ||
+        perm == LocationPermission.deniedForever) {
+      ToastHelper.showError('Location permission is required.');
+      return false;
+    }
+    return true;
+  }
+
+  /// GPS → static location message (`POST /api/chat/location`).
+  Future<void> sendCurrentLocationFromGps() async {
+    final cid = _activeChatId;
+    final uid = currentUserIdOrNull();
+    if (cid == null || uid == null) return;
+    try {
+      if (!await _ensureLocationReady()) return;
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      await ChatApiService.instance.sendLocation(
+        chatId: cid,
+        userId: uid,
+        latitude: pos.latitude,
+        longitude: pos.longitude,
+      );
+      await refreshActiveChatMessages();
+      await loadConversations(silent: true);
+    } catch (e, st) {
+      LogHelper.instance.error('sendCurrentLocationFromGps', e, st);
+      ToastHelper.showError('Could not get current location.');
+    }
+  }
+
+  /// GPS → live location session (`POST /api/chat/location/live/start`).
+  Future<void> startLiveLocationFromGps({int durationMinutes = 60}) async {
+    final cid = _activeChatId;
+    final uid = currentUserIdOrNull();
+    if (cid == null || uid == null) return;
+    try {
+      if (!await _ensureLocationReady()) return;
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      await ChatApiService.instance.startLiveLocation(
+        chatId: cid,
+        userId: uid,
+        latitude: pos.latitude,
+        longitude: pos.longitude,
+        durationMinutes: durationMinutes,
+      );
+      await refreshActiveChatMessages();
+      await loadConversations(silent: true);
+    } catch (e, st) {
+      LogHelper.instance.error('startLiveLocationFromGps', e, st);
+      ToastHelper.showError('Could not start live location.');
+    }
+  }
+
+  /// Image file from gallery/camera (`POST /api/chat/upload`).
+  Future<void> uploadChatImage(String filePath) async {
+    final cid = _activeChatId;
+    final uid = currentUserIdOrNull();
+    if (cid == null || uid == null) return;
+    try {
+      await ChatApiService.instance.uploadChatFile(
+        chatId: cid,
+        senderId: uid,
+        filePath: filePath,
+      );
+      await refreshActiveChatMessages();
+      await loadConversations(silent: true);
+    } catch (e, st) {
+      LogHelper.instance.error('uploadChatImage', e, st);
+      ToastHelper.showError('Could not send image. Please try again.');
+    }
+  }
+
+  Future<void> editOwnTextMessage({
+    required String messageId,
+    required String newText,
+  }) async {
+    final uid = currentUserIdOrNull();
+    if (uid == null) return;
+    final trimmed = newText.trim();
+    if (trimmed.isEmpty) return;
+    try {
+      await ChatApiService.instance.editMessage(
+        messageId: messageId,
+        userId: uid,
+        text: trimmed,
+      );
+      await refreshActiveChatMessages();
+      await loadConversations(silent: true);
+    } catch (e, st) {
+      LogHelper.instance.error('editOwnTextMessage', e, st);
+    }
+  }
+
+  Future<void> deleteOwnMessage(String messageId) async {
+    final uid = currentUserIdOrNull();
+    if (uid == null) return;
+    try {
+      await ChatApiService.instance.deleteMessage(
+        messageId: messageId,
+        userId: uid,
+      );
+      await refreshActiveChatMessages();
+      await loadConversations(silent: true);
+    } catch (e, st) {
+      LogHelper.instance.error('deleteOwnMessage', e, st);
+    }
+  }
+
+  Future<void> refreshActiveChatMessages() async {
+    final cid = _activeChatId;
+    final uid = currentUserIdOrNull();
+    if (cid == null || uid == null) return;
+    try {
+      final raw = await ChatApiService.instance.getChatHistory(
+        chatId: cid,
+        userId: uid,
+        showErrorToast: false,
+      );
+      final list = raw['messages'];
+      if (list is List) {
+        _messages = list
+            .whereType<Map>()
+            .map(
+              (e) => _serverMessageToBubble(
+                Map<String, dynamic>.from(e),
+                uid,
+              ),
+            )
+            .toList();
+        notifyListeners();
+      }
+    } catch (e, st) {
+      LogHelper.instance.error('refreshActiveChatMessages', e, st);
     }
   }
 
@@ -186,6 +413,7 @@ class ChatProvider extends ChangeNotifier {
     final bubble = _serverMessageToBubble(m, myId);
     _appendDedup(bubble);
     notifyListeners();
+    _scheduleConversationListRefreshFromSocket();
   }
 
   void _handleMessageUpdated(Map<String, dynamic> e) {
@@ -200,6 +428,7 @@ class ChatProvider extends ChangeNotifier {
     if (i >= 0) {
       _messages[i] = updated;
       notifyListeners();
+      _scheduleConversationListRefreshFromSocket();
     }
   }
 
@@ -214,6 +443,7 @@ class ChatProvider extends ChangeNotifier {
       copy['message'] = 'This message was deleted';
       _messages[i] = copy;
       notifyListeners();
+      _scheduleConversationListRefreshFromSocket();
     }
   }
 
@@ -229,10 +459,7 @@ class ChatProvider extends ChangeNotifier {
     final id = item['_id']?.toString() ?? '';
     final name = item['name']?.toString() ?? 'Chat';
     final isGroup = item['isGroup'] == true;
-    final unreadRaw = item['unreadCount'];
-    final unread = unreadRaw is int
-        ? unreadRaw
-        : int.tryParse(unreadRaw?.toString() ?? '0') ?? 0;
+    final unread = _parseUnreadCount(item['unreadCount']);
 
     final last = item['lastMessage'];
     var preview = '';
@@ -290,6 +517,7 @@ class ChatProvider extends ChangeNotifier {
         'message': 'This message was deleted',
         'sender': m['senderName']?.toString() ?? '',
         'time': time,
+        'edited': false,
       };
     }
 
@@ -304,6 +532,7 @@ class ChatProvider extends ChangeNotifier {
         'lng': (m['longitude'] as num?)?.toDouble() ?? 0,
         'time': time,
         'sender': m['senderName']?.toString() ?? '',
+        'isLive': m['isLiveLocation'] == true,
       };
     }
     if (ct == 'voice') {
@@ -318,6 +547,26 @@ class ChatProvider extends ChangeNotifier {
       };
     }
     if (ct == 'file') {
+      final mime = m['mimeType']?.toString().toLowerCase() ?? '';
+      final url = resolveMediaUrl(m['fileUrl']?.toString());
+      final name = (m['fileName'] ?? '').toString().toLowerCase();
+      final extImg = name.endsWith('.jpg') ||
+          name.endsWith('.jpeg') ||
+          name.endsWith('.png') ||
+          name.endsWith('.gif') ||
+          name.endsWith('.webp');
+      if (mime.startsWith('image/') || extImg) {
+        if (url != null && url.isNotEmpty) {
+          return {
+            '_id': id,
+            'isMe': isMe,
+            'type': 'image',
+            'imageUrl': url,
+            'sender': m['senderName']?.toString() ?? '',
+            'time': time,
+          };
+        }
+      }
       return {
         '_id': id,
         'isMe': isMe,
@@ -325,8 +574,13 @@ class ChatProvider extends ChangeNotifier {
         'message': m['fileName']?.toString() ?? '[File]',
         'sender': m['senderName']?.toString() ?? '',
         'time': time,
+        'edited': false,
       };
     }
+
+    final edited = m['editedAt'] != null &&
+        m['editedAt'].toString().isNotEmpty &&
+        m['editedAt'].toString() != 'null';
 
     return {
       '_id': id,
@@ -335,6 +589,7 @@ class ChatProvider extends ChangeNotifier {
       'message': m['text']?.toString() ?? '',
       'sender': m['senderName']?.toString() ?? '',
       'time': time,
+      'edited': edited,
     };
   }
 
@@ -363,43 +618,30 @@ class ChatProvider extends ChangeNotifier {
     if (raw == null) return null;
     if (raw is DateTime) return raw;
     if (raw is String) return DateTime.tryParse(raw);
+    if (raw is Map) {
+      final d = raw[r'$date'] ?? raw['\$date'] ?? raw['date'];
+      if (d is String) return DateTime.tryParse(d);
+      if (d is int) {
+        return DateTime.fromMillisecondsSinceEpoch(d, isUtc: true).toLocal();
+      }
+    }
     return null;
   }
 
-  bool _isRecording = false;
-  bool _showAttachmentMenu = false;
-
-  bool get isRecording => _isRecording;
-  bool get showAttachmentMenu => _showAttachmentMenu;
-
-  void toggleRecording() {
-    _isRecording = !_isRecording;
-    notifyListeners();
-  }
-
-  void startRecording() {
-    _isRecording = true;
-    _showAttachmentMenu = false;
-    notifyListeners();
-  }
-
-  void stopRecording() {
-    _isRecording = false;
-    notifyListeners();
-  }
-
-  void toggleAttachmentMenu() {
-    _showAttachmentMenu = !_showAttachmentMenu;
-    notifyListeners();
-  }
-
-  void closeAttachmentMenu() {
-    _showAttachmentMenu = false;
-    notifyListeners();
+  int _parseUnreadCount(dynamic raw) {
+    if (raw == null) return 0;
+    if (raw is int) return raw < 0 ? 0 : raw;
+    if (raw is double) {
+      final n = raw.round();
+      return n < 0 ? 0 : n;
+    }
+    return int.tryParse(raw.toString()) ?? 0;
   }
 
   @override
   void dispose() {
+    _conversationListRefreshDebounce?.cancel();
+    _conversationListRefreshDebounce = null;
     _detachSocketListeners();
     super.dispose();
   }

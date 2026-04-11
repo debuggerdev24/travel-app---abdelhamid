@@ -50,7 +50,11 @@ List<RouteBase> get bookingRoutes => [
   GoRoute(
     path: UserAppRoutes.paymentSuccessfullScreen.path,
     name: UserAppRoutes.paymentSuccessfullScreen.name,
-    builder: (context, state) => PaymentSuccessfullScreen(),
+    builder: (context, state) {
+      final extra = state.extra;
+      final amount = extra is PaymentSuccessRouteExtra ? extra.amountEur : null;
+      return PaymentSuccessfullScreen(amountEur: amount);
+    },
   ),
   GoRoute(
     path: UserAppRoutes.paymentFailedScreen.path,

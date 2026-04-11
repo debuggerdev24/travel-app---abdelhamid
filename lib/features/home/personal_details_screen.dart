@@ -10,6 +10,7 @@ import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:trael_app_abdelhamid/core/utils/validators.dart';
 import 'package:trael_app_abdelhamid/provider/home/person_details_provider.dart';
+import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:trael_app_abdelhamid/routes/user_routes.dart';
 
 class PersonalDetailsScreen extends StatefulWidget {
@@ -22,12 +23,57 @@ class PersonalDetailsScreen extends StatefulWidget {
 class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   late final PersonDetailsProvider _provider;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _didPrefillFromProfile = false;
+
+  DateTime? _tryParseDob(String raw) {
+    final s = raw.trim();
+    if (s.isEmpty) return null;
+    try {
+      return DateTime.parse(s);
+    } catch (_) {
+      final only = s.split(' ').first;
+      try {
+        return DateTime.parse(only);
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
+  Future<void> _pickDob(PersonDetailsProvider provider) async {
+    final initial =
+        _tryParseDob(provider.dateOfBirthController.text) ?? DateTime(2000, 1, 1);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1900, 1, 1),
+      lastDate: DateTime.now(),
+      helpText: 'Select date of birth',
+    );
+    if (picked == null) return;
+    final y = picked.year.toString().padLeft(4, '0');
+    final m = picked.month.toString().padLeft(2, '0');
+    final d = picked.day.toString().padLeft(2, '0');
+    provider.dateOfBirthController.text = '$y-$m-$d';
+    // Keep cursor stable
+    provider.dateOfBirthController.selection = TextSelection.fromPosition(
+      TextPosition(offset: provider.dateOfBirthController.text.length),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     _provider = PersonDetailsProvider();
     debugPrint('✅ [PersonalDetailsScreen] Provider initialized');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final profile = context.read<ProfileProvider>().profile;
+      if (profile != null) {
+        _provider.prefillFromUserProfile(profile);
+        _didPrefillFromProfile = true;
+      }
+    });
   }
 
   @override
@@ -44,6 +90,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         value: _provider,
         child: Consumer<PersonDetailsProvider>(
           builder: (context, provider, child) {
+            // If profile arrives after this screen, prefill once.
+            if (!_didPrefillFromProfile) {
+              final profile = context.watch<ProfileProvider>().profile;
+              if (profile != null) {
+                _provider.prefillFromUserProfile(profile);
+                _didPrefillFromProfile = true;
+              }
+            }
             return SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -109,6 +163,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                               hintText: "Select Date of Birth",
                               controller: provider.dateOfBirthController,
                               validator: Validator.validateIsoDateOfBirth,
+                              readOnly: true,
+                              onTap: () => _pickDob(provider),
                               suffixIcon: Padding(
                                 padding: EdgeInsets.all(13.0),
                                 child: SvgIcon(AppAssets.date, size: 24.w),

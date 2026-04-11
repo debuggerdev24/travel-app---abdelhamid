@@ -26,8 +26,8 @@ class TripModel {
   factory TripModel.fromJson(Map<String, dynamic> json) {
     final rawId = json['_id'];
     return TripModel(
-      id: rawId == null ? null : rawId.toString(),
-      title: json['tripName'] ?? '',
+      id: rawId?.toString(),
+      title: (json['tripName'] ?? json['name'] ?? '').toString(),
       location: json['location'] ?? '',
       image: json['bannerImage'] ?? '',
       date: _formatDate(json['startDate'], json['endDate']),
@@ -38,6 +38,21 @@ class TripModel {
                 .map((p) => PackageDetails.fromJson(p))
                 .toList()
           : null,
+    );
+  }
+
+  /// Nested `trip` from `GET /api/user-payment/my-trip` (`name`, `bannerImage`, dates — may omit `_id`).
+  factory TripModel.fromUserPaymentMyTripJson(Map<String, dynamic> json) {
+    final rawId = json['_id'] ?? json['tripId'];
+    return TripModel(
+      id: rawId?.toString(),
+      title: (json['tripName'] ?? json['name'] ?? '').toString(),
+      location: json['location']?.toString() ?? '',
+      image: json['bannerImage']?.toString() ?? '',
+      date: _formatDate(json['startDate'], json['endDate']),
+      status: json['status']?.toString() ?? 'ongoing',
+      description: json['description']?.toString() ?? '',
+      packages: null,
     );
   }
 
@@ -303,8 +318,10 @@ class DocumentModel {
   final String image;
   final String title;
   final File? fileImage;
+
   /// Shown when [fileImage] is null (remote documents).
   final String? networkThumbnailUrl;
+
   /// Full file URL for View / PDF (optional).
   final String? networkFileUrl;
   final String? subtitle;
@@ -327,7 +344,6 @@ class DocumentModel {
   });
 }
 
-
 class TripPaymentDetails {
   final String packageName;
   final double totalAmount;
@@ -343,14 +359,128 @@ class TripPaymentDetails {
     required this.isFullyPaid,
   });
 
-  factory TripPaymentDetails.fromJson(Map<String, dynamic> json) {
-    final summary = json['paymentSummary'];
+  /// Prefer [paid] from [GET user-payment/history] when it is higher than [paidAmount]
+  /// (e.g. my-trip summary not yet updated after Stripe, but history rows exist).
+  TripPaymentDetails withReconciledPaid(double paid) {
+    final total = totalAmount;
+    if (total <= 0) return this;
+    final p = paid.clamp(0.0, total);
+    final pend = (total - p).clamp(0.0, total);
+    final fully = pend < 0.009;
     return TripPaymentDetails(
-      packageName: summary['packageName'] ?? '',
-      totalAmount: (summary['totalAmount'] ?? 0).toDouble(),
-      paidAmount: (summary['paidAmount'] ?? 0).toDouble(),
-      pendingAmount: (summary['pendingAmount'] ?? 0).toDouble(),
-      isFullyPaid: summary['isFullyPaid'] ?? false,
+      packageName: packageName,
+      totalAmount: total,
+      paidAmount: p,
+      pendingAmount: pend,
+      isFullyPaid: fully,
     );
   }
+
+  factory TripPaymentDetails.fromJson(Map<String, dynamic> json) {
+    final summary = json['paymentSummary'];
+    // Root + nested summary: summary keys win (typical API shape).
+    final merged = Map<String, dynamic>.from(json);
+    if (summary is Map) {
+      merged.addAll(Map<String, dynamic>.from(summary));
+    }
+
+    num readNum(dynamic v) {
+      if (v == null) return 0;
+      if (v is num) return v;
+      return double.tryParse(v.toString()) ?? 0;
+    }
+
+    double pickAmount(List<String> keys) {
+      for (final k in keys) {
+        if (!merged.containsKey(k)) continue;
+        return readNum(merged[k]).toDouble();
+      }
+      return 0;
+    }
+
+    String pickString(List<String> keys) {
+      for (final k in keys) {
+        final v = merged[k];
+        if (v != null && v.toString().trim().isNotEmpty) {
+          return v.toString();
+        }
+      }
+      return '';
+    }
+
+    bool pickFullyPaid() {
+      final v = merged['isFullyPaid'] ?? merged['fullyPaid'];
+      if (v == true) return true;
+      if (v == false) return false;
+      final s = v?.toString().toLowerCase();
+      if (s == 'true') return true;
+      if (s == 'false') return false;
+      return false;
+    }
+
+    var total = pickAmount(const [
+      'totalAmount',
+      'total_amount',
+      'total',
+      'packageTotal',
+      'grandTotal',
+    ]);
+    var paid = pickAmount(const [
+      'paidAmount',
+      'paid_amount',
+      'amountPaid',
+      'paid',
+    ]);
+    var pending = pickAmount(const [
+      'pendingAmount',
+      'pending_amount',
+      'pending',
+      'balance',
+      'remaining',
+      'remainingAmount',
+    ]);
+
+    // If only two of three are present, derive the third.
+    if (total <= 0 && paid >= 0 && pending >= 0 && (paid > 0 || pending > 0)) {
+      total = paid + pending;
+    } else if (pending <= 0 && total > 0 && paid >= 0 && paid <= total + 0.01) {
+      pending = (total - paid).clamp(0.0, double.infinity);
+    } else if (paid <= 0 &&
+        total > 0 &&
+        pending >= 0 &&
+        pending <= total + 0.01) {
+      paid = (total - pending).clamp(0.0, double.infinity);
+    }
+
+    var isFully = pickFullyPaid();
+    if (!isFully && total > 0 && pending < 0.009) {
+      isFully = true;
+    }
+
+    return TripPaymentDetails(
+      packageName: pickString(const [
+        'packageName',
+        'package_name',
+        'packageTitle',
+        'title',
+      ]),
+      totalAmount: total,
+      paidAmount: paid,
+      pendingAmount: pending,
+      isFullyPaid: isFully,
+    );
+  }
+}
+
+/// Result of [TripsService.fetchEnrolledTripContext]: user's latest active/pending booking for the Trips tab.
+class EnrolledTripContext {
+  final TripModel trip;
+  final String bookingId;
+  final TripPaymentDetails paymentDetails;
+
+  EnrolledTripContext({
+    required this.trip,
+    required this.bookingId,
+    required this.paymentDetails,
+  });
 }

@@ -39,6 +39,13 @@ List<RouteBase> get authRoutes => [
   GoRoute(
     path: UserAppRoutes.tabScreen.path,
     name: UserAppRoutes.tabScreen.name,
-    builder: (context, state) => TabScreen(),
+    builder: (context, state) {
+      final tabParam = state.uri.queryParameters['tab'];
+      final parsed = int.tryParse(tabParam ?? '');
+      final initialIndex = parsed != null
+          ? parsed.clamp(0, 3)
+          : 0;
+      return TabScreen(initialIndex: initialIndex);
+    },
   ),
 ];

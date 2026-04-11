@@ -31,12 +31,24 @@ List<RouteBase> get tripRoutes => [
   GoRoute(
     path: UserAppRoutes.paymentHistoryScreen.path,
     name: UserAppRoutes.paymentHistoryScreen.name,
-    builder: (context, state) => PaymentHistoryScreen(),
+    builder: (context, state) {
+      final extra = state.extra;
+      final bookingId = extra is Map<String, dynamic>
+          ? extra['bookingId'] as String?
+          : null;
+      return PaymentHistoryScreen(bookingId: bookingId);
+    },
   ),
   GoRoute(
     path: UserAppRoutes.viewPaymentReceiptScreen.path,
     name: UserAppRoutes.viewPaymentReceiptScreen.name,
-    builder: (context, state) => ViewReceiptScreen(),
+    builder: (context, state) {
+      final extra = state.extra;
+      final paymentId = extra is Map<String, dynamic>
+          ? extra['paymentId'] as String?
+          : null;
+      return ViewReceiptScreen(paymentId: paymentId);
+    },
   ),
   GoRoute(
     path: UserAppRoutes.myTripScreen.path,

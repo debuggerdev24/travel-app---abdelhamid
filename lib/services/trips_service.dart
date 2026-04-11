@@ -1,10 +1,14 @@
 import 'dart:io';
 
+import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
 import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
+import 'package:trael_app_abdelhamid/core/utils/payment_flow_log.dart';
 import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
 import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
+import 'package:trael_app_abdelhamid/model/home/payment_receipt_detail.dart';
 import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
+import 'package:trael_app_abdelhamid/model/home/user_payment_history_item.dart';
 import 'package:trael_app_abdelhamid/model/home/user_itinerary_model.dart';
 import 'package:trael_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
 import 'package:trael_app_abdelhamid/model/user_flight_model.dart';
@@ -92,6 +96,216 @@ class TripsService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  /// Backend: `GET /api/user-payment/my-trip` (optional `?bookingId=`) then enriches trip via
+  /// `GET .../booking/get-package-details` + [getTripDetails] when possible; falls back to the
+  /// nested `trip` object from my-trip (`name`, `location`, `bannerImage`, dates).
+  Future<EnrolledTripContext?> fetchEnrolledTripContext({
+    String? bookingId,
+  }) async {
+    final myTripUrl =
+        '${AppConstants.apiPublicRoot}${Endpoints.userPaymentMyTripPath}';
+    final query = <String, dynamic>{};
+    if (bookingId != null && bookingId.isNotEmpty) {
+      query['bookingId'] = bookingId;
+    }
+    try {
+      final response = await BaseApiService.instance.get(
+        myTripUrl,
+        queryParameters: query.isEmpty ? null : query,
+        showErrorToast: false,
+      );
+      if (response['status'] != 1 || response['data'] == null) {
+        PaymentFlowLog.log('fetchEnrolledTripContext: my-trip no data', {
+          'status': response['status'],
+        });
+        return null;
+      }
+      final data = Map<String, dynamic>.from(response['data'] as Map);
+      final bookingId = data['bookingId']?.toString();
+      if (bookingId == null || bookingId.isEmpty) {
+        PaymentFlowLog.log('fetchEnrolledTripContext: missing bookingId in my-trip');
+        return null;
+      }
+
+      PaymentFlowLog.log('fetchEnrolledTripContext: my-trip raw paymentSummary', {
+        'bookingId': bookingId,
+        'paymentSummary': data['paymentSummary']?.toString() ?? 'null',
+      });
+
+      var paymentDetails = TripPaymentDetails.fromJson(data);
+      PaymentFlowLog.log('fetchEnrolledTripContext: parsed TripPaymentDetails', {
+        'bookingId': bookingId,
+        'packageName': paymentDetails.packageName,
+        'totalAmount': paymentDetails.totalAmount,
+        'paidAmount': paymentDetails.paidAmount,
+        'pendingAmount': paymentDetails.pendingAmount,
+        'isFullyPaid': paymentDetails.isFullyPaid,
+      });
+
+      // If my-trip totals lag behind Stripe but history already lists succeeded charges, align UI.
+      try {
+        final history = await fetchUserPaymentHistory(
+          bookingId: bookingId,
+          showErrorToast: false,
+        );
+        final succeededSum = history
+            .where((e) => e.isSucceeded)
+            .fold<double>(0, (a, e) => a + e.amount);
+        const eps = 0.01;
+        if (succeededSum > paymentDetails.paidAmount + eps) {
+          PaymentFlowLog.log(
+            'fetchEnrolledTripContext: reconciling paid/pending from payment history',
+            {
+              'myTripPaid': paymentDetails.paidAmount,
+              'historySucceededSum': succeededSum,
+            },
+          );
+          paymentDetails =
+              paymentDetails.withReconciledPaid(succeededSum);
+        }
+      } catch (_) {
+        // Keep my-trip-only totals on history errors.
+      }
+
+      final trip = await _resolveEnrolledTripModel(data);
+      if (trip == null) {
+        PaymentFlowLog.log(
+          'fetchEnrolledTripContext: could not build TripModel (no trip in response)',
+        );
+        return null;
+      }
+      return EnrolledTripContext(
+        trip: trip,
+        bookingId: bookingId,
+        paymentDetails: paymentDetails,
+      );
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
+  /// Prefer full `/trips/details` when package details include a trip `_id`; otherwise use the
+  /// nested `trip` object from my-trip (`name`, `bannerImage`, …).
+  Future<TripModel?> _resolveEnrolledTripModel(
+    Map<String, dynamic> myTripData,
+  ) async {
+    TripModel? snippetFromMyTrip() {
+      final raw = myTripData['trip'];
+      if (raw is! Map) return null;
+      final m = Map<String, dynamic>.from(raw);
+      if (m['_id'] == null &&
+          m['tripId'] == null &&
+          myTripData['tripId'] != null) {
+        m['_id'] = myTripData['tripId'];
+      }
+      return TripModel.fromUserPaymentMyTripJson(m);
+    }
+
+    final bid = myTripData['bookingId']?.toString();
+    if (bid == null || bid.isEmpty) {
+      return snippetFromMyTrip();
+    }
+
+    try {
+      final pkgResponse = await BaseApiService.instance.get(
+        Endpoints.bookingGetPackageDetails,
+        queryParameters: {'bookingId': bid},
+        showErrorToast: false,
+      );
+      if (pkgResponse['status'] == 1 && pkgResponse['data'] != null) {
+        final pkgData = Map<String, dynamic>.from(pkgResponse['data'] as Map);
+        final tripRaw = pkgData['trip'];
+        if (tripRaw is Map) {
+          final tripMap = Map<String, dynamic>.from(tripRaw);
+          final tripId = tripMap['_id']?.toString();
+          if (tripId != null && tripId.isNotEmpty) {
+            try {
+              return await getTripDetails(tripId, showErrorToast: false);
+            } catch (e) {
+              PaymentFlowLog.log(
+                'fetchEnrolledTripContext: getTripDetails failed, using snippet',
+                {'tripId': tripId, 'error': e.toString()},
+              );
+              final fall = snippetFromMyTrip() ??
+                  TripModel.fromUserPaymentMyTripJson(tripMap);
+              if (fall.id == null || fall.id!.isEmpty) {
+                return TripModel(
+                  id: tripId,
+                  image: fall.image,
+                  title: fall.title,
+                  location: fall.location,
+                  date: fall.date,
+                  status: fall.status,
+                  description: fall.description,
+                  packages: fall.packages,
+                );
+              }
+              return fall;
+            }
+          }
+          final fromPkg = TripModel.fromUserPaymentMyTripJson(tripMap);
+          if (fromPkg.title.isNotEmpty || fromPkg.location.isNotEmpty) {
+            return fromPkg;
+          }
+        }
+      }
+    } catch (e) {
+      PaymentFlowLog.log(
+        'fetchEnrolledTripContext: get-package-details failed',
+        {'error': e.toString()},
+      );
+    }
+
+    return snippetFromMyTrip();
+  }
+
+  /// Backend: `GET /api/user-payment/history` (optional `bookingId`).
+  Future<List<UserPaymentHistoryItem>> fetchUserPaymentHistory({
+    String? bookingId,
+    bool showErrorToast = false,
+  }) async {
+    final url =
+        '${AppConstants.apiPublicRoot}${Endpoints.userPaymentHistoryPath}';
+    final query = <String, dynamic>{};
+    if (bookingId != null && bookingId.isNotEmpty) {
+      query['bookingId'] = bookingId;
+    }
+    final response = await BaseApiService.instance.get(
+      url,
+      queryParameters: query.isEmpty ? null : query,
+      showErrorToast: showErrorToast,
+    );
+    if (response['status'] != 1 || response['data'] == null) return [];
+    final data = response['data'];
+    if (data is! List) return [];
+    return data
+        .whereType<Map>()
+        .map(
+          (e) => UserPaymentHistoryItem.fromJson(
+            Map<String, dynamic>.from(e),
+          ),
+        )
+        .toList();
+  }
+
+  /// Backend: `GET /api/user-payment/receipt?paymentId=`
+  Future<PaymentReceiptDetail?> fetchPaymentReceipt(
+    String paymentId, {
+    bool showErrorToast = true,
+  }) async {
+    final url =
+        '${AppConstants.apiPublicRoot}${Endpoints.userPaymentReceiptPath}';
+    final response = await BaseApiService.instance.get(
+      url,
+      queryParameters: {'paymentId': paymentId},
+      showErrorToast: showErrorToast,
+    );
+    if (response['status'] != 1 || response['data'] == null) return null;
+    final data = Map<String, dynamic>.from(response['data'] as Map);
+    return PaymentReceiptDetail.fromJson(data);
   }
 
   Future<Map<String, dynamic>> savePersonDetail(
@@ -322,6 +536,45 @@ class TripsService {
       return response;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  /// Backend: `PATCH /api/user/booking/booking-status?bookingId=` — sets booking
+  /// `active` and adds the user to the official trip chat group.
+  ///
+  /// If the booking is already active, the API returns an error; that case is
+  /// treated as success so this stays safe to call after every payment.
+  Future<void> markBookingActive({
+    required String bookingId,
+    bool showErrorToast = false,
+  }) async {
+    if (bookingId.isEmpty) return;
+    try {
+      await BaseApiService.instance.patch(
+        Endpoints.bookingBookingStatus,
+        queryParameters: {'bookingId': bookingId},
+        showErrorToast: showErrorToast,
+      );
+      PaymentFlowLog.log('markBookingActive: ok', {'bookingId': bookingId});
+    } on ApiException catch (e) {
+      final msg = e.message.toLowerCase();
+      if (msg.contains('already booked') || msg.contains('already')) {
+        PaymentFlowLog.log('markBookingActive: already active', {
+          'bookingId': bookingId,
+        });
+        return;
+      }
+      PaymentFlowLog.log('markBookingActive: failed', {
+        'bookingId': bookingId,
+        'message': e.message,
+      });
+      if (showErrorToast) rethrow;
+    } catch (e) {
+      PaymentFlowLog.log('markBookingActive: failed', {
+        'bookingId': bookingId,
+        'error': e.toString(),
+      });
+      if (showErrorToast) rethrow;
     }
   }
 }
