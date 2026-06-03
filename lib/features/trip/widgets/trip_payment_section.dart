@@ -6,26 +6,26 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/utils/payment_flow_log.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/past_payment_item.dart';
-import 'package:trael_app_abdelhamid/core/widgets/payment_option_card.dart';
-import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
-import 'package:trael_app_abdelhamid/model/home/user_payment_history_item.dart';
-import 'package:trael_app_abdelhamid/features/home/payment_successfull_screen.dart';
-import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
-import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/services/payment_service.dart';
-import 'package:trael_app_abdelhamid/services/trips_service.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/past_payment_item.dart';
+import 'package:travel_app_abdelhamid/core/widgets/payment_option_card.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
+import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
+import 'package:travel_app_abdelhamid/features/home/payment_successfull_screen.dart';
+import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
+import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/services/payment_service.dart';
+import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
 /// Payment summary + method list + Stripe Payment Sheet for the Trip tab.
 class TripPaymentSection extends StatefulWidget {
@@ -186,7 +186,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
 
     final bookingIdForMyTrip =
         tripProvider.enrolledBookingId ??
-            context.read<TripBookingProvider>().bookingId;
+        context.read<TripBookingProvider>().bookingId;
     tripProvider.rememberLatestPaymentBookingId(bookingIdForMyTrip);
     await _pollEnrolledTripAfterStripeSuccess(
       tripProvider,
@@ -217,10 +217,13 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       bookingId: bookingIdForMyTrip,
     );
     if (!mounted) return;
-    PaymentFlowLog.log('_onPaymentSucceeded: after success screen + final refresh', {
-      'pendingAmount': tripProvider.paymentDetails?.pendingAmount,
-      'paidAmount': tripProvider.paymentDetails?.paidAmount,
-    });
+    PaymentFlowLog.log(
+      '_onPaymentSucceeded: after success screen + final refresh',
+      {
+        'pendingAmount': tripProvider.paymentDetails?.pendingAmount,
+        'paidAmount': tripProvider.paymentDetails?.paidAmount,
+      },
+    );
     await context.read<ChatProvider>().loadConversations(silent: true);
     if (!mounted) return;
     tripProvider.notifyPaymentHistoryRefresh();
@@ -306,7 +309,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
         return;
       }
 
-      PaymentFlowLog.log('_payWithPlatformPay: Stripe confirm OK, calling _onPaymentSucceeded');
+      PaymentFlowLog.log(
+        '_payWithPlatformPay: Stripe confirm OK, calling _onPaymentSucceeded',
+      );
       await _onPaymentSucceeded(pending);
     } on StripeException catch (e) {
       final code = e.error.code;
@@ -320,7 +325,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       });
       ToastHelper.showError(e.error.message ?? 'Payment failed');
     } on StripeError catch (e) {
-      PaymentFlowLog.log('_payWithPlatformPay: StripeError', {'message': e.message});
+      PaymentFlowLog.log('_payWithPlatformPay: StripeError', {
+        'message': e.message,
+      });
       ToastHelper.showError(e.message);
     } catch (e) {
       PaymentFlowLog.log('_payWithPlatformPay: error', {'error': e.toString()});
@@ -407,7 +414,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       PaymentFlowLog.log('_onPayNow: presentPaymentSheet');
       await Stripe.instance.presentPaymentSheet();
 
-      PaymentFlowLog.log('_onPayNow: sheet completed, calling _onPaymentSucceeded');
+      PaymentFlowLog.log(
+        '_onPayNow: sheet completed, calling _onPaymentSucceeded',
+      );
       await _onPaymentSucceeded(pending);
     } on StripeException catch (e) {
       final code = e.error.code;
@@ -456,11 +465,13 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
 
         // No enrolled booking OR backend returned "all zeros" → show empty state CTA.
         // Some environments return `{ total:0, paid:0, pending:0 }` even without a booking.
-        final allZero = payment != null &&
+        final allZero =
+            payment != null &&
             payment.totalAmount.abs() < 0.0001 &&
             payment.paidAmount.abs() < 0.0001 &&
             payment.pendingAmount.abs() < 0.0001;
-        if (!loading && ((bid == null || bid.isEmpty) || payment == null || allZero)) {
+        if (!loading &&
+            ((bid == null || bid.isEmpty) || payment == null || allZero)) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
             child: Container(
@@ -587,7 +598,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
               _pastPaymentsBlock(context, bid),
             if (!loading) ...[
               if (payment != null && payment.pendingAmount > 0) ...[
-                Padding(  
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Column(
                     children: [
@@ -740,7 +751,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
               ),
             )
           else
-            ..._pastPayments.take(3).map(
+            ..._pastPayments
+                .take(3)
+                .map(
                   (e) => PastPaymentItem(
                     id: _paymentDisplayId(e),
                     amount: _formatPaymentAmount(e),

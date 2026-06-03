@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:trael_app_abdelhamid/model/profile/user_profile_model.dart';
-import 'package:trael_app_abdelhamid/services/user_profile_service.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
+import 'package:travel_app_abdelhamid/core/utils/image_compress_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/model/profile/user_profile_model.dart';
+import 'package:travel_app_abdelhamid/services/user_profile_service.dart';
 
 class ProfileProvider extends ChangeNotifier {
   UserProfile? _profile;
@@ -9,6 +11,9 @@ class ProfileProvider extends ChangeNotifier {
 
   bool _loading = false;
   bool get isLoading => _loading;
+
+  bool _updatingProfileImage = false;
+  bool get isUpdatingProfileImage => _updatingProfileImage;
 
   String? _error;
   String? get error => _error;
@@ -25,8 +30,32 @@ class ProfileProvider extends ChangeNotifier {
 
   List<String> selectedLanguages = [];
 
+  /// Maps API values like `english` to dropdown label `English`.
+  String? canonicalLanguage(String raw) {
+    final lower = raw.trim().toLowerCase();
+    if (lower.isEmpty) return null;
+    for (final opt in languageOptions) {
+      if (opt.toLowerCase() == lower) return opt;
+    }
+    return null;
+  }
+
+  List<String> normalizeSelectedLanguages(List<String> raw) {
+    for (final item in raw) {
+      final canonical = canonicalLanguage(item);
+      if (canonical != null) return [canonical];
+    }
+    return [];
+  }
+
   void updateSelectedLanguages(List<String> values) {
-    selectedLanguages = values;
+    if (values.isEmpty) {
+      selectedLanguages = [];
+    } else {
+      final pick = values.length == 1 ? values.first : values.last;
+      final canonical = canonicalLanguage(pick);
+      selectedLanguages = canonical != null ? [canonical] : [];
+    }
     notifyListeners();
   }
 
@@ -40,7 +69,7 @@ class ProfileProvider extends ChangeNotifier {
       final p = await UserProfileService.instance.getUserDetails();
       _profile = p;
       if (p != null) {
-        selectedLanguages = p.languages;
+        selectedLanguages = normalizeSelectedLanguages(p.languages);
       }
     } catch (e) {
       _error = e.toString();
@@ -58,7 +87,9 @@ class ProfileProvider extends ChangeNotifier {
     try {
       final p = await UserProfileService.instance.editProfile(profile: updated);
       _profile = p ?? updated;
-      selectedLanguages = _profile?.languages ?? selectedLanguages;
+      selectedLanguages = normalizeSelectedLanguages(
+        _profile?.languages ?? selectedLanguages,
+      );
       ToastHelper.showSuccess('Profile updated');
       return true;
     } catch (e) {
@@ -72,26 +103,41 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<bool> updateProfileImage(String filePath) async {
-    _loading = true;
+    if (_updatingProfileImage) return false;
+    _updatingProfileImage = true;
     _error = null;
     notifyListeners();
     try {
+      final uploadPath = await compressImageForUpload(filePath);
       final url = await UserProfileService.instance.changeProfileImage(
-        filePath: filePath,
+        filePath: uploadPath,
+        showErrorToast: false,
       );
       if (url != null && url.isNotEmpty && _profile != null) {
         _profile = _profile!.copyWith(profileImageRaw: url);
       }
       if (url != null && url.isNotEmpty) {
         ToastHelper.showSuccess('Profile image updated');
+        return true;
       }
-      return url != null;
+      ToastHelper.showError('Failed to update profile image');
+      return false;
+    } on ApiException catch (e) {
+      _error = e.message;
+      if (e.statusCode == 413) {
+        ToastHelper.showError(
+          'Image is too large. Please choose a smaller photo.',
+        );
+      } else {
+        ToastHelper.showError('Failed to update profile image');
+      }
+      return false;
     } catch (e) {
       _error = e.toString();
       ToastHelper.showError('Failed to update profile image');
       return false;
     } finally {
-      _loading = false;
+      _updatingProfileImage = false;
       notifyListeners();
     }
   }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
-import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/model/essential/currency_info_model.dart';
-import 'package:trael_app_abdelhamid/services/essential_service.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/model/essential/currency_info_model.dart';
+import 'package:travel_app_abdelhamid/services/essential_service.dart';
 
 class CurrencyMoneyScreen extends StatefulWidget {
   const CurrencyMoneyScreen({super.key});
@@ -210,9 +210,7 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 14.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: data.paymentOptions
-                  .map((o) => _bullet(o, 0))
-                  .toList(),
+              children: data.paymentOptions.map((o) => _bullet(o, 0)).toList(),
             ),
           ),
       ],
@@ -223,9 +221,10 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
     final tips = data.tips?.trim();
     if (tips == null || tips.isEmpty) return const SizedBox.shrink();
 
-    final lines = tips.split(RegExp(r'\r?\n')).map((s) => s.trim()).where(
-          (s) => s.isNotEmpty,
-        );
+    final lines = tips
+        .split(RegExp(r'\r?\n'))
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

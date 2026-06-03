@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:trael_app_abdelhamid/core/utils/prayer_time_helpers.dart';
-import 'package:trael_app_abdelhamid/model/prayer/prayer_time_model.dart';
-import 'package:trael_app_abdelhamid/services/prayer_service.dart';
+import 'package:travel_app_abdelhamid/core/utils/prayer_time_helpers.dart';
+import 'package:travel_app_abdelhamid/model/prayer/prayer_time_model.dart';
+import 'package:travel_app_abdelhamid/services/prayer_service.dart';
 
 /// Loads prayer times from the API and exposes the next prayer + countdown for the home screen.
 class PrayerTimesProvider extends ChangeNotifier {
@@ -22,7 +22,10 @@ class PrayerTimesProvider extends ChangeNotifier {
   int _fetchGeneration = 0;
 
   PrayerTimesProvider() {
-    _tick = Timer.periodic(const Duration(seconds: 30), (_) => notifyListeners());
+    _tick = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => notifyListeners(),
+    );
   }
 
   /// Fetches from API. Uses `showErrorToast: false` so home stays quiet on failure.
@@ -34,8 +37,9 @@ class PrayerTimesProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final list =
-          await PrayerService.instance.fetchPrayerTimes(showErrorToast: false);
+      final list = await PrayerService.instance.fetchPrayerTimes(
+        showErrorToast: false,
+      );
       if (id != _fetchGeneration) return;
       _items = list;
       _error = null;

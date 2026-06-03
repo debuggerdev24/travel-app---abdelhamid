@@ -1,13 +1,14 @@
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
-import 'package:trael_app_abdelhamid/model/profile/office_location_model.dart';
-import 'package:trael_app_abdelhamid/model/profile/team_member_model.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
+import 'package:travel_app_abdelhamid/model/profile/office_location_model.dart';
+import 'package:travel_app_abdelhamid/model/profile/team_member_model.dart';
 
 /// Locations & team under `/api/...`, app/trip reviews under `/api/user/...`.
 class ProfileContentService {
   ProfileContentService._internal();
-  static final ProfileContentService instance = ProfileContentService._internal();
+  static final ProfileContentService instance =
+      ProfileContentService._internal();
 
   String _public(String path) => '${AppConstants.apiPublicRoot}$path';
 
@@ -30,9 +31,7 @@ class ProfileContentService {
       final list = <OfficeLocation>[];
       for (final e in raw) {
         if (e is Map) {
-          list.add(
-            OfficeLocation.fromJson(Map<String, dynamic>.from(e)),
-          );
+          list.add(OfficeLocation.fromJson(Map<String, dynamic>.from(e)));
         }
       }
       if (list.isNotEmpty) {
@@ -57,9 +56,7 @@ class ProfileContentService {
           .toList();
     }
     if (data is Map) {
-      return [
-        TeamMemberModel.fromJson(Map<String, dynamic>.from(data)),
-      ];
+      return [TeamMemberModel.fromJson(Map<String, dynamic>.from(data))];
     }
     return [];
   }

@@ -1,12 +1,12 @@
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/features/auth/screens/forgot_password_screen.dart';
-import 'package:trael_app_abdelhamid/features/auth/screens/otp_verification_screen.dart';
-import 'package:trael_app_abdelhamid/features/auth/screens/reset_password_screen.dart';
-import 'package:trael_app_abdelhamid/features/auth/screens/sign_in_screen.dart';
-import 'package:trael_app_abdelhamid/features/auth/screens/sign_up_screen.dart';
-import 'package:trael_app_abdelhamid/features/tabs/tab_screen.dart';
+import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/forgot_password_screen.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/otp_verification_screen.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/reset_password_screen.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/sign_in_screen.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/sign_up_screen.dart';
+import 'package:travel_app_abdelhamid/features/tabs/tab_screen.dart';
 
 List<RouteBase> get authRoutes => [
   GoRoute(
@@ -42,9 +42,7 @@ List<RouteBase> get authRoutes => [
     builder: (context, state) {
       final tabParam = state.uri.queryParameters['tab'];
       final parsed = int.tryParse(tabParam ?? '');
-      final initialIndex = parsed != null
-          ? parsed.clamp(0, 3)
-          : 0;
+      final initialIndex = parsed != null ? parsed.clamp(0, 3) : 0;
       return TabScreen(initialIndex: initialIndex);
     },
   ),

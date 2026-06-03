@@ -1,3 +1,5 @@
+import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
+
 class PersonDetailsModel {
   final String id;
   final String travellerCode;
@@ -43,7 +45,7 @@ class PersonDetailsModel {
       phoneNumber: json['phoneNumber'] ?? '',
       firstName: json['firstName'] ?? '',
       surname: json['surname'] ?? '',
-      dateOfBirth: json['dateOfBirth'],
+      dateOfBirth: formatDateToYyyyMmDd(json['dateOfBirth']?.toString()),
       placeOfBirth: json['placeOfBirth'] ?? '',
       nationality: json['nationality'] ?? '',
       address: json['address'] ?? '',

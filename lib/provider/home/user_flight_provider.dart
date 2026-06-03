@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:trael_app_abdelhamid/model/user_flight_model.dart';
-import 'package:trael_app_abdelhamid/services/trips_service.dart';
+import 'package:travel_app_abdelhamid/model/user_flight_model.dart';
+import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
 class FlightProvider extends ChangeNotifier {
   FlightDetailsModel? _flightDetails;
@@ -32,7 +32,9 @@ class FlightProvider extends ChangeNotifier {
     try {
       debugPrint('🔵 [FlightProvider] Fetching flights for tripId: $tripId');
       _flightDetails = await TripsService.instance.getMyFlights(tripId);
-      debugPrint('✅ [FlightProvider] Flights fetched: ${_flightDetails?.flights.length} flights');
+      debugPrint(
+        '✅ [FlightProvider] Flights fetched: ${_flightDetails?.flights.length} flights',
+      );
     } catch (e) {
       _error = e.toString();
       debugPrint('❌ [FlightProvider] Error: $_error');

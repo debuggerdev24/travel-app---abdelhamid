@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:trael_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
-import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart' as hp;
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
+import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart' as hp;
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class RoomDetailsScreen extends StatefulWidget {
   const RoomDetailsScreen({super.key});

@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/feed_back_card.dart';
-import 'package:trael_app_abdelhamid/core/widgets/packge_details_card.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/feed_back_card.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
+import 'package:travel_app_abdelhamid/core/widgets/packge_details_card.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 
 class TripDetailsScreen extends StatefulWidget {
   const TripDetailsScreen({super.key});
@@ -46,6 +47,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
 
     final isUpcoming = tripProvider.upcomingTripList.contains(trip);
     final details = bookingProvider.tripDetails;
+    final display = details ?? trip;
 
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
@@ -71,7 +73,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         30.w.horizontalSpace,
                         Expanded(
                           child: AppText(
-                            text: details?.title ?? trip.title,
+                            text: display.title,
                             overflow: TextOverflow.ellipsis,
                             style: textStyle32Bold.copyWith(
                               fontSize: 26.sp,
@@ -86,20 +88,14 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          Image.network(
-                            trip.imageUrl.replaceAll("//uploads", "/uploads"),
+                          NetworkImageWithShimmer(
+                            imageUrl: display.imageUrl.replaceAll(
+                              "//uploads",
+                              "/uploads",
+                            ),
                             height: 250.h,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Center(
-                                  child: Container(
-                                    height: 250.h,
-                                    width: double.infinity,
-                                    color: Colors.grey[300],
-                                    child: const Icon(Icons.broken_image),
-                                  ),
-                                ),
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 27.w),
@@ -109,7 +105,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 12.h.verticalSpace,
 
                                 AppText(
-                                  text: details?.title ?? trip.title,
+                                  text: display.title,
                                   style: textStyle16SemiBold,
                                 ),
 
@@ -121,8 +117,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     14.w.horizontalSpace,
                                     Expanded(
                                       child: AppText(
-                                        text:
-                                            details?.location ?? trip.location,
+                                        text: display.location,
                                         style: textStyle14Regular.copyWith(
                                           color: AppColors.primaryColor,
                                         ),
@@ -132,7 +127,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     SvgIcon(AppAssets.calendar, size: 22.w),
                                     14.w.horizontalSpace,
                                     AppText(
-                                      text: details?.date ?? trip.date,
+                                      text: display.date,
                                       style: textStyle14Regular.copyWith(
                                         color: AppColors.primaryColor,
                                       ),
@@ -144,10 +139,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 sectionTitle("About Us"),
                                 2.h.verticalSpace,
                                 AppText(
-                                  text:
-                                      (details?.description.isNotEmpty ?? false)
-                                      ? details!.description
-                                      : trip.description,
+                                  text: display.description,
                                   style: textStyle14Regular.copyWith(
                                     color: AppColors.primaryColor.setOpacity(
                                       0.5,
@@ -175,15 +167,13 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                             .selectPackage(package),
                                       ),
                                     )
-                                  else
-                                    ...tripProvider.packageList.map(
-                                      (package) => PackageDetailsCard(
-                                        package: package,
-                                        isSelected:
-                                            tripProvider.selectedPackage ==
-                                            package,
-                                        onTap: () =>
-                                            tripProvider.selectPackage(package),
+                                  else if (details != null)
+                                    AppText(
+                                      text: 'No packages available for this trip.',
+                                      style: textStyle14Regular.copyWith(
+                                        color: AppColors.primaryColor.setOpacity(
+                                          0.6,
+                                        ),
                                       ),
                                     ),
 
@@ -203,21 +193,25 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   ),
                                   42.h.verticalSpace,
                                   AppButton(
-                                    title: "Select Package & Room Type",
+                                    title: bookingProvider.isBooked
+                                        ? 'Continue to Room Type'
+                                        : 'Select Package & Room Type',
                                     isLoading: bookingProvider.isLoading,
                                     onTap: () async {
                                       final success = await bookingProvider
-                                          .bookPackage();
+                                          .proceedToRoomSelection();
+
+                                      if (!context.mounted) return;
 
                                       if (success) {
-                                        ToastHelper.showSuccess(
-                                          "Package selected successfully",
-                                        );
-                                        if (context.mounted) {
-                                          context.pushNamed(
-                                            UserAppRoutes.roomDetailScren.name,
+                                        if (!bookingProvider.isBooked) {
+                                          ToastHelper.showSuccess(
+                                            'Package selected successfully',
                                           );
                                         }
+                                        context.pushNamed(
+                                          UserAppRoutes.roomDetailScren.name,
+                                        );
                                       }
                                     },
                                   ),

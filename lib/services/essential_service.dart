@@ -1,18 +1,21 @@
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
-import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
-import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
-import 'package:trael_app_abdelhamid/model/essential/currency_info_model.dart';
-import 'package:trael_app_abdelhamid/model/essential/emergency_contacts_model.dart';
-import 'package:trael_app_abdelhamid/model/essential/health_tip_model.dart';
-import 'package:trael_app_abdelhamid/model/essential/local_info_model.dart';
-import 'package:trael_app_abdelhamid/model/essential/packing_list_model.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
+import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/model/essential/currency_info_model.dart';
+import 'package:travel_app_abdelhamid/model/essential/emergency_contacts_model.dart';
+import 'package:travel_app_abdelhamid/model/essential/health_tip_model.dart';
+import 'package:travel_app_abdelhamid/model/essential/local_info_model.dart';
+import 'package:travel_app_abdelhamid/model/essential/packing_list_model.dart';
 
 /// Backend returns HTTP 400 with `{ status: 0, message: "... not found" }` when a section has no CMS data.
-bool _isEssentialNotFoundEmpty(ApiException e, {required String messageMustContain}) {
+bool _isEssentialNotFoundEmpty(
+  ApiException e, {
+  required String messageMustContain,
+}) {
   if (e.statusCode == 400) return true;
-  final raw = e.data; 
+  final raw = e.data;
   if (raw is Map) {
     final m = Map<String, dynamic>.from(raw);
     if (m['status'] == 0) {
@@ -30,7 +33,9 @@ class EssentialService {
 
   String get _apiRoot => AppConstants.imageBaseUrl;
 
-  Future<PackingListResponse> getPackingList({bool showErrorToast = false}) async {
+  Future<PackingListResponse> getPackingList({
+    bool showErrorToast = false,
+  }) async {
     try {
       final url = '$_apiRoot${Endpoints.essentialPackingList}';
       final response = await BaseApiService.instance.get(
@@ -67,11 +72,7 @@ class EssentialService {
         try {
           return CurrencyInfoData.fromJson(data.cast<String, dynamic>());
         } catch (e, st) {
-          LogHelper.instance.error(
-            'getCurrencyInfo parse',
-            e,
-            st,
-          );
+          LogHelper.instance.error('getCurrencyInfo parse', e, st);
           throw ApiException(
             statusCode: 0,
             message: 'Invalid currency data from server.',
@@ -102,11 +103,7 @@ class EssentialService {
         try {
           return EmergencyContactsData.fromJson(data.cast<String, dynamic>());
         } catch (e, st) {
-          LogHelper.instance.error(
-            'getEmergencyContacts parse',
-            e,
-            st,
-          );
+          LogHelper.instance.error('getEmergencyContacts parse', e, st);
           throw ApiException(
             statusCode: 0,
             message: 'Invalid emergency contacts data from server.',
@@ -140,11 +137,7 @@ class EssentialService {
       try {
         out.add(LocalInfoItem.fromJson(e.cast<String, dynamic>()));
       } catch (err, st) {
-        LogHelper.instance.error(
-          'getLocalInfo item $i',
-          err,
-          st,
-        );
+        LogHelper.instance.error('getLocalInfo item $i', err, st);
       }
     }
     return out;
@@ -168,11 +161,7 @@ class EssentialService {
       try {
         out.add(HealthTipItem.fromJson(e.cast<String, dynamic>()));
       } catch (err, st) {
-        LogHelper.instance.error(
-          'getHealthTips item $i',
-          err,
-          st,
-        );
+        LogHelper.instance.error('getHealthTips item $i', err, st);
       }
     }
     return out;

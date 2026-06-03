@@ -1,9 +1,9 @@
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
-import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
-import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
-import 'package:trael_app_abdelhamid/model/umrah/umrah_guide_step_model.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
+import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/model/umrah/umrah_guide_step_model.dart';
 
 /// CMS stores Umrah steps as [Tour Guide] documents (see backend `tourGuideController`).
 class UmrahGuideService {
@@ -12,7 +12,9 @@ class UmrahGuideService {
 
   String get _apiRoot => AppConstants.imageBaseUrl;
 
-  Future<List<UmrahGuideStepModel>> fetchSteps({bool showErrorToast = false}) async {
+  Future<List<UmrahGuideStepModel>> fetchSteps({
+    bool showErrorToast = false,
+  }) async {
     final url = '$_apiRoot${Endpoints.tourGuideFetchDetails}';
     final response = await BaseApiService.instance.get(
       url,
@@ -31,9 +33,7 @@ class UmrahGuideService {
         final e = data[i];
         if (e is! Map) continue;
         try {
-          out.add(
-            UmrahGuideStepModel.fromJson(e.cast<String, dynamic>()),
-          );
+          out.add(UmrahGuideStepModel.fromJson(e.cast<String, dynamic>()));
         } catch (err, st) {
           LogHelper.instance.error('fetchSteps item $i', err, st);
         }
@@ -42,9 +42,7 @@ class UmrahGuideService {
     }
     if (data is Map) {
       try {
-        return [
-          UmrahGuideStepModel.fromJson(data.cast<String, dynamic>()),
-        ];
+        return [UmrahGuideStepModel.fromJson(data.cast<String, dynamic>())];
       } catch (err, st) {
         LogHelper.instance.error('fetchSteps single', err, st);
       }

@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:trael_app_abdelhamid/provider/home/prayer_times_provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/features/home/home_screen.dart';
-import 'package:trael_app_abdelhamid/features/profile/profile_screen.dart';
-import 'package:trael_app_abdelhamid/features/trip/trip_screen.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/features/chat/chat_screen.dart';
+import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/features/home/home_screen.dart';
+import 'package:travel_app_abdelhamid/features/profile/profile_screen.dart';
+import 'package:travel_app_abdelhamid/features/trip/trip_screen.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/features/chat/chat_screen.dart';
 
 class TabScreen extends StatefulWidget {
   final int initialIndex;
@@ -23,7 +23,7 @@ class TabScreen extends StatefulWidget {
 }
 
 // class _TabScreenState extends State<TabScreen> {
-//   late int currentIndex; 
+//   late int currentIndex;
 
 //   final List<Widget> screens = [
 //     HomeScreen(),

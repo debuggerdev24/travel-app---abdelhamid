@@ -1,4 +1,4 @@
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 
 enum PaymentMethodEnum {
   googlePay,

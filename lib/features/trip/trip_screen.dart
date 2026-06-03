@@ -4,28 +4,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_chip.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/details_card.dart';
-import 'package:trael_app_abdelhamid/core/widgets/document_card.dart';
-import 'package:trael_app_abdelhamid/core/widgets/itinerarystep_card.dart';
-import 'package:trael_app_abdelhamid/core/utils/document_download_helper.dart';
-import 'package:trael_app_abdelhamid/core/utils/trip_detail_refresh.dart';
-import 'package:trael_app_abdelhamid/features/trip/widgets/trip_payment_section.dart';
-import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
-import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
-import 'package:trael_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:trael_app_abdelhamid/provider/home/user_flight_provider.dart';
-import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_chip.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/details_card.dart';
+import 'package:travel_app_abdelhamid/core/widgets/document_card.dart';
+import 'package:travel_app_abdelhamid/core/widgets/itinerarystep_card.dart';
+import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/trip_detail_refresh.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/trip_payment_section.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
+import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
+import 'package:travel_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/user_flight_provider.dart';
+import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TripScreen extends StatefulWidget {
@@ -109,17 +111,11 @@ class _TripScreenState extends State<TripScreen> {
                             width: double.infinity,
                             fit: BoxFit.cover,
                           )
-                        : Image.network(
-                            trip.imageUrl,
+                        : NetworkImageWithShimmer(
+                            imageUrl: trip.imageUrl,
                             height: 250.h,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  height: 250.h,
-                                  color: Colors.grey[300],
-                                  child: const Icon(Icons.broken_image),
-                                ),
                           ),
 
                   // Trip title and location
@@ -439,7 +435,7 @@ class _TripScreenState extends State<TripScreen> {
                 final idx = entry.key;
                 final hotel = entry.value;
                 final room = hotel.rooms.isNotEmpty ? hotel.rooms.first : null;
-                final facilities = hotel.facilities.join(', ');
+                final facilities = hotel.facilitiesDisplayText;
 
                 final info = <String, String>{
                   "Name": hotel.hotelName.isEmpty ? "-" : hotel.hotelName,
@@ -449,8 +445,8 @@ class _TripScreenState extends State<TripScreen> {
                   "Phone": hotel.hotelContact.isEmpty
                       ? "-"
                       : hotel.hotelContact,
-                  "Check-in": hotel.stayInfo.checkIn ?? "-",
-                  "Check-out": hotel.stayInfo.checkOut ?? "-",
+                  "Check-in": formatDateTimeForDisplay(hotel.stayInfo.checkIn),
+                  "Check-out": formatDateTimeForDisplay(hotel.stayInfo.checkOut),
                   if (room != null)
                     "Room Type": room.roomType.isEmpty ? "-" : room.roomType,
                   if (room != null)
@@ -725,7 +721,7 @@ class _TripScreenState extends State<TripScreen> {
     final info = <String, String>{
       'File Type': doc.fileType ?? '—',
       if (doc.uploadedDate != null && doc.uploadedDate!.isNotEmpty)
-        'Uploaded': doc.uploadedDate!,
+        'Uploaded': formatDateForDisplay(doc.uploadedDate),
     };
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
@@ -771,7 +767,8 @@ class _TripScreenState extends State<TripScreen> {
     final info = <String, String>{
       if (ticket.flightName != null && ticket.flightName!.isNotEmpty)
         'Flight': ticket.flightName!,
-      if (ticket.date != null && ticket.date!.isNotEmpty) 'Date': ticket.date!,
+      if (ticket.date != null && ticket.date!.isNotEmpty)
+        'Date': formatDateForDisplay(ticket.date),
       'File Type': ticket.fileType ?? '—',
     };
     final title = showMemberName
@@ -822,8 +819,8 @@ class _TripScreenState extends State<TripScreen> {
           networkThumbnailUrl: thumb.isNotEmpty ? thumb : null,
           title: h.hotelName,
           info: {
-            'Check-in': h.checkIn ?? '—',
-            'Check-out': h.checkOut ?? '—',
+            'Check-in': formatDateTimeForDisplay(h.checkIn),
+            'Check-out': formatDateTimeForDisplay(h.checkOut),
             'File Type': h.fileType ?? 'Image',
           },
           button1: 'View',
@@ -851,15 +848,11 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  Widget _buildBundleInsuranceCard(
-    BuildContext context,
-    BundleInsuranceDoc d,
-  ) {
+  Widget _buildBundleInsuranceCard(BuildContext context, BundleInsuranceDoc d) {
     final info = <String, String>{
-      if (d.coverage != null && d.coverage!.isNotEmpty)
-        'Coverage': d.coverage!,
+      if (d.coverage != null && d.coverage!.isNotEmpty) 'Coverage': d.coverage!,
       if (d.uploadedDate != null && d.uploadedDate!.isNotEmpty)
-        'Uploaded': d.uploadedDate!,
+        'Uploaded': formatDateForDisplay(d.uploadedDate),
     };
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
@@ -892,10 +885,7 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  Widget _buildBundleChecklistCard(
-    BuildContext context,
-    BundleChecklistDoc d,
-  ) {
+  Widget _buildBundleChecklistCard(BuildContext context, BundleChecklistDoc d) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: DocumentCard(
@@ -906,7 +896,8 @@ class _TripScreenState extends State<TripScreen> {
           subtitle: 'Travel Document',
           info: {
             if (d.fileType != null) 'File Type': d.fileType!,
-            if (d.uploadedDate != null) 'Uploaded': d.uploadedDate!,
+            if (d.uploadedDate != null && d.uploadedDate!.isNotEmpty)
+              'Uploaded': formatDateForDisplay(d.uploadedDate),
           },
           button1: 'View',
           button2: 'Download',
@@ -927,11 +918,7 @@ class _TripScreenState extends State<TripScreen> {
         },
         onSecondaryTap: () {
           final url = d.resolvedPrimaryFileUrl ?? d.resolvedThumbnailUrl;
-          _shareDocument(
-            context,
-            networkUrl: url,
-            title: 'Checklist',
-          );
+          _shareDocument(context, networkUrl: url, title: 'Checklist');
         },
       ),
     );
@@ -942,8 +929,8 @@ class _TripScreenState extends State<TripScreen> {
     HotelVoucherModel h,
   ) {
     final thumb = serverMediaUrl(h.hotelImage) ?? '';
-    final checkIn = h.stayInfo.checkIn ?? '-';
-    final checkOut = h.stayInfo.checkOut ?? '-';
+    final checkIn = formatDateTimeForDisplay(h.stayInfo.checkIn);
+    final checkOut = formatDateTimeForDisplay(h.stayInfo.checkOut);
 
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
@@ -1059,10 +1046,8 @@ class _TripScreenState extends State<TripScreen> {
           );
         }
 
-        final showEmpty = !hasLocal &&
-            !hasRemote &&
-            !hasHotelRows &&
-            !hasTravelAdmin;
+        final showEmpty =
+            !hasLocal && !hasRemote && !hasHotelRows && !hasTravelAdmin;
 
         final apiPassVisaWidgets = <Widget>[];
         final apiFlightWidgets = <Widget>[];
@@ -1173,16 +1158,14 @@ class _TripScreenState extends State<TripScreen> {
                 ],
 
                 if (docs.any(
-                      (d) =>
-                          d["type"] == "Passport" || d["type"] == "Visa",
+                      (d) => d["type"] == "Passport" || d["type"] == "Visa",
                     ) ||
                     hasPassVisaApi) ...[
                   AppText(text: "Passport & Visa", style: textStyle16SemiBold),
                   12.h.verticalSpace,
                   ...docs
                       .where(
-                        (d) =>
-                            d["type"] == "Passport" || d["type"] == "Visa",
+                        (d) => d["type"] == "Passport" || d["type"] == "Visa",
                       )
                       .map(
                         (doc) => Padding(

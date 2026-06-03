@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 
 class TripCard extends StatelessWidget {
   final String image;
@@ -55,24 +56,21 @@ class TripCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     )
                   : (resolvedImageUrl == null || resolvedImageUrl.isEmpty)
-                      ? Container(
-                          height: 200.h,
-                          width: double.infinity,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.broken_image),
-                        )
-                      : Image.network(
-                          resolvedImageUrl,
-                          height: 200.h,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                            height: 200.h,
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.broken_image),
-                          ),
-                        ),
+                  ? Container(
+                      height: 200.h,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.broken_image),
+                    )
+                  : NetworkImageWithShimmer(
+                      imageUrl: resolvedImageUrl,
+                      height: 200.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(12.r),
+                      ),
+                    ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),

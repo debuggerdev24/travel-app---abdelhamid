@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/past_payment_item.dart';
-import 'package:trael_app_abdelhamid/model/home/user_payment_history_item.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/services/trips_service.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/past_payment_item.dart';
+import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
 class PaymentHistoryScreen extends StatefulWidget {
   const PaymentHistoryScreen({super.key, this.bookingId});
@@ -107,38 +107,38 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _items.isEmpty
-                    ? Center(
-                        child: AppText(
-                          text: 'No payments yet.',
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor.setOpacity(0.6),
-                          ),
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: EdgeInsets.only(bottom: 10.h),
-                        itemCount: _items.length,
-                        itemBuilder: (context, index) {
-                          final e = _items[index];
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 24.w),
-                            child: PastPaymentItem(
-                              id: _displayId(e),
-                              amount: _fmtAmount(e),
-                              date: _fmtDate(e.date),
-                              isConfirmed: e.isSucceeded,
-                              onViewReceiptTap: () {
-                                context.pushNamed(
-                                  UserAppRoutes.viewPaymentReceiptScreen.name,
-                                  extra: <String, dynamic>{
-                                    'paymentId': e.paymentId,
-                                  },
-                                );
-                              },
-                            ),
-                          );
-                        },
+                ? Center(
+                    child: AppText(
+                      text: 'No payments yet.',
+                      style: textStyle14Regular.copyWith(
+                        color: AppColors.primaryColor.setOpacity(0.6),
                       ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: EdgeInsets.only(bottom: 10.h),
+                    itemCount: _items.length,
+                    itemBuilder: (context, index) {
+                      final e = _items[index];
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: PastPaymentItem(
+                          id: _displayId(e),
+                          amount: _fmtAmount(e),
+                          date: _fmtDate(e.date),
+                          isConfirmed: e.isSucceeded,
+                          onViewReceiptTap: () {
+                            context.pushNamed(
+                              UserAppRoutes.viewPaymentReceiptScreen.name,
+                              extra: <String, dynamic>{
+                                'paymentId': e.paymentId,
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

@@ -1,168 +1,391 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:provider/provider.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/utils/jwt_user_id.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/model/chat/group_info_model.dart';
+import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
+import 'package:travel_app_abdelhamid/services/chat_api_service.dart';
 
-class GroupInfoScreen extends StatelessWidget {
+class GroupInfoScreen extends StatefulWidget {
+  /// Chat document id (messages, delete chat).
+  final String chatId;
+
+  /// Group document id for profile/members APIs (`groupId` query param).
+  final String groupId;
   final String name;
   final String image;
+  final String? avatarUrl;
 
-  const GroupInfoScreen({super.key, required this.name, required this.image});
+  const GroupInfoScreen({
+    super.key,
+    required this.chatId,
+    required this.groupId,
+    required this.name,
+    required this.image,
+    this.avatarUrl,
+  });
+
+  @override
+  State<GroupInfoScreen> createState() => _GroupInfoScreenState();
+}
+
+class _GroupInfoScreenState extends State<GroupInfoScreen> {
+  GroupInfoModel? _info;
+  bool _loading = true;
+  String? _error;
+  bool _actionInProgress = false;
+  bool _notificationsOn = true;
+  bool _showAllMembers = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGroupInfo();
+  }
+
+  Future<void> _loadGroupInfo() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      final profileFuture = ChatApiService.instance.getChatProfile(
+        groupId: widget.groupId,
+        showErrorToast: false,
+      );
+      final membersFuture = ChatApiService.instance.getGroupMembers(
+        chatId: widget.groupId,
+        showErrorToast: false,
+      );
+
+      final results = await Future.wait([profileFuture, membersFuture]);
+      final profile = Map<String, dynamic>.from(results[0] as Map);
+      final membersRaw = results[1] as List<Map<String, dynamic>>;
+      final members = membersRaw
+          .map((e) => GroupMemberModel.fromJson(e))
+          .where((m) => m.memberId.isNotEmpty)
+          .toList();
+
+      if (!mounted) return;
+      setState(() {
+        _info = GroupInfoModel.fromProfileJson(
+          chatId: widget.chatId,
+          json: profile,
+          members: members,
+          currentUserId: currentUserIdOrNull(),
+        );
+        _loading = false;
+      });
+      final groupImage = _info?.imageUrl;
+      if (groupImage != null && groupImage.isNotEmpty) {
+        context.read<ChatProvider>().updateConversationAvatar(
+          widget.chatId,
+          groupImage,
+        );
+      }
+    } catch (e, st) {
+      LogHelper.instance.error('loadGroupInfo', e, st);
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = 'Could not load group info. Please try again.';
+      });
+    }
+  }
+
+  Future<void> _exitGroup() async {
+    final info = _info;
+    if (info == null || _actionInProgress) return;
+
+    final uid = currentUserIdOrNull();
+    final self = info.memberForUser(uid);
+    if (self == null) {
+      ToastHelper.showError('Could not find your membership in this group.');
+      return;
+    }
+
+    final confirmed = await _confirmAction(
+      title: 'Exit group?',
+      message: 'You will no longer receive messages from this group.',
+      confirmLabel: 'Exit',
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _actionInProgress = true);
+    try {
+      await ChatApiService.instance.removeGroupMember(
+        chatId: widget.groupId,
+        memberId: self.memberId,
+      );
+      if (!mounted) return;
+      context.read<ChatProvider>().loadConversations(silent: true);
+      ToastHelper.showSuccess('You left the group.');
+      _popToChatList();
+    } catch (e, st) {
+      LogHelper.instance.error('exitGroup', e, st);
+      if (mounted) setState(() => _actionInProgress = false);
+    }
+  }
+
+  Future<void> _deleteGroup() async {
+    final info = _info;
+    if (info == null || _actionInProgress) return;
+    if (!info.isCurrentUserAdmin) {
+      ToastHelper.showError('Only admins can delete this group.');
+      return;
+    }
+
+    final confirmed = await _confirmAction(
+      title: 'Delete group?',
+      message: 'This will permanently delete the group for everyone.',
+      confirmLabel: 'Delete',
+      isDestructive: true,
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _actionInProgress = true);
+    try {
+      await ChatApiService.instance.deleteChat(chatId: widget.chatId);
+      if (!mounted) return;
+      context.read<ChatProvider>().loadConversations(silent: true);
+      ToastHelper.showSuccess('Group deleted.');
+      _popToChatList();
+    } catch (e, st) {
+      LogHelper.instance.error('deleteGroup', e, st);
+      if (mounted) setState(() => _actionInProgress = false);
+    }
+  }
+
+  void _popToChatList() {
+    var pops = 0;
+    while (context.canPop() && pops < 2) {
+      context.pop();
+      pops++;
+    }
+  }
+
+  Future<bool?> _confirmAction({
+    required String title,
+    required String message,
+    required String confirmLabel,
+    bool isDestructive = false,
+  }) {
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              confirmLabel,
+              style: TextStyle(
+                color: isDestructive ? AppColors.redColor : AppColors.blueColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+            ? _buildError()
+            : _buildContent(_info!),
+      ),
+    );
+  }
+
+  Widget _buildError() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppText(
+              textAlign: TextAlign.center,
+              text: _error!,
+              style: textStyle14Regular.copyWith(
+                color: AppColors.primaryColor.setOpacity(0.6),
+              ),
+            ),
+            20.h.verticalSpace,
+            AppActionButton(
+              label: 'Retry',
+              icon: AppAssets.arrow,
+              color: AppColors.blueColor,
+              onTap: _loadGroupInfo,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(GroupInfoModel info) {
+    final visibleMembers = _showAllMembers
+        ? info.members
+        : info.members.take(3).toList();
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 60.h,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned(
+                  left: 0,
+                  child: GestureDetector(
+                    onTap: () => context.pop(),
+                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                  ),
+                ),
+                Center(
+                  child: AppText(
+                    text: 'Group Info',
+                    style: textStyle32Bold.copyWith(
+                      fontSize: 26.sp,
+                      color: AppColors.secondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          20.h.verticalSpace,
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 60.h,
-                child: Stack(
-                  alignment: Alignment.center,
+              NetworkAvatar(
+                imageUrl: info.imageUrl,
+                radius: 48.r,
+                fallbackKind: AvatarFallbackKind.group,
+              ),
+              16.w.horizontalSpace,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Positioned(
-                      left: 0,
-                      child: GestureDetector(
-                        onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    AppText(
+                      text: '${info.name} - Group',
+                      style: textStyle18Bold.copyWith(
+                        fontSize: 18.sp,
+                        color: AppColors.primaryColor,
                       ),
                     ),
-                    Center(
-                      child: AppText(
-                        text: "Group Info",
-                        style: textStyle32Bold.copyWith(
-                          fontSize: 26.sp,
-                          color: AppColors.secondary,
+                    if (info.destination != null) ...[
+                      5.h.verticalSpace,
+                      AppText(
+                        text: info.destination!,
+                        style: textStyle14Regular.copyWith(
+                          fontSize: 16.sp,
+                          color: AppColors.primaryColor,
                         ),
                       ),
-                    ),
+                    ],
+                    if (info.dateRange != null) ...[
+                      5.h.verticalSpace,
+                      AppText(
+                        text: info.dateRange!,
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
-
-              20.h.verticalSpace,
-
-              /// ----------------------
-              /// GROUP TOP SECTION UI
-              /// ----------------------
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Group Image
-                  CircleAvatar(
-                    radius: 48.r,
-
-                    backgroundImage: AssetImage(image),
-                  ),
-
-                  16.w.horizontalSpace,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText(
-                          text: "$name - Group",
-                          style: textStyle18Bold.copyWith(
-                            fontSize: 18.sp,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                        5.h.verticalSpace,
-
-                        AppText(
-                          text: "Makkah, Madinah",
-                          style: textStyle14Regular.copyWith(
-                            fontSize: 16.sp,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                        5.h.verticalSpace,
-                        AppText(
-                          text: "10 – 20 Feb 2025",
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-
-                        SizedBox(height: 8.h),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              12.h.verticalSpace,
-              GestureDetector(
-                onTap: () {},
-                child: AppText(
-                  text: "This group is for updates & travel tips",
-                  style: textStyle14Regular.copyWith(
-                    fontSize: 16.sp,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ),
-
-              25.h.verticalSpace,
-
-              _buildInfoRow("Created By", "Ali Khan (Admin)"),
-              5.h.verticalSpace,
-              Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-              5.h.verticalSpace,
-              _buildInfoRow("Created On", "01 Jan 2025"),    
-
-              20.h.verticalSpace,
-
-              _buildNotificationSwitch(),
-
-              30.h.verticalSpace,
-
-              _buildSharedMedia(),
-
-              25.h.verticalSpace,
-              AppText(
-                text: "Members",
-                style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
-              ),
-              14.h.verticalSpace,
-              _buildMembersList(),
-
-              35.h.verticalSpace,
-
-              Row(
-                children: [
-                  Expanded(
-                    child: AppActionButton(
-                      label: "Exit",
-                      icon: AppAssets.exit,
-                      color: AppColors.blueColor,
-                      onTap: () {},
-                    ),
-                  ),
-                  SizedBox(width: 15.w),
-                  Expanded(
-                    child: AppActionButton(
-                      label: "Delete",
-                      icon: AppAssets.delete,
-                      color: AppColors.redColor,
-                      onTap: () {},
-                    ),
-                  ),
-                ],
-              ),
-              42.h.verticalSpace,
             ],
           ),
-        ),
+          if (info.description != null && info.description!.isNotEmpty) ...[
+            12.h.verticalSpace,
+            AppText(
+              text: info.description!,
+              style: textStyle14Regular.copyWith(
+                fontSize: 16.sp,
+                color: AppColors.primaryColor,
+              ),
+            ),
+          ],
+          25.h.verticalSpace,
+          if (info.createdByLabel != null && info.createdByLabel!.isNotEmpty)
+            _buildInfoRow('Created By', info.createdByLabel!),
+          if (info.createdByLabel != null && info.createdByLabel!.isNotEmpty)
+            5.h.verticalSpace,
+          if (info.createdByLabel != null && info.createdByLabel!.isNotEmpty)
+            Divider(color: AppColors.primaryColor.setOpacity(0.2)),
+          if (info.createdOnLabel != null && info.createdOnLabel!.isNotEmpty) ...[
+            5.h.verticalSpace,
+            _buildInfoRow('Created On', info.createdOnLabel!),
+          ],
+          20.h.verticalSpace,
+          _buildNotificationSwitch(),
+          30.h.verticalSpace,
+          _buildSharedMedia(info),
+          25.h.verticalSpace,
+          AppText(
+            text: 'Members',
+            style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
+          ),
+          14.h.verticalSpace,
+          _buildMembersList(info, visibleMembers),
+          35.h.verticalSpace,
+          if (_actionInProgress)
+            const Center(child: CircularProgressIndicator())
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: AppActionButton(
+                    label: 'Exit',
+                    icon: AppAssets.exit,
+                    color: AppColors.blueColor,
+                    onTap: _exitGroup,
+                  ),
+                ),
+                SizedBox(width: 15.w),
+                if (info.isCurrentUserAdmin)
+                  Expanded(
+                    child: AppActionButton(
+                      label: 'Delete',
+                      icon: AppAssets.delete,
+                      color: AppColors.redColor,
+                      onTap: _deleteGroup,
+                    ),
+                  ),
+              ],
+            ),
+          42.h.verticalSpace,
+        ],
       ),
     );
   }
@@ -178,44 +401,35 @@ class GroupInfoScreen extends StatelessWidget {
             fontSize: 14.sp,
           ),
         ),
-        AppText(
-          text: value,
-          style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+        Flexible(
+          child: AppText(
+            textAlign: TextAlign.end,
+            text: value,
+            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildNotificationSwitch() {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            AppText(
-              text: "Notification",
-              style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
-            ),
-
-            CustomSwitchButton(
-              initialValue: true,
-              onChanged: (value) {
-                print("Notification status: $value");
-              },
-            ),
-          ],
-        );
-      },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        AppText(
+          text: 'Notification',
+          style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
+        ),
+        CustomSwitchButton(
+          initialValue: _notificationsOn,
+          onChanged: (value) => setState(() => _notificationsOn = value),
+        ),
+      ],
     );
   }
 
-  Widget _buildSharedMedia() {
-    final mediaList = [
-      AppAssets.trip1,
-      AppAssets.trip2,
-      AppAssets.trip3,
-      AppAssets.trip4,
-    ];
+  Widget _buildSharedMedia(GroupInfoModel info) {
+    final media = info.sharedMedia.where((m) => m.isImage).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,125 +438,145 @@ class GroupInfoScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppText(
-              text: "Shared Media & Docs",
+              text: 'Shared Media & Docs',
               style: textStyle18Bold.copyWith(
                 color: AppColors.primaryColor,
                 fontSize: 18.sp,
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(26.r),
-                border: Border.all(color: AppColors.secondary),
-              ),
-              child: AppText(
-                text: "View All",
-                style: textStyle14Medium.copyWith(
-                  color: AppColors.secondary,
-                  fontSize: 12.sp,
+            if (media.isNotEmpty)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(26.r),
+                  border: Border.all(color: AppColors.secondary),
+                ),
+                child: AppText(
+                  text: 'View All',
+                  style: textStyle14Medium.copyWith(
+                    color: AppColors.secondary,
+                    fontSize: 12.sp,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
         19.h.verticalSpace,
-
-        SizedBox(
-          height: 100.h,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: mediaList.length,
-            separatorBuilder: (_, __) => SizedBox(width: 10.w),
-            itemBuilder: (_, index) {
-              return Container(
-                width: 100.w,
-                decoration: BoxDecoration(
+        if (media.isEmpty)
+          AppText(
+            text: 'No shared media yet.',
+            style: textStyle14Regular.copyWith(
+              color: AppColors.primaryColor.setOpacity(0.45),
+            ),
+          )
+        else
+          SizedBox(
+            height: 100.h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: media.length,
+              separatorBuilder: (_, __) => SizedBox(width: 10.w),
+              itemBuilder: (_, index) {
+                return ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  image: DecorationImage(
-                    image: AssetImage(mediaList[index]),
+                  child: Image.network(
+                    media[index].url,
+                    width: 100.w,
+                    height: 100.h,
                     fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 100.w,
+                      height: 100.h,
+                      color: Colors.grey.shade200,
+                      alignment: Alignment.center,
+                      child: SvgIcon(AppAssets.photo, size: 28.w),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
 
-  // --------------------------
-  // MEMBERS LIST
-  // --------------------------
-  Widget _buildMembersList() {
-    final members = [
-      {"name": "Ali Khan", "role": "Admin", "image": AppAssets.profilePhoto},
-      {"name": "Ahmed Khan", "role": "Guide", "image": AppAssets.profilePhoto},
-      {
-        "name": "Support Team",
-        "role": "Support Team",
-        "image": AppAssets.profilePhoto,
-      },
-    ];
-
+  Widget _buildMembersList(
+    GroupInfoModel info,
+    List<GroupMemberModel> visibleMembers,
+  ) {
     return Container(
       padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: BoxBorder.all(color: AppColors.primaryColor.setOpacity(0.2)),
+        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
         borderRadius: BorderRadius.circular(15.r),
         boxShadow: [
           BoxShadow(
             color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 6,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...members.map(
-            (member) => Padding(
-              padding: EdgeInsets.only(bottom: 10.h),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20.r,
-                    backgroundImage: AssetImage(member["image"]!),
-                  ),
-                  18.w.horizontalSpace,
-                  Expanded(
-                    child: AppText(
-                      text: member["name"]!,
-                      style: textStyle12Regular.copyWith(
-                        color: AppColors.primaryColor,
-                        fontSize: 16.sp,
+          if (visibleMembers.isEmpty)
+            AppText(
+              text: 'No members found.',
+              style: textStyle14Regular.copyWith(
+                color: AppColors.primaryColor.setOpacity(0.5),
+              ),
+            )
+          else
+            ...visibleMembers.map(
+              (member) => Padding(
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: Row(
+                  children: [
+                    NetworkAvatar(
+                      imageUrl: member.avatarUrl,
+                      radius: 20.r,
+                      fallbackKind: AvatarFallbackKind.user,
+                    ),
+                    18.w.horizontalSpace,
+                    Expanded(
+                      child: AppText(
+                        text: member.name,
+                        style: textStyle12Regular.copyWith(
+                          color: AppColors.primaryColor,
+                          fontSize: 16.sp,
+                        ),
                       ),
                     ),
-                  ),
-                  AppText(
-                    text: member["role"]!,
-                    style: textStyle14Medium.copyWith(
-                      color: AppColors.primaryColor.setOpacity(0.8),
+                    AppText(
+                      text: member.role,
+                      style: textStyle14Medium.copyWith(
+                        color: AppColors.primaryColor.setOpacity(0.8),
+                      ),
                     ),
+                  ],
+                ),
+              ),
+            ),
+          if (info.members.length > 3) ...[
+            Divider(indent: 10.w, endIndent: 10.w),
+            10.h.verticalSpace,
+            GestureDetector(
+              onTap: () => setState(() => _showAllMembers = !_showAllMembers),
+              child: Center(
+                child: AppText(
+                  text: _showAllMembers
+                      ? 'Show Less'
+                      : 'View All Members (${info.members.length})',
+                  style: textStyle18Bold.copyWith(
+                    color: AppColors.blueColor,
+                    fontSize: 16.sp,
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-          Divider(indent: 10.w, endIndent: 10.w),
-          10.h.verticalSpace,
-          Center(
-            child: AppText(
-              text: "View All Members",
-              style: textStyle18Bold.copyWith(
-                color: AppColors.blueColor,
-                fontSize: 16.sp,
-              ),
-            ),
-          ),
+          ],
         ],
       ),
     );

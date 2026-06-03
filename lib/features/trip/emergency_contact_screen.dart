@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/model/essential/emergency_contacts_model.dart';
-import 'package:trael_app_abdelhamid/services/essential_service.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/model/essential/emergency_contacts_model.dart';
+import 'package:travel_app_abdelhamid/services/essential_service.dart';
 
 class EmergencyContactsScreen extends StatefulWidget {
   const EmergencyContactsScreen({super.key});
 
   @override
-  State<EmergencyContactsScreen> createState() => _EmergencyContactsScreenState();
+  State<EmergencyContactsScreen> createState() =>
+      _EmergencyContactsScreenState();
 }
 
 class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
@@ -59,14 +60,13 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
       final rows = <List<String>>[];
       final label =
           (medical.contactType != null && medical.contactType!.isNotEmpty)
-              ? medical.contactType!
-              : "Medical";
+          ? medical.contactType!
+          : "Medical";
       if (medical.hospitalNumber != null &&
           medical.hospitalNumber!.isNotEmpty) {
         rows.add([label, medical.hospitalNumber!]);
       }
-      if (medical.ambulanceCode != null &&
-          medical.ambulanceCode!.isNotEmpty) {
+      if (medical.ambulanceCode != null && medical.ambulanceCode!.isNotEmpty) {
         rows.add(["Ambulance", medical.ambulanceCode!]);
       }
       if (rows.isNotEmpty) {
@@ -75,11 +75,12 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     }
 
     final police = d.police;
-    if (police != null && police.policeHelpline != null &&
+    if (police != null &&
+        police.policeHelpline != null &&
         police.policeHelpline!.isNotEmpty) {
       final pl = police.policeHelpline!;
-      final title = (police.contactType != null &&
-              police.contactType!.isNotEmpty)
+      final title =
+          (police.contactType != null && police.contactType!.isNotEmpty)
           ? police.contactType!
           : "Police";
       cards.add(

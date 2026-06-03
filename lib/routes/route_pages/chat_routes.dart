@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/features/chat/chat_detail_screen.dart';
-import 'package:trael_app_abdelhamid/features/chat/chat_screen.dart';
-import 'package:trael_app_abdelhamid/features/chat/group_info_screen.dart';
-import 'package:trael_app_abdelhamid/features/chat/live_location_screen.dart';
+import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/features/chat/chat_detail_screen.dart';
+import 'package:travel_app_abdelhamid/features/chat/chat_screen.dart';
+import 'package:travel_app_abdelhamid/features/chat/group_info_screen.dart';
+import 'package:travel_app_abdelhamid/features/chat/live_location_screen.dart';
 
 List<RouteBase> get chatRoutes => [
   GoRoute(
@@ -22,6 +22,7 @@ List<RouteBase> get chatRoutes => [
       return ChatDetailScreen(
         key: ValueKey<String>('chat_detail_$chatId'),
         chatId: chatId,
+        groupId: data['groupId'] as String?,
         name: data['name'] as String,
         image: data['image'] as String,
         avatarUrl: data['avatarUrl'] as String?,
@@ -34,7 +35,13 @@ List<RouteBase> get chatRoutes => [
     name: UserAppRoutes.groupInfoScreen.name,
     builder: (context, state) {
       final data = state.extra as Map<String, dynamic>;
-      return GroupInfoScreen(name: data['name'], image: data['image']);
+      return GroupInfoScreen(
+        chatId: data['chatId'] as String,
+        groupId: data['groupId'] as String? ?? data['chatId'] as String,
+        name: data['name'] as String,
+        image: data['image'] as String,
+        avatarUrl: data['avatarUrl'] as String?,
+      );
     },
   ),
   GoRoute(

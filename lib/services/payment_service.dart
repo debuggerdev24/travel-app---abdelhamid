@@ -1,6 +1,6 @@
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/utils/payment_flow_log.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
 
 /// Backend: `POST /api/payment/create-payment-intent` (Bearer auth).
 class PaymentService {
@@ -44,7 +44,9 @@ class PaymentService {
     });
     if (response['status'] != 1 || response['data'] == null) {
       PaymentFlowLog.log('createPaymentIntent FAILED (bad status or data)');
-      throw Exception(response['message']?.toString() ?? 'Payment setup failed');
+      throw Exception(
+        response['message']?.toString() ?? 'Payment setup failed',
+      );
     }
     final data = Map<String, dynamic>.from(response['data'] as Map);
     final secret = data['clientSecret']?.toString();
@@ -57,9 +59,6 @@ class PaymentService {
       'paymentId': paymentId ?? '(null)',
       'clientSecret': PaymentFlowLog.maskClientSecret(secret),
     });
-    return (
-      clientSecret: secret,
-      paymentId: paymentId,
-    );
+    return (clientSecret: secret, paymentId: paymentId);
   }
 }

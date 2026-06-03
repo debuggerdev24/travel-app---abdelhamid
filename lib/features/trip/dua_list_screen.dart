@@ -4,15 +4,15 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
-import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/model/dua/dua_item_model.dart';
-import 'package:trael_app_abdelhamid/services/dua_service.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/model/dua/dua_item_model.dart';
+import 'package:travel_app_abdelhamid/services/dua_service.dart';
 
 class DuaListScreen extends StatefulWidget {
   const DuaListScreen({super.key});
@@ -86,9 +86,9 @@ class _DuaListScreenState extends State<DuaListScreen> {
     } catch (_) {
       if (mounted) {
         setState(() => _playingId = null);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not play audio')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not play audio')));
       }
     }
   }
@@ -230,8 +230,7 @@ class _DuaItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasAudio =
-        dua.audioPath != null && dua.audioPath!.trim().isNotEmpty;
+    final hasAudio = dua.audioPath != null && dua.audioPath!.trim().isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

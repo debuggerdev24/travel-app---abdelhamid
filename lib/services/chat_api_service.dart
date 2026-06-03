@@ -1,6 +1,6 @@
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
 
 /// REST client for `/api/chat/*` (mounted on the server root, not `/api/user`).
 class ChatApiService {
@@ -13,7 +13,10 @@ class ChatApiService {
 
   void _ensureSuccess(dynamic response) {
     if (response is! Map) {
-      throw ApiException(statusCode: 0, message: 'Invalid response from server.');
+      throw ApiException(
+        statusCode: 0,
+        message: 'Invalid response from server.',
+      );
     }
     final s = response['status'];
     if (s == null || s == 1 || s == true) return;
@@ -126,7 +129,10 @@ class ChatApiService {
     _ensureSuccess(response);
     final data = response['data'];
     if (data is Map) return Map<String, dynamic>.from(data);
-    throw ApiException(statusCode: 0, message: 'Invalid live location response.');
+    throw ApiException(
+      statusCode: 0,
+      message: 'Invalid live location response.',
+    );
   }
 
   /// `PATCH /api/chat/message/:messageId` — text only, sender only.
@@ -161,6 +167,62 @@ class ChatApiService {
     _ensureSuccess(response);
   }
 
+  /// `GET /api/chat/profile?groupId=` — group profile for info screen.
+  Future<Map<String, dynamic>> getChatProfile({
+    required String groupId,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.get(
+      '$_root/profile',
+      queryParameters: {'groupId': groupId},
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+    final data = response['data'];
+    if (data is Map) return Map<String, dynamic>.from(data);
+    throw ApiException(statusCode: 0, message: 'Invalid chat profile payload.');
+  }
+
+  /// `GET /api/chat/group/{chatId}/members`
+  Future<List<Map<String, dynamic>>> getGroupMembers({
+    required String chatId,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.get(
+      '$_root/group/$chatId/members',
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+    final data = response['data'];
+    if (data is! List) return [];
+    return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
+  /// `DELETE /api/chat/group/{chatId}/members/{memberId}` — leave group (self).
+  Future<void> removeGroupMember({
+    required String chatId,
+    required String memberId,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.delete(
+      '$_root/group/$chatId/members/$memberId',
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+  }
+
+  /// `DELETE /api/chat/chat/{chatId}` — delete group chat (admin).
+  Future<void> deleteChat({
+    required String chatId,
+    bool showErrorToast = true,
+  }) async {
+    final response = await _api.delete(
+      '$_root/chat/$chatId',
+      showErrorToast: showErrorToast,
+    );
+    _ensureSuccess(response);
+  }
+
   /// `POST /api/chat/upload` multipart — field [file]; form fields chatId, senderId.
   Future<Map<String, dynamic>> uploadChatFile({
     required String chatId,
@@ -170,10 +232,7 @@ class ChatApiService {
   }) async {
     final response = await _api.postMultipart(
       '$_root/upload',
-      fields: {
-        'chatId': chatId,
-        'senderId': senderId,
-      },
+      fields: {'chatId': chatId, 'senderId': senderId},
       fileFieldName: 'file',
       filePath: filePath,
       showErrorToast: showErrorToast,

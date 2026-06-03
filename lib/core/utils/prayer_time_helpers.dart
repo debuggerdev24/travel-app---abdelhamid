@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:trael_app_abdelhamid/model/prayer/prayer_time_model.dart';
+import 'package:travel_app_abdelhamid/model/prayer/prayer_time_model.dart';
 
 /// Parses admin time strings (e.g. `05:00 AM`, `3:35 PM`) to today's [DateTime] in local time.
 /// Tries `h:mm a` before `hh:mm a` so single-digit hours from the API parse correctly.

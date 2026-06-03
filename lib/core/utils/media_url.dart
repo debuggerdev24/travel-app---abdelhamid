@@ -1,4 +1,4 @@
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 
 /// Turns `/uploads/...` into a full URL using [AppConstants.imageBaseUrl].
 String? resolveMediaUrl(String? path) {

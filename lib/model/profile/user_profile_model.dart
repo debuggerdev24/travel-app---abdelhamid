@@ -1,3 +1,5 @@
+import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
+
 class UserProfile {
   const UserProfile({
     required this.firstName,
@@ -54,6 +56,19 @@ class UserProfile {
 
   String get primaryLanguage => languages.isEmpty ? '' : languages.first;
 
+  /// API `age` when present, otherwise computed from [dateOfBirth].
+  int? get displayAge => age ?? ageFromDateOfBirth(dateOfBirth);
+
+  String get displayAgeLabel {
+    final value = displayAge;
+    return value != null ? value.toString() : '—';
+  }
+
+  String get displayDateOfBirth {
+    final formatted = formatDateToYyyyMmDd(dateOfBirth);
+    return formatted.isNotEmpty ? formatted : '—';
+  }
+
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     List<String> parseLanguages(dynamic v) {
       if (v == null) return const [];
@@ -108,7 +123,9 @@ class UserProfile {
       email: (json['email'] ?? '').toString(),
       phoneNumber: (json['phoneNumber'] ?? json['contact'] ?? '').toString(),
       age: parseAge(json['age']),
-      dateOfBirth: (json['dateOfBirth'] ?? json['dob'] ?? '').toString(),
+      dateOfBirth: formatDateToYyyyMmDd(
+        (json['dateOfBirth'] ?? json['dob'] ?? '').toString(),
+      ),
       gender: (json['gender'] ?? '').toString(),
       nationality: (json['nationality'] ?? '').toString(),
       passportNumber:

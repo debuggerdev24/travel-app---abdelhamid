@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/model/chat/chat_model.dart';
-import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/model/chat/chat_model.dart';
+import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -195,112 +196,122 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void _openChat(BuildContext context, ChatModel data) {
+    final chatProvider = context.read<ChatProvider>();
+    final extra = <String, Object?>{
+      'chatId': data.chatId,
+      'groupId': data.groupId,
+      'name': data.name,
+      'image': data.image,
+      'avatarUrl': data.avatarUrl,
+      'isGroup': data.isGroup,
+    };
+    // primeChatOpen skips notifyListeners so the list does not rebuild on the
+    // same frame as the route push (that rebuild was delaying navigation).
+    chatProvider.primeChatOpen(data.chatId);
+    context.pushNamed(UserAppRoutes.chatDetailScreen.name, extra: extra);
+  }
+
   Widget _buildChatItem(BuildContext context, ChatModel data) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        // Defer push to after this frame so the scroll view / RefreshIndicator
-        // gesture arena has settled. In release, an immediate push can appear
-        // "stuck" until another gesture (e.g. pull-to-refresh) triggers a frame.
-        final chatProvider = context.read<ChatProvider>();
-        final extra = <String, Object?>{
-          'chatId': data.chatId,
-          'name': data.name,
-          'image': data.image,
-          'avatarUrl': data.avatarUrl,
-          'isGroup': data.isGroup,
-        };
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!context.mounted) return;
-          chatProvider.primeChatOpen(data.chatId);
-          context.pushNamed(
-            UserAppRoutes.chatDetailScreen.name,
-            extra: extra,
-          );
-        });
-      },
-      child: Row(
-        children: [
-          _avatar(data),
-          15.w.horizontalSpace,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppText(
-                      text: data.name,
-                      style: textStyle18Bold.copyWith(
-                        color: AppColors.primaryColor,
-                        fontSize: 16.sp,
-                      ),
-                    ),
-                    AppText(
-                      text: data.time,
-                      style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.4),
-                      ),
-                    ),
-                  ],
-                ),
-                2.h.verticalSpace,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: AppText(
-                        text: data.message,
-                        style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor.setOpacity(0.4),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (data.unread > 0)
-                      Container(
-                        constraints: BoxConstraints(minWidth: 22.w, minHeight: 22.w),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: data.unread > 9 ? 7.w : 6.w,
-                          vertical: 4.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.blueColor,
-                          borderRadius: BorderRadius.circular(11.r),
-                        ),
-                        alignment: Alignment.center,
+    final hasUnread = data.unread > 0;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _openChat(context, data),
+        child: Row(
+          children: [
+            _avatar(data),
+            15.w.horizontalSpace,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
                         child: AppText(
-                          text: data.unread > 99 ? '99+' : '${data.unread}',
+                          text: data.name,
+                          overflow: TextOverflow.ellipsis,
                           style: textStyle18Bold.copyWith(
-                            color: Colors.white,
-                            fontSize: 11.sp,
+                            color: AppColors.primaryColor,
+                            fontSize: 16.sp,
+                            fontWeight:
+                                hasUnread ? FontWeight.w700 : FontWeight.w600,
                           ),
                         ),
                       ),
-                  ],
-                ),
-              ],
+                      AppText(
+                        text: data.time,
+                        style: textStyle14Regular.copyWith(
+                          color: hasUnread
+                              ? AppColors.blueColor
+                              : AppColors.primaryColor.setOpacity(0.4),
+                          fontWeight:
+                              hasUnread ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  2.h.verticalSpace,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: AppText(
+                          text: data.message,
+                          style: textStyle14Regular.copyWith(
+                            color: hasUnread
+                                ? AppColors.primaryColor.setOpacity(0.75)
+                                : AppColors.primaryColor.setOpacity(0.4),
+                            fontWeight:
+                                hasUnread ? FontWeight.w500 : FontWeight.normal,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),  
+                      ),
+                      if (hasUnread)
+                        Container(
+                          constraints: BoxConstraints(
+                            minWidth: 22.w,
+                            minHeight: 22.w,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: data.unread > 9 ? 7.w : 6.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.blueColor,
+                            borderRadius: BorderRadius.circular(11.r),
+                          ),
+                          alignment: Alignment.center,
+                          child: AppText(
+                            text: data.unread > 99 ? '99+' : '${data.unread}',
+                            style: textStyle18Bold.copyWith(
+                              color: Colors.white,
+                              fontSize: 11.sp,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _avatar(ChatModel data) {
-    final url = data.avatarUrl;
-    if (url != null && url.isNotEmpty) {
-      return CircleAvatar(
-        radius: 24.r,
-        backgroundColor: Colors.grey.shade300,
-        backgroundImage: NetworkImage(url),
-      );
-    }
-    return CircleAvatar(
+    return NetworkAvatar(
+      imageUrl: data.avatarUrl,
       radius: 24.r,
-      backgroundImage: AssetImage(data.image),
-      backgroundColor: Colors.grey,
+      fallbackKind: data.isGroup
+          ? AvatarFallbackKind.group
+          : AvatarFallbackKind.user,
     );
   }
 }

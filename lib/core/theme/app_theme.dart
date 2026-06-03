@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 
 /// Application theme configuration.
 /// Centralizes colors and typography for consistency.

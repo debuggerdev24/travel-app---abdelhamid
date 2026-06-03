@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
-import 'package:trael_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
-import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:trael_app_abdelhamid/model/profile/user_profile_model.dart';
-import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
+import 'package:travel_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/model/profile/user_profile_model.dart';
+import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -49,7 +50,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _didPrefill = true;
     _fullName.text = p.fullName;
     _dob.text = p.dateOfBirth;
-    final derived = _computeAgeFromDob(_tryParseDob(p.dateOfBirth));
+    final derived = ageFromDateOfBirth(p.dateOfBirth);
     _age.text = derived?.toString() ?? (p.age?.toString() ?? '');
     _gender.text = p.gender;
     _nationality.text = p.nationality;
@@ -72,7 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final d = picked.day.toString().padLeft(2, '0');
     setState(() {
       _dob.text = '$y-$m-$d';
-      _age.text = (_computeAgeFromDob(picked)?.toString() ?? '');
+      _age.text = (ageFromDateOfBirth(_dob.text)?.toString() ?? '');
     });
   }
 
@@ -92,32 +93,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  int? _computeAgeFromDob(DateTime? dob) {
-    if (dob == null) return null;
-    final now = DateTime.now();
-    var age = now.year - dob.year;
-    final hadBirthdayThisYear =
-        (now.month > dob.month) || (now.month == dob.month && now.day >= dob.day);
-    if (!hadBirthdayThisYear) age -= 1;
-    if (age < 0 || age > 130) return null;
-    return age;
-  }
-
-  ImageProvider _avatar(ProfileProvider provider) {
+  String? _profileAvatarUrl(ProfileProvider provider) {
     final raw = provider.profile?.profileImageRaw.trim();
-    if (raw == null || raw.isEmpty) {
-      return const AssetImage(AppAssets.profilePhoto);
-    }
-    final url = serverMediaUrl(raw);
-    if (url == null || url.isEmpty) {
-      return const AssetImage(AppAssets.profilePhoto);
-    }
-    return NetworkImage(url);
+    if (raw == null || raw.isEmpty) return null;
+    return serverMediaUrl(raw);
   }
 
   Future<void> _pickAndUploadImage(ProfileProvider provider) async {
     final picker = ImagePicker();
-    final x = await picker.pickImage(source: ImageSource.gallery);
+    final x = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1280,
+      maxHeight: 1280,
+      imageQuality: 80,
+    );
     if (x == null) return;
     await provider.updateProfileImage(x.path);
   }
@@ -130,12 +119,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     if (provider.selectedLanguages.isEmpty) {
-      ToastHelper.showError('Select at least one language');
+      ToastHelper.showError('Select a language');
       return;
     }
 
     final current = provider.profile;
-    final base = current ??
+    final base =
+        current ??
         const UserProfile(
           firstName: '',
           surName: '',
@@ -151,7 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
 
     final split = _splitName(fullName);
-    final computedAge = _computeAgeFromDob(_tryParseDob(_dob.text));
+    final computedAge = ageFromDateOfBirth(_dob.text);
     final updated = base.copyWith(
       firstName: split.$1,
       surName: split.$2,
@@ -170,8 +160,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   (String, String) _splitName(String v) {
-    final parts =
-        v.trim().split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+    final parts = v
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((e) => e.isNotEmpty)
+        .toList();
     if (parts.isEmpty) return ('', '');
     if (parts.length == 1) return (parts.first, '');
     return (parts.first, parts.sublist(1).join(' '));
@@ -207,20 +200,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ],
                       ),
                     ),
-                    CircleAvatar(
-                      radius: 55.r,
-                      backgroundImage: _avatar(provider),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        NetworkAvatar(
+                          imageUrl: _profileAvatarUrl(provider),
+                          radius: 55.r,
+                        ),
+                        if (provider.isUpdatingProfileImage)
+                          Container(
+                            width: 110.r,
+                            height: 110.r,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withValues(alpha: 0.45),
+                            ),
+                            child: Center(
+                              child: SizedBox(
+                                width: 32.w,
+                                height: 32.w,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: AppColors.whiteColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                     6.h.verticalSpace,
                     GestureDetector(
-                      onTap: provider.isLoading
+                      onTap:
+                          provider.isUpdatingProfileImage || provider.isLoading
                           ? null
                           : () => _pickAndUploadImage(provider),
                       child: AppText(
-                        text: "Change Picture",
+                        text: provider.isUpdatingProfileImage
+                            ? 'Updating picture...'
+                            : 'Change Picture',
                         style: textStyle14Medium.copyWith(
                           fontSize: 16.sp,
-                          color: AppColors.blueColor,
+                          color: provider.isUpdatingProfileImage
+                              ? AppColors.primaryColor.withValues(alpha: 0.5)
+                              : AppColors.blueColor,
                         ),
                       ),
                     ),
@@ -283,6 +305,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               selectedItems: provider.selectedLanguages,
                               onChanged: provider.updateSelectedLanguages,
                               titleText: "Language",
+                              showRadio: true,
                             ),
                           ],
                         ),
@@ -290,7 +313,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         AppButton(
                           title: "Save",
                           isLoading: provider.isLoading,
-                          onTap: provider.isLoading ? null : () => _save(provider),
+                          onTap: provider.isLoading
+                              ? null
+                              : () => _save(provider),
                         ),
                       ],
                     ),

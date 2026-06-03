@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
 class HotelVoucherScreen extends StatelessWidget {
   final String? imageFile;
+
   /// Full URL for hotel thumbnail (preferred over [imageFile] when set).
   final String? networkImageUrl;
   final String hotelName;
@@ -60,7 +61,9 @@ class HotelVoucherScreen extends StatelessWidget {
               // Hotel Image
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: (networkImageUrl != null && networkImageUrl!.trim().isNotEmpty)
+                child:
+                    (networkImageUrl != null &&
+                        networkImageUrl!.trim().isNotEmpty)
                     ? Image.network(
                         networkImageUrl!.trim(),
                         width: double.infinity,

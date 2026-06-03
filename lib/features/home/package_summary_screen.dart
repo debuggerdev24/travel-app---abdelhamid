@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/provider/booking/trip_booking_provider.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class PackageSummaryScreen extends StatefulWidget {
   const PackageSummaryScreen({super.key});
@@ -19,7 +19,6 @@ class PackageSummaryScreen extends StatefulWidget {
 }
 
 class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -34,7 +33,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         debugPrint('🔵 [PackageSummaryScreen] Fetching package options...');
         provider.fetchPackageOptions(tripId);
       } else {
-        debugPrint('❌ [PackageSummaryScreen] tripId is null — cannot fetch package options');
+        debugPrint(
+          '❌ [PackageSummaryScreen] tripId is null — cannot fetch package options',
+        );
       }
     });
   }
@@ -45,12 +46,24 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final trip = provider.tripDetails;
     final selectedPackage = provider.selectedPackage;
 
-    debugPrint('🔵 [PackageSummaryScreen] build — isLoading: ${provider.isLoading}');
-    debugPrint('🔵 [PackageSummaryScreen] selectedPackage: ${selectedPackage?.title}');
-    debugPrint('🔵 [PackageSummaryScreen] roomOptions: ${selectedPackage?.roomOptions}');
-    debugPrint('🔵 [PackageSummaryScreen] childPrices: ${selectedPackage?.childPrices}');
-    debugPrint('🔵 [PackageSummaryScreen] inclusions: ${selectedPackage?.inclusions}');
-    debugPrint('🔵 [PackageSummaryScreen] exclusions: ${selectedPackage?.exclusions}');
+    debugPrint(
+      '🔵 [PackageSummaryScreen] build — isLoading: ${provider.isLoading}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] selectedPackage: ${selectedPackage?.title}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] roomOptions: ${selectedPackage?.roomOptions}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] childPrices: ${selectedPackage?.childPrices}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] inclusions: ${selectedPackage?.inclusions}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] exclusions: ${selectedPackage?.exclusions}',
+    );
 
     if (trip == null) {
       return const Scaffold(body: Center(child: Text("No Trip Selected")));
