@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 
 class AppText extends StatelessWidget {
   final String text;

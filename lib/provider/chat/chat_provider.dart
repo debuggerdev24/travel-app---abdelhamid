@@ -3,13 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:trael_app_abdelhamid/core/utils/jwt_user_id.dart';
-import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
-import 'package:trael_app_abdelhamid/core/utils/media_url.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:trael_app_abdelhamid/model/chat/chat_model.dart';
-import 'package:trael_app_abdelhamid/services/chat_api_service.dart';
-import 'package:trael_app_abdelhamid/services/chat_socket_service.dart';
+import 'package:travel_app_abdelhamid/core/utils/jwt_user_id.dart';
+import 'package:travel_app_abdelhamid/core/utils/image_compress_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/media_url.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/model/chat/chat_model.dart';
+import 'package:travel_app_abdelhamid/services/chat_api_service.dart';
+import 'package:travel_app_abdelhamid/services/chat_socket_service.dart';
 
 class ChatProvider extends ChangeNotifier {
   int selectedTabIndex = 0;
@@ -23,10 +25,13 @@ class ChatProvider extends ChangeNotifier {
   bool loadingMessages = false;
 
   final List<StreamSubscription<dynamic>> _socketSubs = [];
+  bool _socketListenersAttached = false;
 
-  /// Debounced reload of the conversation list while the user is inside a chat
-  /// (so last-message preview stays in sync with socket events).
+  /// Debounced reload when socket payload is incomplete (unknown chat, edits, deletes).
   Timer? _conversationListRefreshDebounce;
+
+  /// Debounced mark-as-read while viewing an active chat (WhatsApp-style).
+  Timer? _markReadDebounce;
 
   /// Deduplicates [enterChatRoom] when both list tap and detail screen call it.
   Future<void>? _roomLoadFuture;
@@ -48,6 +53,14 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateConversationAvatar(String chatId, String avatarUrl) {
+    if (avatarUrl.isEmpty) return;
+    final idx = _conversations.indexWhere((c) => c.chatId == chatId);
+    if (idx < 0) return;
+    _conversations[idx] = _conversations[idx].copyWith(avatarUrl: avatarUrl);
+    notifyListeners();
+  }
+
   /// Prepares state for [enterChatRoom] **without** [notifyListeners].
   ///
   /// Call from the chat list **before** [context.push]. Skipping notification
@@ -58,10 +71,10 @@ class ChatProvider extends ChangeNotifier {
     if (chatId.isEmpty) return;
     _roomLoadFuture = null;
     _roomLoadFutureChatId = null;
-    _detachSocketListeners();
     _activeChatId = chatId;
     _messages = [];
     loadingMessages = true;
+    _setConversationUnread(chatId, 0);
   }
 
   Future<void> loadConversations({bool silent = false}) async {
@@ -78,11 +91,13 @@ class ChatProvider extends ChangeNotifier {
 
     try {
       await ChatSocketService.instance.connect(uid);
+      _ensureSocketListenersAttached();
       final raw = await ChatApiService.instance.getConversations(
         userId: uid,
         showErrorToast: !silent,
       );
       _conversations = raw.map(_conversationFromJson).toList();
+      _sortConversationsByRecent();
     } catch (e, st) {
       conversationsError = 'Could not load conversations.';
       LogHelper.instance.error('loadConversations', e, st);
@@ -118,7 +133,6 @@ class ChatProvider extends ChangeNotifier {
 
   Future<void> _enterChatRoomImpl({required String chatId}) async {
     if (_activeChatId != chatId) {
-      _detachSocketListeners();
       _activeChatId = chatId;
       _messages = [];
       loadingMessages = true;
@@ -143,21 +157,29 @@ class ChatProvider extends ChangeNotifier {
     await ChatSocketService.instance.connect(uid);
     if (_activeChatId != chatId) return;
 
-    _attachSocketListeners();
+    _ensureSocketListenersAttached();
 
     try {
       final raw = await historyFuture;
       if (_activeChatId != chatId) return;
       final list = raw['messages'];
       if (list is List) {
+        final senderAvatars = mergeParticipantImages(
+          senderAvatarMapFromMessages(list),
+          raw,
+        );
         _messages = list
             .whereType<Map>()
-            .map((e) => _serverMessageToBubble(
-                  Map<String, dynamic>.from(e),
-                  uid,
-                ))
+            .map(
+              (e) => _serverMessageToBubble(
+                Map<String, dynamic>.from(e),
+                uid,
+                senderAvatars: senderAvatars,
+              ),
+            )
             .toList();
       }
+      await _markChatAsRead(chatId);
     } catch (e, st) {
       if (_activeChatId == chatId) {
         LogHelper.instance.error('enterChatRoom history', e, st);
@@ -175,12 +197,11 @@ class ChatProvider extends ChangeNotifier {
     _roomLoadFutureChatId = null;
     _conversationListRefreshDebounce?.cancel();
     _conversationListRefreshDebounce = null;
-    _detachSocketListeners();
+    _markReadDebounce?.cancel();
+    _markReadDebounce = null;
     _activeChatId = null;
     _messages = [];
     notifyListeners();
-    // List was stale while messages arrived over the socket; sync from API
-    // after the detail route is popped (dispose runs leaveChatRoom).
     loadConversations(silent: true);
   }
 
@@ -361,12 +382,17 @@ class ChatProvider extends ChangeNotifier {
       );
       final list = raw['messages'];
       if (list is List) {
+        final senderAvatars = mergeParticipantImages(
+          senderAvatarMapFromMessages(list),
+          raw,
+        );
         _messages = list
             .whereType<Map>()
             .map(
               (e) => _serverMessageToBubble(
                 Map<String, dynamic>.from(e),
                 uid,
+                senderAvatars: senderAvatars,
               ),
             )
             .toList();
@@ -377,17 +403,22 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  void _attachSocketListeners() {
-    _detachSocketListeners();
+  void _ensureSocketListenersAttached() {
+    if (_socketListenersAttached) return;
     _socketSubs.add(
       ChatSocketService.instance.envelopeStream.listen(_handleEnvelope),
     );
     _socketSubs.add(
-      ChatSocketService.instance.messageUpdatedStream.listen(_handleMessageUpdated),
+      ChatSocketService.instance.messageUpdatedStream.listen(
+        _handleMessageUpdated,
+      ),
     );
     _socketSubs.add(
-      ChatSocketService.instance.messageDeletedStream.listen(_handleMessageDeleted),
+      ChatSocketService.instance.messageDeletedStream.listen(
+        _handleMessageDeleted,
+      ),
     );
+    _socketListenersAttached = true;
   }
 
   void _detachSocketListeners() {
@@ -395,6 +426,129 @@ class ChatProvider extends ChangeNotifier {
       s.cancel();
     }
     _socketSubs.clear();
+    _socketListenersAttached = false;
+  }
+
+  Future<void> _markChatAsRead(String chatId) async {
+    final uid = currentUserIdOrNull();
+    if (uid == null || chatId.isEmpty) return;
+    _setConversationUnread(chatId, 0);
+    notifyListeners();
+    try {
+      await ChatApiService.instance.markChatAsRead(
+        chatId: chatId,
+        userId: uid,
+        showErrorToast: false,
+      );
+    } catch (e, st) {
+      LogHelper.instance.error('markChatAsRead', e, st);
+    }
+  }
+
+  void _scheduleMarkActiveChatRead() {
+    final chatId = _activeChatId;
+    if (chatId == null) return;
+    _markReadDebounce?.cancel();
+    _markReadDebounce = Timer(const Duration(milliseconds: 300), () {
+      _markReadDebounce = null;
+      if (_activeChatId == chatId) {
+        unawaited(_markChatAsRead(chatId));
+      }
+    });
+  }
+
+  void _setConversationUnread(String chatId, int unread) {
+    final idx = _conversations.indexWhere((c) => c.chatId == chatId);
+    if (idx < 0) return;
+    _conversations[idx] = _conversations[idx].copyWith(unread: unread);
+  }
+
+  void _promoteConversation(
+    String chatId, {
+    required String preview,
+    required String time,
+    required DateTime? lastMessageAt,
+    required int unread,
+  }) {
+    final idx = _conversations.indexWhere((c) => c.chatId == chatId);
+    if (idx < 0) {
+      _scheduleConversationListRefreshFromSocket();
+      return;
+    }
+    final updated = _conversations[idx].copyWith(
+      message: preview,
+      time: time,
+      lastMessageAt: lastMessageAt,
+      unread: unread,
+    );
+    _conversations.removeAt(idx);
+    _conversations.insert(0, updated);
+  }
+
+  void _sortConversationsByRecent() {
+    _conversations.sort((a, b) {
+      final at = a.lastMessageAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bt = b.lastMessageAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bt.compareTo(at);
+    });
+  }
+
+  void _applyIncomingMessageToInbox(
+    String chatId,
+    Map<String, dynamic> m,
+    String myId,
+  ) {
+    final sender = m['sender']?.toString() ?? '';
+    final isMe = sender == myId;
+    final idx = _conversations.indexWhere((c) => c.chatId == chatId);
+    if (idx < 0) {
+      _scheduleConversationListRefreshFromSocket();
+      return;
+    }
+
+    final old = _conversations[idx];
+    final preview = _listPreviewFromMessage(
+      m,
+      isGroup: old.isGroup,
+      isMe: isMe,
+    );
+    final time = _formatListTime(m['createdAt']);
+    final lastMessageAt = _parseDate(m['createdAt']) ?? DateTime.now();
+    final isActive = chatId == _activeChatId;
+
+    var unread = old.unread;
+    if (isActive) {
+      unread = 0;
+    } else if (!isMe) {
+      final isSameLast =
+          old.lastMessageAt == lastMessageAt && old.message == preview;
+      if (!isSameLast) unread = old.unread + 1;
+    }
+
+    _promoteConversation(
+      chatId,
+      preview: preview,
+      time: time,
+      lastMessageAt: lastMessageAt,
+      unread: unread,
+    );
+    notifyListeners();
+
+    if (isActive && !isMe) {
+      _scheduleMarkActiveChatRead();
+    }
+  }
+
+  Map<String, String> _senderAvatarsFromExistingMessages() {
+    final map = <String, String>{};
+    for (final msg in _messages) {
+      final sid = msg['senderId']?.toString() ?? msg['sender']?.toString();
+      final url = msg['senderAvatarUrl']?.toString();
+      if (sid != null && sid.isNotEmpty && url != null && url.isNotEmpty) {
+        map[sid] = url;
+      }
+    }
+    return map;
   }
 
   void _handleEnvelope(Map<String, dynamic> env) {
@@ -403,48 +557,63 @@ class ChatProvider extends ChangeNotifier {
     final m = Map<String, dynamic>.from(msg);
     final chatId = m['chat']?.toString();
     final myId = currentUserIdOrNull();
-    if (myId == null) return;
+    if (myId == null || chatId == null || chatId.isEmpty) return;
 
-    if (chatId != _activeChatId) {
-      loadConversations(silent: true);
-      return;
-    }
+    _applyIncomingMessageToInbox(chatId, m, myId);
 
-    final bubble = _serverMessageToBubble(m, myId);
+    if (chatId != _activeChatId) return;
+
+    final senderAvatars = senderAvatarMapFromMessages([m])
+      ..addAll(_senderAvatarsFromExistingMessages());
+    final bubble = _serverMessageToBubble(
+      m,
+      myId,
+      senderAvatars: senderAvatars,
+    );
     _appendDedup(bubble);
     notifyListeners();
-    _scheduleConversationListRefreshFromSocket();
   }
 
   void _handleMessageUpdated(Map<String, dynamic> e) {
-    if (e['chatId']?.toString() != _activeChatId) return;
+    final chatId = e['chatId']?.toString();
     final mid = e['messageId']?.toString();
     final msg = e['message'];
-    if (mid == null || msg is! Map) return;
+    if (chatId == null || mid == null || msg is! Map) return;
     final myId = currentUserIdOrNull();
     if (myId == null) return;
-    final updated = _serverMessageToBubble(Map<String, dynamic>.from(msg), myId);
-    final i = _messages.indexWhere((x) => x['_id']?.toString() == mid);
-    if (i >= 0) {
-      _messages[i] = updated;
-      notifyListeners();
-      _scheduleConversationListRefreshFromSocket();
+
+    if (chatId == _activeChatId) {
+      final senderAvatars = _senderAvatarsFromExistingMessages();
+      final updated = _serverMessageToBubble(
+        Map<String, dynamic>.from(msg),
+        myId,
+        senderAvatars: senderAvatars,
+      );
+      final i = _messages.indexWhere((x) => x['_id']?.toString() == mid);
+      if (i >= 0) {
+        _messages[i] = updated;
+        notifyListeners();
+      }
     }
+    _scheduleConversationListRefreshFromSocket();
   }
 
   void _handleMessageDeleted(Map<String, dynamic> e) {
-    if (e['chatId']?.toString() != _activeChatId) return;
+    final chatId = e['chatId']?.toString();
     final mid = e['messageId']?.toString();
-    if (mid == null) return;
-    final i = _messages.indexWhere((x) => x['_id']?.toString() == mid);
-    if (i >= 0) {
-      final copy = Map<String, dynamic>.from(_messages[i]);
-      copy['type'] = 'text';
-      copy['message'] = 'This message was deleted';
-      _messages[i] = copy;
-      notifyListeners();
-      _scheduleConversationListRefreshFromSocket();
+    if (chatId == null || mid == null) return;
+
+    if (chatId == _activeChatId) {
+      final i = _messages.indexWhere((x) => x['_id']?.toString() == mid);
+      if (i >= 0) {
+        final copy = Map<String, dynamic>.from(_messages[i]);
+        copy['type'] = 'text';
+        copy['message'] = 'This message was deleted';
+        _messages[i] = copy;
+        notifyListeners();
+      }
     }
+    _scheduleConversationListRefreshFromSocket();
   }
 
   void _appendDedup(Map<String, dynamic> bubble) {
@@ -453,6 +622,21 @@ class ChatProvider extends ChangeNotifier {
       if (_messages.any((x) => x['_id']?.toString() == id)) return;
     }
     _messages.add(bubble);
+  }
+
+  String? _groupConversationAvatarUrl(Map<String, dynamic> item) {
+    // Prefer explicit group/trip image fields — not `imageUrl`, which is often a member photo.
+    return serverMediaUrl(
+      item['groupImage']?.toString() ??
+          item['groupImageUrl']?.toString() ??
+          item['image']?.toString() ??
+          (item['group'] is Map
+              ? (item['group'] as Map)['imageUrl']?.toString()
+              : null) ??
+          (item['trip'] is Map
+              ? (item['trip'] as Map)['imageUrl']?.toString()
+              : null),
+    );
   }
 
   ChatModel _conversationFromJson(Map<String, dynamic> item) {
@@ -464,23 +648,54 @@ class ChatProvider extends ChangeNotifier {
     final last = item['lastMessage'];
     var preview = '';
     var time = '';
+    DateTime? lastMessageAt;
     if (last is Map) {
       final lm = Map<String, dynamic>.from(last);
-      preview = _previewFromLastMessage(lm);
+      final uid = currentUserIdOrNull();
+      final sender = lm['sender']?.toString() ?? '';
+      final isMe = uid != null && sender == uid;
+      preview = _listPreviewFromMessage(lm, isGroup: isGroup, isMe: isMe);
       time = _formatListTime(lm['createdAt']);
+      lastMessageAt = _parseDate(lm['createdAt']);
     }
 
-    final imageUrl = resolveMediaUrl(item['imageUrl']?.toString());
+    final imageUrl = isGroup
+        ? _groupConversationAvatarUrl(item)
+        : serverMediaUrl(
+            item['imageUrl']?.toString() ?? item['profilePicture']?.toString(),
+          );
+
+    String? groupId;
+    if (isGroup) {
+      groupId =
+          item['groupId']?.toString() ??
+          (item['group'] is Map
+              ? (item['group'] as Map)['_id']?.toString()
+              : null) ??
+          id;
+    }
 
     return ChatModel(
       chatId: id,
+      groupId: groupId,
       name: name,
       message: preview,
       time: time,
       unread: unread,
+      lastMessageAt: lastMessageAt,
       avatarUrl: imageUrl,
       isGroup: isGroup,
     );
+  }
+
+  String _listPreviewFromMessage(
+    Map<String, dynamic> lm, {
+    required bool isGroup,
+    required bool isMe,
+  }) {
+    final base = _previewFromLastMessage(lm);
+    if (isGroup && isMe && base.isNotEmpty) return 'You: $base';
+    return base;
   }
 
   String _previewFromLastMessage(Map<String, dynamic> lm) {
@@ -494,20 +709,44 @@ class ChatProvider extends ChangeNotifier {
       case 'voice':
         return 'Voice message';
       case 'file':
-        return lm['fileName']?.toString() ?? '[File]';
+        return _filePreviewLabel(lm);
       default:
         return '';
     }
   }
 
+  String _filePreviewLabel(Map<String, dynamic> lm) {
+    final mime = lm['mimeType']?.toString().toLowerCase() ?? '';
+    final name = (lm['fileName'] ?? '').toString().toLowerCase();
+    if (mime.startsWith('image/') ||
+        name.endsWith('.jpg') ||
+        name.endsWith('.jpeg') ||
+        name.endsWith('.png') ||
+        name.endsWith('.gif') ||
+        name.endsWith('.webp')) {
+      return 'Photo';
+    }
+    return lm['fileName']?.toString() ?? '[File]';
+  }
+
   Map<String, dynamic> _serverMessageToBubble(
     Map<String, dynamic> m,
-    String myId,
-  ) {
+    String myId, {
+    Map<String, String>? senderAvatars,
+  }) {
     final id = m['_id']?.toString();
     final sender = m['sender']?.toString() ?? '';
     final isMe = sender == myId;
     final time = _formatMsgTime(m['createdAt']);
+    final senderAvatarUrl = profilePictureFromMessage(
+      m,
+      senderAvatars: senderAvatars,
+    );
+
+    Map<String, dynamic> baseFields() => {
+      'senderId': sender,
+      if (senderAvatarUrl != null) 'senderAvatarUrl': senderAvatarUrl,
+    };
 
     if (m['isDeleted'] == true) {
       return {
@@ -518,12 +757,12 @@ class ChatProvider extends ChangeNotifier {
         'sender': m['senderName']?.toString() ?? '',
         'time': time,
         'edited': false,
+        ...baseFields(),
       };
     }
 
     final ct = m['contentType']?.toString() ?? 'text';
-    if (ct == 'location' ||
-        (m['latitude'] != null && m['longitude'] != null)) {
+    if (ct == 'location' || (m['latitude'] != null && m['longitude'] != null)) {
       return {
         '_id': id,
         'isMe': isMe,
@@ -533,6 +772,7 @@ class ChatProvider extends ChangeNotifier {
         'time': time,
         'sender': m['senderName']?.toString() ?? '',
         'isLive': m['isLiveLocation'] == true,
+        ...baseFields(),
       };
     }
     if (ct == 'voice') {
@@ -544,13 +784,15 @@ class ChatProvider extends ChangeNotifier {
         'sender': m['senderName']?.toString() ?? '',
         'time': time,
         'duration': '00:00',
+        ...baseFields(),
       };
     }
     if (ct == 'file') {
       final mime = m['mimeType']?.toString().toLowerCase() ?? '';
       final url = resolveMediaUrl(m['fileUrl']?.toString());
       final name = (m['fileName'] ?? '').toString().toLowerCase();
-      final extImg = name.endsWith('.jpg') ||
+      final extImg =
+          name.endsWith('.jpg') ||
           name.endsWith('.jpeg') ||
           name.endsWith('.png') ||
           name.endsWith('.gif') ||
@@ -564,6 +806,7 @@ class ChatProvider extends ChangeNotifier {
             'imageUrl': url,
             'sender': m['senderName']?.toString() ?? '',
             'time': time,
+            ...baseFields(),
           };
         }
       }
@@ -575,10 +818,12 @@ class ChatProvider extends ChangeNotifier {
         'sender': m['senderName']?.toString() ?? '',
         'time': time,
         'edited': false,
+        ...baseFields(),
       };
     }
 
-    final edited = m['editedAt'] != null &&
+    final edited =
+        m['editedAt'] != null &&
         m['editedAt'].toString().isNotEmpty &&
         m['editedAt'].toString() != 'null';
 
@@ -590,6 +835,7 @@ class ChatProvider extends ChangeNotifier {
       'sender': m['senderName']?.toString() ?? '',
       'time': time,
       'edited': edited,
+      ...baseFields(),
     };
   }
 
@@ -642,6 +888,8 @@ class ChatProvider extends ChangeNotifier {
   void dispose() {
     _conversationListRefreshDebounce?.cancel();
     _conversationListRefreshDebounce = null;
+    _markReadDebounce?.cancel();
+    _markReadDebounce = null;
     _detachSocketListeners();
     super.dispose();
   }

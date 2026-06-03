@@ -35,7 +35,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
     projectId: 'YOUR_PROJECT_ID',
     storageBucket: 'YOUR_STORAGE_BUCKET',
-    iosBundleId: 'com.example.trael_app_abdelhamid',
+    iosBundleId: 'com.example.travel_app_abdelhamid',
   );
 
   // TODO: fill with values from your Firebase project.
@@ -45,6 +45,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
     projectId: 'YOUR_PROJECT_ID',
     storageBucket: 'YOUR_STORAGE_BUCKET',
-    iosBundleId: 'com.example.trael_app_abdelhamid',
+    iosBundleId: 'com.example.travel_app_abdelhamid',
   );
 }

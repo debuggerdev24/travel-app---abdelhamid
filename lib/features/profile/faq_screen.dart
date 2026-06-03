@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/model/cms/cms_models.dart';
-import 'package:trael_app_abdelhamid/services/cms_content_service.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/model/cms/cms_models.dart';
+import 'package:travel_app_abdelhamid/services/cms_content_service.dart';
 
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
@@ -41,10 +41,7 @@ class _FaqScreenState extends State<FaqScreen> {
       if (!mounted) return;
       setState(() {
         _faqs = list;
-        _expanded = List<bool>.generate(
-          list.length,
-          (i) => i == 0,
-        );
+        _expanded = List<bool>.generate(list.length, (i) => i == 0);
         _loading = false;
       });
     } catch (e) {

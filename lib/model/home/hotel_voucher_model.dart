@@ -1,3 +1,21 @@
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+
+class HotelFacility {
+  final String? id;
+  final String? note;
+  final String? iconRaw;
+
+  const HotelFacility({this.id, this.note, this.iconRaw});
+
+  String get displayLabel {
+    final n = note?.trim();
+    if (n != null && n.isNotEmpty) return n;
+    return 'Facility';
+  }
+
+  String? get iconUrl => serverMediaUrl(iconRaw);
+}
+
 class HotelVoucherModel {
   final String hotelName;
   final String hotelAddress;
@@ -5,7 +23,7 @@ class HotelVoucherModel {
   final String hotelContact;
   final String hotelEmail;
   final String? locationUrl;
-  final List<String> facilities;
+  final List<HotelFacility> facilities;
   final HotelStayInfo stayInfo;
   final List<HotelRoomAllocation> rooms;
 
@@ -21,6 +39,11 @@ class HotelVoucherModel {
     required this.rooms,
   });
 
+  String get facilitiesDisplayText {
+    if (facilities.isEmpty) return '';
+    return facilities.map((f) => f.displayLabel).join(', ');
+  }
+
   factory HotelVoucherModel.fromJson(Map<String, dynamic> json) {
     return HotelVoucherModel(
       hotelName: (json['hotelName'] ?? '').toString(),
@@ -29,14 +52,43 @@ class HotelVoucherModel {
       hotelContact: (json['hotelContact'] ?? '').toString(),
       hotelEmail: (json['hotelEmail'] ?? '').toString(),
       locationUrl: json['locationUrl']?.toString(),
-      facilities: (json['facilities'] as List?)?.map((e) => e.toString()).toList() ?? const [],
-      stayInfo: HotelStayInfo.fromJson((json['stayInfo'] as Map?)?.cast<String, dynamic>() ?? const {}),
+      facilities: _parseFacilities(json['facilities']),
+      stayInfo: HotelStayInfo.fromJson(
+        (json['stayInfo'] as Map?)?.cast<String, dynamic>() ?? const {},
+      ),
       rooms:
           (json['rooms'] as List?)
-              ?.map((e) => HotelRoomAllocation.fromJson((e as Map).cast<String, dynamic>()))
+              ?.map(
+                (e) => HotelRoomAllocation.fromJson(
+                  (e as Map).cast<String, dynamic>(),
+                ),
+              )
               .toList() ??
           const [],
     );
+  }
+
+  static List<HotelFacility> _parseFacilities(dynamic raw) {
+    if (raw is! List) return const [];
+    final out = <HotelFacility>[];
+    for (final e in raw) {
+      if (e is Map) {
+        final map = Map<String, dynamic>.from(e);
+        out.add(
+          HotelFacility(
+            id: map['_id']?.toString(),
+            note: map['note']?.toString(),
+            iconRaw: map['icon']?.toString(),
+          ),
+        );
+      } else {
+        final s = e.toString().trim();
+        if (s.isNotEmpty && !s.startsWith('{')) {
+          out.add(HotelFacility(note: s));
+        }
+      }
+    }
+    return out;
   }
 }
 
@@ -83,9 +135,9 @@ class HotelRoomAllocation {
       bookingRef: (json['bookingRef'] ?? '').toString(),
       roomNumber: (json['roomNumber'] ?? '').toString(),
       roomType: (json['roomType'] ?? '').toString(),
-      guests: (json['guests'] as List?)?.map((e) => e.toString()).toList() ?? const [],
+      guests: (json['guests'] as List?)?.map((e) => e.toString()).toList() ??
+          const [],
       occupancy: (json['occupancy'] ?? '').toString(),
     );
   }
 }
-

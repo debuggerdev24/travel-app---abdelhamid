@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/custom_header.dart';
-import 'package:trael_app_abdelhamid/core/widgets/tab_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/trip_card.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:trael_app_abdelhamid/provider/home/prayer_times_provider.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/custom_header.dart';
+import 'package:travel_app_abdelhamid/core/widgets/tab_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/trip_card.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
+import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         context.read<TripProvider>().fetchTrips();
         context.read<PrayerTimesProvider>().fetchPrayerTimes();
+        context.read<ProfileProvider>().loadProfile();
       }
     });
   }
@@ -46,7 +49,16 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 27.h.verticalSpace,
-                CustomHeaders(image: AppAssets.profilePhoto),
+                Consumer<ProfileProvider>(
+                  builder: (context, profileProvider, _) {
+                    final raw =
+                        profileProvider.profile?.profileImageRaw.trim();
+                    final url = raw != null && raw.isNotEmpty
+                        ? serverMediaUrl(raw)
+                        : null;
+                    return CustomHeaders(profileImageUrl: url);
+                  },
+                ),
 
                 16.h.verticalSpace,
                 Center(

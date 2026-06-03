@@ -1,17 +1,18 @@
 import 'dart:developer';
-import 'package:trael_app_abdelhamid/core/core.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/core.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/custom_switch_button.dart';
-import 'package:trael_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:trael_app_abdelhamid/core/widgets/shimmer_box.dart';
-import 'package:trael_app_abdelhamid/provider/profile/profile_provider.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
+import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -47,16 +48,15 @@ class ProfileScreen extends StatelessWidget {
                 child: Consumer<ProfileProvider>(
                   builder: (context, provider, _) {
                     final p = provider.profile;
-                    final name =
-                        p?.fullName.isNotEmpty == true ? p!.fullName : '—';
+                    final name = p?.fullName.isNotEmpty == true
+                        ? p!.fullName
+                        : '—';
                     final email = p?.email.isNotEmpty == true ? p!.email : '—';
 
-                    ImageProvider avatarImage =
-                        const AssetImage(AppAssets.profilePhoto);
                     final raw = p?.profileImageRaw.trim();
-                    if (raw != null && raw.isNotEmpty) {
-                      avatarImage = NetworkImage(serverMediaUrl(raw) ?? raw);
-                    }
+                    final avatarUrl = raw != null && raw.isNotEmpty
+                        ? serverMediaUrl(raw)
+                        : null;
 
                     return Column(
                       children: [
@@ -67,9 +67,9 @@ class ProfileScreen extends StatelessWidget {
                             shape: BoxShape.circle,
                           )
                         else
-                          CircleAvatar(
+                          NetworkAvatar(
+                            imageUrl: avatarUrl,
                             radius: 50.r,
-                            backgroundImage: avatarImage,
                           ),
                         10.h.verticalSpace,
                         AppText(
@@ -88,229 +88,265 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
 
-                    24.h.verticalSpace,
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: AppText(
-                        text: "Personal Information",
-                        style: textStyle16SemiBold.copyWith(
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                    10.h.verticalSpace,
-                    _infoCard([
-                      _infoRow(
-                        "Date of Birth",
-                        p?.dateOfBirth.isNotEmpty == true ? p!.dateOfBirth : "—",
-                      ),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-                      _infoRow("Age", "—"),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _infoRow(
-                        "Gender",
-                        p?.gender.isNotEmpty == true ? p!.gender : "—",
-                      ),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _infoRow(
-                        "Nationality",
-                        p?.nationality.isNotEmpty == true
-                            ? p!.nationality
-                            : "—",
-                      ),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _infoRow(
-                        "Passport Number",
-                        p?.passportNumber.isNotEmpty == true
-                            ? p!.passportNumber
-                            : "—",
-                      ),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _infoRow(
-                        "Contact",
-                        p?.phoneNumber.isNotEmpty == true ? p!.phoneNumber : "—",
-                      ),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _infoRow(
-                        "Language",
-                        p?.languages.isNotEmpty == true
-                            ? p!.languages.join(', ')
-                            : "—",
-                      ),
-                    ]),
-
-                    20.h.verticalSpace,
-                    GestureDetector(
-                      onTap: () {
-                        context.pushNamed(UserAppRoutes.prayerTimesScreen.name);
-                      },
-                      child: _menuTile("Prayer Times"),
-                    ),
-
-                    22.h.verticalSpace,
-
-                    /// ---------------- HELP & SUPPORT ----------------
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: AppText(
-                        text: "Help & Support",
-                        style: textStyle16SemiBold.copyWith(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                    16.h.verticalSpace,
-                    _infoCard([
-                      _menuitems("FAQs", () {
-                        context.pushNamed(UserAppRoutes.faqScreen.name);
-                      }),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _menuitems("Social Media Links", () {
-                        context.pushNamed(UserAppRoutes.socialMediaScreen.name);
-                      }),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _menuitems("Terms & Conditions", () {
-                        context.pushNamed(
-                          UserAppRoutes.termsConditionScreen.name,
-                        );
-                      }),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _menuitems("Privacy Policy", () {
-                        context.pushNamed(
-                          UserAppRoutes.privacyPolicyScreen.name,
-                        );
-                      }),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _menuitems("Our Locations", () {
-                        context.pushNamed(
-                          UserAppRoutes.ourLocationsScreen.name,
-                        );
-                      }),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _menuitems("Meet Our Team", () {
-                        context.pushNamed(UserAppRoutes.meetOurTeamScreen.name);
-                      }),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _menuitems("Feedback", () {
-                        context.pushNamed(
-                          UserAppRoutes.profileFeedbackScreen.name,
-                        );
-                      }),
-                      Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-
-                      _menuitems("App Settings", () {
-                        context.pushNamed(UserAppRoutes.appSettignScreen.name);
-                      }),
-                    ]),
-
-                    20.h.verticalSpace,
-                    _buildNotificationSwitch(),
-
-                    22.h.verticalSpace,
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: AppText(
-                        text: "Copyright Notice - Tawheed App",
-                        style: textStyle16SemiBold.copyWith(),
-                      ),
-                    ),
-                    16.h.verticalSpace,
-
-                    /// ---------------- COPYRIGHT BLOCK ----------------
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 20.h,
-                      ),
-                      decoration: _boxDecoration(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AppText(
-                            text: "© Temheed Reizen - All rights reserved.",
-                            style: textStyle14Regular.copyWith(
+                        24.h.verticalSpace,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: AppText(
+                            text: "Personal Information",
+                            style: textStyle16SemiBold.copyWith(
                               color: AppColors.primaryColor,
                             ),
                           ),
-                          8.h.verticalSpace,
-                          AppText(
-                            text: "Version: 2025",
-                            style: textStyle14Medium.copyWith(
-                              fontSize: 14.sp,
-                              color: AppColors.primaryColor.setOpacity(0.5),
+                        ),
+                        10.h.verticalSpace,
+                        _infoCard([
+                          _infoRow(
+                            "Date of Birth",
+                            p != null ? p.displayDateOfBirth : "—",
+                          ),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+                          _infoRow("Age", p?.displayAgeLabel ?? "—"),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _infoRow(
+                            "Gender",
+                            p?.gender.isNotEmpty == true ? p!.gender : "—",
+                          ),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _infoRow(
+                            "Nationality",
+                            p?.nationality.isNotEmpty == true
+                                ? p!.nationality
+                                : "—",
+                          ),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _infoRow(
+                            "Passport Number",
+                            p?.passportNumber.isNotEmpty == true
+                                ? p!.passportNumber
+                                : "—",
+                          ),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _infoRow(
+                            "Contact",
+                            p?.phoneNumber.isNotEmpty == true
+                                ? p!.phoneNumber
+                                : "—",
+                          ),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _infoRow(
+                            "Language",
+                            p?.languages.isNotEmpty == true
+                                ? p!.languages.join(', ')
+                                : "—",
+                          ),
+                        ]),
+
+                        20.h.verticalSpace,
+                        GestureDetector(
+                          onTap: () {
+                            context.pushNamed(
+                              UserAppRoutes.prayerTimesScreen.name,
+                            );
+                          },
+                          child: _menuTile("Prayer Times"),
+                        ),
+
+                        22.h.verticalSpace,
+
+                        /// ---------------- HELP & SUPPORT ----------------
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: AppText(
+                            text: "Help & Support",
+                            style: textStyle16SemiBold.copyWith(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primaryColor,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    22.h.verticalSpace,
-                    AppText(
-                      text:
-                          "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.",
-                      style: textStyle14Regular.copyWith(
-                        fontSize: 14.sp,
-                        color: AppColors.primaryColor.setOpacity(0.8),
-                      ),
-                    ),
-                    10.h.verticalSpace,
-                    AppText(
-                      text:
-                          "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
-                      style: textStyle14Regular.copyWith(
-                        fontSize: 14.sp,
-                        color: AppColors.primaryColor.setOpacity(0.8),
-                      ),
-                    ),
-                    10.h.verticalSpace,
+                        ),
+                        16.h.verticalSpace,
+                        _infoCard([
+                          _menuitems("FAQs", () {
+                            context.pushNamed(UserAppRoutes.faqScreen.name);
+                          }),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
 
-                    22.h.verticalSpace,
+                          _menuitems("Social Media Links", () {
+                            context.pushNamed(
+                              UserAppRoutes.socialMediaScreen.name,
+                            );
+                          }),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppActionButton(
-                            label: "Edit Profile",
-                            icon: AppAssets.exit,
-                            color: AppColors.blueColor,
-                            onTap: () {
-                              context.pushNamed(
-                                UserAppRoutes.editProfileScreen.name,
-                              );
-                            },
+                          _menuitems("Terms & Conditions", () {
+                            context.pushNamed(
+                              UserAppRoutes.termsConditionScreen.name,
+                            );
+                          }),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _menuitems("Privacy Policy", () {
+                            context.pushNamed(
+                              UserAppRoutes.privacyPolicyScreen.name,
+                            );
+                          }),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _menuitems("Our Locations", () {
+                            context.pushNamed(
+                              UserAppRoutes.ourLocationsScreen.name,
+                            );
+                          }),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _menuitems("Meet Our Team", () {
+                            context.pushNamed(
+                              UserAppRoutes.meetOurTeamScreen.name,
+                            );
+                          }),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _menuitems("Feedback", () {
+                            context.pushNamed(
+                              UserAppRoutes.profileFeedbackScreen.name,
+                            );
+                          }),
+                          Divider(
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+
+                          _menuitems("App Settings", () {
+                            context.pushNamed(
+                              UserAppRoutes.appSettignScreen.name,
+                            );
+                          }),
+                        ]),
+
+                        20.h.verticalSpace,
+                        _buildNotificationSwitch(),
+
+                        22.h.verticalSpace,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: AppText(
+                            text: "Copyright Notice - Tawheed App",
+                            style: textStyle16SemiBold.copyWith(),
                           ),
                         ),
-                        SizedBox(width: 15.w),
-                        Expanded(
-                          child: AppActionButton(
-                            label: "Logout",
-                            icon: AppAssets.exit,
-                            color: AppColors.redColor,
-                            onTap: () async {
-                              await PrefHelper.clearTokens();
-                              context.pushReplacementNamed(
-                                UserAppRoutes.signInScreen.name,
-                              );
-                            },
+                        16.h.verticalSpace,
+
+                        /// ---------------- COPYRIGHT BLOCK ----------------
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                            vertical: 20.h,
+                          ),
+                          decoration: _boxDecoration(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AppText(
+                                text: "© Temheed Reizen - All rights reserved.",
+                                style: textStyle14Regular.copyWith(
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                              8.h.verticalSpace,
+                              AppText(
+                                text: "Version: 2025",
+                                style: textStyle14Medium.copyWith(
+                                  fontSize: 14.sp,
+                                  color: AppColors.primaryColor.setOpacity(0.5),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                        22.h.verticalSpace,
+                        AppText(
+                          text:
+                              "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.",
+                          style: textStyle14Regular.copyWith(
+                            fontSize: 14.sp,
+                            color: AppColors.primaryColor.setOpacity(0.8),
+                          ),
+                        ),
+                        10.h.verticalSpace,
+                        AppText(
+                          text:
+                              "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
+                          style: textStyle14Regular.copyWith(
+                            fontSize: 14.sp,
+                            color: AppColors.primaryColor.setOpacity(0.8),
+                          ),
+                        ),
+                        10.h.verticalSpace,
 
-                    SizedBox(height: 40.h),
+                        22.h.verticalSpace,
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppActionButton(
+                                label: "Edit Profile",
+                                icon: AppAssets.exit,
+                                color: AppColors.blueColor,
+                                onTap: () {
+                                  context.pushNamed(
+                                    UserAppRoutes.editProfileScreen.name,
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 15.w),
+                            Expanded(
+                              child: AppActionButton(
+                                label: "Logout",
+                                icon: AppAssets.exit,
+                                color: AppColors.redColor,
+                                onTap: () async {
+                                  await PrefHelper.clearTokens();
+                                  context.pushReplacementNamed(
+                                    UserAppRoutes.signInScreen.name,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 40.h),
                       ],
                     );
                   },

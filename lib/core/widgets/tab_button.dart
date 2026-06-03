@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 
 class CustomTabButton extends StatelessWidget {
   final String text;
@@ -8,7 +8,7 @@ class CustomTabButton extends StatelessWidget {
   final int selectedTab;
   final VoidCallback onTap;
 
-  const CustomTabButton( {
+  const CustomTabButton({
     super.key,
     required this.text,
     required this.index,
@@ -35,7 +35,7 @@ class CustomTabButton extends StatelessWidget {
             style: textStyle14Regular.copyWith(
               fontSize: 14.sp,
 
-    fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w500,
               color: active ? Colors.black : Colors.black87,
             ),
           ),

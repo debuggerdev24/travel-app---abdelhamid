@@ -1,6 +1,6 @@
 {
-    "name": "trael_app_abdelhamid",
-    "short_name": "trael_app_abdelhamid",
+    "name": "travel_app_abdelhamid",
+    "short_name": "travel_app_abdelhamid",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 
 class DocumentCard extends StatelessWidget {
   final DocumentModel doc;
+
   /// Primary action (View).
   final VoidCallback onTap;
+
   /// Secondary action (Map / Helpline / Download). Defaults to [onTap].
   final VoidCallback? onSecondaryTap;
 
@@ -25,33 +28,40 @@ class DocumentCard extends StatelessWidget {
     final w = 140.w;
     final h = 126.h;
     if (doc.fileImage != null) {
-      return Image.file(
-        doc.fileImage!,
-        width: w,
-        height: h,
-        fit: BoxFit.cover,
+      return _thumbnailBox(
+        w,
+        h,
+        Image.file(doc.fileImage!, width: w, height: h, fit: BoxFit.contain),
       );
     }
     final url = doc.networkThumbnailUrl;
     if (url != null && url.isNotEmpty) {
-      return Image.network(
-        url,
-        width: w,
-        height: h,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Image.asset(
-          doc.image,
+      return _thumbnailBox(
+        w,
+        h,
+        NetworkImageWithShimmer(
+          imageUrl: url,
           width: w,
           height: h,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
         ),
       );
     }
-    return Image.asset(
-      doc.image,
+    return _thumbnailBox(
+      w,
+      h,
+      Image.asset(doc.image, width: w, height: h, fit: BoxFit.contain),
+    );
+  }
+
+  Widget _thumbnailBox(double w, double h, Widget child) {
+    return SizedBox(
       width: w,
       height: h,
-      fit: BoxFit.cover,
+      child: ColoredBox(
+        color: Colors.white,
+        child: Center(child: child),
+      ),
     );
   }
 
@@ -141,8 +151,9 @@ class DocumentCard extends StatelessWidget {
 
                     8.h.verticalSpace,
                     if (doc.info != null)
-                      ...doc.info!.entries
-                          .map((entry) => _buildInfoRow(entry.key, entry.value)),
+                      ...doc.info!.entries.map(
+                        (entry) => _buildInfoRow(entry.key, entry.value),
+                      ),
                   ],
                 ),
               ),

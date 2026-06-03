@@ -1,8 +1,8 @@
-import 'package:trael_app_abdelhamid/core/utils/pref_helper.dart';
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
-import 'package:trael_app_abdelhamid/features/auth/model/login_response_model.dart';
-import 'package:trael_app_abdelhamid/features/auth/model/verify_otp_response_model.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
+import 'package:travel_app_abdelhamid/features/auth/model/login_response_model.dart';
+import 'package:travel_app_abdelhamid/features/auth/model/verify_otp_response_model.dart';
 
 class AuthService {
   final BaseApiService _apiService = BaseApiService.instance;

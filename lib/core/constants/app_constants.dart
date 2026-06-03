@@ -1,14 +1,12 @@
 class AppConstants {
-  // static const String baseUrl = 'http://192.168.1.63:3000/api/user';
-  // // Base URL for loading public assets like `/uploads/<file>`
-  // static const String imageBaseUrl = 'http://192.168.1.63:3000';
+  static const String baseUrl = 'http://129.212.220.37/api/user'; 
 
-  static const String baseUrl = 'https://rebecca-phosphoreted-vanishingly.ngrok-free.dev/api/user'; 
   // Base URL for loading public assets like `/uploads/<file>`
-  static const String imageBaseUrl = 'https://rebecca-phosphoreted-vanishingly.ngrok-free.dev';
+  static const String imageBaseUrl = 'http://129.212.220.37';
 
   /// Socket.IO server for real-time chat (often LAN while REST uses ngrok).
-  static const String chatSocketBaseUrl = 'ws://192.168.1.72:3000';
+  // static const String chatSocketBaseUrl = 'ws://192.168.1.72:3000';
+  static const String chatSocketBaseUrl = 'ws://129.212.220.37';
 
   /// CMS routes live under `/api` (not `/api/user`). Use with paths like `/faq/get-faqs`.
   static String get apiPublicRoot => '$imageBaseUrl/api';

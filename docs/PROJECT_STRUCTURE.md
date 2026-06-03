@@ -71,8 +71,8 @@ lib/
 
 ### Imports
 
-- Use **package imports**: `package:trael_app_abdelhamid/...`
-- For **constants, theme, enums**: `import 'package:trael_app_abdelhamid/core/core.dart';`
+- Use **package imports**: `package:travel_app_abdelhamid/...`
+- For **constants, theme, enums**: `import 'package:travel_app_abdelhamid/core/core.dart';`
 - For **widgets**: import the specific file, e.g. `core/widgets/app_button.dart`, to avoid circular dependencies.
 
 ### Routes

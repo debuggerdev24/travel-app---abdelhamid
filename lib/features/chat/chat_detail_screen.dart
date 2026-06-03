@@ -6,18 +6,22 @@ import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/live_location_constants.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/provider/chat/chat_provider.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/live_location_constants.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
+import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String chatId;
+  final String? groupId;
   final String name;
   final String image;
   final String? avatarUrl;
@@ -26,6 +30,7 @@ class ChatDetailScreen extends StatefulWidget {
   const ChatDetailScreen({
     super.key,
     required this.chatId,
+    this.groupId,
     required this.name,
     required this.image,
     this.avatarUrl,
@@ -86,7 +91,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     final provider = Provider.of<ChatProvider>(context);
 
@@ -124,7 +129,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     if (widget.isGroup) {
                       context.pushNamed(
                         UserAppRoutes.groupInfoScreen.name,
-                        extra: {'name': widget.name, 'image': widget.image},
+                        extra: {
+                          'chatId': widget.chatId,
+                          'groupId': widget.groupId ?? widget.chatId,
+                          'name': widget.name,
+                          'image': widget.image,
+                          'avatarUrl': widget.avatarUrl,
+                        },
                       );
                     } else {}
                   },
@@ -298,7 +309,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       builder: (ctx) => AlertDialog(
         title: const Text('Delete message?'),
         content: const Text(
-          'This removes the message for everyone in the chat.',
+          'Are you sure you want to delete this message?',
         ),
         actions: [
           TextButton(
@@ -457,7 +468,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (!isMe) ...[_bubbleAvatar(isMe), 10.w.horizontalSpace],
+              if (!isMe) ...[_bubbleAvatar(message), 10.w.horizontalSpace],
               Flexible(
                 child: Column(
                   crossAxisAlignment: isMe
@@ -477,7 +488,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ],
                 ),
               ),
-              if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(isMe)],
+              if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(message)],
             ],
           ),
         ),
@@ -501,7 +512,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (!isMe) ...[_bubbleAvatar(isMe), 10.w.horizontalSpace],
+              if (!isMe) ...[_bubbleAvatar(message), 10.w.horizontalSpace],
               Flexible(
                 child: Column(
                   crossAxisAlignment: isMe
@@ -553,7 +564,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ],
                 ),
               ),
-              if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(isMe)],
+              if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(message)],
             ],
           ),
         ),
@@ -569,7 +580,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         children: [
-          if (!isMe) Row(children: [_bubbleAvatar(isMe), 10.w.horizontalSpace]),
+          if (!isMe) Row(children: [_bubbleAvatar(message), 10.w.horizontalSpace]),
           Flexible(
             child: Align(
               alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -610,32 +621,23 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               ),
             ),
           ),
-          if (isMe) Row(children: [10.w.horizontalSpace, _bubbleAvatar(isMe)]),
+          if (isMe) Row(children: [10.w.horizontalSpace, _bubbleAvatar(message)]),
         ],
       ),
     );
   }
 
-  Widget _bubbleAvatar(bool isMe) {
-    final url = widget.avatarUrl;
-    if (url != null && url.isNotEmpty && isMe) {
-      return CircleAvatar(
-        radius: 22.r,
-        backgroundImage: NetworkImage(url),
-        backgroundColor: Colors.grey,
-      );
+  Widget _bubbleAvatar(Map<String, dynamic> message) {
+    final isMe = message['isMe'] == true;
+    var url = message['senderAvatarUrl']?.toString();
+    if (isMe && (url == null || url.isEmpty)) {
+      final profile = context.read<ProfileProvider>().profile;
+      url = serverMediaUrl(profile?.profileImageRaw);
     }
-    if (!isMe) {
-      return CircleAvatar(
-        radius: 22.r,
-        backgroundImage: AssetImage(AppAssets.profilePhoto),
-        backgroundColor: Colors.grey,
-      );
-    }
-    return CircleAvatar(
+    return NetworkAvatar(
+      imageUrl: url,
       radius: 22.r,
-      backgroundImage: AssetImage(widget.image),
-      backgroundColor: Colors.grey,
+      fallbackKind: AvatarFallbackKind.user,
     );
   }
 

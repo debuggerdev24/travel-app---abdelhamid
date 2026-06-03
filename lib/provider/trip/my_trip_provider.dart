@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
-import 'package:trael_app_abdelhamid/core/utils/api_error_message.dart';
-import 'package:trael_app_abdelhamid/model/essential/packing_list_model.dart';
-import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
-import 'package:trael_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
-import 'package:trael_app_abdelhamid/services/essential_service.dart';
-import 'package:trael_app_abdelhamid/services/trips_service.dart';
+import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
+import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
+import 'package:travel_app_abdelhamid/core/utils/image_compress_helper.dart';
+import 'package:travel_app_abdelhamid/model/essential/packing_list_model.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
+import 'package:travel_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
+import 'package:travel_app_abdelhamid/services/essential_service.dart';
+import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
 /// ===============================
 ///  USER DOCUMENT MODEL
@@ -76,9 +77,7 @@ class MyTripProvider extends ChangeNotifier {
   /// Loads `GET /trip-documents` bundle (member docs + trip hotel / insurance / checklist).
   Future<void> fetchTripDocuments(String tripId, {bool force = false}) async {
     if (_isTripDocumentsLoading) return;
-    if (!force &&
-        _hasFetchedTripDocuments &&
-        _tripDocumentsTripId == tripId) {
+    if (!force && _hasFetchedTripDocuments && _tripDocumentsTripId == tripId) {
       return;
     }
 
@@ -170,11 +169,12 @@ class MyTripProvider extends ChangeNotifier {
     _isUploadingDocument = true;
     notifyListeners();
     try {
+      final photoFile = await compressImageFileForUpload(file);
       await TripsService.instance.addUserDocument(
         tripId: tripId,
         documentType: apiType,
         documentName: name,
-        photoFile: file,
+        photoFile: photoFile,
         memberId: memberId,
         showErrorToast: false,
       );

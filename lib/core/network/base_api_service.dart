@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
-import 'package:trael_app_abdelhamid/core/utils/pref_helper.dart';
-import 'package:trael_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:trael_app_abdelhamid/core/extensions/routes_extensions.dart';
-import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
-import 'package:trael_app_abdelhamid/routes/go_routes.dart';
-import 'package:trael_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
+import 'package:travel_app_abdelhamid/routes/go_routes.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class BaseApiService {
   BaseApiService._internal() {
@@ -225,9 +225,7 @@ class BaseApiService {
       }
 
       if (!showErrorToast && statusCode == 400) {
-        LogHelper.instance.debug(
-          'API POST multipart $endpoint → 400 $message',
-        );
+        LogHelper.instance.debug('API POST multipart $endpoint → 400 $message');
       } else {
         LogHelper.instance.error(
           "API Error: POST multipart $endpoint",
@@ -444,8 +442,7 @@ class BaseApiService {
       }
 
       // 400 / 404 + no toast: CMS "not found" or empty content; avoid ERROR-level noise
-      if (!showErrorToast &&
-          (statusCode == 400 || statusCode == 404)) {
+      if (!showErrorToast && (statusCode == 400 || statusCode == 404)) {
         LogHelper.instance.debug(
           'API $method $endpoint → $statusCode $message',
         );

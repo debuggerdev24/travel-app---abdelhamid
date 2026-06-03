@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
 import '../../model/home/trip_model.dart';
 import '../../services/trips_service.dart';
 
@@ -18,6 +18,9 @@ class TripBookingProvider extends ChangeNotifier {
 
   String? _bookingId;
   String? get bookingId => _bookingId;
+
+  bool _isBooked = false;
+  bool get isBooked => _isBooked;
 
   void updateAdultCount(int count) {
     if (adultCount != count) {
@@ -72,13 +75,20 @@ class TripBookingProvider extends ChangeNotifier {
   Future<void> loadTripDetails(String tripId) async {
     _isLoading = true;
     _error = null;
+    _isBooked = false;
     notifyListeners();
 
     try {
-      _tripDetails = await TripsService.instance.getTripDetails(
+      final result = await TripsService.instance.getTripDetails(
         tripId,
         showErrorToast: true,
       );
+      _tripDetails = result.trip;
+      _isBooked = result.isBooked;
+      _bookingId = result.bookingId;
+      if (_isBooked && (_bookingId == null || _bookingId!.isEmpty)) {
+        await _resolveExistingBookingId();
+      }
       if (_tripDetails?.packages?.isNotEmpty ?? false) {
         _selectedPackage = _tripDetails!.packages!.first;
       }
@@ -88,6 +98,45 @@ class TripBookingProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> _resolveExistingBookingId() async {
+    final tripId = _tripDetails?.id;
+    if (tripId == null || tripId.isEmpty) return;
+
+    try {
+      final ctx = await TripsService.instance.fetchEnrolledTripContext();
+      if (ctx != null && ctx.trip.id == tripId) {
+        _bookingId = ctx.bookingId;
+      }
+    } catch (_) {
+      // Room step may still load options by tripId.
+    }
+  }
+
+  /// When [isBooked] is true, skips `add-package` and only ensures a package is selected.
+  Future<bool> proceedToRoomSelection() async {
+    if (_tripDetails?.id == null || _selectedPackage?.id == null) {
+      _error = 'Trip or Package not selected';
+      notifyListeners();
+      return false;
+    }
+
+    if (_isBooked) {
+      if (_bookingId == null || _bookingId!.isEmpty) {
+        _isLoading = true;
+        notifyListeners();
+        try {
+          await _resolveExistingBookingId();
+        } finally {
+          _isLoading = false;
+          notifyListeners();
+        }
+      }
+      return true;
+    }
+
+    return bookPackage();
   }
 
   void selectPackage(PackageDetails package) {
@@ -172,7 +221,7 @@ class TripBookingProvider extends ChangeNotifier {
       _error = "Trip or Package not selected";
       notifyListeners();
       return false;
-    } 
+    }
 
     _isLoading = true;
     _error = null;

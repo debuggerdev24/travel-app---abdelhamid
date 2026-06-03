@@ -1,24 +1,24 @@
 import 'dart:io';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text_filed.dart';
-import 'package:trael_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
-import 'package:trael_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:trael_app_abdelhamid/provider/trip/my_trip_provider.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
+import 'package:travel_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:travel_app_abdelhamid/core/utils/image_compress_helper.dart';
+import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
 
 class AddDocumentScreen extends StatefulWidget {
   const AddDocumentScreen({super.key, this.tripId});
 
-  /// Preferred; falls back to [TripProvider.selectedTrip] if null.
   final String? tripId;
 
   @override
@@ -61,8 +61,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
       backgroundColor: Colors.white,
       body: Consumer2<MyTripProvider, TripProvider>(
         builder: (context, myTrip, trip, child) {
-          final resolvedTripId =
-              widget.tripId ?? trip.selectedTrip?.id ?? '';
+          final resolvedTripId = widget.tripId ?? trip.selectedTrip?.id ?? '';
 
           return SingleChildScrollView(
             child: SafeArea(
@@ -154,7 +153,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               if (myTrip.selectedDocumentType.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text("Please select document type"),
+                                    content: Text(
+                                      "Please select document type",
+                                    ),
                                   ),
                                 );
                                 return;
@@ -188,9 +189,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               if (!context.mounted) return;
 
                               if (err != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(err)),
-                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text(err)));
                                 return;
                               }
 

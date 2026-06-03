@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:trael_app_abdelhamid/model/home/family_details_model.dart';
-import 'package:trael_app_abdelhamid/model/person_details_model.dart';
-import 'package:trael_app_abdelhamid/model/profile/user_profile_model.dart';
-import 'package:trael_app_abdelhamid/services/trips_service.dart';
+import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
+import 'package:travel_app_abdelhamid/model/home/family_details_model.dart';
+import 'package:travel_app_abdelhamid/model/person_details_model.dart';
+import 'package:travel_app_abdelhamid/model/profile/user_profile_model.dart';
+import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
 class PersonDetailsProvider extends ChangeNotifier {
   // ─── Personal Details Controllers ───────────────────────────────────────────
@@ -15,14 +16,18 @@ class PersonDetailsProvider extends ChangeNotifier {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController houseNumberController = TextEditingController();
   final TextEditingController postalCodeController = TextEditingController();
-  final TextEditingController placeOfResidenceController = TextEditingController();
+  final TextEditingController placeOfResidenceController =
+      TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
 
   // ─── Family Member Controllers ───────────────────────────────────────────────
-  final TextEditingController familyFirstNameController = TextEditingController();
+  final TextEditingController familyFirstNameController =
+      TextEditingController();
   final TextEditingController familySurnameController = TextEditingController();
-  final TextEditingController familyPhoneNumberController = TextEditingController();
-  final TextEditingController familyRelationshipController = TextEditingController();
+  final TextEditingController familyPhoneNumberController =
+      TextEditingController();
+  final TextEditingController familyRelationshipController =
+      TextEditingController();
 
   // ─── State ───────────────────────────────────────────────────────────────────
   PersonDetailsModel? _personDetails;
@@ -40,7 +45,8 @@ class PersonDetailsProvider extends ChangeNotifier {
   /// Prefill main booker fields from user profile (Get User Details API).
   /// Only fills fields that are currently empty, so it won't overwrite typing.
   void prefillFromUserProfile(UserProfile p) {
-    if (firstNameController.text.trim().isEmpty && p.firstName.trim().isNotEmpty) {
+    if (firstNameController.text.trim().isEmpty &&
+        p.firstName.trim().isNotEmpty) {
       firstNameController.text = p.firstName.trim();
     }
     if (surnameController.text.trim().isEmpty && p.surName.trim().isNotEmpty) {
@@ -48,7 +54,7 @@ class PersonDetailsProvider extends ChangeNotifier {
     }
     if (dateOfBirthController.text.trim().isEmpty &&
         p.dateOfBirth.trim().isNotEmpty) {
-      dateOfBirthController.text = p.dateOfBirth.trim();
+      dateOfBirthController.text = formatDateToYyyyMmDd(p.dateOfBirth);
     }
     if (nationalityController.text.trim().isEmpty &&
         p.nationality.trim().isNotEmpty) {

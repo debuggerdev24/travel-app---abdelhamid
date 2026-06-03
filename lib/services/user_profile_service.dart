@@ -1,6 +1,6 @@
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
-import 'package:trael_app_abdelhamid/model/profile/user_profile_model.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
+import 'package:travel_app_abdelhamid/model/profile/user_profile_model.dart';
 
 class UserProfileService {
   UserProfileService._internal();
@@ -85,10 +85,10 @@ class UserProfileService {
     final data = map['data'];
     if (data is Map) {
       final m = Map<String, dynamic>.from(data);
-      final url = (m['profileImage'] ?? m['profilePicture'] ?? m['image'])?.toString();
+      final url = (m['profileImage'] ?? m['profilePicture'] ?? m['image'])
+          ?.toString();
       if (url != null && url.trim().isNotEmpty) return url;
     }
     return null;
   }
 }
-

@@ -1,17 +1,18 @@
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
 
 class CustomHeaders extends StatelessWidget {
-  final String image;
+  final String? profileImageUrl;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
 
   const CustomHeaders({
     super.key,
-    required this.image,
+    this.profileImageUrl,
     this.onProfileTap,
     this.onNotificationTap,
   });
@@ -37,7 +38,12 @@ class CustomHeaders extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.blueColor, width: 1),
                   ),
-                  child: CircleAvatar(backgroundImage: AssetImage(image)),
+                  child: ClipOval(
+                    child: NetworkAvatar(
+                      imageUrl: profileImageUrl,
+                      radius: 21.r,
+                    ),
+                  ),
                 ),
               ),
 

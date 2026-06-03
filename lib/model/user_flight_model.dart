@@ -1,3 +1,5 @@
+import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
+
 class FlightDetailsModel {
   final TripInfoModel trip;
   final List<FlightInfoModel> flights;
@@ -102,7 +104,7 @@ class FlightInfoModel {
   Map<String, String> get infoMap => {
     "Flight": flightName,
     "Route": route,
-    "Date": date,
+    "Date": formatDateForDisplay(date),
     "Departure": departureTime,
     "Arrival": arrivalTime,
     "Duration": duration,

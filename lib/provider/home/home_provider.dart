@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:trael_app_abdelhamid/core/enums/payment_option_enum.dart';
-import 'package:trael_app_abdelhamid/core/utils/payment_flow_log.dart';
-import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
-import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
-import 'package:trael_app_abdelhamid/model/home/user_itinerary_model.dart';
-import 'package:trael_app_abdelhamid/services/trips_service.dart';
+import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
+import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
+import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
+import 'package:travel_app_abdelhamid/model/home/user_itinerary_model.dart';
+import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
 class TripProvider extends ChangeNotifier {
   /// Last trip the user chose on Home (lists / trip-details navigation).

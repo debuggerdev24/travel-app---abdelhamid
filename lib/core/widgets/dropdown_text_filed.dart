@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:trael_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
 class DropdownController {
   static _CustomMultiSelectDropdownState? openedDropdown;
@@ -59,6 +59,30 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
     }
   }
 
+  bool _isItemSelected(String item) {
+    if (widget.selectedItems.isEmpty) return false;
+    return widget.selectedItems.any(
+      (s) => s.toLowerCase() == item.toLowerCase(),
+    );
+  }
+
+  String? _radioGroupValue() {
+    if (widget.selectedItems.isEmpty) return null;
+    final selected = widget.selectedItems.first;
+    for (final item in widget.items) {
+      if (item.toLowerCase() == selected.toLowerCase()) return item;
+    }
+    return selected;
+  }
+
+  String _displaySelectedText() {
+    if (widget.selectedItems.isEmpty) return widget.hintText;
+    if (widget.showRadio) {
+      return _radioGroupValue() ?? widget.selectedItems.first;
+    }
+    return widget.selectedItems.join(', ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -103,9 +127,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
               children: [
                 Expanded(
                   child: AppText(
-                    text: widget.selectedItems.isEmpty
-                        ? widget.hintText
-                        : widget.selectedItems.join(", "),
+                    text: _displaySelectedText(),
                     style: textStyle14Regular.copyWith(
                       color: widget.selectedItems.isEmpty
                           ? AppColors.primaryColor.setOpacity(0.6)
@@ -164,25 +186,26 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                 SizedBox(height: 5.h),
                 // Items List
                 ...widget.items.map((item) {
-                  final isSelected = widget.selectedItems.contains(item);
+                  final isSelected = _isItemSelected(item);
 
                   return InkWell(
                     onTap: () {
                       setState(() {
                         if (widget.showRadio) {
-                          widget.selectedItems
-                            ..clear()
-                            ..add(item);
+                          widget.onChanged([item]);
                           isExpanded = false;
                         } else {
+                          final next = List<String>.from(widget.selectedItems);
                           if (isSelected) {
-                            widget.selectedItems.remove(item);
+                            next.removeWhere(
+                              (s) => s.toLowerCase() == item.toLowerCase(),
+                            );
                           } else {
-                            widget.selectedItems.add(item);
+                            next.add(item);
                           }
+                          widget.onChanged(next);
                         }
                       });
-                      widget.onChanged(widget.selectedItems);
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
@@ -197,18 +220,11 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                               ? Radio<String>(
                                   activeColor: AppColors.blueColor,
                                   value: item,
-                                  groupValue: widget.selectedItems.isNotEmpty
-                                      ? widget.selectedItems.first
-                                      : null,
+                                  groupValue: _radioGroupValue(),
                                   onChanged: (val) {
                                     if (val != null) {
-                                      setState(() {
-                                        widget.selectedItems
-                                          ..clear()
-                                          ..add(val);
-                                        isExpanded = false;
-                                      });
-                                      widget.onChanged(widget.selectedItems);
+                                      setState(() => isExpanded = false);
+                                      widget.onChanged([val]);
                                     }
                                   },
                                 )

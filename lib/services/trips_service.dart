@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/network/base_api_service.dart';
-import 'package:trael_app_abdelhamid/core/network/endpoints.dart';
-import 'package:trael_app_abdelhamid/core/utils/payment_flow_log.dart';
-import 'package:trael_app_abdelhamid/core/network/network_errors.dart';
-import 'package:trael_app_abdelhamid/model/home/hotel_voucher_model.dart';
-import 'package:trael_app_abdelhamid/model/home/payment_receipt_detail.dart';
-import 'package:trael_app_abdelhamid/model/home/trip_model.dart';
-import 'package:trael_app_abdelhamid/model/home/user_payment_history_item.dart';
-import 'package:trael_app_abdelhamid/model/home/user_itinerary_model.dart';
-import 'package:trael_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
-import 'package:trael_app_abdelhamid/model/user_flight_model.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
+import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
+import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
+import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
+import 'package:travel_app_abdelhamid/model/home/payment_receipt_detail.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
+import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
+import 'package:travel_app_abdelhamid/model/home/user_itinerary_model.dart';
+import 'package:travel_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
+import 'package:travel_app_abdelhamid/model/user_flight_model.dart';
 
 enum TripsType { upcoming, past }
 
@@ -42,7 +42,7 @@ class TripsService {
     }
   }
 
-  Future<TripModel> getTripDetails(
+  Future<TripDetailsLoadResult> getTripDetails(
     String id, {
     bool showErrorToast = true,
   }) async {
@@ -53,11 +53,13 @@ class TripsService {
         showErrorToast: showErrorToast,
       );
 
-      if (response['data'] != null) {
-        return TripModel.fromJson(response['data']);
-      } else {
-        throw Exception('Trip details not found');
+      final data = response['data'];
+      if (data is Map) {
+        return TripDetailsLoadResult.fromDetailsResponse(
+          Map<String, dynamic>.from(data),
+        );
       }
+      throw Exception('Trip details not found');
     } catch (e) {
       rethrow;
     }
@@ -125,24 +127,32 @@ class TripsService {
       final data = Map<String, dynamic>.from(response['data'] as Map);
       final bookingId = data['bookingId']?.toString();
       if (bookingId == null || bookingId.isEmpty) {
-        PaymentFlowLog.log('fetchEnrolledTripContext: missing bookingId in my-trip');
+        PaymentFlowLog.log(
+          'fetchEnrolledTripContext: missing bookingId in my-trip',
+        );
         return null;
       }
 
-      PaymentFlowLog.log('fetchEnrolledTripContext: my-trip raw paymentSummary', {
-        'bookingId': bookingId,
-        'paymentSummary': data['paymentSummary']?.toString() ?? 'null',
-      });
+      PaymentFlowLog.log(
+        'fetchEnrolledTripContext: my-trip raw paymentSummary',
+        {
+          'bookingId': bookingId,
+          'paymentSummary': data['paymentSummary']?.toString() ?? 'null',
+        },
+      );
 
       var paymentDetails = TripPaymentDetails.fromJson(data);
-      PaymentFlowLog.log('fetchEnrolledTripContext: parsed TripPaymentDetails', {
-        'bookingId': bookingId,
-        'packageName': paymentDetails.packageName,
-        'totalAmount': paymentDetails.totalAmount,
-        'paidAmount': paymentDetails.paidAmount,
-        'pendingAmount': paymentDetails.pendingAmount,
-        'isFullyPaid': paymentDetails.isFullyPaid,
-      });
+      PaymentFlowLog.log(
+        'fetchEnrolledTripContext: parsed TripPaymentDetails',
+        {
+          'bookingId': bookingId,
+          'packageName': paymentDetails.packageName,
+          'totalAmount': paymentDetails.totalAmount,
+          'paidAmount': paymentDetails.paidAmount,
+          'pendingAmount': paymentDetails.pendingAmount,
+          'isFullyPaid': paymentDetails.isFullyPaid,
+        },
+      );
 
       // If my-trip totals lag behind Stripe but history already lists succeeded charges, align UI.
       try {
@@ -162,8 +172,7 @@ class TripsService {
               'historySucceededSum': succeededSum,
             },
           );
-          paymentDetails =
-              paymentDetails.withReconciledPaid(succeededSum);
+          paymentDetails = paymentDetails.withReconciledPaid(succeededSum);
         }
       } catch (_) {
         // Keep my-trip-only totals on history errors.
@@ -223,13 +232,14 @@ class TripsService {
           final tripId = tripMap['_id']?.toString();
           if (tripId != null && tripId.isNotEmpty) {
             try {
-              return await getTripDetails(tripId, showErrorToast: false);
+              return (await getTripDetails(tripId, showErrorToast: false)).trip;
             } catch (e) {
               PaymentFlowLog.log(
                 'fetchEnrolledTripContext: getTripDetails failed, using snippet',
                 {'tripId': tripId, 'error': e.toString()},
               );
-              final fall = snippetFromMyTrip() ??
+              final fall =
+                  snippetFromMyTrip() ??
                   TripModel.fromUserPaymentMyTripJson(tripMap);
               if (fall.id == null || fall.id!.isEmpty) {
                 return TripModel(
@@ -284,9 +294,7 @@ class TripsService {
     return data
         .whereType<Map>()
         .map(
-          (e) => UserPaymentHistoryItem.fromJson(
-            Map<String, dynamic>.from(e),
-          ),
+          (e) => UserPaymentHistoryItem.fromJson(Map<String, dynamic>.from(e)),
         )
         .toList();
   }
@@ -521,7 +529,7 @@ class TripsService {
   //     }
   //   } catch (e) {
   //     rethrow;
-  //   }  
+  //   }
   // }
 
   Future<Map<String, dynamic>> saveRoomPreference(

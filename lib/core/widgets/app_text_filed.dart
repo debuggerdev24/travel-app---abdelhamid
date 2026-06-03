@@ -1,9 +1,9 @@
-import 'package:trael_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trael_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:trael_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -71,15 +71,15 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final InputBorder normalBorder = border ??
+    final InputBorder normalBorder =
+        border ??
         outlineInputBorder ??
         OutlineInputBorder(
-          borderSide: BorderSide(
-            color: AppColors.primaryColor.setOpacity(0.2),
-          ),
+          borderSide: BorderSide(color: AppColors.primaryColor.setOpacity(0.2)),
           borderRadius: BorderRadius.circular(8.r),
         );
-    final InputBorder invalidBorder = errorBorder ??
+    final InputBorder invalidBorder =
+        errorBorder ??
         OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
           borderSide: const BorderSide(color: AppColors.redColor),
@@ -178,7 +178,8 @@ class AppTextField extends StatelessWidget {
           SizedBox(height: 4.h),
           Text(
             bottomText!,
-            style: bottomTextStyle ??
+            style:
+                bottomTextStyle ??
                 textStyle14Regular.copyWith(
                   color: AppColors.greyColor,
                   fontSize: 12.sp,

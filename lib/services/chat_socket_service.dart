@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import 'package:trael_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:trael_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
 
 /// Socket.IO client aligned with [travel-admin-backend/socket/socketHandler.js].
 class ChatSocketService {
@@ -20,8 +20,10 @@ class ChatSocketService {
       StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get envelopeStream => _envelope.stream;
-  Stream<Map<String, dynamic>> get messageUpdatedStream => _messageUpdated.stream;
-  Stream<Map<String, dynamic>> get messageDeletedStream => _messageDeleted.stream;
+  Stream<Map<String, dynamic>> get messageUpdatedStream =>
+      _messageUpdated.stream;
+  Stream<Map<String, dynamic>> get messageDeletedStream =>
+      _messageDeleted.stream;
 
   bool get isConnected => _socket?.connected == true;
 

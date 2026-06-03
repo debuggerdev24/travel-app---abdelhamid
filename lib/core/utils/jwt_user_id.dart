@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:trael_app_abdelhamid/core/utils/pref_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 
 /// Reads `userId` from the JWT payload (matches backend [helpers/utility.js]).
 String? userIdFromAccessToken(String? token) {
@@ -10,7 +10,8 @@ String? userIdFromAccessToken(String? token) {
   try {
     final normalized = base64Url.normalize(parts[1]);
     final payload =
-        jsonDecode(utf8.decode(base64Url.decode(normalized))) as Map<String, dynamic>;
+        jsonDecode(utf8.decode(base64Url.decode(normalized)))
+            as Map<String, dynamic>;
     final uid = payload['userId'];
     if (uid == null) return null;
     return uid.toString();
