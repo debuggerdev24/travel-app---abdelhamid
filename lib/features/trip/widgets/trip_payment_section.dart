@@ -71,53 +71,6 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     }
   }
 
-  /// Re-fetch `GET .../user-payment/my-trip` until paid/pending change, or [maxAttempts] exhausted.
-  /// If totals never change, the backend is not updating the booking after Stripe (webhook / DB).
-  Future<void> _pollEnrolledTripAfterStripeSuccess(
-    TripProvider tripProvider, {
-    required double priorPending,
-    required double priorPaid,
-    String? bookingId,
-  }) async {
-    const maxAttempts = 15;
-    const gap = Duration(milliseconds: 1000);
-
-    for (var attempt = 0; attempt < maxAttempts; attempt++) {
-      await tripProvider.loadEnrolledTripForTripsTab(bookingId: bookingId);
-      final p = tripProvider.paymentDetails;
-      if (p == null) {
-        PaymentFlowLog.log('poll after Stripe: paymentDetails is null');
-        return;
-      }
-      final pendingDropped = p.pendingAmount < priorPending - 0.009;
-      final paidIncreased = p.paidAmount > priorPaid + 0.009;
-      if (pendingDropped || paidIncreased) {
-        PaymentFlowLog.log('poll after Stripe: my-trip reflects payment', {
-          'attempt': attempt + 1,
-          'pendingAmount': p.pendingAmount,
-          'paidAmount': p.paidAmount,
-        });
-        return;
-      }
-      PaymentFlowLog.log(
-        'poll after Stripe: my-trip still unchanged (webhook slow or missing)',
-        {
-          'attempt': '${attempt + 1}/$maxAttempts',
-          'pendingAmount': p.pendingAmount,
-          'paidAmount': p.paidAmount,
-        },
-      );
-      if (attempt < maxAttempts - 1) {
-        await Future.delayed(gap);
-      }
-    }
-    PaymentFlowLog.log(
-      'poll after Stripe: TIMEOUT — backend never updated booking. '
-      'Configure Stripe webhook payment_intent.succeeded (or equivalent) to add this charge to the booking; '
-      'GET my-trip must return updated paidAmount / pendingAmount.',
-    );
-  }
-
   Future<void> _loadPastPayments(String? bookingId) async {
     if (!mounted) return;
     if (bookingId == null || bookingId.isEmpty) {
@@ -175,57 +128,43 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     });
     if (!mounted) return;
     final tripProvider = context.read<TripProvider>();
-    final priorPending =
-        tripProvider.paymentDetails?.pendingAmount ?? paidAmountEur;
-    final priorPaid = tripProvider.paymentDetails?.paidAmount ?? 0;
-    PaymentFlowLog.log('_onPaymentSucceeded: snapshot before refresh', {
-      'priorPending': priorPending,
-      'priorPaid': priorPaid,
-      'chargedThisSession': paidAmountEur,
-    });
-
     final bookingIdForMyTrip =
         tripProvider.enrolledBookingId ??
         context.read<TripBookingProvider>().bookingId;
-    tripProvider.rememberLatestPaymentBookingId(bookingIdForMyTrip);
-    await _pollEnrolledTripAfterStripeSuccess(
-      tripProvider,
-      priorPending: priorPending,
-      priorPaid: priorPaid,
-      bookingId: bookingIdForMyTrip,
-    );
-    if (!mounted) return;
-    PaymentFlowLog.log('_onPaymentSucceeded: after poll', {
-      'pendingAmount': tripProvider.paymentDetails?.pendingAmount,
-      'paidAmount': tripProvider.paymentDetails?.paidAmount,
-    });
-    if (bookingIdForMyTrip != null && bookingIdForMyTrip.isNotEmpty) {
-      await TripsService.instance.markBookingActive(
-        bookingId: bookingIdForMyTrip,
-      );
-    }
-    if (!mounted) return;
-    await context.read<ChatProvider>().loadConversations(silent: true);
-    if (!mounted) return;
+
+    // Show success screen immediately after payment succeeds
     ToastHelper.showSuccess('Payment successful');
     await context.pushNamed(
       UserAppRoutes.paymentSuccessfullScreen.name,
       extra: PaymentSuccessRouteExtra(amountEur: paidAmountEur),
     );
     if (!mounted) return;
+
+    // Now perform background refresh operations
+    tripProvider.rememberLatestPaymentBookingId(bookingIdForMyTrip);
+
+    // Quick single refresh instead of excessive polling
     await tripProvider.loadEnrolledTripForTripsTab(
       bookingId: bookingIdForMyTrip,
     );
     if (!mounted) return;
-    PaymentFlowLog.log(
-      '_onPaymentSucceeded: after success screen + final refresh',
-      {
-        'pendingAmount': tripProvider.paymentDetails?.pendingAmount,
-        'paidAmount': tripProvider.paymentDetails?.paidAmount,
-      },
-    );
+
+    PaymentFlowLog.log('_onPaymentSucceeded: after quick refresh', {
+      'pendingAmount': tripProvider.paymentDetails?.pendingAmount,
+      'paidAmount': tripProvider.paymentDetails?.paidAmount,
+    });
+
+    if (bookingIdForMyTrip != null && bookingIdForMyTrip.isNotEmpty) {
+      await TripsService.instance.markBookingActive(
+        bookingId: bookingIdForMyTrip,
+      );
+    }
+    if (!mounted) return;
+
     await context.read<ChatProvider>().loadConversations(silent: true);
     if (!mounted) return;
+
+    // Refresh payment history in background
     tripProvider.notifyPaymentHistoryRefresh();
   }
 

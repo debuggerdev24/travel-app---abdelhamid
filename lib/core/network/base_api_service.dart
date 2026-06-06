@@ -49,6 +49,9 @@ class BaseApiService {
             if (token != null && token.isNotEmpty) {
               options.headers[HttpHeaders.authorizationHeader] =
                   'Bearer $token';
+              LogHelper.instance.debug(
+                'API Request: ${options.method} ${options.uri} | Authorization Token: Bearer $token',
+              );
             }
 
             handler.next(options);

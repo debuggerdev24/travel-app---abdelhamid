@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
@@ -47,6 +48,7 @@ class TabScreen extends StatefulWidget {
 //   }
 class _TabScreenState extends State<TabScreen> {
   late int currentIndex;
+  DateTime? lastBackPressed;
 
   @override
   void initState() {
@@ -67,12 +69,35 @@ class _TabScreenState extends State<TabScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: [HomeScreen(), TripScreen(), ChatScreen(), ProfileScreen()],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        final now = DateTime.now();
+        if (lastBackPressed == null ||
+            now.difference(lastBackPressed!) > const Duration(seconds: 2)) {
+          lastBackPressed = now;
+          Fluttertoast.showToast(
+            msg: 'Press back again to exit',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black87,
+            textColor: Colors.white,
+            fontSize: 16,
+          );
+        } else {
+          // Allow the pop to happen
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: currentIndex,
+          children: [HomeScreen(), TripScreen(), ChatScreen(), ProfileScreen()],
+        ),
+        bottomNavigationBar: bottomNavigationBar(),
       ),
-      bottomNavigationBar: bottomNavigationBar(),
     );
   }
 

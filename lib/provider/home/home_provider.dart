@@ -15,6 +15,11 @@ class TripProvider extends ChangeNotifier {
   TripModel? _enrolledTrip;
   TripModel? get enrolledTrip => _enrolledTrip;
 
+  /// List of all enrolled/booked trips (static data for now until API is ready).
+  /// TODO: Replace with API call when backend supports fetching all enrolled trips.
+  List<TripModel> _enrolledTripsList = [];
+  List<TripModel> get enrolledTripsList => _enrolledTripsList;
+
   /// What the Trips tab should display: enrolled trip when present, otherwise Home selection.
   TripModel? get tripForTripsTab => _enrolledTrip ?? selectedTrip;
 
@@ -190,16 +195,38 @@ class TripProvider extends ChangeNotifier {
         _enrolledTrip = ctx.trip;
         _paymentDetails = ctx.paymentDetails;
         _enrolledBookingId = ctx.bookingId;
+
+        // TODO: Replace with API call when backend supports fetching all enrolled trips
+        // For now, populate with static data based on current enrolled trip
+        _enrolledTripsList = [];
+        // Add the enrolled trip to the list
+        _enrolledTripsList.add(ctx.trip);
+        // Add a duplicate to simulate multiple booked trips (static data)
+        // This will be replaced with actual API data when available
+        final trip2 = TripModel(
+          id: ctx.trip.id,
+          title: ctx.trip.title,
+          location: ctx.trip.location,
+          date: ctx.trip.date,
+          image: ctx.trip.image,
+          status: ctx.trip.status,
+          description: ctx.trip.description,
+          packages: ctx.trip.packages,
+        );
+        _enrolledTripsList.add(trip2);
+
         PaymentFlowLog.log('loadEnrolledTripForTripsTab: state updated', {
           'bookingId': _enrolledBookingId,
           'pendingAmount': _paymentDetails?.pendingAmount,
           'paidAmount': _paymentDetails?.paidAmount,
           'isFullyPaid': _paymentDetails?.isFullyPaid,
+          'enrolledTripsCount': _enrolledTripsList.length,
         });
       } else {
         _enrolledTrip = null;
         _paymentDetails = null;
         _enrolledBookingId = null;
+        _enrolledTripsList = [];
         PaymentFlowLog.log(
           'loadEnrolledTripForTripsTab: no enrolled context (null)',
         );

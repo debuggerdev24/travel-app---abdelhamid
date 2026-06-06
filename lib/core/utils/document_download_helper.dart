@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -103,7 +102,8 @@ Future<_DownloadedFile> _downloadNetworkFile(String url, String label) async {
     BaseOptions(
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 120),
-      validateStatus: (status) => status != null && status >= 200 && status < 300,
+      validateStatus: (status) =>
+          status != null && status >= 200 && status < 300,
     ),
   );
   final token = PrefHelper.getAccessToken();
@@ -142,10 +142,7 @@ Future<void> _saveOrShare({
     final dir = await getTemporaryDirectory();
     final temp = File('${dir.path}/$fileName');
     await temp.writeAsBytes(bytes, flush: true);
-    await Share.shareXFiles(
-      [XFile(temp.path, name: fileName)],
-      subject: label,
-    );
+    await Share.shareXFiles([XFile(temp.path, name: fileName)], subject: label);
     return;
   }
 
@@ -167,10 +164,7 @@ Future<void> _saveOrShare({
   final dir = await getTemporaryDirectory();
   final temp = File('${dir.path}/$fileName');
   await temp.writeAsBytes(bytes, flush: true);
-  await Share.shareXFiles(
-    [XFile(temp.path, name: fileName)],
-    subject: label,
-  );
+  await Share.shareXFiles([XFile(temp.path, name: fileName)], subject: label);
 }
 
 String _sanitizeFileName(String name) {

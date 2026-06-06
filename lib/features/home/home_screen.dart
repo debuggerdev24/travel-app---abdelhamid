@@ -51,8 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 27.h.verticalSpace,
                 Consumer<ProfileProvider>(
                   builder: (context, profileProvider, _) {
-                    final raw =
-                        profileProvider.profile?.profileImageRaw.trim();
+                    final raw = profileProvider.profile?.profileImageRaw.trim();
                     final url = raw != null && raw.isNotEmpty
                         ? serverMediaUrl(raw)
                         : null;

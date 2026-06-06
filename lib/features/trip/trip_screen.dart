@@ -44,6 +44,9 @@ class _TripScreenState extends State<TripScreen> {
   /// Last trip id we ran [refreshAllTripScopedData] for (avoids duplicate work).
   String? _lastRefreshedTripId;
 
+  /// Whether to show the trip list or the selected trip details
+  bool _showTripList = true;
+
   @override
   void initState() {
     super.initState();
@@ -74,130 +77,271 @@ class _TripScreenState extends State<TripScreen> {
   @override
   Widget build(BuildContext context) {
     final tripProvider = context.watch<TripProvider>();
-    final trip = tripProvider.tripForTripsTab;
-
-    _scheduleRefreshIfTripChanged(trip?.id);
+    final enrolledTrips = tripProvider.enrolledTripsList;
 
     return Consumer<MyTripProvider>(
       builder: (context, provider, child) {
         return Scaffold(
           backgroundColor: Colors.white,
           body: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  10.h.verticalSpace,
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 27.w,
-                      vertical: 10.h,
-                    ),
-                    child: Center(
-                      child: AppText(
-                        text: trip?.title ?? "",
-                        style: textStyle32Bold.copyWith(
-                          fontSize: 26.sp,
-                          color: AppColors.secondary,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (trip != null)
-                    trip.image.startsWith('assets')
-                        ? Image.asset(
-                            trip.image,
-                            height: 250.h,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          )
-                        : NetworkImageWithShimmer(
-                            imageUrl: trip.imageUrl,
-                            height: 250.h,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-
-                  // Trip title and location
-                  12.h.verticalSpace,
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 27.w),
-                    child: AppText(
-                      text: trip?.title ?? "-",
-                      style: textStyle16SemiBold,
-                    ),
-                  ),
-                  14.h.verticalSpace,
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 27.w,
-                      vertical: 2.h,
-                    ),
-                    child: Row(
-                      children: [
-                        SvgIcon(AppAssets.pin, size: 22.w),
-                        14.w.horizontalSpace,
-                        Expanded(
-                          child: AppText(
-                            text: trip?.location ?? "-",
-                            style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                        ),
-                        12.w.horizontalSpace,
-                        SvgIcon(AppAssets.calendar, size: 22.w),
-                        14.w.horizontalSpace,
-                        AppText(
-                          text: trip?.date ?? "-",
-                          style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  10.h.verticalSpace,
-
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 19.w,
-                        vertical: 10.h,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildTab("Payment", AppAssets.payment, 0),
-                          _buildTab("Flights", AppAssets.flight, 1),
-                          _buildTab("Hotels", AppAssets.hotel, 2),
-                          _buildTab("Itinerary", AppAssets.itinerary, 3),
-                          _buildTab("Essentials", AppAssets.essential, 4),
-                          _buildTab("Documents", AppAssets.document, 5),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Show section based on selected tab
-                  _getSelectedSection(provider),
-
-                  // Proceed Button (optional, only for Payment maybe)
-                  // if (selectedIndex == 0)
-                  //   Padding(
-                  //     padding: EdgeInsets.symmetric(
-                  //       horizontal: 27.w,
-                  //       vertical: 20.h,
-                  //     ),
-                  //     child: AppButton(title: "Proceed to Pay"),
-                  //   ),
-                ],
-              ),
-            ),
+            child: _showTripList
+                ? _buildTripList(tripProvider, enrolledTrips)
+                : _buildTripDetails(tripProvider, provider),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildTripList(
+    TripProvider tripProvider,
+    List<TripModel> enrolledTrips,
+  ) {
+    if (enrolledTrips.isEmpty) {
+      return Center(
+        child: AppText(
+          text: "No enrolled trips found",
+          style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 60.h,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Center(
+                child: AppText(
+                  text: "My Trips",
+                  style: textStyle32Bold.copyWith(
+                    fontSize: 26.sp,
+                    color: AppColors.secondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        20.h.verticalSpace,
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 27.w),
+            itemCount: enrolledTrips.length,
+            itemBuilder: (context, index) {
+              final trip = enrolledTrips[index];
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _showTripList = false;
+                    tripProvider.selectTrip(trip);
+                  });
+                },
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 16.h),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: AppColors.primaryColor.withOpacity(0.2),
+                    ),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.blueColor.withOpacity(0.1),
+                        blurRadius: 3,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(12.r),
+                        ),
+                        child: trip.image.startsWith('assets')
+                            ? Image.asset(
+                                trip.image,
+                                height: 150.h,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )
+                            : NetworkImageWithShimmer(
+                                imageUrl: trip.imageUrl,
+                                height: 150.h,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(16.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(
+                              text: trip.title,
+                              style: textStyle16SemiBold,
+                            ),
+                            8.h.verticalSpace,
+                            Row(
+                              children: [
+                                SvgIcon(AppAssets.pin, size: 18.w),
+                                8.w.horizontalSpace,
+                                Expanded(
+                                  child: AppText(
+                                    text: trip.location,
+                                    style: textStyle14Regular.copyWith(
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                                8.w.horizontalSpace,
+                                SvgIcon(AppAssets.calendar, size: 18.w),
+                                8.w.horizontalSpace,
+                                AppText(
+                                  text: trip.date,
+                                  style: textStyle14Regular.copyWith(
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTripDetails(TripProvider tripProvider, MyTripProvider provider) {
+    final trip = tripProvider.tripForTripsTab;
+
+    _scheduleRefreshIfTripChanged(trip?.id);
+
+    return WillPopScope(
+      onWillPop: () async {
+        setState(() {
+          _showTripList = true;
+        });
+        return false;
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 15.h),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _showTripList = true;
+                      });
+                    },
+                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                  ),
+                  30.w.horizontalSpace,
+                  Expanded(
+                    child: AppText(
+                      text: trip?.title ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      style: textStyle32Bold.copyWith(
+                        fontSize: 26.sp,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (trip != null)
+              trip.image.startsWith('assets')
+                  ? Image.asset(
+                      trip.image,
+                      height: 250.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : NetworkImageWithShimmer(
+                      imageUrl: trip.imageUrl,
+                      height: 250.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+
+            // Trip title and location
+            12.h.verticalSpace,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 27.w),
+              child: AppText(
+                text: trip?.title ?? "-",
+                style: textStyle16SemiBold,
+              ),
+            ),
+            14.h.verticalSpace,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 2.h),
+              child: Row(
+                children: [
+                  SvgIcon(AppAssets.pin, size: 22.w),
+                  14.w.horizontalSpace,
+                  Expanded(
+                    child: AppText(
+                      text: trip?.location ?? "-",
+                      style: textStyle14Regular.copyWith(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                  ),
+                  12.w.horizontalSpace,
+                  SvgIcon(AppAssets.calendar, size: 22.w),
+                  14.w.horizontalSpace,
+                  AppText(
+                    text: trip?.date ?? "-",
+                    style: textStyle14Regular.copyWith(
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            10.h.verticalSpace,
+
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 19.w, vertical: 10.h),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildTab("Payment", AppAssets.payment, 0),
+                    _buildTab("Flights", AppAssets.flight, 1),
+                    _buildTab("Hotels", AppAssets.hotel, 2),
+                    _buildTab("Itinerary", AppAssets.itinerary, 3),
+                    _buildTab("Essentials", AppAssets.essential, 4),
+                    _buildTab("Documents", AppAssets.document, 5),
+                  ],
+                ),
+              ),
+            ),
+
+            // Show section based on selected tab
+            _getSelectedSection(provider),
+          ],
+        ),
+      ),
     );
   }
 
@@ -446,7 +590,9 @@ class _TripScreenState extends State<TripScreen> {
                       ? "-"
                       : hotel.hotelContact,
                   "Check-in": formatDateTimeForDisplay(hotel.stayInfo.checkIn),
-                  "Check-out": formatDateTimeForDisplay(hotel.stayInfo.checkOut),
+                  "Check-out": formatDateTimeForDisplay(
+                    hotel.stayInfo.checkOut,
+                  ),
                   if (room != null)
                     "Room Type": room.roomType.isEmpty ? "-" : room.roomType,
                   if (room != null)

@@ -91,7 +91,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ChatProvider>(context);
 
@@ -308,9 +308,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete message?'),
-        content: const Text(
-          'Are you sure you want to delete this message?',
-        ),
+        content: const Text('Are you sure you want to delete this message?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -580,7 +578,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         children: [
-          if (!isMe) Row(children: [_bubbleAvatar(message), 10.w.horizontalSpace]),
+          if (!isMe)
+            Row(children: [_bubbleAvatar(message), 10.w.horizontalSpace]),
           Flexible(
             child: Align(
               alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -621,7 +620,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               ),
             ),
           ),
-          if (isMe) Row(children: [10.w.horizontalSpace, _bubbleAvatar(message)]),
+          if (isMe)
+            Row(children: [10.w.horizontalSpace, _bubbleAvatar(message)]),
         ],
       ),
     );
@@ -812,7 +812,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         border: Border.all(color: frameColor, width: 2),
         boxShadow: [
           BoxShadow(
-            color: frameColor.withOpacity(0.18),
+            color: frameColor.withValues(alpha: 0.18),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

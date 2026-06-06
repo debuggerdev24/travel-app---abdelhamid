@@ -13,7 +13,6 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:travel_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:travel_app_abdelhamid/core/utils/image_compress_helper.dart';
 import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
 
 class AddDocumentScreen extends StatefulWidget {

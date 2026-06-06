@@ -169,11 +169,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     )
                                   else if (details != null)
                                     AppText(
-                                      text: 'No packages available for this trip.',
+                                      text:
+                                          'No packages available for this trip.',
                                       style: textStyle14Regular.copyWith(
-                                        color: AppColors.primaryColor.setOpacity(
-                                          0.6,
-                                        ),
+                                        color: AppColors.primaryColor
+                                            .setOpacity(0.6),
                                       ),
                                     ),
 
