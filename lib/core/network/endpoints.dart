@@ -13,6 +13,7 @@ class Endpoints {
   static const String addBookingPackage = '/booking/add-package';
   static const String getPackageOptions = '/booking/get-package-options';
   static const String saveRoomPreference = '/booking/save-room-preference';
+  static const String getRoomPreference = '/booking/get-room-preference';
   static const String savePersonDetail = '/booking/save-person-details';
   static const String saveFamilyDetails = '/booking/add-family-member';
 
@@ -20,7 +21,8 @@ class Endpoints {
   static const String bookingGetPackageDetails = '/booking/get-package-details';
   static const String bookingGetUserDetails = '/booking/get-user-details';
   static const String bookingEditProfile = '/booking/edit-profile';
-  static const String bookingChangeProfileImage = '/booking/change-profile-image';
+  static const String bookingChangeProfileImage =
+      '/booking/change-profile-image';
 
   /// `PATCH ?bookingId=` — sets booking `active` and adds user to trip chat group.
   static const String bookingBookingStatus = '/booking/booking-status';
@@ -45,7 +47,8 @@ class Endpoints {
   static const String userPaymentReceiptPath = '/user-payment/receipt';
 
   static const String essentialPackingList = '/api/essential/get-packing-list';
-  static const String essentialCurrencyInfo = '/api/essential/get-currency-info';
+  static const String essentialCurrencyInfo =
+      '/api/essential/get-currency-info';
   static const String essentialEmergencyContacts =
       '/api/essential/get-emergency-contacts';
   static const String essentialLocalInfo = '/api/essential/get-local-info';
@@ -72,4 +75,7 @@ class Endpoints {
 
   /// `GET` — Bearer auth; list of `{ name, time }` prayer rows.
   static const String prayerDetails = '/prayer/prayer-details';
+
+  /// `GET` — Bearer auth; upcoming bookings list.
+  static const String upcomingBookings = '/trips/upcoming-bookings';
 }

@@ -69,81 +69,80 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                if (selectedTab == 0) 16.h.verticalSpace,
-                if (selectedTab == 0)
-                  GestureDetector(
-                    onTap: () async {
-                      await context.pushNamed(
-                        UserAppRoutes.prayerTimesScreen.name,
-                      );
-                      if (!context.mounted) return;
-                      await context
-                          .read<PrayerTimesProvider>()
-                          .fetchPrayerTimes();
-                    },
-                    child: Container(
-                      height: 52.h,
-                      margin: EdgeInsets.symmetric(horizontal: 27.w),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.primaryColor.setOpacity(0.2),
-                        ),
-                        borderRadius: BorderRadius.circular(8.r),
+                16.h.verticalSpace,
+                GestureDetector(
+                  onTap: () async {
+                    await context.pushNamed(
+                      UserAppRoutes.prayerTimesScreen.name,
+                    );
+                    if (!context.mounted) return;
+                    await context
+                        .read<PrayerTimesProvider>()
+                        .fetchPrayerTimes();
+                  },
+                  child: Container(
+                    height: 52.h,
+                    margin: EdgeInsets.symmetric(horizontal: 27.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.primaryColor.setOpacity(0.2),
                       ),
-                      child: Row(
-                        children: [
-                          16.w.horizontalSpace,
-                          AppText(
-                            text: "Next Prayer",
-                            style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor.setOpacity(0.6),
-                            ),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Row(
+                      children: [
+                        16.w.horizontalSpace,
+                        AppText(
+                          text: "Next Prayer",
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor.setOpacity(0.6),
                           ),
-                          AppText(
-                            text: "  :  ",
-                            style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor.setOpacity(0.6),
-                            ),
+                        ),
+                        AppText(
+                          text: "  :  ",
+                          style: textStyle14Regular.copyWith(
+                            color: AppColors.primaryColor.setOpacity(0.6),
                           ),
-                          if (prayer.showHomePrayerLoading)
-                            SizedBox(
-                              width: 18.w,
-                              height: 18.w,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.primaryColor,
-                              ),
-                            )
-                          else ...[
-                            Expanded(
-                              child: AppText(
-                                text: prayer.homePrayerLine,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textStyle14Regular.copyWith(
-                                  color: AppColors.primaryColor,
-                                ),
-                              ),
+                        ),
+                        if (prayer.showHomePrayerLoading)
+                          SizedBox(
+                            width: 18.w,
+                            height: 18.w,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primaryColor,
                             ),
-                            VerticalDivider(
-                              indent: 12.w,
-                              endIndent: 12.w,
-                              color: AppColors.primaryColor.setOpacity(0.2),
-                            ),
-                            AppText(
-                              text: prayer.homeCountdownLine,
+                          )
+                        else ...[
+                          Expanded(
+                            child: AppText(
+                              text: prayer.homePrayerLine,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: textStyle14Regular.copyWith(
                                 color: AppColors.primaryColor,
                               ),
                             ),
-                          ],
-                          8.w.horizontalSpace,
-                          SvgIcon(AppAssets.travel, size: 24.w),
-                          8.w.horizontalSpace,
+                          ),
+                          VerticalDivider(
+                            indent: 12.w,
+                            endIndent: 12.w,
+                            color: AppColors.primaryColor.setOpacity(0.2),
+                          ),
+                          AppText(
+                            text: prayer.homeCountdownLine,
+                            style: textStyle14Regular.copyWith(
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
                         ],
-                      ),
+                        8.w.horizontalSpace,
+                        SvgIcon(AppAssets.travel, size: 24.w),
+                        8.w.horizontalSpace,
+                      ],
                     ),
                   ),
+                ),
 
                 20.h.verticalSpace,
 

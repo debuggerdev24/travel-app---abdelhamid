@@ -15,7 +15,6 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/payment_option_card.dart';
 import 'package:travel_app_abdelhamid/features/home/payment_successfull_screen.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
-import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
@@ -145,26 +144,32 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
     final bookingId = context.read<TripBookingProvider>().bookingId;
     final tripProvider = context.read<TripProvider>();
     tripProvider.rememberLatestPaymentBookingId(bookingId);
-    await tripProvider.loadEnrolledTripForTripsTab(bookingId: bookingId);
+
+    // Only refresh payment status (my-trip API) - skip all nested API calls
+    if (bookingId != null && bookingId.isNotEmpty) {
+      final result = await TripsService.instance.fetchPaymentDetailsOnly(
+        bookingId: bookingId,
+      );
+      if (result != null && mounted) {
+        tripProvider.updatePaymentDetailsOnly(
+          result.paymentDetails,
+          result.bookingId,
+        );
+      }
+    }
     if (!mounted) return;
+
     if (bookingId != null && bookingId.isNotEmpty) {
       await TripsService.instance.markBookingActive(bookingId: bookingId);
     }
     if (!mounted) return;
-    await context.read<ChatProvider>().loadConversations(silent: true);
-    if (!mounted) return;
+
     tripProvider.notifyPaymentHistoryRefresh();
     ToastHelper.showSuccess('Payment successful');
     await context.pushNamed(
       UserAppRoutes.paymentSuccessfullScreen.name,
       extra: PaymentSuccessRouteExtra(amountEur: amount),
     );
-    if (!mounted) return;
-    await tripProvider.loadEnrolledTripForTripsTab(bookingId: bookingId);
-    if (!mounted) return;
-    await context.read<ChatProvider>().loadConversations(silent: true);
-    if (!mounted) return;
-    tripProvider.notifyPaymentHistoryRefresh();
   }
 
   Future<void> _payNow() async {

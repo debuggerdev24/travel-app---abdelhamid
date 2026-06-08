@@ -53,9 +53,7 @@ class _TripScreenState extends State<TripScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final tripProvider = context.read<TripProvider>();
-      await tripProvider.loadEnrolledTripForTripsTab();
-      if (!mounted) return;
-      await tripProvider.ensureSelectedTripFromUpcoming();
+      await tripProvider.fetchUpcomingBookingsForTripsTab();
     });
   }
 
@@ -97,6 +95,8 @@ class _TripScreenState extends State<TripScreen> {
     TripProvider tripProvider,
     List<TripModel> enrolledTrips,
   ) {
+    final bookings = tripProvider.enrolledBookingsList;
+
     if (enrolledTrips.isEmpty) {
       return Center(
         child: AppText(
@@ -133,24 +133,33 @@ class _TripScreenState extends State<TripScreen> {
             itemCount: enrolledTrips.length,
             itemBuilder: (context, index) {
               final trip = enrolledTrips[index];
+              final booking = bookings.isNotEmpty && index < bookings.length
+                  ? bookings[index]
+                  : null;
               return GestureDetector(
-                onTap: () {
+                onTap: () async {
                   setState(() {
                     _showTripList = false;
                     tripProvider.selectTrip(trip);
                   });
+                  // Load enrolled trip context with booking ID to show payment details
+                  if (booking != null && booking.id.isNotEmpty) {
+                    await tripProvider.loadEnrolledTripForTripsTab(
+                      bookingId: booking.id,
+                    );
+                  }
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 16.h),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
-                      color: AppColors.primaryColor.withOpacity(0.2),
+                      color: AppColors.primaryColor.withValues(alpha: 0.2),
                     ),
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.blueColor.withOpacity(0.1),
+                        color: AppColors.blueColor.withValues(alpha: 0.1),
                         blurRadius: 3,
                         offset: const Offset(0, 2),
                       ),
@@ -358,8 +367,6 @@ class _TripScreenState extends State<TripScreen> {
         // Refetch APIs whenever the user selects these tabs (fresh data each visit).
         if (index == 0) {
           final tripProvider = context.read<TripProvider>();
-          final bookingId = tripProvider.enrolledBookingId;
-          tripProvider.loadEnrolledTripForTripsTab(bookingId: bookingId);
           tripProvider.notifyPaymentHistoryRefresh();
         } else if (index == 1) {
           final tripProvider = context.read<TripProvider>();

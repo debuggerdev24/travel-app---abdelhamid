@@ -214,21 +214,38 @@ class MyTripProvider extends ChangeNotifier {
   /// ===============================
   /// PAYMENTS LIST
   /// ===============================
-  List<PaymentModel> payments = [
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "02 Jan 2024"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "22 Dec 2024"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "31 May 2023"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "02 Jan 2024"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "22 Dec 2024"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "31 May 2023"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "02 Jan 2024"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "22 Dec 2024"),
-    PaymentModel(id: "#TRX001", amount: "250,000", date: "31 May 2023"),
-  ];
+  List<UpcomingBookingModel> upcomingBookings = [];
 
-  void addPayment(PaymentModel payment) {
-    payments.add(payment);
+  bool _isUpcomingBookingsLoading = false;
+  bool get isUpcomingBookingsLoading => _isUpcomingBookingsLoading;
+
+  String? _upcomingBookingsError;
+  String? get upcomingBookingsError => _upcomingBookingsError;
+
+  bool _hasFetchedUpcomingBookings = false;
+  bool get hasFetchedUpcomingBookings => _hasFetchedUpcomingBookings;
+
+  Future<void> fetchUpcomingBookings({bool force = false}) async {
+    if (_isUpcomingBookingsLoading) return;
+    if (!force && _hasFetchedUpcomingBookings) return;
+
+    _isUpcomingBookingsLoading = true;
+    _upcomingBookingsError = null;
     notifyListeners();
+
+    try {
+      upcomingBookings = await TripsService.instance.getUpcomingBookings(
+        showErrorToast: false,
+      );
+      _hasFetchedUpcomingBookings = true;
+    } catch (e) {
+      _upcomingBookingsError = e.toString();
+      upcomingBookings = [];
+      _hasFetchedUpcomingBookings = true;
+    } finally {
+      _isUpcomingBookingsLoading = false;
+      notifyListeners();
+    }
   }
 
   /// ===============================

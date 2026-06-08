@@ -57,7 +57,7 @@ class _TabScreenState extends State<TabScreen> {
     if (currentIndex == 1) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!context.mounted) return;
-        context.read<TripProvider>().loadEnrolledTripForTripsTab();
+        context.read<TripProvider>().fetchUpcomingBookingsForTripsTab();
       });
     } else if (currentIndex == 2) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -117,7 +117,7 @@ class _TabScreenState extends State<TabScreen> {
         } else if (index == 1) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
-            context.read<TripProvider>().loadEnrolledTripForTripsTab();
+            context.read<TripProvider>().fetchUpcomingBookingsForTripsTab();
           });
         } else if (index == 2) {
           WidgetsBinding.instance.addPostFrameCallback((_) {

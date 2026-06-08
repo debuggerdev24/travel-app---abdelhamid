@@ -196,6 +196,49 @@ class TripsService {
     }
   }
 
+  /// Lightweight version that only calls my-trip API without nested calls.
+  /// Used after payment to refresh payment status without unnecessary API overhead.
+  Future<({String bookingId, TripPaymentDetails paymentDetails})?>
+  fetchPaymentDetailsOnly({String? bookingId}) async {
+    final myTripUrl =
+        '${AppConstants.apiPublicRoot}${Endpoints.userPaymentMyTripPath}';
+    final query = <String, dynamic>{};
+    if (bookingId != null && bookingId.isNotEmpty) {
+      query['bookingId'] = bookingId;
+    }
+    try {
+      final response = await BaseApiService.instance.get(
+        myTripUrl,
+        queryParameters: query.isEmpty ? null : query,
+        showErrorToast: false,
+      );
+      if (response['status'] != 1 || response['data'] == null) {
+        PaymentFlowLog.log('fetchPaymentDetailsOnly: my-trip no data', {
+          'status': response['status'],
+        });
+        return null;
+      }
+      final data = Map<String, dynamic>.from(response['data'] as Map);
+      final bid = data['bookingId']?.toString();
+      if (bid == null || bid.isEmpty) {
+        PaymentFlowLog.log('fetchPaymentDetailsOnly: missing bookingId');
+        return null;
+      }
+
+      final paymentDetails = TripPaymentDetails.fromJson(data);
+      PaymentFlowLog.log('fetchPaymentDetailsOnly: success', {
+        'bookingId': bid,
+        'paidAmount': paymentDetails.paidAmount,
+        'pendingAmount': paymentDetails.pendingAmount,
+      });
+
+      return (bookingId: bid, paymentDetails: paymentDetails);
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
   /// Prefer full `/trips/details` when package details include a trip `_id`; otherwise use the
   /// nested `trip` object from my-trip (`name`, `bannerImage`, …).
   Future<TripModel?> _resolveEnrolledTripModel(
@@ -547,6 +590,75 @@ class TripsService {
     }
   }
 
+  Future<Map<String, dynamic>?> getRoomPreference({
+    String? bookingId,
+    String? roomPreferenceId,
+  }) async {
+    try {
+      final queryParameters = <String, dynamic>{};
+      if (bookingId != null && bookingId.isNotEmpty) {
+        queryParameters['bookingId'] = bookingId;
+      }
+      if (roomPreferenceId != null && roomPreferenceId.isNotEmpty) {
+        queryParameters['roomPreferenceId'] = roomPreferenceId;
+      }
+
+      final response = await BaseApiService.instance.get(
+        Endpoints.getRoomPreference,
+        queryParameters: queryParameters.isEmpty ? null : queryParameters,
+        showErrorToast: false,
+      );
+      if (response['status'] == 1 && response['data'] != null) {
+        return Map<String, dynamic>.from(response['data'] as Map);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getBookingDetails(String bookingId) async {
+    try {
+      final response = await BaseApiService.instance.get(
+        Endpoints.bookingGetPackageDetails,
+        queryParameters: {'bookingId': bookingId},
+        showErrorToast: false,
+      );
+      if (response['status'] == 1 && response['data'] != null) {
+        return Map<String, dynamic>.from(response['data'] as Map);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Fetch family member details from upcoming bookings using bookingId
+  Future<Map<String, dynamic>?> getFamilyMemberDetails(String bookingId) async {
+    try {
+      final bookings = await getUpcomingBookings(showErrorToast: false);
+      final booking = bookings.firstWhere(
+        (b) => b.id == bookingId,
+        orElse: () => throw Exception('Booking not found'),
+      );
+
+      // Return the first family member if exists
+      if (booking.familyMembers.isNotEmpty) {
+        final firstMember = booking.familyMembers.first;
+        return {
+          '_id': firstMember.id,
+          'firstName': firstMember.firstName,
+          'surname': firstMember.surname,
+          'phoneNumber': firstMember.phoneNumber,
+          'relationship': firstMember.relationship,
+        };
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Backend: `PATCH /api/user/booking/booking-status?bookingId=` — sets booking
   /// `active` and adds the user to the official trip chat group.
   ///
@@ -583,6 +695,32 @@ class TripsService {
         'error': e.toString(),
       });
       if (showErrorToast) rethrow;
+    }
+  }
+
+  /// Backend: `GET /api/user/trips/upcoming-bookings` — fetches upcoming bookings list.
+  Future<List<UpcomingBookingModel>> getUpcomingBookings({
+    bool showErrorToast = false,
+  }) async {
+    try {
+      final response = await BaseApiService.instance.get(
+        Endpoints.upcomingBookings,
+        showErrorToast: showErrorToast,
+      );
+
+      final data = response['data'];
+      if (data is List) {
+        return data
+            .whereType<Map>()
+            .map(
+              (e) =>
+                  UpcomingBookingModel.fromJson(Map<String, dynamic>.from(e)),
+            )
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      rethrow;
     }
   }
 }

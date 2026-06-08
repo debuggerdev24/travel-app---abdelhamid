@@ -21,7 +21,6 @@ import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
 import 'package:travel_app_abdelhamid/features/home/payment_successfull_screen.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
-import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/services/payment_service.dart';
@@ -140,28 +139,34 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     );
     if (!mounted) return;
 
-    // Now perform background refresh operations
+    // Now perform background refresh operations - only necessary APIs
     tripProvider.rememberLatestPaymentBookingId(bookingIdForMyTrip);
 
-    // Quick single refresh instead of excessive polling
-    await tripProvider.loadEnrolledTripForTripsTab(
-      bookingId: bookingIdForMyTrip,
-    );
+    // Only refresh payment status (my-trip API) - skip all nested API calls
+    if (bookingIdForMyTrip != null && bookingIdForMyTrip.isNotEmpty) {
+      final result = await TripsService.instance.fetchPaymentDetailsOnly(
+        bookingId: bookingIdForMyTrip,
+      );
+      if (result != null && mounted) {
+        tripProvider.updatePaymentDetailsOnly(
+          result.paymentDetails,
+          result.bookingId,
+        );
+      }
+    }
     if (!mounted) return;
 
-    PaymentFlowLog.log('_onPaymentSucceeded: after quick refresh', {
+    PaymentFlowLog.log('_onPaymentSucceeded: after payment refresh', {
       'pendingAmount': tripProvider.paymentDetails?.pendingAmount,
       'paidAmount': tripProvider.paymentDetails?.paidAmount,
     });
 
+    // Mark booking as active
     if (bookingIdForMyTrip != null && bookingIdForMyTrip.isNotEmpty) {
       await TripsService.instance.markBookingActive(
         bookingId: bookingIdForMyTrip,
       );
     }
-    if (!mounted) return;
-
-    await context.read<ChatProvider>().loadConversations(silent: true);
     if (!mounted) return;
 
     // Refresh payment history in background

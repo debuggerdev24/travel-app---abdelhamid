@@ -25,16 +25,41 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _roomTypeError;
   String? _bedTypeError;
+  late TextEditingController _personController;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final bookingProvider = context.read<TripBookingProvider>();
+    final bookingProvider = context.read<TripBookingProvider>();
+    _personController = TextEditingController(
+      text: bookingProvider.adultCount.toString(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // First fetch package options to ensure we have room/child data
       if (bookingProvider.tripDetails?.id != null) {
-        bookingProvider.fetchPackageOptions(bookingProvider.tripDetails!.id!);
+        await bookingProvider.fetchPackageOptions(
+          bookingProvider.tripDetails!.id!,
+        );
+      }
+      // If room preference is already saved, fetch the saved data
+      // This will fallback to package options data if API fails
+      if (bookingProvider.isRoomPreferenceSaved &&
+          bookingProvider.bookingId != null) {
+        await bookingProvider.fetchSavedRoomPreference();
+        // Update the controller with the fetched adult count
+        if (mounted) {
+          setState(() {
+            _personController.text = bookingProvider.adultCount.toString();
+          });
+        }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _personController.dispose();
+    super.dispose();
   }
 
   bool _validateDropdowns() {
@@ -67,6 +92,11 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
       body: Consumer2<hp.TripProvider, TripBookingProvider>(
         builder: (context, tripProvider, bookingProvider, child) {
           final selectedPackage = bookingProvider.selectedPackage;
+
+          // Update person controller when adult count changes (e.g., after fetching saved data)
+          if (_personController.text != bookingProvider.adultCount.toString()) {
+            _personController.text = bookingProvider.adultCount.toString();
+          }
 
           return SafeArea(
             child: Column(
@@ -107,6 +137,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             labelText: "Person",
                             hintText: "Enter Person Number",
                             keyboardType: TextInputType.number,
+                            controller: _personController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return "Please enter number of persons";
@@ -118,55 +149,67 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                               return null;
                             },
                             onChanged: (value) {
-                              bookingProvider.updateAdultCount(
-                                int.tryParse(value ?? '') ?? 1,
-                              );
-                            },
-                          ),
-                          SizedBox(height: 22.h),
-                          CustomMultiSelectDropdown(
-                            labelText: "Room Type",
-                            hintText: "Select Room Type",
-                            errorText: _roomTypeError,
-                            items:
-                                selectedPackage?.roomOptions ??
-                                tripProvider.roomTypes,
-                            selectedItems:
-                                (bookingProvider.selectedRoomTypeId != null &&
-                                    selectedPackage != null)
-                                ? [
-                                    selectedPackage.roomOptions.firstWhere((
-                                      opt,
-                                    ) {
-                                      final rooms = selectedPackage.roomDetails
-                                          .where(
-                                            (r) =>
-                                                r.id ==
-                                                bookingProvider
-                                                    .selectedRoomTypeId,
-                                          );
-                                      if (rooms.isEmpty) return false;
-                                      return opt.contains(rooms.first.roomType);
-                                    }, orElse: () => ''),
-                                  ]
-                                : [],
-                            onChanged: (values) {
-                              if (values.isNotEmpty &&
-                                  selectedPackage != null) {
-                                final selectedOpt = values.first;
-                                final rooms = selectedPackage.roomDetails.where(
-                                  (r) => selectedOpt.contains(r.roomType),
+                              if (!bookingProvider.isRoomPreferenceSaved) {
+                                bookingProvider.updateAdultCount(
+                                  int.tryParse(value ?? '') ?? 1,
                                 );
-                                if (rooms.isNotEmpty) {
-                                  bookingProvider.updateSelectedRoomTypeId(
-                                    rooms.first.id,
-                                  );
-                                  setState(() => _roomTypeError = null);
-                                }
                               }
                             },
-                            titleText: "Room Type",
-                            showRadio: true,
+                            readOnly: bookingProvider.isRoomPreferenceSaved,
+                          ),
+                          SizedBox(height: 22.h),
+                          IgnorePointer(
+                            ignoring: bookingProvider.isRoomPreferenceSaved,
+                            child: CustomMultiSelectDropdown(
+                              labelText: "Room Type",
+                              hintText: "Select Room Type",
+                              errorText: _roomTypeError,
+                              items:
+                                  selectedPackage?.roomOptions ??
+                                  tripProvider.roomTypes,
+                              selectedItems:
+                                  (bookingProvider.selectedRoomTypeId != null &&
+                                      selectedPackage != null)
+                                  ? [
+                                      selectedPackage.roomOptions.firstWhere((
+                                        opt,
+                                      ) {
+                                        final rooms = selectedPackage
+                                            .roomDetails
+                                            .where(
+                                              (r) =>
+                                                  r.id ==
+                                                  bookingProvider
+                                                      .selectedRoomTypeId,
+                                            );
+                                        if (rooms.isEmpty) return false;
+                                        return opt.contains(
+                                          rooms.first.roomType,
+                                        );
+                                      }, orElse: () => ''),
+                                    ]
+                                  : [],
+                              onChanged: (values) {
+                                if (bookingProvider.isRoomPreferenceSaved)
+                                  return;
+                                if (values.isNotEmpty &&
+                                    selectedPackage != null) {
+                                  final selectedOpt = values.first;
+                                  final rooms = selectedPackage.roomDetails
+                                      .where(
+                                        (r) => selectedOpt.contains(r.roomType),
+                                      );
+                                  if (rooms.isNotEmpty) {
+                                    bookingProvider.updateSelectedRoomTypeId(
+                                      rooms.first.id,
+                                    );
+                                    setState(() => _roomTypeError = null);
+                                  }
+                                }
+                              },
+                              titleText: "Room Type",
+                              showRadio: true,
+                            ),
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
@@ -181,93 +224,110 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             readOnly: true,
                           ),
                           SizedBox(height: 22.h),
-                          CustomMultiSelectDropdown(
-                            labelText: "Bed Type",
-                            hintText: "Select Bed Type",
-                            errorText: _bedTypeError,
-                            items: tripProvider.bedTypes,
-                            selectedItems:
-                                bookingProvider.selectedBedType != null
-                                ? [bookingProvider.selectedBedType!]
-                                : [],
-                            onChanged: (values) {
-                              if (values.isNotEmpty) {
-                                bookingProvider.updateSelectedBedType(
-                                  values.first,
-                                );
-                                setState(() => _bedTypeError = null);
-                              }
-                            },
-                            titleText: "Bed Type",
-                            showRadio: true,
+                          IgnorePointer(
+                            ignoring: bookingProvider.isRoomPreferenceSaved,
+                            child: CustomMultiSelectDropdown(
+                              labelText: "Bed Type",
+                              hintText: "Select Bed Type",
+                              errorText: _bedTypeError,
+                              items: tripProvider.bedTypes,
+                              selectedItems:
+                                  bookingProvider.selectedBedType != null
+                                  ? [bookingProvider.selectedBedType!]
+                                  : [],
+                              onChanged: (values) {
+                                if (bookingProvider.isRoomPreferenceSaved)
+                                  return;
+                                if (values.isNotEmpty) {
+                                  bookingProvider.updateSelectedBedType(
+                                    values.first,
+                                  );
+                                  setState(() => _bedTypeError = null);
+                                }
+                              },
+                              titleText: "Bed Type",
+                              showRadio: true,
+                            ),
                           ),
                           SizedBox(height: 22.h),
-                          CustomMultiSelectDropdown(
-                            labelText: "Child",
-                            hintText: "Select Child",
-                            items:
-                                selectedPackage?.childPrices ??
-                                tripProvider.childOptions,
-                            selectedItems:
-                                (bookingProvider.selectedChildDetailsId !=
-                                        null &&
-                                    selectedPackage != null)
-                                ? [
-                                    selectedPackage.childPrices.firstWhere((
-                                      opt,
-                                    ) {
-                                      final children = selectedPackage
-                                          .childDetails
-                                          .where(
-                                            (c) =>
-                                                c.id ==
-                                                bookingProvider
-                                                    .selectedChildDetailsId,
-                                          );
-                                      if (children.isEmpty) return false;
-                                      return opt.contains(
-                                        children.first.childName,
+                          IgnorePointer(
+                            ignoring: bookingProvider.isRoomPreferenceSaved,
+                            child: CustomMultiSelectDropdown(
+                              labelText: "Child",
+                              hintText: "Select Child",
+                              items:
+                                  selectedPackage?.childPrices ??
+                                  tripProvider.childOptions,
+                              selectedItems:
+                                  (bookingProvider.selectedChildDetailsId !=
+                                          null &&
+                                      selectedPackage != null)
+                                  ? [
+                                      selectedPackage.childPrices.firstWhere((
+                                        opt,
+                                      ) {
+                                        final children = selectedPackage
+                                            .childDetails
+                                            .where(
+                                              (c) =>
+                                                  c.id ==
+                                                  bookingProvider
+                                                      .selectedChildDetailsId,
+                                            );
+                                        if (children.isEmpty) return false;
+                                        return opt.contains(
+                                          children.first.childName,
+                                        );
+                                      }, orElse: () => ''),
+                                    ]
+                                  : [],
+                              onChanged: (values) {
+                                if (bookingProvider.isRoomPreferenceSaved)
+                                  return;
+                                if (values.isNotEmpty &&
+                                    selectedPackage != null) {
+                                  final selectedOpt = values.first;
+                                  final children = selectedPackage.childDetails
+                                      .where(
+                                        (c) =>
+                                            selectedOpt.contains(c.childName),
                                       );
-                                    }, orElse: () => ''),
-                                  ]
-                                : [],
-                            onChanged: (values) {
-                              if (values.isNotEmpty &&
-                                  selectedPackage != null) {
-                                final selectedOpt = values.first;
-                                final children = selectedPackage.childDetails
-                                    .where(
-                                      (c) => selectedOpt.contains(c.childName),
-                                    );
-                                if (children.isNotEmpty) {
-                                  bookingProvider.updateSelectedChildDetailsId(
-                                    children.first.id,
+                                  if (children.isNotEmpty) {
+                                    bookingProvider
+                                        .updateSelectedChildDetailsId(
+                                          children.first.id,
+                                        );
+                                  }
+                                }
+                              },
+                              titleText: "Child",
+                              showRadio: true,
+                            ),
+                          ),
+                          SizedBox(height: 22.h),
+                          IgnorePointer(
+                            ignoring: bookingProvider.isRoomPreferenceSaved,
+                            child: CustomMultiSelectDropdown(
+                              labelText: "No. of Child",
+                              hintText: "Select Child Count",
+                              items: tripProvider.numberOfChildren,
+                              selectedItems: [
+                                bookingProvider.selectedChildCount
+                                    .toString()
+                                    .padLeft(2, '0'),
+                              ],
+                              onChanged: (values) {
+                                if (bookingProvider.isRoomPreferenceSaved)
+                                  return;
+                                if (values.isNotEmpty) {
+                                  bookingProvider.updateSelectedChildCount(
+                                    int.tryParse(values.first) ?? 0,
                                   );
                                 }
-                              }
-                            },
-                            titleText: "Child",
-                            showRadio: true,
-                          ),
-                          SizedBox(height: 22.h),
-                          CustomMultiSelectDropdown(
-                            labelText: "No. of Child",
-                            hintText: "Select Child Count",
-                            items: tripProvider.numberOfChildren,
-                            selectedItems: [
-                              bookingProvider.selectedChildCount
-                                  .toString()
-                                  .padLeft(2, '0'),
-                            ],
-                            onChanged: (values) {
-                              if (values.isNotEmpty) {
-                                bookingProvider.updateSelectedChildCount(
-                                  int.tryParse(values.first) ?? 0,
-                                );
-                              }
-                            },
-                            titleText: "Select Child Count",
-                            showRadio: true,
+                              },
+                              titleText: "Select Child Count",
+                              showRadio: true,
+                            ),
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
@@ -286,35 +346,47 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           ),
                           SizedBox(height: 22.h),
                           // Baby
-                          CustomMultiSelectDropdown(
-                            labelText: "Baby",
-                            hintText: "Select Baby",
-                            items: tripProvider.babyOptions,
-                            selectedItems: tripProvider.selectedBabyTypes,
-                            onChanged: tripProvider.updateBabyTypes,
-                            titleText: "Baby",
-                            showRadio: true,
+                          IgnorePointer(
+                            ignoring: bookingProvider.isRoomPreferenceSaved,
+                            child: CustomMultiSelectDropdown(
+                              labelText: "Baby",
+                              hintText: "Select Baby",
+                              items: tripProvider.babyOptions,
+                              selectedItems: tripProvider.selectedBabyTypes,
+                              onChanged: (values) {
+                                if (bookingProvider.isRoomPreferenceSaved)
+                                  return;
+                                tripProvider.updateBabyTypes(values);
+                              },
+                              titleText: "Baby",
+                              showRadio: true,
+                            ),
                           ),
                           SizedBox(height: 22.h),
-                          CustomMultiSelectDropdown(
-                            labelText: "No. of Baby",
-                            hintText: "Select No. of Baby",
-                            items: tripProvider.numberOfBaby,
-                            selectedItems: [
-                              bookingProvider.babyCount.toString().padLeft(
-                                2,
-                                '0',
-                              ),
-                            ],
-                            onChanged: (values) {
-                              if (values.isNotEmpty) {
-                                bookingProvider.updateBabyCount(
-                                  int.tryParse(values.first) ?? 0,
-                                );
-                              }
-                            },
-                            titleText: "Select Baby Count",
-                            showRadio: true,
+                          IgnorePointer(
+                            ignoring: bookingProvider.isRoomPreferenceSaved,
+                            child: CustomMultiSelectDropdown(
+                              labelText: "No. of Baby",
+                              hintText: "Select No. of Baby",
+                              items: tripProvider.numberOfBaby,
+                              selectedItems: [
+                                bookingProvider.babyCount.toString().padLeft(
+                                  2,
+                                  '0',
+                                ),
+                              ],
+                              onChanged: (values) {
+                                if (bookingProvider.isRoomPreferenceSaved)
+                                  return;
+                                if (values.isNotEmpty) {
+                                  bookingProvider.updateBabyCount(
+                                    int.tryParse(values.first) ?? 0,
+                                  );
+                                }
+                              },
+                              titleText: "Select Baby Count",
+                              showRadio: true,
+                            ),
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
@@ -329,34 +401,74 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             readOnly: true,
                           ),
                           SizedBox(height: 27.h),
-                          AppButton(
-                            title: "Next",
-                            isLoading: bookingProvider.isLoading,
-                            onTap: () async {
-                              final isFormValid = _formKey.currentState!
-                                  .validate();
-                              final areDropdownsValid = _validateDropdowns();
-
-                              if (isFormValid && areDropdownsValid) {
-                                final success = await bookingProvider
-                                    .saveRoomPreference();
-                                if (success) {
-                                  ToastHelper.showSuccess(
-                                    "Preferences saved successfully",
+                          if (bookingProvider.isRoomPreferenceSaved) ...[
+                            Container(
+                              padding: EdgeInsets.all(16.w),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(
+                                  color: AppColors.primaryColor,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  SvgIcon(AppAssets.check, size: 24.w),
+                                  12.w.horizontalSpace,
+                                  Expanded(
+                                    child: AppText(
+                                      text: "Room preferences already saved",
+                                      style: textStyle14Regular.copyWith(
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 22.h),
+                            AppButton(
+                              title: "Continue to Personal Details",
+                              onTap: () {
+                                if (context.mounted) {
+                                  context.pushNamed(
+                                    UserAppRoutes.personalDetailsScreen.name,
                                   );
-                                  if (context.mounted) {
-                                    context.pushNamed(
-                                      UserAppRoutes.personalDetailsScreen.name,
-                                    );
-                                  }
                                 }
-                              } else {
-                                ToastHelper.showError(
-                                  "Please fix the errors in the form",
-                                );
-                              }
-                            },
-                          ),
+                              },
+                            ),
+                          ] else
+                            AppButton(
+                              title: "Next",
+                              isLoading: bookingProvider.isLoading,
+                              onTap: () async {
+                                final isFormValid = _formKey.currentState!
+                                    .validate();
+                                final areDropdownsValid = _validateDropdowns();
+
+                                if (isFormValid && areDropdownsValid) {
+                                  final success = await bookingProvider
+                                      .saveRoomPreference();
+                                  if (success) {
+                                    ToastHelper.showSuccess(
+                                      "Preferences saved successfully",
+                                    );
+                                    if (context.mounted) {
+                                      context.pushNamed(
+                                        UserAppRoutes
+                                            .personalDetailsScreen
+                                            .name,
+                                      );
+                                    }
+                                  }
+                                } else {
+                                  ToastHelper.showError(
+                                    "Please fix the errors in the form",
+                                  );
+                                }
+                              },
+                            ),
                           SizedBox(height: 10.h),
                         ],
                       ),

@@ -15,10 +15,16 @@ class TripProvider extends ChangeNotifier {
   TripModel? _enrolledTrip;
   TripModel? get enrolledTrip => _enrolledTrip;
 
-  /// List of all enrolled/booked trips (static data for now until API is ready).
-  /// TODO: Replace with API call when backend supports fetching all enrolled trips.
-  List<TripModel> _enrolledTripsList = [];
-  List<TripModel> get enrolledTripsList => _enrolledTripsList;
+  /// List of all enrolled/booked trips from API.
+  List<UpcomingBookingModel> _enrolledBookingsList = [];
+  List<UpcomingBookingModel> get enrolledBookingsList => _enrolledBookingsList;
+
+  /// Convenience getter for trip models (backward compatibility)
+  List<TripModel> get enrolledTripsList =>
+      _enrolledBookingsList.map((b) => b.trip).toList();
+
+  bool _isEnrolledTripsLoading = false;
+  bool get isEnrolledTripsLoading => _isEnrolledTripsLoading;
 
   /// What the Trips tab should display: enrolled trip when present, otherwise Home selection.
   TripModel? get tripForTripsTab => _enrolledTrip ?? selectedTrip;
@@ -167,6 +173,29 @@ class TripProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Fetches all upcoming bookings from API and populates enrolledBookingsList.
+  Future<void> fetchUpcomingBookingsForTripsTab() async {
+    _isEnrolledTripsLoading = true;
+    notifyListeners();
+    try {
+      final bookings = await TripsService.instance.getUpcomingBookings(
+        showErrorToast: false,
+      );
+      _enrolledBookingsList = bookings;
+      PaymentFlowLog.log('fetchUpcomingBookingsForTripsTab: fetched', {
+        'count': _enrolledBookingsList.length,
+      });
+    } catch (e) {
+      PaymentFlowLog.log('fetchUpcomingBookingsForTripsTab: error', {
+        'error': e.toString(),
+      });
+      _enrolledBookingsList = [];
+    } finally {
+      _isEnrolledTripsLoading = false;
+      notifyListeners();
+    }
+  }
+
   /// Latest active/pending booking from `GET /api/user-payment/my-trip` + full trip details.
   /// Updates [_enrolledTrip] and payment fields only — does not change [selectedTrip] (Home).
   ///
@@ -196,37 +225,21 @@ class TripProvider extends ChangeNotifier {
         _paymentDetails = ctx.paymentDetails;
         _enrolledBookingId = ctx.bookingId;
 
-        // TODO: Replace with API call when backend supports fetching all enrolled trips
-        // For now, populate with static data based on current enrolled trip
-        _enrolledTripsList = [];
-        // Add the enrolled trip to the list
-        _enrolledTripsList.add(ctx.trip);
-        // Add a duplicate to simulate multiple booked trips (static data)
-        // This will be replaced with actual API data when available
-        final trip2 = TripModel(
-          id: ctx.trip.id,
-          title: ctx.trip.title,
-          location: ctx.trip.location,
-          date: ctx.trip.date,
-          image: ctx.trip.image,
-          status: ctx.trip.status,
-          description: ctx.trip.description,
-          packages: ctx.trip.packages,
-        );
-        _enrolledTripsList.add(trip2);
+        // Fetch all upcoming bookings from API
+        await fetchUpcomingBookingsForTripsTab();
 
         PaymentFlowLog.log('loadEnrolledTripForTripsTab: state updated', {
           'bookingId': _enrolledBookingId,
           'pendingAmount': _paymentDetails?.pendingAmount,
           'paidAmount': _paymentDetails?.paidAmount,
           'isFullyPaid': _paymentDetails?.isFullyPaid,
-          'enrolledTripsCount': _enrolledTripsList.length,
+          'enrolledTripsCount': _enrolledBookingsList.length,
         });
       } else {
         _enrolledTrip = null;
         _paymentDetails = null;
         _enrolledBookingId = null;
-        _enrolledTripsList = [];
+        _enrolledBookingsList = [];
         PaymentFlowLog.log(
           'loadEnrolledTripForTripsTab: no enrolled context (null)',
         );
@@ -358,6 +371,22 @@ class TripProvider extends ChangeNotifier {
 
   bool _isPaymentLoading = false;
   bool get isPaymentLoading => _isPaymentLoading;
+
+  /// Updates only payment details and booking ID without triggering full API refresh.
+  /// Used after payment to avoid unnecessary API calls (get-package-details, trips/details, upcoming-bookings).
+  void updatePaymentDetailsOnly(
+    TripPaymentDetails? paymentDetails,
+    String? bookingId,
+  ) {
+    _paymentDetails = paymentDetails;
+    _enrolledBookingId = bookingId;
+    PaymentFlowLog.log('updatePaymentDetailsOnly', {
+      'bookingId': bookingId,
+      'paidAmount': paymentDetails?.paidAmount,
+      'pendingAmount': paymentDetails?.pendingAmount,
+    });
+    notifyListeners();
+  }
 
   Future<void> fetchPaymentDetails(String tripId) async {
     _isPaymentLoading = true;

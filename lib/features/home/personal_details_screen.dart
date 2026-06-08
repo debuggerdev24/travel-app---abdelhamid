@@ -95,8 +95,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             if (!_didPrefillFromProfile) {
               final profile = context.watch<ProfileProvider>().profile;
               if (profile != null) {
-                _provider.prefillFromUserProfile(profile);
-                _didPrefillFromProfile = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted && !_didPrefillFromProfile) {
+                    _provider.prefillFromUserProfile(profile);
+                    _didPrefillFromProfile = true;
+                  }
+                });
               }
             }
             return SafeArea(

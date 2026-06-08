@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -41,7 +42,12 @@ class TripCard extends StatelessWidget {
               offset: Offset(0, 2),
             ),
           ],
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.r),
+            topRight: Radius.circular(12.r),
+            bottomLeft: Radius.circular(20.r),
+            bottomRight: Radius.circular(20.r),
+          ),
           border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
         ),
         child: Column(
@@ -77,12 +83,37 @@ class TripCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppText(text: title, style: textStyle16SemiBold),
+                  /// Title row with clipboard icon
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: AppText(
+                          text: title,
+                          style: textStyle16SemiBold,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      8.w.horizontalSpace,
+                      Icon(
+                        Icons.assignment_outlined,
+                        size: 20.w,
+                        color: AppColors.primaryColor,
+                      ),
+                    ],
+                  ),
                   12.h.verticalSpace,
 
-                  /// Location
+                  /// Location with icon
                   Row(
                     children: [
+                      SvgIcon(
+                        AppAssets.location,
+                        size: 16.w,
+                        color: AppColors.primaryColor.setOpacity(0.6),
+                      ),
+                      8.w.horizontalSpace,
                       AppText(
                         text: location,
                         style: textStyle14Regular.copyWith(
@@ -94,9 +125,15 @@ class TripCard extends StatelessWidget {
 
                   12.h.verticalSpace,
 
-                  /// Date
+                  /// Date with calendar icon
                   Row(
                     children: [
+                      SvgIcon(
+                        AppAssets.calendar,
+                        size: 16.w,
+                        color: AppColors.primaryColor.setOpacity(0.6),
+                      ),
+                      8.w.horizontalSpace,
                       AppText(
                         text: date,
                         style: textStyle14Regular.copyWith(
@@ -121,6 +158,7 @@ class TripCard extends StatelessWidget {
                           text: status,
                           style: textStyle14Medium.copyWith(
                             color: AppColors.blueColor,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],

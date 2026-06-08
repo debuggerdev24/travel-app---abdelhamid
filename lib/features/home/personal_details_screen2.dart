@@ -29,6 +29,19 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
     super.initState();
     _personDetailsProvider = PersonDetailsProvider();
     debugPrint('✅ [FamilyMembersScreen] Provider initialized');
+
+    // Fetch and populate family member data if booking exists
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final bookingId = context.read<TripBookingProvider>().bookingId;
+      if (bookingId != null && bookingId.isNotEmpty) {
+        debugPrint(
+          '🔵 [FamilyMembersScreen] Fetching family details for bookingId: $bookingId',
+        );
+        await _personDetailsProvider.fetchAndPopulateFamilyDetails(bookingId);
+        debugPrint('✅ [FamilyMembersScreen] Family details populated');
+      }
+    });
   }
 
   @override
@@ -188,21 +201,43 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                                         return;
                                       }
 
-                                      final success = await personProvider
-                                          .saveFamilyDetails(bookingId);
+                                      // Check if data has changed
+                                      final hasChanged = personProvider
+                                          .hasFamilyDataChanged();
 
-                                      debugPrint(
-                                        success
-                                            ? '✅ [FamilyMembersScreen] Family details saved successfully'
-                                            : '❌ [FamilyMembersScreen] Failed to save family details',
-                                      );
-
-                                      if (success && context.mounted) {
-                                        context.pushNamed(
-                                          UserAppRoutes
-                                              .packageSummaryScreen
-                                              .name,
+                                      if (hasChanged) {
+                                        // Data changed or new - save via API
+                                        debugPrint(
+                                          '🔵 [FamilyMembersScreen] Data changed - saving via API',
                                         );
+                                        final success = await personProvider
+                                            .saveFamilyDetails(bookingId);
+
+                                        debugPrint(
+                                          success
+                                              ? '✅ [FamilyMembersScreen] Family details saved successfully'
+                                              : '❌ [FamilyMembersScreen] Failed to save family details',
+                                        );
+
+                                        if (success && context.mounted) {
+                                          context.pushNamed(
+                                            UserAppRoutes
+                                                .packageSummaryScreen
+                                                .name,
+                                          );
+                                        }
+                                      } else {
+                                        // Data unchanged - skip API call and go to next screen
+                                        debugPrint(
+                                          '🔵 [FamilyMembersScreen] Data unchanged - skipping API call',
+                                        );
+                                        if (context.mounted) {
+                                          context.pushNamed(
+                                            UserAppRoutes
+                                                .packageSummaryScreen
+                                                .name,
+                                          );
+                                        }
                                       }
                                     },
                             ),

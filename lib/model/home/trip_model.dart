@@ -546,3 +546,111 @@ class EnrolledTripContext {
     required this.paymentDetails,
   });
 }
+
+/// Model for upcoming booking from `/api/user/trips/upcoming-bookings`
+class UpcomingBookingModel {
+  final String id;
+  final TripModel trip;
+  final String userId;
+  final PackageInfo package;
+  final String paymentStatus;
+  final String status;
+  final bool isPresent;
+  final List<dynamic> documents;
+  final List<FamilyMember> familyMembers;
+  final String createdAt;
+  final String updatedAt;
+  final String packageCost;
+  final String? roomPreferenceId;
+  final String? stripeCustomerId;
+
+  UpcomingBookingModel({
+    required this.id,
+    required this.trip,
+    required this.userId,
+    required this.package,
+    required this.paymentStatus,
+    required this.status,
+    required this.isPresent,
+    required this.documents,
+    required this.familyMembers,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.packageCost,
+    this.roomPreferenceId,
+    this.stripeCustomerId,
+  });
+
+  factory UpcomingBookingModel.fromJson(Map<String, dynamic> json) {
+    final tripData = json['tripId'];
+    final packageData = json['packageId'];
+    final familyMembersData = json['familyMembers'] as List<dynamic>? ?? [];
+
+    return UpcomingBookingModel(
+      id: json['_id']?.toString() ?? '',
+      trip: TripModel.fromJson(
+        tripData is Map ? Map<String, dynamic>.from(tripData) : {},
+      ),
+      userId: json['userId']?.toString() ?? '',
+      package: PackageInfo.fromJson(
+        packageData is Map ? Map<String, dynamic>.from(packageData) : {},
+      ),
+      paymentStatus: json['paymentStatus']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+      isPresent: json['isPresent'] ?? false,
+      documents: json['document'] as List<dynamic>? ?? [],
+      familyMembers: familyMembersData
+          .map(
+            (e) => FamilyMember.fromJson(
+              e is Map ? Map<String, dynamic>.from(e) : {},
+            ),
+          )
+          .toList(),
+      createdAt: json['createdAt']?.toString() ?? '',
+      updatedAt: json['updatedAt']?.toString() ?? '',
+      packageCost: json['packageCost']?.toString() ?? '0',
+      roomPreferenceId: json['roomPreferenceId']?.toString(),
+      stripeCustomerId: json['stripeCustomerId']?.toString(),
+    );
+  }
+}
+
+class PackageInfo {
+  final String id;
+  final String packageName;
+
+  PackageInfo({required this.id, required this.packageName});
+
+  factory PackageInfo.fromJson(Map<String, dynamic> json) {
+    return PackageInfo(
+      id: json['_id']?.toString() ?? '',
+      packageName: json['packageName']?.toString() ?? '',
+    );
+  }
+}
+
+class FamilyMember {
+  final String id;
+  final String firstName;
+  final String surname;
+  final String phoneNumber;
+  final String relationship;
+
+  FamilyMember({
+    required this.id,
+    required this.firstName,
+    required this.surname,
+    required this.phoneNumber,
+    required this.relationship,
+  });
+
+  factory FamilyMember.fromJson(Map<String, dynamic> json) {
+    return FamilyMember(
+      id: json['_id']?.toString() ?? '',
+      firstName: json['firstName']?.toString() ?? '',
+      surname: json['surname']?.toString() ?? '',
+      phoneNumber: json['phoneNumber']?.toString() ?? '',
+      relationship: json['relationship']?.toString() ?? '',
+    );
+  }
+}
