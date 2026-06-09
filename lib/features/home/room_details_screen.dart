@@ -35,8 +35,10 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
       text: bookingProvider.adultCount.toString(),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // First fetch package options to ensure we have room/child data
-      if (bookingProvider.tripDetails?.id != null) {
+      // Only fetch package options from backend if no package is selected locally
+      // With the new flow, package is stored locally until payment
+      if (bookingProvider.selectedPackage == null &&
+          bookingProvider.tripDetails?.id != null) {
         await bookingProvider.fetchPackageOptions(
           bookingProvider.tripDetails!.id!,
         );

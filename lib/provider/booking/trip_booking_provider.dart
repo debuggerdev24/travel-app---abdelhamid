@@ -33,6 +33,15 @@ class TripBookingProvider extends ChangeNotifier {
   Map<String, dynamic>? _savedRoomPreference;
   Map<String, dynamic>? get savedRoomPreference => _savedRoomPreference;
 
+  // Local storage for unsaved booking data
+  bool _hasUnsavedData = false;
+  bool get hasUnsavedData => _hasUnsavedData;
+
+  Map<String, dynamic>? _localPackageData;
+  Map<String, dynamic>? _localRoomPreferenceData;
+  Map<String, dynamic>? _localPersonDetailsData;
+  Map<String, dynamic>? _localFamilyDetailsData;
+
   void updateAdultCount(int count) {
     if (adultCount != count) {
       adultCount = count;
@@ -438,42 +447,18 @@ class TripBookingProvider extends ChangeNotifier {
       return false;
     }
 
-    _isLoading = true;
-    _error = null;
+    // Store package data locally instead of calling API immediately
+    _localPackageData = {
+      "tripId": _tripDetails!.id!,
+      "packageId": _selectedPackage!.id!,
+    };
+    _hasUnsavedData = true;
     notifyListeners();
-
-    try {
-      final response = await TripsService.instance.addBookingPackage(
-        _tripDetails!.id!,
-        _selectedPackage!.id!,
-      );
-
-      if (response['status'] == 1 && response['data'] != null) {
-        _bookingId = response['data']['_id'];
-        LogHelper.instance.info("Booking ID: $_bookingId");
-        return true;
-      }
-      return false;
-    } catch (e) {
-      _error = e.toString();
-      return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    return true;
   }
 
   Future<bool> saveRoomPreference() async {
-    if (_bookingId == null) {
-      _error = "No active booking found";
-      notifyListeners();
-      return false;
-    }
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
+    // Store room preference data locally instead of calling API immediately
     try {
       final room = _selectedPackage?.roomDetails.firstWhere(
         (r) => r.id == selectedRoomTypeId,
@@ -490,8 +475,7 @@ class TripBookingProvider extends ChangeNotifier {
         ),
       );
 
-      final data = {
-        "bookingId": _bookingId,
+      _localRoomPreferenceData = {
         "roomTypeId": selectedRoomTypeId,
         "roomPrice": "€${room?.roomPrice ?? 0}",
         "bedType": selectedBedType?.toLowerCase(),
@@ -502,14 +486,88 @@ class TripBookingProvider extends ChangeNotifier {
         "babyCount": babyCount,
         "babyPrice": "€${500 * babyCount}",
       };
+      _hasUnsavedData = true;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    }
+  }
 
-      final response = await TripsService.instance.saveRoomPreference(data);
-      if (response['status'] == 1) {
-        _isRoomPreferenceSaved = true;
-        // Store the saved data locally
-        _savedRoomPreference = data;
+  /// Store person details locally
+  void setLocalPersonDetails(Map<String, dynamic> data) {
+    _localPersonDetailsData = data;
+    _hasUnsavedData = true;
+    notifyListeners();
+  }
+
+  /// Store family details locally
+  void setLocalFamilyDetails(Map<String, dynamic> data) {
+    _localFamilyDetailsData = data;
+    _hasUnsavedData = true;
+    notifyListeners();
+  }
+
+  /// Save all booking data to backend after successful payment
+  /// This makes one comprehensive API call instead of multiple incremental calls
+  Future<bool> saveAllBookingData() async {
+    if (_tripDetails?.id == null) {
+      _error = "Trip not selected";
+      notifyListeners();
+      return false;
+    }
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Step 1: Create booking with package
+      if (_localPackageData != null) {
+        final response = await TripsService.instance.addBookingPackage(
+          _localPackageData!["tripId"],
+          _localPackageData!["packageId"],
+        );
+
+        if (response['status'] != 1 || response['data'] == null) {
+          _error = "Failed to create booking";
+          return false;
+        }
+        _bookingId = response['data']['booking']['_id'];
+        LogHelper.instance.info("Booking ID created: $_bookingId");
       }
-      return response['status'] == 1;
+
+      // Step 2: Save room preference if booking exists
+      if (_bookingId != null && _localRoomPreferenceData != null) {
+        final roomData = Map<String, dynamic>.from(_localRoomPreferenceData!);
+        roomData["bookingId"] = _bookingId;
+
+        final response = await TripsService.instance.saveRoomPreference(
+          roomData,
+        );
+        if (response['status'] == 1) {
+          _isRoomPreferenceSaved = true;
+          _savedRoomPreference = roomData;
+        }
+      }
+
+      // Step 3: Save person details if booking exists
+      if (_bookingId != null && _localPersonDetailsData != null) {
+        await TripsService.instance.savePersonDetail(_localPersonDetailsData!);
+      }
+
+      // Step 4: Save family details if booking exists
+      if (_bookingId != null && _localFamilyDetailsData != null) {
+        await TripsService.instance.saveFamilyDetails(
+          bookingId: _bookingId!,
+          body: _localFamilyDetailsData!,
+        );
+      }
+
+      // Clear local data after successful save
+      clearLocalData();
+      return true;
     } catch (e) {
       _error = e.toString();
       return false;
@@ -517,5 +575,23 @@ class TripBookingProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Check if there is any unsaved local data
+  bool get hasAnyUnsavedData {
+    return _localPackageData != null ||
+        _localRoomPreferenceData != null ||
+        _localPersonDetailsData != null ||
+        _localFamilyDetailsData != null;
+  }
+
+  /// Clear all locally stored booking data
+  void clearLocalData() {
+    _localPackageData = null;
+    _localRoomPreferenceData = null;
+    _localPersonDetailsData = null;
+    _localFamilyDetailsData = null;
+    _hasUnsavedData = false;
+    notifyListeners();
   }
 }

@@ -14,6 +14,7 @@ class TripCard extends StatelessWidget {
   final String location;
   final String date;
   final String status;
+  final String? paymentStatus;
   final VoidCallback onTap;
 
   const TripCard({
@@ -23,6 +24,7 @@ class TripCard extends StatelessWidget {
     required this.location,
     required this.date,
     required this.status,
+    this.paymentStatus,
     required this.onTap,
   });
 
@@ -164,6 +166,44 @@ class TripCard extends StatelessWidget {
                       ],
                     ),
                   ],
+
+                  /// Payment Status (Only show if not empty)
+                  if (paymentStatus != null && paymentStatus!.isNotEmpty) ...[
+                    12.h.verticalSpace,
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 6.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getPaymentStatusColor(
+                          paymentStatus!,
+                        ).setOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          color: _getPaymentStatusColor(paymentStatus!),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getPaymentStatusIcon(paymentStatus!),
+                            size: 14.w,
+                            color: _getPaymentStatusColor(paymentStatus!),
+                          ),
+                          6.w.horizontalSpace,
+                          AppText(
+                            text: "Payment: $paymentStatus",
+                            style: textStyle12semiBold.copyWith(
+                              color: _getPaymentStatusColor(paymentStatus!),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -171,5 +211,33 @@ class TripCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getPaymentStatusColor(String status) {
+    final lowerStatus = status.toLowerCase();
+    if (lowerStatus.contains('pending') || lowerStatus.contains('unpaid')) {
+      return Colors.orange;
+    } else if (lowerStatus.contains('paid') ||
+        lowerStatus.contains('complete')) {
+      return Colors.green;
+    } else if (lowerStatus.contains('failed') ||
+        lowerStatus.contains('cancelled')) {
+      return Colors.red;
+    }
+    return AppColors.blueColor;
+  }
+
+  IconData _getPaymentStatusIcon(String status) {
+    final lowerStatus = status.toLowerCase();
+    if (lowerStatus.contains('pending') || lowerStatus.contains('unpaid')) {
+      return Icons.pending_outlined;
+    } else if (lowerStatus.contains('paid') ||
+        lowerStatus.contains('complete')) {
+      return Icons.check_circle_outline;
+    } else if (lowerStatus.contains('failed') ||
+        lowerStatus.contains('cancelled')) {
+      return Icons.error_outline;
+    }
+    return Icons.info_outline;
   }
 }

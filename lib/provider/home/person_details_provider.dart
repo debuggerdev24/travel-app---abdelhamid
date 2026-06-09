@@ -43,6 +43,17 @@ class PersonDetailsProvider extends ChangeNotifier {
   bool _isFamilyLoading = false;
   bool get isFamilyLoading => _isFamilyLoading;
 
+  // Local storage for unsaved data
+  Map<String, dynamic>? _localPersonDetailsData;
+  Map<String, dynamic>? _localFamilyDetailsData;
+  bool _hasUnsavedPersonData = false;
+  bool _hasUnsavedFamilyData = false;
+
+  Map<String, dynamic>? get localPersonDetailsData => _localPersonDetailsData;
+  Map<String, dynamic>? get localFamilyDetailsData => _localFamilyDetailsData;
+  bool get hasUnsavedPersonData => _hasUnsavedPersonData;
+  bool get hasUnsavedFamilyData => _hasUnsavedFamilyData;
+
   /// Prefill main booker fields from user profile (Get User Details API).
   /// Only fills fields that are currently empty, so it won't overwrite typing.
   void prefillFromUserProfile(UserProfile p) {
@@ -92,11 +103,9 @@ class PersonDetailsProvider extends ChangeNotifier {
 
   // ─── Save Personal Details ───────────────────────────────────────────────────
   Future<bool> savePersonDetails() async {
-    _isLoading = true;
-    notifyListeners();
-
+    // Store person details locally instead of calling API immediately
     try {
-      final body = {
+      _localPersonDetailsData = {
         "firstName": firstNameController.text.trim(),
         "surname": surnameController.text.trim(),
         "dateOfBirth": dateOfBirthController.text.trim(),
@@ -109,27 +118,17 @@ class PersonDetailsProvider extends ChangeNotifier {
         "placeOfResidence": placeOfResidenceController.text.trim(),
         "phoneNumber": phoneNumberController.text.trim(),
       };
-
-      final response = await TripsService.instance.savePersonDetail(body);
-
-      if (response['status'] == 1 && response['data'] != null) {
-        _personDetails = PersonDetailsModel.fromJson(response['data']);
-        return true;
-      }
-      return false;
+      _hasUnsavedPersonData = true;
+      notifyListeners();
+      return true;
     } catch (e) {
       return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 
   // ─── Save Family Member Details ──────────────────────────────────────────────
   Future<bool> saveFamilyDetails(String bookingId) async {
-    _isFamilyLoading = true;
-    notifyListeners();
-
+    // Store family details locally instead of calling API immediately
     try {
       final familyData = FamilyMemberModel(
         firstName: familyFirstNameController.text.trim(),
@@ -138,21 +137,12 @@ class PersonDetailsProvider extends ChangeNotifier {
         relationship: familyRelationshipController.text.trim(),
       );
 
-      final response = await TripsService.instance.saveFamilyDetails(
-        bookingId: bookingId,
-        body: familyData.toJson(),
-      );
-
-      if (response['status'] == 1) {
-        _familyMember = familyData;
-        return true;
-      }
-      return false;
+      _localFamilyDetailsData = familyData.toJson();
+      _hasUnsavedFamilyData = true;
+      notifyListeners();
+      return true;
     } catch (e) {
       return false;
-    } finally {
-      _isFamilyLoading = false;
-      notifyListeners();
     }
   }
 
@@ -251,6 +241,15 @@ class PersonDetailsProvider extends ChangeNotifier {
     );
 
     return hasChanged;
+  }
+
+  // ─── Clear Local Data ─────────────────────────────────────────────────────────
+  void clearLocalData() {
+    _localPersonDetailsData = null;
+    _localFamilyDetailsData = null;
+    _hasUnsavedPersonData = false;
+    _hasUnsavedFamilyData = false;
+    notifyListeners();
   }
 
   // ─── Dispose ─────────────────────────────────────────────────────────────────

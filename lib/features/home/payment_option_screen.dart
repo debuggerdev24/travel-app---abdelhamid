@@ -69,15 +69,42 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
       return;
     }
 
+    // Check if a package is selected locally
+    if (bookingProvider.selectedPackage == null) {
+      ToastHelper.showError('Please select a package first.');
+      return;
+    }
+
+    // Save all local booking data to backend before payment
+    if (bookingProvider.hasAnyUnsavedData) {
+      setState(() => _paying = true);
+      try {
+        final saved = await bookingProvider.saveAllBookingData();
+        if (!saved) {
+          ToastHelper.showError(
+            'Failed to save booking data. Please try again.',
+          );
+          setState(() => _paying = false);
+          return;
+        }
+      } catch (e) {
+        ToastHelper.showError('Failed to save booking data: $e');
+        setState(() => _paying = false);
+        return;
+      }
+    }
+
     final bookingId = bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
-      ToastHelper.showError('No booking found. Select a package first.');
+      ToastHelper.showError('Failed to create booking. Please try again.');
+      setState(() => _paying = false);
       return;
     }
 
     final amount = bookingProvider.totalAmount;
     if (amount <= 0) {
       ToastHelper.showError('Amount must be greater than 0.');
+      setState(() => _paying = false);
       return;
     }
 
@@ -198,15 +225,42 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
       return;
     }
 
+    // Check if a package is selected locally
+    if (bookingProvider.selectedPackage == null) {
+      ToastHelper.showError('Please select a package first.');
+      return;
+    }
+
+    // Save all local booking data to backend before payment
+    if (bookingProvider.hasAnyUnsavedData) {
+      setState(() => _paying = true);
+      try {
+        final saved = await bookingProvider.saveAllBookingData();
+        if (!saved) {
+          ToastHelper.showError(
+            'Failed to save booking data. Please try again.',
+          );
+          setState(() => _paying = false);
+          return;
+        }
+      } catch (e) {
+        ToastHelper.showError('Failed to save booking data: $e');
+        setState(() => _paying = false);
+        return;
+      }
+    }
+
     final bookingId = bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
-      ToastHelper.showError('No booking found. Select a package first.');
+      ToastHelper.showError('Failed to create booking. Please try again.');
+      setState(() => _paying = false);
       return;
     }
 
     final amount = bookingProvider.totalAmount;
     if (amount <= 0) {
       ToastHelper.showError('Amount must be greater than 0.');
+      setState(() => _paying = false);
       return;
     }
 

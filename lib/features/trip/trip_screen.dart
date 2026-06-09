@@ -31,7 +31,8 @@ import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TripScreen extends StatefulWidget {
-  const TripScreen({super.key});
+  final Function(bool)? onShowTripDetails;
+  const TripScreen({super.key, this.onShowTripDetails});
 
   @override
   State<TripScreen> createState() => _TripScreenState();
@@ -142,6 +143,7 @@ class _TripScreenState extends State<TripScreen> {
                     _showTripList = false;
                     tripProvider.selectTrip(trip);
                   });
+                  widget.onShowTripDetails?.call(true);
                   // Load enrolled trip context with booking ID to show payment details
                   if (booking != null && booking.id.isNotEmpty) {
                     await tripProvider.loadEnrolledTripForTripsTab(
@@ -219,6 +221,51 @@ class _TripScreenState extends State<TripScreen> {
                                 ),
                               ],
                             ),
+                            if (booking != null &&
+                                booking.paymentStatus.isNotEmpty) ...[
+                              12.h.verticalSpace,
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 6.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _getPaymentStatusColor(
+                                    booking.paymentStatus,
+                                  ).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  border: Border.all(
+                                    color: _getPaymentStatusColor(
+                                      booking.paymentStatus,
+                                    ),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      _getPaymentStatusIcon(
+                                        booking.paymentStatus,
+                                      ),
+                                      size: 14.w,
+                                      color: _getPaymentStatusColor(
+                                        booking.paymentStatus,
+                                      ),
+                                    ),
+                                    6.w.horizontalSpace,
+                                    AppText(
+                                      text: "Payment: ${booking.paymentStatus}",
+                                      style: textStyle12semiBold.copyWith(
+                                        color: _getPaymentStatusColor(
+                                          booking.paymentStatus,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -243,6 +290,7 @@ class _TripScreenState extends State<TripScreen> {
         setState(() {
           _showTripList = true;
         });
+        widget.onShowTripDetails?.call(false);
         return false;
       },
       child: SingleChildScrollView(
@@ -258,6 +306,7 @@ class _TripScreenState extends State<TripScreen> {
                       setState(() {
                         _showTripList = true;
                       });
+                      widget.onShowTripDetails?.call(false);
                     },
                     child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
                   ),
@@ -1532,4 +1581,32 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   // (removed unused _cardDetailsSection)
+
+  Color _getPaymentStatusColor(String status) {
+    final lowerStatus = status.toLowerCase();
+    if (lowerStatus.contains('pending') || lowerStatus.contains('unpaid')) {
+      return Colors.orange;
+    } else if (lowerStatus.contains('paid') ||
+        lowerStatus.contains('complete')) {
+      return Colors.green;
+    } else if (lowerStatus.contains('failed') ||
+        lowerStatus.contains('cancelled')) {
+      return Colors.red;
+    }
+    return AppColors.blueColor;
+  }
+
+  IconData _getPaymentStatusIcon(String status) {
+    final lowerStatus = status.toLowerCase();
+    if (lowerStatus.contains('pending') || lowerStatus.contains('unpaid')) {
+      return Icons.pending_outlined;
+    } else if (lowerStatus.contains('paid') ||
+        lowerStatus.contains('complete')) {
+      return Icons.check_circle_outline;
+    } else if (lowerStatus.contains('failed') ||
+        lowerStatus.contains('cancelled')) {
+      return Icons.error_outline;
+    }
+    return Icons.info_outline;
+  }
 }

@@ -19,6 +19,37 @@ class PackageSummaryScreen extends StatefulWidget {
 }
 
 class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
+  /// Show confirmation dialog when user tries to go back with unsaved data
+  Future<bool> _onWillPop() async {
+    final tripBookingProvider = context.read<TripBookingProvider>();
+    if (tripBookingProvider.hasAnyUnsavedData) {
+      final shouldPop = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Discard unsaved data?'),
+          content: const Text(
+            'You have unsaved booking data. Do you want to discard it and go back?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                tripBookingProvider.clearLocalData();
+                Navigator.pop(context, true);
+              },
+              child: const Text('Discard'),
+            ),
+          ],
+        ),
+      );
+      return shouldPop ?? false;
+    }
+    return true;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -29,9 +60,17 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       debugPrint('✅ [PackageSummaryScreen] initState called');
       debugPrint('🔵 [PackageSummaryScreen] tripId: $tripId');
 
-      if (tripId != null && tripId.isNotEmpty) {
+      // Only fetch package options from backend if no package is selected locally
+      // With the new flow, package is stored locally until payment
+      if (provider.selectedPackage == null &&
+          tripId != null &&
+          tripId.isNotEmpty) {
         debugPrint('🔵 [PackageSummaryScreen] Fetching package options...');
         provider.fetchPackageOptions(tripId);
+      } else if (provider.selectedPackage != null) {
+        debugPrint(
+          '🔵 [PackageSummaryScreen] Package already selected locally',
+        );
       } else {
         debugPrint(
           '❌ [PackageSummaryScreen] tripId is null — cannot fetch package options',
@@ -69,148 +108,153 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       return const Scaffold(body: Center(child: Text("No Trip Selected")));
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.whiteColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            /// ---------------- HEADER ----------------
-            40.h.verticalSpace,
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 26.w),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: AppColors.whiteColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              /// ---------------- HEADER ----------------
+              40.h.verticalSpace,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => context.pop(),
+                        child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                      ),
                     ),
-                  ),
-                  AppText(
-                    text: "Umrah Trip 2025",
-                    style: textStyle32Bold.copyWith(
-                      fontSize: 26.sp,
-                      color: AppColors.secondary,
+                    AppText(
+                      text: "Umrah Trip 2025",
+                      style: textStyle32Bold.copyWith(
+                        fontSize: 26.sp,
+                        color: AppColors.secondary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            /// Travel details
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 32.h),
-              child: Row(
-                children: [
-                  SvgIcon(AppAssets.pin, size: 20.w),
-                  10.w.horizontalSpace,
-                  Expanded(
-                    child: AppText(
-                      text: trip.location,
+              /// Travel details
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 32.h),
+                child: Row(
+                  children: [
+                    SvgIcon(AppAssets.pin, size: 20.w),
+                    10.w.horizontalSpace,
+                    Expanded(
+                      child: AppText(
+                        text: trip.location,
+                        style: textStyle14Regular.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ),
+                    SvgIcon(AppAssets.calendar, size: 20.w),
+                    10.w.horizontalSpace,
+                    AppText(
+                      text: trip.date,
                       style: textStyle14Regular.copyWith(
                         color: AppColors.primaryColor,
                       ),
                     ),
-                  ),
-                  SvgIcon(AppAssets.calendar, size: 20.w),
-                  10.w.horizontalSpace,
-                  AppText(
-                    text: trip.date,
-                    style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            /// ------------- MAIN CONTENT LIST ---------------
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    10.h.verticalSpace,
-
-                    /// Selected Package Card
-                    if (selectedPackage != null)
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(16.w),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.blueColor),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primaryColor.setOpacity(0.1),
-                              blurRadius: 3,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                          color: Colors.white,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AppText(
-                              text: selectedPackage.title,
-                              style: textStyle16SemiBold.copyWith(
-                                color: AppColors.secondary,
-                                fontSize: 17.sp,
-                              ),
-                            ),
-                            _buildSection(
-                              title: 'Room Options :',
-                              items: selectedPackage.roomOptions,
-                            ),
-                            _buildSection(
-                              title: 'Child Prices :',
-                              items: selectedPackage.childPrices,
-                            ),
-                            _buildSection(
-                              title: 'Inclusions :',
-                              items: selectedPackage.inclusions,
-                            ),
-                            _buildSection(
-                              title: 'Exclusions :',
-                              items: selectedPackage.exclusions,
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    20.h.verticalSpace,
-
-                    /// Example Price Rows
-                    _priceRow("2 Person (Adult)", "€7,000"),
-                    _priceRow("2 Child", "€2500"),
-                    _priceRow("1 Baby", "€500"),
-
-                    Divider(
-                      height: 30.h,
-                      color: AppColors.primaryColor.setOpacity(0.2),
-                      endIndent: 60,
-                    ),
-                    _priceRow("TOTAL COST", "€10,000"),
-                    52.h.verticalSpace,
-                    AppButton(
-                      onTap: () {
-                        debugPrint('🔵 [PackageSummaryScreen] Book Now tapped');
-                        context.pushNamed(
-                          UserAppRoutes.paymentOptionScreen.name,
-                        );
-                      },
-                      title: "Book Now",
-                    ),
-                    46.h.verticalSpace,
                   ],
                 ),
               ),
-            ),
-          ],
+
+              /// ------------- MAIN CONTENT LIST ---------------
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      10.h.verticalSpace,
+
+                      /// Selected Package Card
+                      if (selectedPackage != null)
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(16.w),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.blueColor),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primaryColor.setOpacity(0.1),
+                                blurRadius: 3,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AppText(
+                                text: selectedPackage.title,
+                                style: textStyle16SemiBold.copyWith(
+                                  color: AppColors.secondary,
+                                  fontSize: 17.sp,
+                                ),
+                              ),
+                              _buildSection(
+                                title: 'Room Options :',
+                                items: selectedPackage.roomOptions,
+                              ),
+                              _buildSection(
+                                title: 'Child Prices :',
+                                items: selectedPackage.childPrices,
+                              ),
+                              _buildSection(
+                                title: 'Inclusions :',
+                                items: selectedPackage.inclusions,
+                              ),
+                              _buildSection(
+                                title: 'Exclusions :',
+                                items: selectedPackage.exclusions,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      20.h.verticalSpace,
+
+                      /// Example Price Rows
+                      _priceRow("2 Person (Adult)", "€7,000"),
+                      _priceRow("2 Child", "€2500"),
+                      _priceRow("1 Baby", "€500"),
+
+                      Divider(
+                        height: 30.h,
+                        color: AppColors.primaryColor.setOpacity(0.2),
+                        endIndent: 60,
+                      ),
+                      _priceRow("TOTAL COST", "€10,000"),
+                      52.h.verticalSpace,
+                      AppButton(
+                        onTap: () {
+                          debugPrint(
+                            '🔵 [PackageSummaryScreen] Book Now tapped',
+                          );
+                          context.pushNamed(
+                            UserAppRoutes.paymentOptionScreen.name,
+                          );
+                        },
+                        title: "Book Now",
+                      ),
+                      46.h.verticalSpace,
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -23,32 +23,10 @@ class TabScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _TabScreenState();
 }
 
-// class _TabScreenState extends State<TabScreen> {
-//   late int currentIndex;
-
-//   final List<Widget> screens = [
-//     HomeScreen(),
-//     TripScreen(),
-//     ChatScreen(),
-//     ProfileScreen(),
-//   ];
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     currentIndex = widget.initialIndex;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: screens[currentIndex],
-//       bottomNavigationBar: bottomNavigationBar(),
-//     );
-//   }
 class _TabScreenState extends State<TabScreen> {
   late int currentIndex;
   DateTime? lastBackPressed;
+  bool _showBottomNav = true;
 
   @override
   void initState() {
@@ -94,9 +72,20 @@ class _TabScreenState extends State<TabScreen> {
       child: Scaffold(
         body: IndexedStack(
           index: currentIndex,
-          children: [HomeScreen(), TripScreen(), ChatScreen(), ProfileScreen()],
+          children: [
+            HomeScreen(),
+            TripScreen(
+              onShowTripDetails: (show) {
+                setState(() {
+                  _showBottomNav = !show;
+                });
+              },
+            ),
+            ChatScreen(),
+            ProfileScreen(),
+          ],
         ),
-        bottomNavigationBar: bottomNavigationBar(),
+        bottomNavigationBar: _showBottomNav ? bottomNavigationBar() : null,
       ),
     );
   }
@@ -108,6 +97,7 @@ class _TabScreenState extends State<TabScreen> {
       onTap: (index) {
         setState(() {
           currentIndex = index;
+          _showBottomNav = true;
         });
         if (index == 0) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
