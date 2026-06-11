@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
@@ -17,22 +15,28 @@ class FeedbackReviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.setOpacity(0.1),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
             blurRadius: 3,
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
-        color: AppColors.whiteColor,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// Title
-          const Text(
+          Text(
             "Your Feedback",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
 
           10.verticalSpace,
@@ -45,7 +49,10 @@ class FeedbackReviewCard extends StatelessWidget {
                 children: [
                   AppText(
                     text: "5",
-                    style: textStyle16SemiBold.copyWith(fontSize: 46.sp),
+                    style: textStyle16SemiBold.copyWith(
+                      fontSize: 46.sp,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
 
                   /// Stars
@@ -54,7 +61,7 @@ class FeedbackReviewCard extends StatelessWidget {
                       5,
                       (_) => Icon(
                         Icons.star,
-                        color: AppColors.lightYellowColor,
+                        color: Theme.of(context).colorScheme.primary,
                         size: 18.sp,
                       ),
                     ),
@@ -65,7 +72,7 @@ class FeedbackReviewCard extends StatelessWidget {
                     text: "1 Review",
                     style: textStyle14Regular.copyWith(
                       fontSize: 12.sp,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -76,11 +83,11 @@ class FeedbackReviewCard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    _ratingRow(5, 0.9),
-                    _ratingRow(4, 0.7),
-                    _ratingRow(3, 0.4),
-                    _ratingRow(2, 0.2),
-                    _ratingRow(1, 0.1),
+                    _ratingRow(context, 5, 0.9),
+                    _ratingRow(context, 4, 0.7),
+                    _ratingRow(context, 3, 0.4),
+                    _ratingRow(context, 2, 0.2),
+                    _ratingRow(context, 1, 0.1),
                   ],
                 ),
               ),
@@ -90,7 +97,7 @@ class FeedbackReviewCard extends StatelessWidget {
           Divider(
             height: 30.h,
             thickness: 1,
-            color: AppColors.primaryColor.setOpacity(0.2),
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
           ),
 
           /// USER REVIEW SECTION
@@ -115,6 +122,7 @@ class FeedbackReviewCard extends StatelessWidget {
                           text: "Aisha Khan",
                           style: textStyle14Medium.copyWith(
                             fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         12.w.horizontalSpace,
@@ -130,7 +138,10 @@ class FeedbackReviewCard extends StatelessWidget {
                     4.h.verticalSpace,
                     AppText(
                       text: "Jan 26, 2025",
-                      style: textStyle14Regular.copyWith(fontSize: 12.sp),
+                      style: textStyle14Regular.copyWith(
+                        fontSize: 12.sp,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
 
                     12.verticalSpace,
@@ -143,14 +154,16 @@ class FeedbackReviewCard extends StatelessWidget {
           AppText(
             text:
                 "“My stay at Zenstone Retreat was absolutely wonderful. The atmosphere is so peaceful, surrounded by nature with beautiful stone pathways and a calming koi pond. The staff were incredibly welcoming and made sure everything was perfect. If you’re looking for a place to relax, recharge, and enjoy pure tranquility, this is the spot!”",
-            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _ratingRow(int number, double fill) {
+  Widget _ratingRow(BuildContext context, int number, double fill) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
@@ -159,13 +172,17 @@ class FeedbackReviewCard extends StatelessWidget {
             width: 150.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(110.r),
-              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(110.r),
               child: LinearProgressIndicator(
                 value: fill,
-                valueColor: AlwaysStoppedAnimation(AppColors.lightYellowColor),
+                valueColor: AlwaysStoppedAnimation(
+                  Theme.of(context).colorScheme.primary,
+                ),
                 backgroundColor: Colors.transparent,
                 minHeight: 6.h,
               ),
@@ -174,7 +191,10 @@ class FeedbackReviewCard extends StatelessWidget {
           10.horizontalSpace,
           Text(
             "$number",
-            style: TextStyle(fontSize: 12.sp, color: Colors.black87),
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),

@@ -31,7 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -119,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
             text: "Chat",
             style: textStyle16SemiBold.copyWith(
               fontSize: 26.sp,
-              color: AppColors.secondary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           SvgIcon(AppAssets.search, size: 24.w, color: AppColors.primaryColor),
@@ -136,7 +136,7 @@ class _ChatScreenState extends State<ChatScreen> {
           padding: EdgeInsets.all(5.w),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(130.r),
-            color: AppColors.lightblueColor,
+            color: Theme.of(context).colorScheme.surface,
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.setOpacity(0.2),
@@ -170,7 +170,9 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 39.w),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(25.r),
           boxShadow: isSelected
               ? [
@@ -187,7 +189,7 @@ class _ChatScreenState extends State<ChatScreen> {
             label,
             style: textStyle14Medium.copyWith(
               fontSize: 14.sp,
-              color: AppColors.primaryColor,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -235,10 +237,11 @@ class _ChatScreenState extends State<ChatScreen> {
                           text: data.name,
                           overflow: TextOverflow.ellipsis,
                           style: textStyle18Bold.copyWith(
-                            color: AppColors.primaryColor,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 16.sp,
-                            fontWeight:
-                                hasUnread ? FontWeight.w700 : FontWeight.w600,
+                            fontWeight: hasUnread
+                                ? FontWeight.w700
+                                : FontWeight.w600,
                           ),
                         ),
                       ),
@@ -247,9 +250,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         style: textStyle14Regular.copyWith(
                           color: hasUnread
                               ? AppColors.blueColor
-                              : AppColors.primaryColor.setOpacity(0.4),
-                          fontWeight:
-                              hasUnread ? FontWeight.w600 : FontWeight.normal,
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.4),
+                          fontWeight: hasUnread
+                              ? FontWeight.w600
+                              : FontWeight.normal,
                         ),
                       ),
                     ],
@@ -263,13 +269,18 @@ class _ChatScreenState extends State<ChatScreen> {
                           text: data.message,
                           style: textStyle14Regular.copyWith(
                             color: hasUnread
-                                ? AppColors.primaryColor.setOpacity(0.75)
-                                : AppColors.primaryColor.setOpacity(0.4),
-                            fontWeight:
-                                hasUnread ? FontWeight.w500 : FontWeight.normal,
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.75)
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.4),
+                            fontWeight: hasUnread
+                                ? FontWeight.w500
+                                : FontWeight.normal,
                           ),
                           overflow: TextOverflow.ellipsis,
-                        ),  
+                        ),
                       ),
                       if (hasUnread)
                         Container(
@@ -289,7 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: AppText(
                             text: data.unread > 99 ? '99+' : '${data.unread}',
                             style: textStyle18Bold.copyWith(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 11.sp,
                             ),
                           ),

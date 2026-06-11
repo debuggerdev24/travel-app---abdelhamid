@@ -1,8 +1,6 @@
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 
 class AppTextField extends StatelessWidget {
@@ -75,14 +73,14 @@ class AppTextField extends StatelessWidget {
         border ??
         outlineInputBorder ??
         OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.primaryColor.setOpacity(0.2)),
+          borderSide: BorderSide.none,
           borderRadius: BorderRadius.circular(8.r),
         );
     final InputBorder invalidBorder =
         errorBorder ??
         OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
-          borderSide: const BorderSide(color: AppColors.redColor),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
         );
 
     return Column(
@@ -106,6 +104,7 @@ class AppTextField extends StatelessWidget {
                         textStyle14Medium.copyWith(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                   ),
                 ],
@@ -116,10 +115,10 @@ class AppTextField extends StatelessWidget {
           const SizedBox.shrink(),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.whiteColor,
+            color: Theme.of(context).colorScheme.surface,
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.setOpacity(0.1),
+                color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                 blurRadius: 1,
                 offset: const Offset(0, 2),
               ),
@@ -135,10 +134,10 @@ class AppTextField extends StatelessWidget {
             inputFormatters: inputFormatters,
             controller: controller,
             obscureText: obSecureText ?? false,
-            cursorColor: AppColors.primaryColor,
+            cursorColor: Theme.of(context).colorScheme.primary,
             showCursor: !readOnly,
             style: textStyle14Regular.copyWith(
-              color: AppColors.black,
+              color: Theme.of(context).colorScheme.onSurface,
               decoration: TextDecoration.none,
             ),
             onTap: onTap,
@@ -154,9 +153,13 @@ class AppTextField extends StatelessWidget {
               suffix: suffix,
               prefix: prefix,
               hintText: hintText,
-              hintStyle: hintStyle ?? textStyle14Regular,
+              hintStyle:
+                  hintStyle ??
+                  textStyle14Regular.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
               errorStyle: textStyle14Regular.copyWith(
-                color: AppColors.redColor,
+                color: Theme.of(context).colorScheme.error,
                 fontSize: 12.sp,
               ),
               contentPadding:
@@ -181,7 +184,7 @@ class AppTextField extends StatelessWidget {
             style:
                 bottomTextStyle ??
                 textStyle14Regular.copyWith(
-                  color: AppColors.greyColor,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12.sp,
                 ),
           ),

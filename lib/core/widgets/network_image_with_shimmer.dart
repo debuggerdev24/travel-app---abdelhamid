@@ -24,7 +24,7 @@ class NetworkImageWithShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = imageUrl.trim();
     if (url.isEmpty) {
-      return _errorPlaceholder();
+      return _errorPlaceholder(context);
     }
 
     Widget image = Image.network(
@@ -36,7 +36,7 @@ class NetworkImageWithShimmer extends StatelessWidget {
         if (progress == null) return child;
         return _shimmerPlaceholder();
       },
-      errorBuilder: (_, __, ___) => _errorPlaceholder(),
+      errorBuilder: (_, __, ___) => _errorPlaceholder(context),
     );
 
     if (borderRadius != null) {
@@ -48,11 +48,7 @@ class NetworkImageWithShimmer extends StatelessWidget {
   Widget _shimmerPlaceholder() {
     final h = height ?? 120;
     if (width != null && width!.isFinite) {
-      return ShimmerBox(
-        width: width!,
-        height: h,
-        borderRadius: borderRadius,
-      );
+      return ShimmerBox(width: width!, height: h, borderRadius: borderRadius);
     }
     return SizedBox(
       height: h,
@@ -62,23 +58,22 @@ class NetworkImageWithShimmer extends StatelessWidget {
           final w = constraints.maxWidth.isFinite && constraints.maxWidth > 0
               ? constraints.maxWidth
               : 300.0;
-          return ShimmerBox(
-            width: w,
-            height: h,
-            borderRadius: borderRadius,
-          );
+          return ShimmerBox(width: w, height: h, borderRadius: borderRadius);
         },
       ),
     );
   }
 
-  Widget _errorPlaceholder() {
+  Widget _errorPlaceholder(BuildContext context) {
     return Container(
       width: width,
       height: height ?? 120,
-      color: Colors.grey.shade300,
+      color: Theme.of(context).colorScheme.errorContainer,
       alignment: Alignment.center,
-      child: Icon(errorIcon, color: Colors.grey.shade600),
+      child: Icon(
+        errorIcon,
+        color: Theme.of(context).colorScheme.onErrorContainer,
+      ),
     );
   }
 }

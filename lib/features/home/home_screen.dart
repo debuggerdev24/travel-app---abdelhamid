@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer2<TripProvider, PrayerTimesProvider>(
         builder: (context, provider, prayer, child) {
           return SafeArea(
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     text: "My Trip",
                     style: textStyle12semiBold.copyWith(
                       fontSize: 28.sp,
-                      color: AppColors.primaryColor,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -85,7 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     margin: EdgeInsets.symmetric(horizontal: 27.w),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: AppColors.primaryColor.setOpacity(0.2),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.2),
                       ),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
@@ -95,22 +97,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         AppText(
                           text: "Next Prayer",
                           style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor.setOpacity(0.6),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         AppText(
                           text: "  :  ",
                           style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor.setOpacity(0.6),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         if (prayer.showHomePrayerLoading)
                           SizedBox(
                             width: 18.w,
                             height: 18.w,
-                            child: const CircularProgressIndicator(
+                            child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: AppColors.primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           )
                         else ...[
@@ -120,19 +122,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: textStyle14Regular.copyWith(
-                                color: AppColors.primaryColor,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
                           VerticalDivider(
                             indent: 12.w,
                             endIndent: 12.w,
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
                           AppText(
                             text: prayer.homeCountdownLine,
                             style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -185,9 +189,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Builder(
                     builder: (context) {
                       if (provider.isLoading) {
-                        return const Center(
+                        return Center(
                           child: CircularProgressIndicator(
-                            color: AppColors.primaryColor,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         );
                       }
@@ -196,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           : provider.tripList;
                       if (trips.isEmpty) {
                         return RefreshIndicator(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                           onRefresh: () async {
                             await provider.fetchTrips(showGlobalLoading: false);
                             if (context.mounted) {
@@ -215,7 +219,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ? "No Current Trips"
                                       : "No Past Trips",
                                   style: textStyle16SemiBold.copyWith(
-                                    color: AppColors.primaryColor,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                               ),
@@ -224,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
                       return RefreshIndicator(
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                         onRefresh: () async {
                           await provider.fetchTrips(showGlobalLoading: false);
                           if (context.mounted) {

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -54,7 +52,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 27.w),
@@ -77,7 +75,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                       text: "Our Locations",
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -86,9 +84,9 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
               if (_loading)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 48.h),
-                  child: const Center(
+                  child: Center(
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 )
@@ -101,7 +99,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                       AppText(
                         text: _error!,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       TextButton(
@@ -109,7 +107,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                         child: AppText(
                           text: "Retry",
                           style: textStyle14Medium.copyWith(
-                            color: AppColors.blueColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
@@ -153,7 +151,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
               Icon(
                 Icons.location_on_outlined,
                 size: 56.sp,
-                color: AppColors.primaryColor.setOpacity(0.35),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               20.h.verticalSpace,
               AppText(
@@ -161,7 +159,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                 text: 'No office locations yet',
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 17.sp,
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               14.h.verticalSpace,
@@ -172,7 +170,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,
-                  color: AppColors.primaryColor.setOpacity(0.72),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -187,7 +185,9 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
       padding: EdgeInsets.only(top: 10.h, bottom: 8.w),
       child: AppText(
         text: title,
-        style: textStyle16SemiBold.copyWith(color: AppColors.primaryColor),
+        style: textStyle16SemiBold.copyWith(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }
@@ -203,15 +203,15 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         border: Border.all(
-          color: AppColors.primaryColor.setOpacity(0.2),
+          color: Theme.of(context).colorScheme.outlineVariant,
           width: 0,
         ),
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryColor.setOpacity(0.1),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 2,
             offset: const Offset(0, 2),
           ),
@@ -232,7 +232,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                         text: "•  ",
                         style: textStyle12Regular.copyWith(
                           fontSize: 16.sp,
-                          color: AppColors.primaryColor.setOpacity(0.8),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       Expanded(
@@ -240,7 +240,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                           text: text,
                           style: textStyle12Regular.copyWith(
                             fontSize: 16.sp,
-                            color: AppColors.primaryColor.setOpacity(0.8),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),

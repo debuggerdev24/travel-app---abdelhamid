@@ -29,4 +29,27 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get dark {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.dark(
+        primary: AppColors.skyblueColor,
+        secondary: AppColors.secondary,
+        surface: const Color(0xFF1E1E1E),
+        error: AppColors.redColor,
+        onPrimary: AppColors.whiteColor,
+        onSecondary: AppColors.whiteColor,
+        onSurface: AppColors.whiteColor,
+        onError: AppColors.whiteColor,
+      ),
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      fontFamily: 'Poppins',
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFF1E1E1E),
+        foregroundColor: AppColors.whiteColor,
+        elevation: 0,
+      ),
+    );
+  }
 }

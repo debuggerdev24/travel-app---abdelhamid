@@ -88,7 +88,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: AppColors.whiteColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         resizeToAvoidBottomInset: true,
         body: ChangeNotifierProvider.value(
           value: _personDetailsProvider,

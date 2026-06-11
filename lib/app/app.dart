@@ -10,6 +10,7 @@ import 'package:travel_app_abdelhamid/provider/home/user_flight_provider.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
+import 'package:travel_app_abdelhamid/provider/theme_provider.dart';
 import 'package:travel_app_abdelhamid/routes/go_routes.dart';
 
 /// Root widget of the application.
@@ -32,6 +33,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => TripBookingProvider()),
         ChangeNotifierProvider(create: (_) => FlightProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(402, 874),
@@ -40,6 +42,8 @@ class App extends StatelessWidget {
             title: 'TRAEL APP',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: context.watch<ThemeProvider>().themeMode,
             routerConfig: UserAppRoute.goRouter,
           );
         },

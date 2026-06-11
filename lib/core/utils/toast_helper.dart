@@ -44,4 +44,8 @@ class ToastHelper {
       fontSize: 16.0,
     );
   }
+
+  static void dismiss() {
+    Fluttertoast.cancel();
+  }
 }

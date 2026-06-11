@@ -99,7 +99,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
     final hasPdf = d?.pdfDownloadUrl != null && d!.pdfDownloadUrl!.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       bottomNavigationBar: hasPdf
           ? SafeArea(
               child: Padding(
@@ -126,7 +126,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                           ? 'Download / open PDF'
                           : 'Download PDF (unavailable)',
                       style: textStyle16SemiBold.copyWith(
-                        color: AppColors.whiteColor,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ),

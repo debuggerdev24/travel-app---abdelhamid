@@ -209,7 +209,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator())
@@ -343,7 +343,8 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             5.h.verticalSpace,
           if (info.createdByLabel != null && info.createdByLabel!.isNotEmpty)
             Divider(color: AppColors.primaryColor.setOpacity(0.2)),
-          if (info.createdOnLabel != null && info.createdOnLabel!.isNotEmpty) ...[
+          if (info.createdOnLabel != null &&
+              info.createdOnLabel!.isNotEmpty) ...[
             5.h.verticalSpace,
             _buildInfoRow('Created On', info.createdOnLabel!),
           ],
@@ -421,7 +422,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
         ),
         CustomSwitchButton(
-          initialValue: _notificationsOn,
+          value: _notificationsOn,
           onChanged: (value) => setState(() => _notificationsOn = value),
         ),
       ],
@@ -507,7 +508,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     return Container(
       padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
         borderRadius: BorderRadius.circular(15.r),
         boxShadow: [

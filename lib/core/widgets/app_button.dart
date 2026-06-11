@@ -1,8 +1,6 @@
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
@@ -46,12 +44,13 @@ class AppButton extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: (isLoading || onTap == null)
-              ? (buttonColor ?? AppColors.blueColor).setOpacity(0.6)
-              : buttonColor ?? AppColors.blueColor,
+              ? (buttonColor ?? Theme.of(context).colorScheme.primary)
+                    .withOpacity(0.6)
+              : buttonColor ?? Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(8.r),
           boxShadow: [
             BoxShadow(
-              color: AppColors.blueColor.setOpacity(0.1),
+              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
               blurRadius: 3,
               spreadRadius: 0,
               offset: const Offset(0, 6),
@@ -74,7 +73,7 @@ class AppButton extends StatelessWidget {
                 text: title ?? "",
                 style: textStyle18Bold.copyWith(
                   fontSize: fontSize ?? 18.sp,
-                  color: titleColor ?? AppColors.whiteColor,
+                  color: titleColor ?? Colors.white,
                 ),
               ),
       ),
@@ -114,7 +113,9 @@ class AppActionButton extends StatelessWidget {
           8.w.horizontalSpace,
           AppText(
             text: label,
-            style: textStyle14Medium.copyWith(color: Colors.white),
+            style: textStyle14Medium.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),

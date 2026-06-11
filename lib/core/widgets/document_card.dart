@@ -106,7 +106,7 @@ class DocumentCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 8.h),
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
         boxShadow: [
@@ -183,16 +183,16 @@ class DocumentCard extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.remove_red_eye_outlined,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             size: 18,
                           ),
                           12.w.horizontalSpace,
                           AppText(
                             text: doc.button1,
                             style: textStyle14Medium.copyWith(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               fontSize: 14.sp,
                             ),
                           ),
@@ -218,7 +218,7 @@ class DocumentCard extends StatelessWidget {
                           offset: const Offset(0, 2),
                         ),
                       ],
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: AppColors.blueColor,
                         width: 0.8,

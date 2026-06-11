@@ -31,7 +31,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
     final provider = context.watch<MyTripProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [

@@ -54,7 +54,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,7 +214,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
 
   BoxDecoration _boxDecoration() {
     return BoxDecoration(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       boxShadow: [
         BoxShadow(
           color: AppColors.blueColor.setOpacity(0.1),

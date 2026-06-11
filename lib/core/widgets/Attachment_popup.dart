@@ -19,7 +19,7 @@ class AttachmentPopup extends StatelessWidget {
             width: 180.w,
             padding: EdgeInsets.symmetric(vertical: 12.h),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(

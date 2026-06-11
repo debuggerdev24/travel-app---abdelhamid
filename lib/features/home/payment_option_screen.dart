@@ -6,7 +6,6 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
@@ -307,7 +306,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer<TripProvider>(
         builder: (context, provider, child) {
           return SingleChildScrollView(
@@ -326,7 +325,11 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
                           onTap: () => context.pop(),
-                          child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                          child: SvgIcon(
+                            AppAssets.backIcon,
+                            size: 26.w,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
 
@@ -334,7 +337,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
                         text: "Payment Options",
                         style: textStyle32Bold.copyWith(
                           fontSize: 26.sp,
-                          color: AppColors.secondary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],

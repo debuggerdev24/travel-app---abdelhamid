@@ -23,7 +23,7 @@ class TravelInsuranceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 26.w),
@@ -71,7 +71,7 @@ class TravelInsuranceScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(14.w),
                 decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: [
                     BoxShadow(
@@ -106,7 +106,7 @@ class TravelInsuranceScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(14.w),
                 decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: [
                     BoxShadow(

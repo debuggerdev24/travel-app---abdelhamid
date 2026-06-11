@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 
 class PackageDetailsCard extends StatelessWidget {
@@ -25,16 +23,16 @@ class PackageDetailsCard extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 14.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? AppColors.secondary
-                : AppColors.primaryColor.setOpacity(0.2),
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.outline.withOpacity(0.2),
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.blueColor.setOpacity(0.1),
+              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
               blurRadius: 3,
               offset: const Offset(0, 2),
             ),
@@ -51,7 +49,7 @@ class PackageDetailsCard extends StatelessWidget {
                   AppText(
                     text: package.title,
                     style: textStyle16SemiBold.copyWith(
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -59,21 +57,28 @@ class PackageDetailsCard extends StatelessWidget {
 
               if (package.roomOptions.isNotEmpty)
                 _buildSection(
+                  context: context,
                   title: 'Room Options :',
                   items: package.roomOptions,
                 ),
 
               if (package.childPrices.isNotEmpty)
                 _buildSection(
+                  context: context,
                   title: 'Child Prices :',
                   items: package.childPrices,
                 ),
 
               if (package.inclusions.isNotEmpty)
-                _buildSection(title: 'Inclusions :', items: package.inclusions),
+                _buildSection(
+                  context: context,
+                  title: 'Inclusions :',
+                  items: package.inclusions,
+                ),
 
               if (package.exclusions.isNotEmpty)
                 _buildSection(
+                  context: context,
                   title: 'Exclusions:',
                   items: package.exclusions,
                   isLast: true,
@@ -86,6 +91,7 @@ class PackageDetailsCard extends StatelessWidget {
   }
 
   Widget _buildSection({
+    required BuildContext context,
     required String title,
     required List<String> items,
     bool isLast = false,
@@ -99,7 +105,10 @@ class PackageDetailsCard extends StatelessWidget {
             8.h.verticalSpace,
             AppText(
               text: title,
-              style: textStyle14Medium.copyWith(fontWeight: FontWeight.w500),
+              style: textStyle14Medium.copyWith(
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ],
         ),
@@ -115,7 +124,7 @@ class PackageDetailsCard extends StatelessWidget {
                   width: 4.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.setOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -125,7 +134,7 @@ class PackageDetailsCard extends StatelessWidget {
                     text: item,
                     style: textStyle14Regular.copyWith(
                       fontSize: 14,
-                      color: AppColors.primaryColor.setOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),

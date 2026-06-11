@@ -56,7 +56,7 @@ class _FaqScreenState extends State<FaqScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 27.w),
@@ -79,7 +79,7 @@ class _FaqScreenState extends State<FaqScreen> {
                       text: "FAQ",
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -89,7 +89,7 @@ class _FaqScreenState extends State<FaqScreen> {
               Container(
                 padding: EdgeInsets.all(14.w),
                 decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
+                  color: Theme.of(context).colorScheme.surface,
                   border: Border.all(
                     color: AppColors.primaryColor.setOpacity(0.2),
                   ),
@@ -121,13 +121,15 @@ class _FaqScreenState extends State<FaqScreen> {
                             text: "Travel-related FAQs",
                             style: textStyle16SemiBold.copyWith(
                               fontSize: 18.sp,
-                              color: AppColors.primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           AppText(
                             text: "Answers from your travel team",
                             style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor.setOpacity(0.6),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -156,7 +158,7 @@ class _FaqScreenState extends State<FaqScreen> {
                       AppText(
                         text: _error!,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       16.h.verticalSpace,
@@ -165,7 +167,7 @@ class _FaqScreenState extends State<FaqScreen> {
                         child: AppText(
                           text: "Retry",
                           style: textStyle14Medium.copyWith(
-                            color: AppColors.blueColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
@@ -178,7 +180,7 @@ class _FaqScreenState extends State<FaqScreen> {
                   child: AppText(
                     text: "No FAQs available yet.",
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor.setOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 )
@@ -214,9 +216,9 @@ class _FaqScreenState extends State<FaqScreen> {
                                     text: faq.question,
                                     style: textStyle16SemiBold.copyWith(
                                       fontSize: 16.sp,
-                                      color: AppColors.primaryColor.setOpacity(
-                                        0.8,
-                                      ),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
                                   ),
                                 ),
@@ -224,7 +226,9 @@ class _FaqScreenState extends State<FaqScreen> {
                                   width: 32.w,
                                   height: 32.w,
                                   decoration: BoxDecoration(
-                                    color: AppColors.whiteColor,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: AppColors.blueColor,
@@ -248,7 +252,9 @@ class _FaqScreenState extends State<FaqScreen> {
                             text: faq.answer,
                             style: textStyle14Regular.copyWith(
                               fontSize: 14.sp,
-                              color: AppColors.textcolor.setOpacity(0.6),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         const Divider(color: Colors.black12, thickness: 1),

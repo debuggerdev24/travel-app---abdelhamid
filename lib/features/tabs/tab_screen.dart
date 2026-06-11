@@ -61,7 +61,7 @@ class _TabScreenState extends State<TabScreen> {
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black87,
-            textColor: Colors.white,
+            textColor: Theme.of(context).colorScheme.onSurface,
             fontSize: 16,
           );
         } else {
@@ -158,7 +158,7 @@ class KBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(color: Colors.grey.setOpacity(0.3), width: 1),
         ),

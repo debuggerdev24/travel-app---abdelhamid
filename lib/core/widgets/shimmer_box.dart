@@ -34,8 +34,8 @@ class _ShimmerBoxState extends State<ShimmerBox>
 
   @override
   Widget build(BuildContext context) {
-    final base = Colors.grey.shade300;
-    final highlight = Colors.grey.shade100;
+    final base = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final highlight = Theme.of(context).colorScheme.surfaceContainerLow;
 
     return AnimatedBuilder(
       animation: _c,
@@ -65,4 +65,3 @@ class _ShimmerBoxState extends State<ShimmerBox>
     );
   }
 }
-

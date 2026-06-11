@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
 import 'package:travel_app_abdelhamid/model/home/family_details_model.dart';
@@ -37,10 +36,10 @@ class PersonDetailsProvider extends ChangeNotifier {
   FamilyMemberModel? _familyMember;
   FamilyMemberModel? get familyMember => _familyMember;
 
-  bool _isLoading = false;
+  final bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  bool _isFamilyLoading = false;
+  final bool _isFamilyLoading = false;
   bool get isFamilyLoading => _isFamilyLoading;
 
   // Local storage for unsaved data

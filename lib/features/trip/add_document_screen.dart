@@ -57,7 +57,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer2<MyTripProvider, TripProvider>(
         builder: (context, myTrip, trip, child) {
           final resolvedTripId = widget.tripId ?? trip.selectedTrip?.id ?? '';

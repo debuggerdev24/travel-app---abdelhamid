@@ -173,7 +173,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer<ProfileProvider>(
         builder: (context, provider, child) {
           _prefill(provider);
@@ -219,9 +219,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: SizedBox(
                                 width: 32.w,
                                 height: 32.w,
-                                child: const CircularProgressIndicator(
+                                child: CircularProgressIndicator(
                                   strokeWidth: 3,
-                                  color: AppColors.whiteColor,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),

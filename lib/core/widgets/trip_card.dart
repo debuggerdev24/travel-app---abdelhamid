@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 
@@ -36,10 +34,10 @@ class TripCard extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.only(bottom: 24.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: AppColors.blueColor.setOpacity(0.1),
+              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
               blurRadius: 3,
               offset: Offset(0, 2),
             ),
@@ -50,7 +48,9 @@ class TripCard extends StatelessWidget {
             bottomLeft: Radius.circular(20.r),
             bottomRight: Radius.circular(20.r),
           ),
-          border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+          ),
         ),
         child: Column(
           children: [
@@ -67,8 +67,11 @@ class TripCard extends StatelessWidget {
                   ? Container(
                       height: 200.h,
                       width: double.infinity,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.broken_image),
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      child: Icon(
+                        Icons.broken_image,
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
                     )
                   : NetworkImageWithShimmer(
                       imageUrl: resolvedImageUrl,
@@ -92,7 +95,9 @@ class TripCard extends StatelessWidget {
                       Expanded(
                         child: AppText(
                           text: title,
-                          style: textStyle16SemiBold,
+                          style: textStyle16SemiBold.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -101,7 +106,7 @@ class TripCard extends StatelessWidget {
                       Icon(
                         Icons.assignment_outlined,
                         size: 20.w,
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ],
                   ),
@@ -113,13 +118,13 @@ class TripCard extends StatelessWidget {
                       SvgIcon(
                         AppAssets.location,
                         size: 16.w,
-                        color: AppColors.primaryColor.setOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       8.w.horizontalSpace,
                       AppText(
                         text: location,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -133,13 +138,13 @@ class TripCard extends StatelessWidget {
                       SvgIcon(
                         AppAssets.calendar,
                         size: 16.w,
-                        color: AppColors.primaryColor.setOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       8.w.horizontalSpace,
                       AppText(
                         text: date,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -153,13 +158,13 @@ class TripCard extends StatelessWidget {
                         AppText(
                           text: "Status : ",
                           style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         AppText(
                           text: status,
                           style: textStyle14Medium.copyWith(
-                            color: AppColors.blueColor,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -177,11 +182,15 @@ class TripCard extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: _getPaymentStatusColor(
+                          context,
                           paymentStatus!,
-                        ).setOpacity(0.15),
+                        ).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: _getPaymentStatusColor(paymentStatus!),
+                          color: _getPaymentStatusColor(
+                            context,
+                            paymentStatus!,
+                          ),
                           width: 1,
                         ),
                       ),
@@ -191,13 +200,19 @@ class TripCard extends StatelessWidget {
                           Icon(
                             _getPaymentStatusIcon(paymentStatus!),
                             size: 14.w,
-                            color: _getPaymentStatusColor(paymentStatus!),
+                            color: _getPaymentStatusColor(
+                              context,
+                              paymentStatus!,
+                            ),
                           ),
                           6.w.horizontalSpace,
                           AppText(
                             text: "Payment: $paymentStatus",
                             style: textStyle12semiBold.copyWith(
-                              color: _getPaymentStatusColor(paymentStatus!),
+                              color: _getPaymentStatusColor(
+                                context,
+                                paymentStatus!,
+                              ),
                             ),
                           ),
                         ],
@@ -213,7 +228,7 @@ class TripCard extends StatelessWidget {
     );
   }
 
-  Color _getPaymentStatusColor(String status) {
+  Color _getPaymentStatusColor(BuildContext context, String status) {
     final lowerStatus = status.toLowerCase();
     if (lowerStatus.contains('pending') || lowerStatus.contains('unpaid')) {
       return Colors.orange;
@@ -224,7 +239,7 @@ class TripCard extends StatelessWidget {
         lowerStatus.contains('cancelled')) {
       return Colors.red;
     }
-    return AppColors.blueColor;
+    return Theme.of(context).colorScheme.primary;
   }
 
   IconData _getPaymentStatusIcon(String status) {

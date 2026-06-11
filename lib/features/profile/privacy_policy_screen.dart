@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/cms/cms_models.dart';
@@ -73,7 +71,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               Icon(
                 Icons.privacy_tip_outlined,
                 size: 56.sp,
-                color: AppColors.primaryColor.setOpacity(0.35),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               20.h.verticalSpace,
               AppText(
@@ -81,7 +79,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 text: 'Privacy policy is not available yet',
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 17.sp,
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               14.h.verticalSpace,
@@ -92,7 +90,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,
-                  color: AppColors.primaryColor.setOpacity(0.72),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -109,7 +107,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
         text: title,
         style: textStyle16SemiBold.copyWith(
           fontSize: 16.sp,
-          color: AppColors.primaryColor.setOpacity(0.8),
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );
@@ -124,14 +122,14 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           Text(
             "•  ",
             style: textStyle14Regular.copyWith(
-              color: AppColors.textcolor.setOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           Expanded(
             child: Text(
               text,
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.6),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -143,7 +141,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 27.w),
@@ -165,7 +163,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     text: "Privacy Policy",
                     style: textStyle16SemiBold.copyWith(
                       fontSize: 26.sp,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -173,9 +171,9 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               if (_loading)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 48.h),
-                  child: const Center(
+                  child: Center(
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 )
@@ -188,7 +186,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                       AppText(
                         text: _error!,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       TextButton(
@@ -196,7 +194,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                         child: AppText(
                           text: "Retry",
                           style: textStyle14Medium.copyWith(
-                            color: AppColors.blueColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),

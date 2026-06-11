@@ -6,11 +6,9 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
@@ -421,17 +419,19 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
               decoration: BoxDecoration(
-                color: AppColors.whiteColor,
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primaryColor.setOpacity(0.12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.shadow.withOpacity(0.1),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
                 ],
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
-                  color: AppColors.primaryColor.setOpacity(0.18),
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                 ),
               ),
               child: Column(
@@ -440,7 +440,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   AppText(
                     text: 'No active booking yet',
                     style: textStyle16SemiBold.copyWith(
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 18.sp,
                     ),
                     textAlign: TextAlign.center,
@@ -450,7 +450,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                     text:
                         'Choose a package to start booking. You can pay after selecting your package.',
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor.setOpacity(0.65),
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 14.sp,
                     ),
                     textAlign: TextAlign.center,
@@ -490,23 +490,27 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
                 decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
+                  color: Theme.of(context).colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primaryColor.setOpacity(0.2),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.shadow.withOpacity(0.1),
                       blurRadius: 1,
                       offset: const Offset(0, 1),
                     ),
                   ],
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
-                    color: AppColors.primaryColor.setOpacity(0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withOpacity(0.2),
                   ),
                 ),
                 child: loading
                     ? Center(
                         child: CircularProgressIndicator(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       )
                     : Column(
@@ -515,7 +519,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                           AppText(
                             text: payment?.packageName ?? '-',
                             style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor.setOpacity(0.8),
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 14.sp,
                             ),
                           ),
@@ -619,7 +623,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                     text:
                         'No payment due. Your balance is fully paid — thank you!',
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor.setOpacity(0.7),
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 15.sp,
                     ),
                     textAlign: TextAlign.center,
@@ -647,7 +651,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 child: AppText(
                   text: 'Past Payment',
                   style: textStyle16SemiBold.copyWith(
-                    color: AppColors.secondary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 18.sp,
                   ),
                 ),
@@ -662,9 +666,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 child: AppText(
                   text: 'View All',
                   style: textStyle14Medium.copyWith(
-                    color: AppColors.blueColor,
+                    color: Theme.of(context).colorScheme.primary,
                     decoration: TextDecoration.underline,
-                    decorationColor: AppColors.blueColor,
+                    decorationColor: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -679,7 +683,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   height: 24.w,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: AppColors.primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -690,7 +694,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
               child: AppText(
                 text: 'No payment activity yet.',
                 style: textStyle14Regular.copyWith(
-                  color: AppColors.primaryColor.setOpacity(0.5),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             )
@@ -719,9 +723,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
   Widget _priceRow(String title, String value) {
     Color textColor;
     if (title == 'Paid' || title == 'Pending') {
-      textColor = AppColors.primaryColor.setOpacity(0.6);
+      textColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.7);
     } else {
-      textColor = AppColors.primaryColor;
+      textColor = Theme.of(context).colorScheme.onSurface;
     }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),

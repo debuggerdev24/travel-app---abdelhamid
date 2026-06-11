@@ -77,7 +77,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     final ratingProvider = Provider.of<TripProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 15.h),
@@ -152,7 +152,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
                       Container(
                         decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(6),
                           boxShadow: [
                             BoxShadow(

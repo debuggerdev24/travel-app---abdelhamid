@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -90,7 +89,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer2<hp.TripProvider, TripBookingProvider>(
         builder: (context, tripProvider, bookingProvider, child) {
           final selectedPackage = bookingProvider.selectedPackage;
@@ -115,14 +114,18 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
                           onTap: () => context.pop(),
-                          child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                          child: SvgIcon(
+                            AppAssets.backIcon,
+                            size: 28.5.w,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
                       AppText(
                         text: "Room Details",
                         style: textStyle32Bold.copyWith(
                           fontSize: 26.sp,
-                          color: AppColors.secondary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -192,8 +195,9 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                     ]
                                   : [],
                               onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved)
+                                if (bookingProvider.isRoomPreferenceSaved) {
                                   return;
+                                }
                                 if (values.isNotEmpty &&
                                     selectedPackage != null) {
                                   final selectedOpt = values.first;
@@ -220,7 +224,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 ? "€${bookingProvider.totalAmount}"
                                 : "Auto Filled",
                             hintStyle: textStyle14Regular.copyWith(
-                              color: AppColors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                             keyboardType: TextInputType.number,
                             readOnly: true,
@@ -238,8 +242,9 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   ? [bookingProvider.selectedBedType!]
                                   : [],
                               onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved)
+                                if (bookingProvider.isRoomPreferenceSaved) {
                                   return;
+                                }
                                 if (values.isNotEmpty) {
                                   bookingProvider.updateSelectedBedType(
                                     values.first,
@@ -284,8 +289,9 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                     ]
                                   : [],
                               onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved)
+                                if (bookingProvider.isRoomPreferenceSaved) {
                                   return;
+                                }
                                 if (values.isNotEmpty &&
                                     selectedPackage != null) {
                                   final selectedOpt = values.first;
@@ -319,8 +325,9 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                     .padLeft(2, '0'),
                               ],
                               onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved)
+                                if (bookingProvider.isRoomPreferenceSaved) {
                                   return;
+                                }
                                 if (values.isNotEmpty) {
                                   bookingProvider.updateSelectedChildCount(
                                     int.tryParse(values.first) ?? 0,
@@ -341,7 +348,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 ? "€${(selectedPackage.childDetails.where((c) => c.id == bookingProvider.selectedChildDetailsId).isNotEmpty ? selectedPackage.childDetails.firstWhere((c) => c.id == bookingProvider.selectedChildDetailsId).childPrice : 0) * bookingProvider.selectedChildCount}"
                                 : "Auto Filled",
                             hintStyle: textStyle14Regular.copyWith(
-                              color: AppColors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                             keyboardType: TextInputType.number,
                             readOnly: true,
@@ -356,8 +363,9 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                               items: tripProvider.babyOptions,
                               selectedItems: tripProvider.selectedBabyTypes,
                               onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved)
+                                if (bookingProvider.isRoomPreferenceSaved) {
                                   return;
+                                }
                                 tripProvider.updateBabyTypes(values);
                               },
                               titleText: "Baby",
@@ -378,8 +386,9 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 ),
                               ],
                               onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved)
+                                if (bookingProvider.isRoomPreferenceSaved) {
                                   return;
+                                }
                                 if (values.isNotEmpty) {
                                   bookingProvider.updateBabyCount(
                                     int.tryParse(values.first) ?? 0,
@@ -397,7 +406,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 ? "€${500 * bookingProvider.babyCount}"
                                 : "Auto filled",
                             hintStyle: textStyle14Regular.copyWith(
-                              color: AppColors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                             keyboardType: TextInputType.number,
                             readOnly: true,
@@ -407,22 +416,32 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             Container(
                               padding: EdgeInsets.all(16.w),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryColor.withOpacity(0.1),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12.r),
                                 border: Border.all(
-                                  color: AppColors.primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                   width: 1,
                                 ),
                               ),
                               child: Row(
                                 children: [
-                                  SvgIcon(AppAssets.check, size: 24.w),
+                                  SvgIcon(
+                                    AppAssets.check,
+                                    size: 24.w,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
                                   12.w.horizontalSpace,
                                   Expanded(
                                     child: AppText(
                                       text: "Room preferences already saved",
                                       style: textStyle14Regular.copyWith(
-                                        color: AppColors.primaryColor,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                       ),
                                     ),
                                   ),

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/model/cms/cms_models.dart';
@@ -93,7 +91,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
@@ -115,7 +113,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                     text: "Social Media \nLinks",
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -126,16 +124,16 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                     "Stay connected with us! Follow our latest updates, photos, and travel stories on social media.",
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
-                  color: AppColors.textcolor.setOpacity(0.6),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
               22.h.verticalSpace,
               if (_loading)
-                const Expanded(
+                Expanded(
                   child: Center(
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 )
@@ -147,7 +145,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                       AppText(
                         text: _error!,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       TextButton(
@@ -155,7 +153,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                         child: AppText(
                           text: "Retry",
                           style: textStyle14Medium.copyWith(
-                            color: AppColors.blueColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
@@ -168,7 +166,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                     child: AppText(
                       text: "No social links available yet.",
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -188,14 +186,16 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                             horizontal: 20.w,
                           ),
                           decoration: BoxDecoration(
-                            border: BoxBorder.all(
-                              color: AppColors.primaryColor.setOpacity(0.2),
+                            border: Border.all(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.outlineVariant,
                             ),
-                            color: AppColors.whiteColor,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12.r),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.blueColor.setOpacity(0.1),
+                                color: Colors.black.withOpacity(0.05),
                                 blurRadius: 1,
                                 offset: const Offset(0, 2),
                               ),
@@ -215,7 +215,9 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                           : 'Link',
                                       style: textStyle16SemiBold.copyWith(
                                         fontSize: 18.sp,
-                                        color: AppColors.primaryColor,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                     if (item.description.isNotEmpty)
@@ -223,8 +225,9 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                         text: item.description,
                                         style: textStyle14Regular.copyWith(
                                           fontSize: 14.sp,
-                                          color: AppColors.primaryColor
-                                              .setOpacity(0.8),
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                   ],
@@ -235,7 +238,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                 child: Icon(
                                   Icons.open_in_new,
                                   size: 24.w,
-                                  color: AppColors.blueColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ],

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
+import 'package:travel_app_abdelhamid/provider/theme_provider.dart';
 
 class AppSettingsScreen extends StatefulWidget {
   const AppSettingsScreen({super.key});
@@ -22,9 +24,36 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   bool autoUpdate = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadThemeMode();
+  }
+
+  void _loadThemeMode() {
+    final themeProvider = context.read<ThemeProvider>();
+    switch (themeProvider.themeModeOption) {
+      case ThemeModeOption.light:
+        lightMode = true;
+        darkMode = false;
+        systemDefault = false;
+        break;
+      case ThemeModeOption.dark:
+        lightMode = false;
+        darkMode = true;
+        systemDefault = false;
+        break;
+      case ThemeModeOption.system:
+        lightMode = false;
+        darkMode = false;
+        systemDefault = true;
+        break;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 27.w), // NOT CHANGED
@@ -48,7 +77,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     text: "App Settings",
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -61,12 +90,13 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 value: lightMode,
                 onChanged: (v) {
                   setState(() {
-                    lightMode = v;
-                    if (v) {
-                      darkMode = false;
-                      systemDefault = false;
-                    }
+                    lightMode = true;
+                    darkMode = false;
+                    systemDefault = false;
                   });
+                  context.read<ThemeProvider>().setThemeMode(
+                    ThemeModeOption.light,
+                  );
                 },
               ),
 
@@ -77,12 +107,13 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 value: darkMode,
                 onChanged: (v) {
                   setState(() {
-                    darkMode = v;
-                    if (v) {
-                      lightMode = false;
-                      systemDefault = false;
-                    }
+                    darkMode = true;
+                    lightMode = false;
+                    systemDefault = false;
                   });
+                  context.read<ThemeProvider>().setThemeMode(
+                    ThemeModeOption.dark,
+                  );
                 },
               ),
 
@@ -93,12 +124,13 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 value: systemDefault,
                 onChanged: (v) {
                   setState(() {
-                    systemDefault = v;
-                    if (v) {
-                      lightMode = false;
-                      darkMode = false;
-                    }
+                    systemDefault = true;
+                    lightMode = false;
+                    darkMode = false;
                   });
+                  context.read<ThemeProvider>().setThemeMode(
+                    ThemeModeOption.system,
+                  );
                 },
               ),
 
@@ -129,7 +161,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -142,12 +174,13 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          AppText(text: title, style: textStyle16SemiBold.copyWith()),
-          CustomSwitchButton(
-            initialValue: value,
-
-            onChanged: (v) => onChanged(v),
+          AppText(
+            text: title,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
+          CustomSwitchButton(value: value, onChanged: (v) => onChanged(v)),
         ],
       ),
     );

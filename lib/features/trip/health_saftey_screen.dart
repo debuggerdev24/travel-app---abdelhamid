@@ -182,7 +182,7 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18.r),
-        color: AppColors.whiteColor,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.setOpacity(0.3),

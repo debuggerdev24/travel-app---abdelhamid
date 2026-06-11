@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class AppChip extends StatelessWidget {
   final bool isSelected;
@@ -28,13 +26,13 @@ class AppChip extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 8.w),
         padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
         decoration: BoxDecoration(
-          color: AppColors.whiteColor,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(80.w),
           border: Border.all(
             width: 0.5,
             color: isSelected
-                ? AppColors.secondary.setOpacity(0.3)
-                : AppColors.primaryColor.setOpacity(0.2),
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                : Theme.of(context).colorScheme.outline.withOpacity(0.5),
           ),
         ),
         child: Row(
@@ -42,8 +40,8 @@ class AppChip extends StatelessWidget {
             SvgIcon(
               icon,
               color: isSelected
-                  ? AppColors.secondary
-                  : AppColors.primaryColor.setOpacity(0.8),
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurface,
               size: 24.w,
             ),
             10.w.horizontalSpace,
@@ -51,8 +49,8 @@ class AppChip extends StatelessWidget {
               text: title,
               style: textPoppinsMedium.copyWith(
                 color: isSelected
-                    ? AppColors.secondary
-                    : AppColors.primaryColor.setOpacity(0.8),
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
                 fontSize: 14.sp,
               ),

@@ -42,7 +42,7 @@ class PastPaymentItem extends StatelessWidget {
             alignment: Alignment.center,
             child: Icon(
               isConfirmed ? Icons.check : Icons.schedule,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
               size: 20.sp,
             ),
           ),

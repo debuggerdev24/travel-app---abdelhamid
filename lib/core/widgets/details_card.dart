@@ -23,7 +23,7 @@ class TripDetailsCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
         boxShadow: [

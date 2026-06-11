@@ -28,7 +28,9 @@ class CustomTabButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(160.r),
-            color: active ? Colors.white : Colors.transparent,
+            color: active
+                ? Theme.of(context).colorScheme.surface
+                : Colors.transparent,
           ),
           child: Text(
             text,
@@ -36,7 +38,9 @@ class CustomTabButton extends StatelessWidget {
               fontSize: 14.sp,
 
               fontWeight: FontWeight.w500,
-              color: active ? Colors.black : Colors.black87,
+              color: active
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
         ),

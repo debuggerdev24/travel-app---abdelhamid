@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/core.dart';
@@ -35,7 +36,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -79,6 +80,20 @@ class _SignInScreenState extends State<SignInScreen> {
                           AppTextField(
                             controller: personalCodeController,
                             hintText: "Enter Your Personal Code",
+                            onChanged: (value) {
+                              if (value != null) {
+                                final trimmedValue = value.trim();
+                                if (trimmedValue != value) {
+                                  personalCodeController.value =
+                                      TextEditingValue(
+                                        text: trimmedValue,
+                                        selection: TextSelection.collapsed(
+                                          offset: trimmedValue.length,
+                                        ),
+                                      );
+                                }
+                              }
+                            },
                             validator: (value) =>
                                 Validator.validateEmpty(value, "Personal Code"),
                           ),

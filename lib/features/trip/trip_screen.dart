@@ -81,7 +81,7 @@ class _TripScreenState extends State<TripScreen> {
     return Consumer<MyTripProvider>(
       builder: (context, provider, child) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
             child: _showTripList
                 ? _buildTripList(tripProvider, enrolledTrips)
@@ -99,11 +99,55 @@ class _TripScreenState extends State<TripScreen> {
     final bookings = tripProvider.enrolledBookingsList;
 
     if (enrolledTrips.isEmpty) {
-      return Center(
-        child: AppText(
-          text: "No enrolled trips found",
-          style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
-        ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 60.h,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: AppText(
+                    text: "My Trips",
+                    style: textStyle32Bold.copyWith(
+                      fontSize: 26.sp,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgIcon(
+                    AppAssets.flight,
+                    size: 80.w,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  24.h.verticalSpace,
+                  AppText(
+                    text: "No enrolled trips found",
+                    style: textStyle16SemiBold.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  8.h.verticalSpace,
+                  AppText(
+                    text: "Start exploring and book your first trip!",
+                    style: textStyle14Regular.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       );
     }
 
@@ -120,7 +164,7 @@ class _TripScreenState extends State<TripScreen> {
                   text: "My Trips",
                   style: textStyle32Bold.copyWith(
                     fontSize: 26.sp,
-                    color: AppColors.secondary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -158,7 +202,7 @@ class _TripScreenState extends State<TripScreen> {
                     border: Border.all(
                       color: AppColors.primaryColor.withValues(alpha: 0.2),
                     ),
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.blueColor.withValues(alpha: 0.1),
@@ -195,7 +239,9 @@ class _TripScreenState extends State<TripScreen> {
                           children: [
                             AppText(
                               text: trip.title,
-                              style: textStyle16SemiBold,
+                              style: textStyle16SemiBold.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
                             8.h.verticalSpace,
                             Row(
@@ -206,7 +252,9 @@ class _TripScreenState extends State<TripScreen> {
                                   child: AppText(
                                     text: trip.location,
                                     style: textStyle14Regular.copyWith(
-                                      color: AppColors.primaryColor,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
                                   ),
                                 ),
@@ -216,7 +264,9 @@ class _TripScreenState extends State<TripScreen> {
                                 AppText(
                                   text: trip.date,
                                   style: textStyle14Regular.copyWith(
-                                    color: AppColors.primaryColor,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                               ],
@@ -317,7 +367,7 @@ class _TripScreenState extends State<TripScreen> {
                       overflow: TextOverflow.ellipsis,
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -345,7 +395,9 @@ class _TripScreenState extends State<TripScreen> {
               padding: EdgeInsets.symmetric(horizontal: 27.w),
               child: AppText(
                 text: trip?.title ?? "-",
-                style: textStyle16SemiBold,
+                style: textStyle16SemiBold.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ),
             14.h.verticalSpace,
@@ -359,7 +411,7 @@ class _TripScreenState extends State<TripScreen> {
                     child: AppText(
                       text: trip?.location ?? "-",
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -369,7 +421,7 @@ class _TripScreenState extends State<TripScreen> {
                   AppText(
                     text: trip?.date ?? "-",
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -519,7 +571,7 @@ class _TripScreenState extends State<TripScreen> {
               child: AppText(
                 text: "No flight details available",
                 style: textStyle14Regular.copyWith(
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -605,7 +657,7 @@ class _TripScreenState extends State<TripScreen> {
                     AppText(
                       text: "Failed to load hotel details",
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     12.h.verticalSpace,
@@ -626,7 +678,7 @@ class _TripScreenState extends State<TripScreen> {
                 child: AppText(
                   text: "No hotel details available",
                   style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               )
@@ -715,7 +767,7 @@ class _TripScreenState extends State<TripScreen> {
                 AppText(
                   text: "Failed to load itinerary",
                   style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 12.h.verticalSpace,
@@ -733,7 +785,9 @@ class _TripScreenState extends State<TripScreen> {
           : activities.isEmpty
           ? AppText(
               text: "No itinerary available",
-              style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -744,7 +798,7 @@ class _TripScreenState extends State<TripScreen> {
                     child: AppText(
                       text: today!.itinerary.dayTitle,
                       style: textStyle16SemiBold.copyWith(
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -754,7 +808,7 @@ class _TripScreenState extends State<TripScreen> {
                     child: AppText(
                       text: today!.itinerary.notes!.trim(),
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -867,13 +921,13 @@ class _TripScreenState extends State<TripScreen> {
                 text: essentialsItems[index],
                 style: textStyle14Regular.copyWith(
                   fontSize: 18.sp,
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               SvgIcon(
                 AppAssets.arrow,
                 size: 16.sp,
-                color: AppColors.primaryColor,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ],
           ),
@@ -1227,7 +1281,7 @@ class _TripScreenState extends State<TripScreen> {
                 AppText(
                   text: err,
                   style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 16.h.verticalSpace,
@@ -1341,13 +1395,13 @@ class _TripScreenState extends State<TripScreen> {
                             SvgIcon(
                               AppAssets.addMore,
                               size: 18.w,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
                             SizedBox(width: 8.w),
                             AppText(
                               text: "Add More",
                               style: textPoppinsMedium.copyWith(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 fontSize: 14.sp,
                               ),
                             ),
@@ -1363,7 +1417,12 @@ class _TripScreenState extends State<TripScreen> {
                       (d) => d["type"] == "Passport" || d["type"] == "Visa",
                     ) ||
                     hasPassVisaApi) ...[
-                  AppText(text: "Passport & Visa", style: textStyle16SemiBold),
+                  AppText(
+                    text: "Passport & Visa",
+                    style: textStyle16SemiBold.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   12.h.verticalSpace,
                   ...docs
                       .where(
@@ -1411,7 +1470,9 @@ class _TripScreenState extends State<TripScreen> {
                     hasFlightApi) ...[
                   AppText(
                     text: "Round Trip Tickets",
-                    style: textStyle16SemiBold,
+                    style: textStyle16SemiBold.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   SizedBox(height: 12.h),
                   ...docs
@@ -1460,7 +1521,9 @@ class _TripScreenState extends State<TripScreen> {
                     hasMedApi) ...[
                   AppText(
                     text: "Medical Certificate",
-                    style: textStyle16SemiBold,
+                    style: textStyle16SemiBold.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   SizedBox(height: 12.h),
                   ...docs
@@ -1501,7 +1564,12 @@ class _TripScreenState extends State<TripScreen> {
                 ],
 
                 if (hasHotelRows) ...[
-                  AppText(text: "Hotel Vouchers", style: textStyle16SemiBold),
+                  AppText(
+                    text: "Hotel Vouchers",
+                    style: textStyle16SemiBold.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   SizedBox(height: 12.h),
                   if (bundleHotel != null)
                     _buildBundleHotelDocCard(context, bundleHotel),
@@ -1512,7 +1580,12 @@ class _TripScreenState extends State<TripScreen> {
                 ],
 
                 if (hasTravelAdmin) ...[
-                  AppText(text: "Travel Document", style: textStyle16SemiBold),
+                  AppText(
+                    text: "Travel Document",
+                    style: textStyle16SemiBold.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                   SizedBox(height: 12.h),
                   if (insurance != null)
                     _buildBundleInsuranceCard(context, insurance),
@@ -1532,9 +1605,11 @@ class _TripScreenState extends State<TripScreen> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 32.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
 
         boxShadow: [
           BoxShadow(
@@ -1553,6 +1628,7 @@ class _TripScreenState extends State<TripScreen> {
             style: textStyle16SemiBold.copyWith(
               fontSize: 21.sp,
               fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           10.h.verticalSpace,
@@ -1560,7 +1636,7 @@ class _TripScreenState extends State<TripScreen> {
             text: "Add your Passport, Visa, Tickets here.",
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.setOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           40.h.verticalSpace,
@@ -1593,7 +1669,7 @@ class _TripScreenState extends State<TripScreen> {
         lowerStatus.contains('cancelled')) {
       return Colors.red;
     }
-    return AppColors.blueColor;
+    return Theme.of(context).colorScheme.primary;
   }
 
   IconData _getPaymentStatusIcon(String status) {

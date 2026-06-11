@@ -27,7 +27,7 @@ class HotelVoucherScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 27.w),
@@ -51,7 +51,7 @@ class HotelVoucherScreen extends StatelessWidget {
                       text: "Hotel Voucher",
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -128,17 +128,21 @@ class HotelVoucherScreen extends StatelessWidget {
               20.h.verticalSpace,
 
               // Static Inputs
-              _inputBox("Guest Name", "Ali Mohammed"),
-              _inputBox("Booking Ref", "45239-UMR-2025"),
-              _inputBox("Room Type", "Double Deluxe (302)"),
-              _inputBox("Occupancy", "2 Adults"),
-              _stayInfo(),
-              _inputBox("Hotel Contact", "+966 12 377 8900"),
-              _inputBox("Hotel Email", "reservations@swissotel.com"),
+              _inputBox(context, "Guest Name", "Ali Mohammed"),
+              _inputBox(context, "Booking Ref", "45239-UMR-2025"),
+              _inputBox(context, "Room Type", "Double Deluxe (302)"),
+              _inputBox(context, "Occupancy", "2 Adults"),
+              _stayInfo(context),
+              _inputBox(context, "Hotel Contact", "+966 12 377 8900"),
+              _inputBox(context, "Hotel Email", "reservations@swissotel.com"),
 
               Text(
                 "Facilities",
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               14.h.verticalSpace,
 
@@ -164,13 +168,13 @@ class HotelVoucherScreen extends StatelessWidget {
   }
 
   // Reusable Input Box Style
-  Widget _inputBox(String title, String value) {
+  Widget _inputBox(BuildContext context, String title, String value) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(bottom: 14.h),
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.whiteColor,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: AppColors.blueColor.setOpacity(0.1),
@@ -201,13 +205,13 @@ class HotelVoucherScreen extends StatelessWidget {
     );
   }
 
-  Widget _stayInfo() {
+  Widget _stayInfo(BuildContext context) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(bottom: 14.h),
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.whiteColor,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: AppColors.blueColor.setOpacity(0.1),

@@ -3,35 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
-class CustomSwitchButton extends StatefulWidget {
-  final bool initialValue;
+class CustomSwitchButton extends StatelessWidget {
+  final bool value;
   final ValueChanged<bool>? onChanged;
 
-  const CustomSwitchButton({
-    super.key,
-    this.initialValue = true,
-    this.onChanged,
-  });
-
-  @override
-  State<CustomSwitchButton> createState() => _CustomSwitchButtonState();
-}
-
-class _CustomSwitchButtonState extends State<CustomSwitchButton> {
-  late bool isOn;
-
-  @override
-  void initState() {
-    super.initState();
-    isOn = widget.initialValue;
-  }
+  const CustomSwitchButton({super.key, this.value = true, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        setState(() => isOn = !isOn);
-        widget.onChanged?.call(isOn);
+        onChanged?.call(!value);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
@@ -40,7 +22,7 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
         padding: EdgeInsets.all(4.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
-          gradient: isOn
+          gradient: value
               ? const LinearGradient(
                   colors: [
                     Color(0xFF678DFF),
@@ -57,12 +39,12 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
                 ),
         ),
         child: Align(
-          alignment: isOn ? Alignment.centerRight : Alignment.centerLeft,
+          alignment: value ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
             width: 20.w,
             height: 24.w,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(

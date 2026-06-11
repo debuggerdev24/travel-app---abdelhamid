@@ -56,7 +56,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
@@ -184,7 +184,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
           child: Container(
             height: 48.h,
             decoration: BoxDecoration(
-              color: AppColors.whiteColor,
+              color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
                   color: AppColors.blueColor.setOpacity(0.1),
@@ -237,7 +237,9 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
                   10.w.horizontalSpace,
                   AppText(
                     text: " View Dua List",
-                    style: textStyle14Medium.copyWith(color: Colors.white),
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ],
               ),

@@ -3,13 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class PackageSummaryScreen extends StatefulWidget {
   const PackageSummaryScreen({super.key});
@@ -111,7 +109,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: AppColors.whiteColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Column(
             children: [
@@ -133,7 +131,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       text: "Umrah Trip 2025",
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -145,22 +143,30 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 32.h),
                 child: Row(
                   children: [
-                    SvgIcon(AppAssets.pin, size: 20.w),
+                    SvgIcon(
+                      AppAssets.pin,
+                      size: 20.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     10.w.horizontalSpace,
                     Expanded(
                       child: AppText(
                         text: trip.location,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
-                    SvgIcon(AppAssets.calendar, size: 20.w),
+                    SvgIcon(
+                      AppAssets.calendar,
+                      size: 20.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     10.w.horizontalSpace,
                     AppText(
                       text: trip.date,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -183,15 +189,19 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                           padding: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.blueColor),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryColor.setOpacity(0.1),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.shadow.withOpacity(0.1),
                                 blurRadius: 3,
                                 offset: const Offset(0, 2),
                               ),
                             ],
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +209,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                               AppText(
                                 text: selectedPackage.title,
                                 style: textStyle16SemiBold.copyWith(
-                                  color: AppColors.secondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   fontSize: 17.sp,
                                 ),
                               ),
@@ -232,7 +244,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
                       Divider(
                         height: 30.h,
-                        color: AppColors.primaryColor.setOpacity(0.2),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.2),
                         endIndent: 60,
                       ),
                       _priceRow("TOTAL COST", "€10,000"),
@@ -269,7 +283,10 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         children: [
           AppText(
             text: title,
-            style: textStyle14Medium.copyWith(fontWeight: FontWeight.w600),
+            style: textStyle14Medium.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           8.h.verticalSpace,
           ...items.map(
@@ -283,7 +300,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     width: 4.w,
                     height: 4.h,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor,
+                      color: Theme.of(context).colorScheme.onSurface,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -292,7 +309,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                     child: AppText(
                       text: e,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
                       ),
                     ),
                   ),
@@ -316,7 +335,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.6),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
               ),
@@ -325,7 +344,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           AppText(
             text: ":",
             style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),
@@ -334,7 +353,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           AppText(
             text: value,
             style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor,
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),

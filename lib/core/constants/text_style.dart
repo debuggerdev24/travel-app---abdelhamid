@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'app_colors.dart';
 
 final textStyle32Bold = TextStyle(
   fontFamily: 'Poppins',
@@ -12,7 +10,6 @@ final textStyle12semiBold = TextStyle(
   fontSize: 12.sp,
   fontFamily: 'Poppins',
   fontWeight: FontWeight.w600,
-  color: AppColors.tabTextColor,
 );
 final textPoppinsMedium = TextStyle(
   fontSize: 12.sp,
@@ -24,46 +21,39 @@ final textStyle18Bold = TextStyle(
   fontSize: 18.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w700,
-  color: AppColors.whiteColor,
 );
 
 final textStyle14Regular = TextStyle(
   fontSize: 14.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w400,
-  color: AppColors.primaryColor.setOpacity(0.6),
 );
 final textStyle14Italic = TextStyle(
   fontSize: 14.sp,
   fontFamily: 'Roboto',
   fontStyle: FontStyle.italic,
-  color: AppColors.primaryColor.setOpacity(0.6),
 );
 final textStyle16SemiBold = TextStyle(
   fontSize: 16.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w600,
-  color: AppColors.primaryColor,
 );
 final textStyle14Medium = TextStyle(
   fontSize: 14.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w600,
-  color: AppColors.primaryColor,
 );
 
 final textStyle10Regular = TextStyle(
   fontSize: 10.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w400,
-  color: AppColors.primaryColor.setOpacity(0.6),
 );
 
 final textStyle12Regular = TextStyle(
   fontSize: 12.sp,
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w400,
-  color: AppColors.primaryColor.setOpacity(0.6),
 );
 
 // final textStyle14Regular = TextStyle(
@@ -116,7 +106,6 @@ final textStyle12Regular = TextStyle(
 final textStyleSubtitleBold = TextStyle(
   fontSize: 22.sp,
   fontWeight: FontWeight.w400,
-  color: AppColors.black,
 );
 final primaryTextButtonTheme = TextButton.styleFrom(
   foregroundColor: Colors.white,

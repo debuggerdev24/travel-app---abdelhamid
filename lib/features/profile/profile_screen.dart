@@ -20,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,7 +35,7 @@ class ProfileScreen extends StatelessWidget {
                       text: "Profile",
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -67,16 +67,13 @@ class ProfileScreen extends StatelessWidget {
                             shape: BoxShape.circle,
                           )
                         else
-                          NetworkAvatar(
-                            imageUrl: avatarUrl,
-                            radius: 50.r,
-                          ),
+                          NetworkAvatar(imageUrl: avatarUrl, radius: 50.r),
                         10.h.verticalSpace,
                         AppText(
                           text: name,
                           style: textStyle16SemiBold.copyWith(
                             fontSize: 18.sp,
-                            color: AppColors.primaryColor,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         4.h.verticalSpace,
@@ -84,7 +81,9 @@ class ProfileScreen extends StatelessWidget {
                           text: provider.isLoading && p == null ? '—' : email,
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
-                            color: AppColors.primaryColor.setOpacity(0.8),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.8),
                           ),
                         ),
 
@@ -94,63 +93,81 @@ class ProfileScreen extends StatelessWidget {
                           child: AppText(
                             text: "Personal Information",
                             style: textStyle16SemiBold.copyWith(
-                              color: AppColors.primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
                         10.h.verticalSpace,
-                        _infoCard([
+                        _infoCard(context, [
                           _infoRow(
+                            context,
                             "Date of Birth",
                             p != null ? p.displayDateOfBirth : "—",
                           ),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
-                          _infoRow("Age", p?.displayAgeLabel ?? "—"),
+                          _infoRow(context, "Age", p?.displayAgeLabel ?? "—"),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
                           _infoRow(
+                            context,
                             "Gender",
                             p?.gender.isNotEmpty == true ? p!.gender : "—",
                           ),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
                           _infoRow(
+                            context,
                             "Nationality",
                             p?.nationality.isNotEmpty == true
                                 ? p!.nationality
                                 : "—",
                           ),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
                           _infoRow(
+                            context,
                             "Passport Number",
                             p?.passportNumber.isNotEmpty == true
                                 ? p!.passportNumber
                                 : "—",
                           ),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
                           _infoRow(
+                            context,
                             "Contact",
                             p?.phoneNumber.isNotEmpty == true
                                 ? p!.phoneNumber
                                 : "—",
                           ),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
                           _infoRow(
+                            context,
                             "Language",
                             p?.languages.isNotEmpty == true
                                 ? p!.languages.join(', ')
@@ -165,7 +182,7 @@ class ProfileScreen extends StatelessWidget {
                               UserAppRoutes.prayerTimesScreen.name,
                             );
                           },
-                          child: _menuTile("Prayer Times"),
+                          child: _menuTile(context, "Prayer Times"),
                         ),
 
                         22.h.verticalSpace,
@@ -178,74 +195,88 @@ class ProfileScreen extends StatelessWidget {
                             style: textStyle16SemiBold.copyWith(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
                         16.h.verticalSpace,
-                        _infoCard([
-                          _menuitems("FAQs", () {
+                        _infoCard(context, [
+                          _menuitems(context, "FAQs", () {
                             context.pushNamed(UserAppRoutes.faqScreen.name);
                           }),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
-                          _menuitems("Social Media Links", () {
+                          _menuitems(context, "Social Media Links", () {
                             context.pushNamed(
                               UserAppRoutes.socialMediaScreen.name,
                             );
                           }),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
-                          _menuitems("Terms & Conditions", () {
+                          _menuitems(context, "Terms & Conditions", () {
                             context.pushNamed(
                               UserAppRoutes.termsConditionScreen.name,
                             );
                           }),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
-                          _menuitems("Privacy Policy", () {
+                          _menuitems(context, "Privacy Policy", () {
                             context.pushNamed(
                               UserAppRoutes.privacyPolicyScreen.name,
                             );
                           }),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
-                          _menuitems("Our Locations", () {
+                          _menuitems(context, "Our Locations", () {
                             context.pushNamed(
                               UserAppRoutes.ourLocationsScreen.name,
                             );
                           }),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
-                          _menuitems("Meet Our Team", () {
+                          _menuitems(context, "Meet Our Team", () {
                             context.pushNamed(
                               UserAppRoutes.meetOurTeamScreen.name,
                             );
                           }),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
-                          _menuitems("Feedback", () {
+                          _menuitems(context, "Feedback", () {
                             context.pushNamed(
                               UserAppRoutes.profileFeedbackScreen.name,
                             );
                           }),
                           Divider(
-                            color: AppColors.primaryColor.setOpacity(0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
 
-                          _menuitems("App Settings", () {
+                          _menuitems(context, "App Settings", () {
                             context.pushNamed(
                               UserAppRoutes.appSettignScreen.name,
                             );
@@ -253,14 +284,16 @@ class ProfileScreen extends StatelessWidget {
                         ]),
 
                         20.h.verticalSpace,
-                        _buildNotificationSwitch(),
+                        _buildNotificationSwitch(context),
 
                         22.h.verticalSpace,
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
                             text: "Copyright Notice - Tawheed App",
-                            style: textStyle16SemiBold.copyWith(),
+                            style: textStyle16SemiBold.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
                         ),
                         16.h.verticalSpace,
@@ -272,14 +305,16 @@ class ProfileScreen extends StatelessWidget {
                             horizontal: 20.w,
                             vertical: 20.h,
                           ),
-                          decoration: _boxDecoration(),
+                          decoration: _boxDecoration(context),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AppText(
                                 text: "© Temheed Reizen - All rights reserved.",
                                 style: textStyle14Regular.copyWith(
-                                  color: AppColors.primaryColor,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                               8.h.verticalSpace,
@@ -287,7 +322,9 @@ class ProfileScreen extends StatelessWidget {
                                 text: "Version: 2025",
                                 style: textStyle14Medium.copyWith(
                                   fontSize: 14.sp,
-                                  color: AppColors.primaryColor.setOpacity(0.5),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
                                 ),
                               ),
                             ],
@@ -299,7 +336,9 @@ class ProfileScreen extends StatelessWidget {
                               "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.",
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
-                            color: AppColors.primaryColor.setOpacity(0.8),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.8),
                           ),
                         ),
                         10.h.verticalSpace,
@@ -308,7 +347,9 @@ class ProfileScreen extends StatelessWidget {
                               "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
-                            color: AppColors.primaryColor.setOpacity(0.8),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.8),
                           ),
                         ),
                         10.h.verticalSpace,
@@ -361,16 +402,16 @@ class ProfileScreen extends StatelessWidget {
 
   /// ---------------- WIDGETS ----------------
 
-  Widget _infoCard(List<Widget> children) {
+  Widget _infoCard(BuildContext context, List<Widget> children) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-      decoration: _boxDecoration(),
+      decoration: _boxDecoration(context),
       child: Column(children: children),
     );
   }
 
-  Widget _infoRow(String title, String value) {
+  Widget _infoRow(BuildContext context, String title, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.h),
       child: Row(
@@ -379,24 +420,26 @@ class ProfileScreen extends StatelessWidget {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
               ),
             ),
           ),
           AppText(
             text: value,
-            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _menuTile(String title) {
+  Widget _menuTile(BuildContext context, String title) {
     return Container(
       margin: EdgeInsets.only(bottom: 10.h),
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 16.h),
-      decoration: _boxDecoration(),
+      decoration: _boxDecoration(context),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -404,7 +447,7 @@ class ProfileScreen extends StatelessWidget {
             text: title,
             style: textStyle16SemiBold.copyWith(
               fontSize: 16.sp,
-              color: AppColors.primaryColor,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           Padding(
@@ -416,10 +459,10 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationSwitch() {
+  Widget _buildNotificationSwitch(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 17.h),
-      decoration: _boxDecoration(),
+      decoration: _boxDecoration(context),
       child: StatefulBuilder(
         builder: (context, setState) {
           return Row(
@@ -428,12 +471,12 @@ class ProfileScreen extends StatelessWidget {
               AppText(
                 text: "Notification",
                 style: textStyle16SemiBold.copyWith(
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
 
               CustomSwitchButton(
-                initialValue: true,
+                value: true,
 
                 onChanged: (value) {
                   log("Notification status: $value");
@@ -446,7 +489,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _menuitems(String title, VoidCallback onTap) {
+  Widget _menuitems(BuildContext context, String title, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -457,7 +500,7 @@ class ProfileScreen extends StatelessWidget {
               child: AppText(
                 text: title,
                 style: textStyle14Medium.copyWith(
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -471,10 +514,12 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  BoxDecoration _boxDecoration() {
+  BoxDecoration _boxDecoration(BuildContext context) {
     return BoxDecoration(
-      color: Colors.white,
-      border: BoxBorder.all(color: AppColors.primaryColor.setOpacity(0.2)),
+      color: Theme.of(context).colorScheme.surface,
+      border: BoxBorder.all(
+        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+      ),
       borderRadius: BorderRadius.circular(12.r),
       boxShadow: [
         BoxShadow(

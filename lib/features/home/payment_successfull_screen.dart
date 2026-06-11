@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 /// Passed as [GoRouterState.extra] when opening [PaymentSuccessfullScreen].
@@ -31,7 +29,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
     return PopScope(
       canPop: true,
       child: Scaffold(
-        backgroundColor: AppColors.whiteColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -44,7 +42,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                     text: "Payment Successful!",
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   42.h.verticalSpace,
@@ -53,7 +51,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                   AppText(
                     text: amountLine,
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 18.sp,
                     ),
                     textAlign: TextAlign.center,
@@ -63,7 +61,9 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                     text:
                         "Thank you for booking with us! Your trip is now confirmed – happy travels ahead!",
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor.setOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
                       fontSize: 16.sp,
                     ),
                     textAlign: TextAlign.center,

@@ -3,9 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
 class DropdownController {
@@ -94,6 +92,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             style: textStyle14Medium.copyWith(
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
 
@@ -110,17 +109,17 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.setOpacity(0.1),
+                  color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                   blurRadius: 1,
                   offset: const Offset(0, 2),
                 ),
               ],
               borderRadius: BorderRadius.circular(8.r),
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               border: Border.all(
                 color: widget.errorText != null
-                    ? Colors.red.setOpacity(0.5)
-                    : AppColors.primaryColor.setOpacity(0.2),
+                    ? Colors.red.withOpacity(0.5)
+                    : Colors.transparent,
               ),
             ),
             child: Row(
@@ -130,15 +129,15 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                     text: _displaySelectedText(),
                     style: textStyle14Regular.copyWith(
                       color: widget.selectedItems.isEmpty
-                          ? AppColors.primaryColor.setOpacity(0.6)
-                          : AppColors.primaryColor,
+                          ? Theme.of(context).colorScheme.onSurfaceVariant
+                          : Theme.of(context).colorScheme.onSurface,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 SvgIcon(
                   AppAssets.dropdown,
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                   size: 26.w,
                 ),
               ],
@@ -161,8 +160,8 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             margin: EdgeInsets.only(top: 6.h),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
-              color: Colors.white,
+              border: Border.all(color: Colors.transparent),
+              color: Theme.of(context).colorScheme.surface,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +176,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                     text: widget.titleText,
                     style: textStyle18Bold.copyWith(
                       fontSize: 14.sp,
-                      color: AppColors.primaryColor.setOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -215,10 +214,17 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          AppText(text: item, style: textStyle14Regular),
+                          AppText(
+                            text: item,
+                            style: textStyle14Regular.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
                           widget.showRadio
                               ? Radio<String>(
-                                  activeColor: AppColors.blueColor,
+                                  activeColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
                                   value: item,
                                   groupValue: _radioGroupValue(),
                                   onChanged: (val) {

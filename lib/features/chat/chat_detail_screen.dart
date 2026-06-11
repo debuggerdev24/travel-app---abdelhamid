@@ -96,7 +96,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     final provider = Provider.of<ChatProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -117,7 +117,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -162,7 +162,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           AppText(
                             text: 'Loading messages…',
                             style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor.setOpacity(0.55),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.55),
                             ),
                           ),
                         ],
@@ -344,7 +346,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void _showLocationShareSheet(BuildContext context, ChatProvider provider) {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
@@ -373,12 +375,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 ),
                 title: AppText(
                   text: 'Current location',
-                  style: textStyle14Medium.copyWith(color: Colors.black87),
+                  style: textStyle14Medium.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 subtitle: AppText(
                   text: 'Send a map pin of where you are now',
                   style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor.setOpacity(0.55),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.55),
                     fontSize: 12.sp,
                   ),
                 ),
@@ -408,12 +414,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ),
                   title: AppText(
                     text: liveLocationDurationTitle(minutes),
-                    style: textStyle14Medium.copyWith(color: Colors.black87),
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   subtitle: AppText(
                     text: liveLocationDurationSubtitle(minutes),
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor.setOpacity(0.55),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.55),
                       fontSize: 12.sp,
                     ),
                   ),
@@ -653,14 +663,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           AppText(
             text: msg['sender']?.toString() ?? '',
             textAlign: TextAlign.left,
-            style: textStyle16SemiBold.copyWith(color: AppColors.primaryColor),
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         if (!isMe) 4.h.verticalSpace,
         AppText(
           text: msg['message']?.toString() ?? '',
           textAlign: textAlign,
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.setOpacity(0.8),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
           ),
         ),
         if (msg['edited'] == true) ...[
@@ -669,7 +681,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             text: 'Edited',
             textAlign: textAlign,
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.45),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.45),
               fontSize: 11.sp,
               fontStyle: FontStyle.italic,
             ),
@@ -680,7 +692,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           text: msg['time']?.toString() ?? '',
           textAlign: textAlign,
           style: textStyle14Regular.copyWith(
-            color: AppColors.primaryColor.setOpacity(0.6),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
         ),
       ],
@@ -710,7 +722,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
         AppText(
           text: message['duration']?.toString() ?? '00:00',
-          style: textStyle12semiBold.copyWith(color: Colors.black),
+          style: textStyle12semiBold.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
       ],
     );
@@ -773,7 +787,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             AppText(
               text: 'Current location',
               style: textStyle12semiBold.copyWith(
-                color: AppColors.primaryColor,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 12.sp,
               ),
             ),
@@ -781,7 +795,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             AppText(
               text: '· one-time pin',
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.55),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withOpacity(0.55),
                 fontSize: 11.sp,
               ),
             ),
@@ -876,7 +892,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 minLines: 1,
                 maxLines: 5,
                 style: textStyle14Regular.copyWith(
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 decoration: InputDecoration(
                   isDense: true,
@@ -886,7 +902,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ),
                   hintText: 'Type Here...',
                   hintStyle: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor.setOpacity(0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
                   ),
                   border: InputBorder.none,
                 ),
@@ -984,10 +1002,10 @@ class _ChatFullScreenImagePage extends StatelessWidget {
               final value = total != null && total > 0 ? loaded / total : null;
               return Center(child: CircularProgressIndicator(value: value));
             },
-            errorBuilder: (context, error, stackTrace) => const Center(
+            errorBuilder: (context, error, stackTrace) => Center(
               child: Icon(
                 Icons.broken_image_outlined,
-                color: Colors.white54,
+                color: Theme.of(context).colorScheme.onSurface,
                 size: 64,
               ),
             ),
@@ -996,7 +1014,11 @@ class _ChatFullScreenImagePage extends StatelessWidget {
             child: Align(
               alignment: Alignment.topLeft,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                icon: Icon(
+                  Icons.close,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  size: 28,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),

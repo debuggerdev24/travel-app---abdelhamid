@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -12,7 +11,6 @@ import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.da
 import 'package:travel_app_abdelhamid/core/widgets/packge_details_card.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 
@@ -42,7 +40,14 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     final trip = tripProvider.selectedTrip;
 
     if (trip == null) {
-      return const Scaffold(body: Center(child: Text("No Trip Selected")));
+      return Scaffold(
+        body: Center(
+          child: Text(
+            "No Trip Selected",
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          ),
+        ),
+      );
     }
 
     final isUpcoming = tripProvider.upcomingTripList.contains(trip);
@@ -50,11 +55,13 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     final display = details ?? trip;
 
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: bookingProvider.isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColors.primaryColor),
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +75,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                       children: [
                         GestureDetector(
                           onTap: () => context.pop(),
-                          child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                          child: SvgIcon(
+                            AppAssets.backIcon,
+                            size: 28.5.w,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                         30.w.horizontalSpace,
                         Expanded(
@@ -77,7 +88,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: textStyle32Bold.copyWith(
                               fontSize: 26.sp,
-                              color: AppColors.secondary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -106,30 +117,50 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
 
                                 AppText(
                                   text: display.title,
-                                  style: textStyle16SemiBold,
+                                  style: textStyle16SemiBold.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
                                 ),
 
                                 14.h.verticalSpace,
 
                                 Row(
                                   children: [
-                                    SvgIcon(AppAssets.pin, size: 22.w),
+                                    SvgIcon(
+                                      AppAssets.pin,
+                                      size: 22.w,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
                                     14.w.horizontalSpace,
                                     Expanded(
                                       child: AppText(
                                         text: display.location,
                                         style: textStyle14Regular.copyWith(
-                                          color: AppColors.primaryColor,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                         ),
                                       ),
                                     ),
                                     12.w.horizontalSpace,
-                                    SvgIcon(AppAssets.calendar, size: 22.w),
+                                    SvgIcon(
+                                      AppAssets.calendar,
+                                      size: 22.w,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
                                     14.w.horizontalSpace,
                                     AppText(
                                       text: display.date,
                                       style: textStyle14Regular.copyWith(
-                                        color: AppColors.primaryColor,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                   ],
@@ -141,16 +172,20 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 AppText(
                                   text: display.description,
                                   style: textStyle14Regular.copyWith(
-                                    color: AppColors.primaryColor.setOpacity(
-                                      0.5,
-                                    ),
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                                 22.h.verticalSpace,
                                 if (isUpcoming) ...[
                                   AppText(
                                     text: "Package Details",
-                                    style: textStyle16SemiBold,
+                                    style: textStyle16SemiBold.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
                                   ),
                                   // Map existing cards to real data if packages exist
                                   if (details?.packages != null &&
@@ -172,23 +207,28 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                       text:
                                           'No packages available for this trip.',
                                       style: textStyle14Regular.copyWith(
-                                        color: AppColors.primaryColor
-                                            .setOpacity(0.6),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
 
                                   AppText(
                                     text: "Note:",
-                                    style: textStyle16SemiBold,
+                                    style: textStyle16SemiBold.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
                                   ),
                                   8.h.verticalSpace,
                                   AppText(
                                     text:
                                         "Prices may vary depending on airline & hotel:",
                                     style: textStyle14Regular.copyWith(
-                                      color: AppColors.primaryColor.setOpacity(
-                                        0.6,
-                                      ),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
                                   ),
                                   42.h.verticalSpace,
@@ -251,9 +291,19 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                         children: [
                                           AppText(
                                             text: "Support Contact",
-                                            style: textStyle16SemiBold,
+                                            style: textStyle16SemiBold.copyWith(
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
+                                            ),
                                           ),
-                                          SvgIcon(AppAssets.phone, size: 24.w),
+                                          SvgIcon(
+                                            AppAssets.phone,
+                                            size: 24.w,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                          ),
                                         ],
                                       ),
                                     ],
@@ -285,7 +335,12 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   Widget sectionTitle(String text) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
-      child: AppText(text: text, style: textStyle16SemiBold),
+      child: AppText(
+        text: text,
+        style: textStyle16SemiBold.copyWith(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
     );
   }
 
@@ -297,11 +352,15 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
         children: [
           AppText(
             text: title,
-            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           AppText(
             text: value,
-            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),
@@ -313,16 +372,22 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(26.r),
-        border: Border.all(color: AppColors.secondary),
+        border: Border.all(color: Theme.of(context).colorScheme.secondary),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgIcon(AppAssets.check, size: 17.w),
+          SvgIcon(
+            AppAssets.check,
+            size: 17.w,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           10.w.horizontalSpace,
           AppText(
             text: status,
-            style: textPoppinsMedium.copyWith(color: AppColors.secondary),
+            style: textPoppinsMedium.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),
@@ -335,13 +400,15 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.setOpacity(0.1),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
             blurRadius: 3,
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
-        color: Colors.white,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
@@ -350,7 +417,12 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           if (title != null)
             Padding(
               padding: EdgeInsets.only(bottom: 10),
-              child: AppText(text: title, style: textStyle16SemiBold),
+              child: AppText(
+                text: title,
+                style: textStyle16SemiBold.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
             ),
           ...rows,
         ],

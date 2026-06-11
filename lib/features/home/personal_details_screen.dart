@@ -122,7 +122,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: AppColors.whiteColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: ChangeNotifierProvider.value(
           value: _provider,
           child: Consumer<PersonDetailsProvider>(

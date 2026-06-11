@@ -4,8 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
@@ -31,7 +29,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 27.w),
@@ -56,7 +54,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                     text: "Prayer Times",
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -68,9 +66,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                 child: Consumer<PrayerTimesProvider>(
                   builder: (context, prayer, _) {
                     if (prayer.isLoading && prayer.items.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: CircularProgressIndicator(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       );
                     }
@@ -81,7 +79,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           text:
                               'Could not load prayer times. Pull to refresh from home or try again later.',
                           style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor.setOpacity(0.8),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       );
@@ -93,7 +91,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           text:
                               'No prayer times have been set yet. They can be added from the admin panel.',
                           style: textStyle14Regular.copyWith(
-                            color: AppColors.primaryColor.setOpacity(0.8),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       );
@@ -154,12 +152,12 @@ class _PrayerTileState extends State<PrayerTile> {
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
-        color: Colors.white,
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: AppColors.blueColor.setOpacity(0.08),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -171,7 +169,10 @@ class _PrayerTileState extends State<PrayerTile> {
             width: 65.w,
             child: AppText(
               text: widget.prayer,
-              style: textStyle16SemiBold.copyWith(fontSize: 16.sp),
+              style: textStyle16SemiBold.copyWith(
+                fontSize: 16.sp,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
 
@@ -179,20 +180,26 @@ class _PrayerTileState extends State<PrayerTile> {
             width: 30.w,
             child: AppText(
               text: ":",
-              style: textStyle16SemiBold.copyWith(fontSize: 16.sp),
+              style: textStyle16SemiBold.copyWith(
+                fontSize: 16.sp,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
 
           AppText(
             text: widget.time,
-            style: textStyle16SemiBold.copyWith(fontSize: 16.sp),
+            style: textStyle16SemiBold.copyWith(
+              fontSize: 16.sp,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
 
           const Spacer(),
 
           CustomSwitchButton(
-            initialValue: isOn,
+            value: isOn,
             onChanged: (v) {
               setState(() => isOn = v);
               widget.onChanged(v);

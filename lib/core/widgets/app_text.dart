@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 
 class AppText extends StatelessWidget {
@@ -28,7 +29,9 @@ class AppText extends StatelessWidget {
       maxLines: maxLines,
       style: style != null
           ? style!.copyWith(decoration: textDecoration)
-          : textStyle14Regular.copyWith(),
+          : textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
     );
   }
 }

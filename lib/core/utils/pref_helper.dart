@@ -5,6 +5,7 @@ class PrefHelper {
   static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
   static const String _userIdKey = 'user_id';
+  static const String _themeModeKey = 'theme_mode';
 
   /// Initialize the shared preferences instance
   static Future<void> init() async {
@@ -49,5 +50,15 @@ class PrefHelper {
   static bool isLoggedIn() {
     final token = getAccessToken();
     return token != null && token.isNotEmpty;
+  }
+
+  /// Saves the theme mode to local storage
+  static Future<bool> saveThemeMode(String themeMode) async {
+    return await _prefs.setString(_themeModeKey, themeMode);
+  }
+
+  /// Retrieves the theme mode from local storage
+  static String? getThemeMode() {
+    return _prefs.getString(_themeModeKey);
   }
 }

@@ -66,7 +66,7 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -130,11 +130,8 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
   Widget _imageFitContain(Widget image) {
     return SizedBox.expand(
       child: ColoredBox(
-        color: AppColors.whiteColor,
-        child: Align(
-          alignment: Alignment.center,
-          child: image,
-        ),
+        color: Theme.of(context).colorScheme.surface,
+        child: Align(alignment: Alignment.center, child: image),
       ),
     );
   }
