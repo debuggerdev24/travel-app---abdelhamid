@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -147,7 +146,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
             text: "Couldn't load dua list",
             textAlign: TextAlign.center,
             style: textStyle14Medium.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.85),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           10.h.verticalSpace,
@@ -157,7 +156,9 @@ class _DuaListScreenState extends State<DuaListScreen> {
               text: _error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.65),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -187,7 +188,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
                     text: 'No duas available yet',
                     textAlign: TextAlign.center,
                     style: textStyle14Regular.copyWith(
-                      color: AppColors.primaryColor.setOpacity(0.7),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -244,6 +245,7 @@ class _DuaItemTile extends StatelessWidget {
                 style: textStyle16SemiBold.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 16.sp,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -269,14 +271,14 @@ class _DuaItemTile extends StatelessWidget {
         ),
         if (dua.description.trim().isNotEmpty) ...[
           8.h.verticalSpace,
-          _descriptionBlock(dua.description),
+          _descriptionBlock(context, dua.description),
         ],
       ],
     );
   }
 
   /// If CMS uses a blank line between Arabic and translation, show both blocks.
-  Widget _descriptionBlock(String raw) {
+  Widget _descriptionBlock(BuildContext context, String raw) {
     final parts = raw
         .split(RegExp(r'\n\s*\n'))
         .map((s) => s.trim())
@@ -291,7 +293,9 @@ class _DuaItemTile extends StatelessWidget {
             text: parts.first,
             textAlign: TextAlign.right,
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           6.h.verticalSpace,
@@ -299,7 +303,9 @@ class _DuaItemTile extends StatelessWidget {
             text: parts.sublist(1).join('\n\n'),
             textAlign: TextAlign.start,
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -310,7 +316,7 @@ class _DuaItemTile extends StatelessWidget {
       text: raw,
       textAlign: TextAlign.start,
       style: textStyle14Regular.copyWith(
-        color: AppColors.primaryColor.setOpacity(0.5),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
       ),
     );
   }

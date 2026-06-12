@@ -5,10 +5,10 @@ import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 enum ThemeModeOption { light, dark, system }
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeModeOption _themeModeOption = ThemeModeOption.light;
-  
+  ThemeModeOption _themeModeOption = ThemeModeOption.system;
+
   ThemeModeOption get themeModeOption => _themeModeOption;
-  
+
   ThemeMode get themeMode {
     switch (_themeModeOption) {
       case ThemeModeOption.light:

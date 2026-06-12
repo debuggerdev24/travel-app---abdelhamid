@@ -63,7 +63,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.6),
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16.sp,
                     ),
                     textAlign: TextAlign.center,

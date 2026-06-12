@@ -164,7 +164,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                             borderRadius: BorderRadius.circular(6),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 8,
                                 offset: Offset(2, 4),
                               ),

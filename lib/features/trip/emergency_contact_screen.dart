@@ -171,7 +171,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
               text: "Couldn't load emergency contacts",
               textAlign: TextAlign.center,
               style: textStyle14Medium.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.85),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             10.h.verticalSpace,
@@ -179,7 +179,9 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
               text: _error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.65),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             16.h.verticalSpace,
@@ -212,7 +214,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                       text: "No emergency contacts available",
                       textAlign: TextAlign.center,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -289,7 +291,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                 text: title,
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 18.sp,
-                  color: AppColors.primaryColor.setOpacity(0.8),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               SvgIcon(AppAssets.phone, color: AppColors.secondary, size: 24.w),
@@ -308,7 +310,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                       text: e[0],
                       style: textStyle14Regular.copyWith(
                         fontSize: 16.sp,
-                        color: AppColors.primaryColor.setOpacity(0.8),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -316,7 +318,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                     text: " : ",
                     style: textStyle14Regular.copyWith(
                       fontSize: 16.sp,
-                      color: AppColors.primaryColor.setOpacity(0.8),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   16.w.horizontalSpace,
@@ -325,7 +327,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                       text: e[1],
                       style: textStyle14Regular.copyWith(
                         fontSize: 16.sp,
-                        color: AppColors.primaryColor.setOpacity(0.8),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),

@@ -164,7 +164,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             style: textStyle14Regular.copyWith(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.55),
+                              ).colorScheme.onSurface.withValues(alpha: 0.55),
                             ),
                           ),
                         ],
@@ -384,7 +384,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   style: textStyle14Regular.copyWith(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.55),
+                    ).colorScheme.onSurface.withValues(alpha: 0.55),
                     fontSize: 12.sp,
                   ),
                 ),
@@ -423,7 +423,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.55),
+                      ).colorScheme.onSurface.withValues(alpha: 0.55),
                       fontSize: 12.sp,
                     ),
                   ),
@@ -672,7 +672,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           text: msg['message']?.toString() ?? '',
           textAlign: textAlign,
           style: textStyle14Regular.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.8),
           ),
         ),
         if (msg['edited'] == true) ...[
@@ -681,7 +683,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             text: 'Edited',
             textAlign: textAlign,
             style: textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.45),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.45),
               fontSize: 11.sp,
               fontStyle: FontStyle.italic,
             ),
@@ -692,7 +696,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           text: msg['time']?.toString() ?? '',
           textAlign: textAlign,
           style: textStyle14Regular.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
       ],
@@ -797,7 +803,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               style: textStyle14Regular.copyWith(
                 color: Theme.of(
                   context,
-                ).colorScheme.onSurface.withOpacity(0.55),
+                ).colorScheme.onSurface.withValues(alpha: 0.55),
                 fontSize: 11.sp,
               ),
             ),
@@ -904,7 +910,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   hintStyle: textStyle14Regular.copyWith(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.6),
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   border: InputBorder.none,
                 ),

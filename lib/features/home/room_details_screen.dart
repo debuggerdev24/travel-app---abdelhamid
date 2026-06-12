@@ -418,7 +418,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                               decoration: BoxDecoration(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.primary.withOpacity(0.1),
+                                ).colorScheme.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12.r),
                                 border: Border.all(
                                   color: Theme.of(context).colorScheme.primary,

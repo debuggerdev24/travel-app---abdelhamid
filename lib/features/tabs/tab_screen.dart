@@ -189,7 +189,9 @@ class BottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = isSelected ? AppColors.secondary : AppColors.tabColor;
+    final Color color = isSelected
+        ? AppColors.secondary
+        : Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30.w),

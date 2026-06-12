@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       border: Border.all(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.2),
+                        ).colorScheme.onSurface.withValues(alpha: 0.2),
                       ),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             endIndent: 12.w,
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
                           AppText(
                             text: prayer.homeCountdownLine,
@@ -157,7 +157,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(130.r),
-                      color: AppColors.lightblueColor,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.tabColor
+                          : AppColors.lightblueColor,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.setOpacity(0.2),

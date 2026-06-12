@@ -185,7 +185,7 @@ class _MeetOurTeamScreenState extends State<MeetOurTeamScreen> {
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

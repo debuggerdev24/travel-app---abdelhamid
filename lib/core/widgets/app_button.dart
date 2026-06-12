@@ -45,12 +45,14 @@ class AppButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: (isLoading || onTap == null)
               ? (buttonColor ?? Theme.of(context).colorScheme.primary)
-                    .withOpacity(0.6)
+                    .withValues(alpha: 0.6)
               : buttonColor ?? Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(8.r),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.shadow.withValues(alpha: 0.1),
               blurRadius: 3,
               spreadRadius: 0,
               offset: const Offset(0, 6),
@@ -113,9 +115,7 @@ class AppActionButton extends StatelessWidget {
           8.w.horizontalSpace,
           AppText(
             text: label,
-            style: textStyle14Medium.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            style: textStyle14Medium.copyWith(color: Colors.white),
           ),
         ],
       ),

@@ -109,7 +109,9 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.shadow.withValues(alpha: 0.1),
                   blurRadius: 1,
                   offset: const Offset(0, 2),
                 ),
@@ -118,7 +120,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
               color: Theme.of(context).colorScheme.surface,
               border: Border.all(
                 color: widget.errorText != null
-                    ? Colors.red.withOpacity(0.5)
+                    ? Colors.red.withValues(alpha: 0.5)
                     : Colors.transparent,
               ),
             ),

@@ -53,7 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       text: TextSpan(
                         text: "Create An",
                         style: textStyle32Bold.copyWith(
-                          color: AppColors.primaryColor,
+                          color: AppColors.secondary,
                         ),
                         children: [
                           TextSpan(

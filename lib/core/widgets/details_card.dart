@@ -106,30 +106,38 @@ class EscortContactCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
       decoration: BoxDecoration(
-        color: AppColors.lightblueColor,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// Title
-          AppText(text: "Escort Contact", style: textStyle16SemiBold),
+          AppText(
+            text: "Escort Contact",
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
 
           SizedBox(height: 10.h),
 
           /// Contact Name
-          _buildRow("Escort Name", name),
+          _buildRow(context, "Escort Name", name),
 
           SizedBox(height: 12.h),
 
           /// Phone Row with icon
           Row(
             children: [
-              Expanded(child: _buildRow("Phone", phone)),
+              Expanded(child: _buildRow(context, "Phone", phone)),
               SvgIcon(
                 AppAssets.phone,
                 size: 20.sp,
-                color: AppColors.primaryColor,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ],
           ),
@@ -138,7 +146,7 @@ class EscortContactCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String key, String value) {
+  Widget _buildRow(BuildContext context, String key, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -148,7 +156,7 @@ class EscortContactCard extends StatelessWidget {
             text: key,
             style: textStyle14Regular.copyWith(
               fontSize: 15.sp,
-              color: AppColors.primaryColor.setOpacity(0.8),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -156,7 +164,7 @@ class EscortContactCard extends StatelessWidget {
           text: ":",
           style: TextStyle(
             fontSize: 16.sp,
-            color: AppColors.primaryColor.setOpacity(0.8),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         10.w.horizontalSpace,
@@ -165,7 +173,7 @@ class EscortContactCard extends StatelessWidget {
             text: value,
             style: textStyle14Regular.copyWith(
               fontSize: 15.sp,
-              color: AppColors.primaryColor.setOpacity(0.8),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

@@ -83,7 +83,7 @@ class ProfileScreen extends StatelessWidget {
                             fontSize: 14.sp,
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.8),
+                            ).colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
 
@@ -107,13 +107,13 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
                           _infoRow(context, "Age", p?.displayAgeLabel ?? "—"),
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _infoRow(
@@ -124,7 +124,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _infoRow(
@@ -137,7 +137,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _infoRow(
@@ -150,7 +150,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _infoRow(
@@ -163,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _infoRow(
@@ -207,7 +207,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _menuitems(context, "Social Media Links", () {
@@ -218,7 +218,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _menuitems(context, "Terms & Conditions", () {
@@ -229,7 +229,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _menuitems(context, "Privacy Policy", () {
@@ -240,7 +240,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _menuitems(context, "Our Locations", () {
@@ -251,7 +251,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _menuitems(context, "Meet Our Team", () {
@@ -262,7 +262,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _menuitems(context, "Feedback", () {
@@ -273,7 +273,7 @@ class ProfileScreen extends StatelessWidget {
                           Divider(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.2),
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
                           _menuitems(context, "App Settings", () {
@@ -322,9 +322,8 @@ class ProfileScreen extends StatelessWidget {
                                 text: "Version: 2025",
                                 style: textStyle14Medium.copyWith(
                                   fontSize: 14.sp,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
                                 ),
                               ),
                             ],
@@ -338,7 +337,7 @@ class ProfileScreen extends StatelessWidget {
                             fontSize: 14.sp,
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.8),
+                            ).colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
                         10.h.verticalSpace,
@@ -349,7 +348,7 @@ class ProfileScreen extends StatelessWidget {
                             fontSize: 14.sp,
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.8),
+                            ).colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
                         10.h.verticalSpace,
@@ -377,10 +376,35 @@ class ProfileScreen extends StatelessWidget {
                                 icon: AppAssets.exit,
                                 color: AppColors.redColor,
                                 onTap: () async {
-                                  await PrefHelper.clearTokens();
-                                  context.pushReplacementNamed(
-                                    UserAppRoutes.signInScreen.name,
+                                  final confirmed = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Logout'),
+                                      content: const Text(
+                                        'Are you sure you want to logout?',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
                                   );
+                                  if (confirmed == true) {
+                                    await PrefHelper.clearTokens();
+                                    if (context.mounted) {
+                                      context.pushReplacementNamed(
+                                        UserAppRoutes.signInScreen.name,
+                                      );
+                                    }
+                                  }
                                 },
                               ),
                             ),
@@ -420,7 +444,9 @@ class ProfileScreen extends StatelessWidget {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -518,7 +544,7 @@ class ProfileScreen extends StatelessWidget {
     return BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
       border: BoxBorder.all(
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
       ),
       borderRadius: BorderRadius.circular(12.r),
       boxShadow: [

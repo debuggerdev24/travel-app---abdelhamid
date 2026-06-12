@@ -28,11 +28,13 @@ class PackageDetailsCard extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.shadow.withValues(alpha: 0.1),
               blurRadius: 3,
               offset: const Offset(0, 2),
             ),

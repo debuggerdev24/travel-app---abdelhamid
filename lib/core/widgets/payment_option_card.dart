@@ -46,7 +46,9 @@ class PaymentOption extends StatelessWidget {
           Radio<PaymentMethodEnum>(
             side: BorderSide(
               width: 0.7,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             innerRadius: WidgetStatePropertyAll(6),
             activeColor: Theme.of(context).colorScheme.primary,

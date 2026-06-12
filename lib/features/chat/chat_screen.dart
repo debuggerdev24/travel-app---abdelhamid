@@ -75,7 +75,9 @@ class _ChatScreenState extends State<ChatScreen> {
                               textAlign: TextAlign.center,
                               text: 'No conversations yet.',
                               style: textStyle14Regular.copyWith(
-                                color: AppColors.primaryColor.setOpacity(0.5),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 1),
                               ),
                             ),
                           ),
@@ -164,6 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
     int index,
   ) {
     final bool isSelected = provider.selectedTabIndex == index;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => provider.changeTab(index),
@@ -171,7 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
         padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 39.w),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(25.r),
           boxShadow: isSelected
@@ -189,7 +192,9 @@ class _ChatScreenState extends State<ChatScreen> {
             label,
             style: textStyle14Medium.copyWith(
               fontSize: 14.sp,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: isSelected && isDarkMode
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -252,7 +257,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ? AppColors.blueColor
                               : Theme.of(
                                   context,
-                                ).colorScheme.onSurface.withOpacity(0.4),
+                                ).colorScheme.onSurface.withValues(alpha: 0.4),
                           fontWeight: hasUnread
                               ? FontWeight.w600
                               : FontWeight.normal,
@@ -269,12 +274,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           text: data.message,
                           style: textStyle14Regular.copyWith(
                             color: hasUnread
-                                ? Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface.withOpacity(0.75)
-                                : Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface.withOpacity(0.4),
+                                ? Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.75)
+                                : Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.4),
                             fontWeight: hasUnread
                                 ? FontWeight.w500
                                 : FontWeight.normal,

@@ -102,7 +102,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
               text: "Couldn't load local information",
               textAlign: TextAlign.center,
               style: textStyle14Medium.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.85),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             10.h.verticalSpace,
@@ -110,7 +110,9 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
               text: _error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.65),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             16.h.verticalSpace,
@@ -142,7 +144,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
                       text: "No local information available",
                       textAlign: TextAlign.center,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -181,7 +183,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
               text: item.title,
               style: textStyle16SemiBold.copyWith(
                 fontSize: 18.sp,
-                color: AppColors.primaryColor.setOpacity(0.85),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           if (item.shortDescription != null &&
@@ -191,7 +193,9 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
               text: item.shortDescription!,
               style: textStyle14Regular.copyWith(
                 fontSize: 15.sp,
-                color: AppColors.primaryColor.setOpacity(0.75),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.85),
               ),
             ),
           ],
@@ -203,7 +207,9 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
               style: textStyle14Regular.copyWith(
                 fontSize: 16.sp,
                 height: 1.45,
-                color: AppColors.primaryColor.setOpacity(0.65),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.75),
               ),
             ),
           ],

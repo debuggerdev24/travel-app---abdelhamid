@@ -246,7 +246,13 @@ class _TripScreenState extends State<TripScreen> {
                             8.h.verticalSpace,
                             Row(
                               children: [
-                                SvgIcon(AppAssets.pin, size: 18.w),
+                                SvgIcon(
+                                  AppAssets.pin,
+                                  size: 18.w,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
                                 8.w.horizontalSpace,
                                 Expanded(
                                   child: AppText(
@@ -259,7 +265,13 @@ class _TripScreenState extends State<TripScreen> {
                                   ),
                                 ),
                                 8.w.horizontalSpace,
-                                SvgIcon(AppAssets.calendar, size: 18.w),
+                                SvgIcon(
+                                  AppAssets.calendar,
+                                  size: 18.w,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
                                 8.w.horizontalSpace,
                                 AppText(
                                   text: trip.date,
@@ -405,7 +417,11 @@ class _TripScreenState extends State<TripScreen> {
               padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 2.h),
               child: Row(
                 children: [
-                  SvgIcon(AppAssets.pin, size: 22.w),
+                  SvgIcon(
+                    AppAssets.pin,
+                    size: 22.w,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   14.w.horizontalSpace,
                   Expanded(
                     child: AppText(
@@ -416,7 +432,11 @@ class _TripScreenState extends State<TripScreen> {
                     ),
                   ),
                   12.w.horizontalSpace,
-                  SvgIcon(AppAssets.calendar, size: 22.w),
+                  SvgIcon(
+                    AppAssets.calendar,
+                    size: 22.w,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   14.w.horizontalSpace,
                   AppText(
                     text: trip?.date ?? "-",
@@ -1608,7 +1628,7 @@ class _TripScreenState extends State<TripScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
 
         boxShadow: [

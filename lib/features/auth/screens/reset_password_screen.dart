@@ -67,7 +67,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         TextSpan(
                           text: "Password",
                           style: textStyle32Bold.copyWith(
-                            color: AppColors.primaryColor,
+                            color: AppColors.secondary,
                           ),
                         ),
                       ],

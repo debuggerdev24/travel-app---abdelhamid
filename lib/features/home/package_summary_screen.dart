@@ -196,7 +196,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                               BoxShadow(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.shadow.withOpacity(0.1),
+                                ).colorScheme.shadow.withValues(alpha: 0.1),
                                 blurRadius: 3,
                                 offset: const Offset(0, 2),
                               ),
@@ -246,7 +246,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                         height: 30.h,
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.2),
+                        ).colorScheme.onSurface.withValues(alpha: 0.2),
                         endIndent: 60,
                       ),
                       _priceRow("TOTAL COST", "€10,000"),
@@ -311,7 +311,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       style: textStyle14Regular.copyWith(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.7),
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ),
@@ -335,7 +335,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
               ),
@@ -344,7 +346,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           AppText(
             text: ":",
             style: textStyle14Medium.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),

@@ -424,14 +424,16 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   BoxShadow(
                     color: Theme.of(
                       context,
-                    ).colorScheme.shadow.withOpacity(0.1),
+                    ).colorScheme.shadow.withValues(alpha: 0.1),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
                 ],
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
               child: Column(
@@ -495,7 +497,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                     BoxShadow(
                       color: Theme.of(
                         context,
-                      ).colorScheme.shadow.withOpacity(0.1),
+                      ).colorScheme.shadow.withValues(alpha: 0.1),
                       blurRadius: 1,
                       offset: const Offset(0, 1),
                     ),
@@ -504,7 +506,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   border: Border.all(
                     color: Theme.of(
                       context,
-                    ).colorScheme.outline.withOpacity(0.2),
+                    ).colorScheme.outline.withValues(alpha: 0.2),
                   ),
                 ),
                 child: loading
@@ -723,7 +725,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
   Widget _priceRow(String title, String value) {
     Color textColor;
     if (title == 'Paid' || title == 'Pending') {
-      textColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.7);
+      textColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.7);
     } else {
       textColor = Theme.of(context).colorScheme.onSurface;
     }

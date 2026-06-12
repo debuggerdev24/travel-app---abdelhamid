@@ -37,7 +37,9 @@ class TripCard extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.shadow.withValues(alpha: 0.1),
               blurRadius: 3,
               offset: Offset(0, 2),
             ),
@@ -49,7 +51,9 @@ class TripCard extends StatelessWidget {
             bottomRight: Radius.circular(20.r),
           ),
           border: Border.all(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.2),
           ),
         ),
         child: Column(
@@ -184,7 +188,7 @@ class TripCard extends StatelessWidget {
                         color: _getPaymentStatusColor(
                           context,
                           paymentStatus!,
-                        ).withOpacity(0.15),
+                        ).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
                           color: _getPaymentStatusColor(

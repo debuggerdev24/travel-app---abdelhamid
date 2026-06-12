@@ -241,8 +241,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         style: textStyle14Medium.copyWith(
                           fontSize: 16.sp,
                           color: provider.isUpdatingProfileImage
-                              ? AppColors.primaryColor.withValues(alpha: 0.5)
-                              : AppColors.blueColor,
+                              ? Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.5)
+                              : AppColors.skyblueColor,
                         ),
                       ),
                     ),
@@ -254,7 +256,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: AppText(
                             text: "Personal Information",
                             style: textStyle16SemiBold.copyWith(
-                              color: AppColors.primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),

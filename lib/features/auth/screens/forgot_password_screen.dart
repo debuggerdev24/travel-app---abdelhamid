@@ -64,7 +64,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         TextSpan(
                           text: "Password ? ",
                           style: textStyle32Bold.copyWith(
-                            color: AppColors.primaryColor,
+                            color: AppColors.secondary,
                           ),
                         ),
                       ],

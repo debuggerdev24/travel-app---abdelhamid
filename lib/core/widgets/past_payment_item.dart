@@ -54,7 +54,7 @@ class PastPaymentItem extends StatelessWidget {
                 AppText(
                   text: '$id - $amount',
                   style: textStyle14Medium.copyWith(
-                    color: AppColors.primaryColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                     fontSize: 15.sp,
                   ),
@@ -63,7 +63,9 @@ class PastPaymentItem extends StatelessWidget {
                 AppText(
                   text: isConfirmed ? 'Paid $date' : 'Pending · $date',
                   style: textStyle14Regular.copyWith(
-                    color: AppColors.primaryColor.setOpacity(0.55),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                     fontSize: 13.sp,
                   ),
                 ),

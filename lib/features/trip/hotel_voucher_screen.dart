@@ -93,13 +93,15 @@ class HotelVoucherScreen extends StatelessWidget {
                       style: textStyle18Bold.copyWith(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     Spacer(),
                     SvgIcon(
                       AppAssets.map,
-                      color: AppColors.secondary,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 24.w,
                     ),
                   ],
@@ -118,7 +120,9 @@ class HotelVoucherScreen extends StatelessWidget {
                     AppText(
                       text: address,
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -146,9 +150,9 @@ class HotelVoucherScreen extends StatelessWidget {
               ),
               14.h.verticalSpace,
 
-              _facilityItem("Free WiFi", AppAssets.wifi),
-              _facilityItem("Breakfast Included", AppAssets.breakfast),
-              _facilityItem("Dinner", AppAssets.kitchen),
+              _facilityItem(context, "Free WiFi", AppAssets.wifi),
+              _facilityItem(context, "Breakfast Included", AppAssets.breakfast),
+              _facilityItem(context, "Dinner", AppAssets.kitchen),
 
               40.h.verticalSpace,
             ],
@@ -192,13 +196,17 @@ class HotelVoucherScreen extends StatelessWidget {
             text: title,
             style: textStyle14Regular.copyWith(
               fontSize: 12.sp,
-              color: AppColors.primaryColor.setOpacity(0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           8.h.verticalSpace,
           AppText(
             text: value,
-            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),
@@ -229,21 +237,23 @@ class HotelVoucherScreen extends StatelessWidget {
             text: "Stay Info",
             style: textStyle14Regular.copyWith(
               fontSize: 12.sp,
-              color: AppColors.primaryColor.setOpacity(0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           8.h.verticalSpace,
-          _buildInfoRow("Check-In", "10 Feb 2025, 2:00 PM"),
+          _buildInfoRow(context, "Check-In", "10 Feb 2025, 2:00 PM"),
           SizedBox(height: 10.h),
-          _buildInfoRow("Check-Out", "15 Feb 2025, 11:00 AM"),
+          _buildInfoRow(context, "Check-Out", "15 Feb 2025, 11:00 AM"),
           SizedBox(height: 10.h),
-          _buildInfoRow("Nights", "05"),
+          _buildInfoRow(context, "Nights", "05"),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.h),
       child: Row(
@@ -253,17 +263,29 @@ class HotelVoucherScreen extends StatelessWidget {
             width: 70.w,
             child: AppText(
               text: label,
-              style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
             ),
           ),
           AppText(
             text: " :  ",
-            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
           ),
           Expanded(
             child: AppText(
               text: value,
-              style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
             ),
           ),
         ],
@@ -271,7 +293,7 @@ class HotelVoucherScreen extends StatelessWidget {
     );
   }
 
-  Widget _facilityItem(String title, String icon) {
+  Widget _facilityItem(BuildContext context, String title, String icon) {
     return Padding(
       padding: EdgeInsets.only(bottom: 18.h),
       child: Row(
@@ -279,14 +301,18 @@ class HotelVoucherScreen extends StatelessWidget {
           SvgIcon(
             icon,
             size: 20.sp,
-            color: AppColors.primaryColor.setOpacity(0.8),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
           8.w.horizontalSpace,
           AppText(
             text: title,
             style: textStyle14Regular.copyWith(
               fontSize: 14.sp,
-              color: AppColors.primaryColor.setOpacity(0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.8),
             ),
           ),
         ],

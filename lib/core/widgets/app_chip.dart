@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
@@ -31,7 +32,7 @@ class AppChip extends StatelessWidget {
           border: Border.all(
             width: 0.5,
             color: isSelected
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                ? AppColors.secondary.withOpacity(0.5)
                 : Theme.of(context).colorScheme.outline.withOpacity(0.5),
           ),
         ),
@@ -40,7 +41,7 @@ class AppChip extends StatelessWidget {
             SvgIcon(
               icon,
               color: isSelected
-                  ? Theme.of(context).colorScheme.primary
+                  ? AppColors.secondary
                   : Theme.of(context).colorScheme.onSurface,
               size: 24.w,
             ),
@@ -49,7 +50,7 @@ class AppChip extends StatelessWidget {
               text: title,
               style: textPoppinsMedium.copyWith(
                 color: isSelected
-                    ? Theme.of(context).colorScheme.primary
+                    ? AppColors.secondary
                     : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
                 fontSize: 14.sp,

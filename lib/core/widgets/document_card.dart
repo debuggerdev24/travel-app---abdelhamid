@@ -65,7 +65,7 @@ class DocumentCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
@@ -76,7 +76,9 @@ class DocumentCard extends StatelessWidget {
             child: AppText(
               text: label,
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
                 fontSize: 13.sp,
               ),
             ),
@@ -84,14 +86,18 @@ class DocumentCard extends StatelessWidget {
           AppText(
             text: " :  ",
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           Expanded(
             child: AppText(
               text: value,
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -138,7 +144,9 @@ class DocumentCard extends StatelessWidget {
                         text: doc.subtitle!,
                         style: textStyle14Medium.copyWith(
                           fontSize: 12.sp,
-                          color: AppColors.secondary,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       4.h.verticalSpace,
@@ -146,13 +154,17 @@ class DocumentCard extends StatelessWidget {
 
                     AppText(
                       text: doc.title,
-                      style: textStyle16SemiBold.copyWith(fontSize: 16.sp),
+                      style: textStyle16SemiBold.copyWith(
+                        fontSize: 16.sp,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
 
                     8.h.verticalSpace,
                     if (doc.info != null)
                       ...doc.info!.entries.map(
-                        (entry) => _buildInfoRow(entry.key, entry.value),
+                        (entry) =>
+                            _buildInfoRow(context, entry.key, entry.value),
                       ),
                   ],
                 ),
