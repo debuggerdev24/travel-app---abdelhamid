@@ -42,4 +42,5 @@ enum UserAppRoutes {
   appSettignScreen,
   profileFeedbackScreen,
   prayerTimesScreen,
+  notificationScreen,
 }

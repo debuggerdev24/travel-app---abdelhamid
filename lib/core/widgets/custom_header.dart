@@ -61,7 +61,11 @@ class CustomHeaders extends StatelessWidget {
                     color: AppColors.blueColor.setOpacity(0.2),
                     border: Border.all(color: AppColors.blueColor, width: 1.w),
                   ),
-                  child: SvgIcon(AppAssets.notification, size: 14.sp),
+                  child: SvgIcon(
+                    AppAssets.notification,
+                    size: 14.sp,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
             ],

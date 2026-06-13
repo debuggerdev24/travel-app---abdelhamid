@@ -55,7 +55,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     final url = raw != null && raw.isNotEmpty
                         ? serverMediaUrl(raw)
                         : null;
-                    return CustomHeaders(profileImageUrl: url);
+                    return CustomHeaders(
+                      profileImageUrl: url,
+                      onNotificationTap: () {
+                        context.pushNamed(
+                          UserAppRoutes.notificationScreen.name,
+                        );
+                      },
+                    );
                   },
                 ),
 
@@ -141,7 +148,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                         8.w.horizontalSpace,
-                        SvgIcon(AppAssets.travel, size: 24.w),
+                        SvgIcon(
+                          AppAssets.travel,
+                          size: 24.w,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                         8.w.horizontalSpace,
                       ],
                     ),

@@ -57,7 +57,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           TextSpan(
                             text: "Back!",
                             style: textStyle32Bold.copyWith(
-                              color: AppColors.primaryColor,
+                              color: AppColors.secondary,
                             ),
                           ),
                         ],

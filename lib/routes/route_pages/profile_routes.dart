@@ -6,6 +6,7 @@ import 'package:travel_app_abdelhamid/features/profile/edit_profile_screen.dart'
 import 'package:travel_app_abdelhamid/features/profile/faq_screen.dart';
 import 'package:travel_app_abdelhamid/features/profile/meet_our_team_screen.dart';
 import 'package:travel_app_abdelhamid/features/profile/our_location_screen.dart';
+import 'package:travel_app_abdelhamid/features/profile/notification_screen.dart';
 import 'package:travel_app_abdelhamid/features/profile/prayer_time_screen.dart';
 import 'package:travel_app_abdelhamid/features/profile/privacy_policy_screen.dart';
 import 'package:travel_app_abdelhamid/features/profile/profile_feed_back_screen.dart';
@@ -62,5 +63,10 @@ List<RouteBase> get profileRoutes => [
     path: UserAppRoutes.prayerTimesScreen.path,
     name: UserAppRoutes.prayerTimesScreen.name,
     builder: (context, state) => PrayerTimesScreen(),
+  ),
+  GoRoute(
+    path: UserAppRoutes.notificationScreen.path,
+    name: UserAppRoutes.notificationScreen.name,
+    builder: (context, state) => const NotificationScreen(),
   ),
 ];

@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
-import 'package:travel_app_abdelhamid/core/core.dart';
+import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/routes/route_pages/auth_routes.dart';
 import 'package:travel_app_abdelhamid/routes/route_pages/booking_routes.dart';
 import 'package:travel_app_abdelhamid/routes/route_pages/chat_routes.dart';

@@ -32,8 +32,8 @@ class AppChip extends StatelessWidget {
           border: Border.all(
             width: 0.5,
             color: isSelected
-                ? AppColors.secondary.withOpacity(0.5)
-                : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                ? AppColors.secondary.withValues(alpha: 0.5)
+                : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
           ),
         ),
         child: Row(

@@ -65,7 +65,7 @@ class PastPaymentItem extends StatelessWidget {
                   style: textStyle14Regular.copyWith(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
                     fontSize: 13.sp,
                   ),
                 ),
