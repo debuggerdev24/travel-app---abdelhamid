@@ -1,6 +1,7 @@
 enum UserAppRoutes {
   signUpScreen,
   signInScreen,
+  guideDashboard,
   forgotPasswordScreen,
   verifyOtpScreen,
   resetPasswordScreen,

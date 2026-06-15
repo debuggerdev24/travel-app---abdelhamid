@@ -186,6 +186,17 @@ class ProfileScreen extends StatelessWidget {
                         ),
 
                         22.h.verticalSpace,
+                        GestureDetector(
+                          onTap: () {
+                            context.pushNamed(
+                              UserAppRoutes.currencyMoneyScreen.name,
+                              extra: DateTime.now().millisecondsSinceEpoch,
+                            );
+                          },
+                          child: _menuTile(context, "Currency Converter"),
+                        ),
+
+                        22.h.verticalSpace,
 
                         /// ---------------- HELP & SUPPORT ----------------
                         Align(

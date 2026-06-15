@@ -135,11 +135,35 @@ class _SignInScreenState extends State<SignInScreen> {
                             title: "Sign In",
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
+                                // Check for static guide credentials
+                                final personalCode = personalCodeController.text
+                                    .trim();
+                                final email = emailController.text.trim();
+                                final password = passwordController.text.trim();
+
+                                if (personalCode == '12345678' &&
+                                    email == 'guide@gmail.com' &&
+                                    password == '12345678') {
+                                  // Static guide login - no API call
+                                  await PrefHelper.saveAccessToken(
+                                    'static_guide_token',
+                                  );
+                                  await PrefHelper.saveUserId('guide_user');
+
+                                  if (context.mounted) {
+                                    ToastService.showSuccess("Welcome Guide!");
+                                    context.pushReplacementNamed(
+                                      UserAppRoutes.guideDashboard.name,
+                                    );
+                                  }
+                                  return;
+                                }
+
+                                // Normal user login flow
                                 final success = await authProvider.login(
-                                  travellerCode: personalCodeController.text
-                                      .trim(),
-                                  emailOrPhone: emailController.text.trim(),
-                                  password: passwordController.text.trim(),
+                                  travellerCode: personalCode,
+                                  emailOrPhone: email,
+                                  password: password,
                                   omError: (error) {
                                     ToastService.showError(error);
                                   },

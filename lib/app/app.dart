@@ -10,6 +10,7 @@ import 'package:travel_app_abdelhamid/provider/home/user_flight_provider.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
+import 'package:travel_app_abdelhamid/provider/trip/currency_converter_provider.dart';
 import 'package:travel_app_abdelhamid/provider/theme_provider.dart';
 import 'package:travel_app_abdelhamid/routes/go_routes.dart';
 
@@ -34,6 +35,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TripBookingProvider()),
         ChangeNotifierProvider(create: (_) => FlightProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => CurrencyConverterProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(402, 874),

@@ -22,6 +22,7 @@ class ChatProvider extends ChangeNotifier {
   String? _activeChatId;
   List<Map<String, dynamic>> _messages = [];
   bool loadingMessages = false;
+  bool _isLocalChat = false; // Flag for local/static chats
 
   final List<StreamSubscription<dynamic>> _socketSubs = [];
   bool _socketListenersAttached = false;
@@ -57,6 +58,15 @@ class ChatProvider extends ChangeNotifier {
     final idx = _conversations.indexWhere((c) => c.chatId == chatId);
     if (idx < 0) return;
     _conversations[idx] = _conversations[idx].copyWith(avatarUrl: avatarUrl);
+    notifyListeners();
+  }
+
+  /// Loads local messages for static/demo chats (used by guide chat screen)
+  void loadLocalMessages(String chatId, List<Map<String, dynamic>> messages) {
+    _activeChatId = chatId;
+    _messages = messages;
+    _isLocalChat = true;
+    loadingMessages = false;
     notifyListeners();
   }
 
@@ -219,11 +229,39 @@ class ChatProvider extends ChangeNotifier {
     final cid = _activeChatId;
     final uid = currentUserIdOrNull();
     if (cid == null || uid == null || trimmed.isEmpty) return;
+
+    // If this is a local chat, add the message locally instead of using socket
+    if (_isLocalChat) {
+      _addLocalMessage(trimmed);
+      return;
+    }
+
     ChatSocketService.instance.sendTextMessage(
       chatId: cid,
       senderId: uid,
       text: trimmed,
     );
+  }
+
+  void _addLocalMessage(String text) {
+    final cid = _activeChatId;
+    if (cid == null) return;
+
+    final newMessage = {
+      '_id': 'local_msg_${DateTime.now().millisecondsSinceEpoch}',
+      'isMe': true,
+      'type': 'text',
+      'message': text,
+      'sender': 'You',
+      'time': DateFormat.jm().format(DateTime.now()),
+      'edited': false,
+    };
+
+    _messages.add(newMessage);
+    notifyListeners();
+
+    // Also update the local storage in guide chat screen
+    // This is a workaround - in production you'd want a proper state management solution
   }
 
   Future<void> sharePinnedLocation({

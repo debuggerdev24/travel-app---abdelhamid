@@ -26,6 +26,7 @@ class ChatDetailScreen extends StatefulWidget {
   final String image;
   final String? avatarUrl;
   final bool isGroup;
+  final bool isLocalChat;
 
   const ChatDetailScreen({
     super.key,
@@ -35,6 +36,7 @@ class ChatDetailScreen extends StatefulWidget {
     required this.image,
     this.avatarUrl,
     this.isGroup = false,
+    this.isLocalChat = false,
   });
 
   @override
@@ -52,20 +54,29 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     _chat ??= context.read<ChatProvider>();
     if (_chatLoadStarted) return;
     _chatLoadStarted = true;
-    // Earliest safe place to use [context.read]; runs before first paint so the
-    // fetch starts in parallel with building this route (smoother than post-frame).
-    _chat!.enterChatRoom(
-      chatId: widget.chatId,
-      title: widget.name,
-      avatarUrl: widget.avatarUrl,
-      isGroup: widget.isGroup,
-    );
+    // Wrap in post-frame callback to prevent setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // Skip enterChatRoom for local chats since messages are already loaded
+        if (!widget.isLocalChat) {
+          _chat!.enterChatRoom(
+            chatId: widget.chatId,
+            title: widget.name,
+            avatarUrl: widget.avatarUrl,
+            isGroup: widget.isGroup,
+          );
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
     _textController.dispose();
-    _chat?.leaveChatRoom();
+    // Skip leaveChatRoom for local chats
+    if (!widget.isLocalChat) {
+      _chat?.leaveChatRoom();
+    }
     super.dispose();
   }
 

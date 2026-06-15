@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/forgot_password_screen.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/guide_dashboard_screen.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/otp_verification_screen.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/reset_password_screen.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/sign_in_screen.dart';
@@ -18,6 +19,11 @@ List<RouteBase> get authRoutes => [
     path: UserAppRoutes.signInScreen.path,
     name: UserAppRoutes.signInScreen.name,
     builder: (context, state) => SignInScreen(),
+  ),
+  GoRoute(
+    path: UserAppRoutes.guideDashboard.path,
+    name: UserAppRoutes.guideDashboard.name,
+    builder: (context, state) => GuideDashboardScreen(),
   ),
   GoRoute(
     path: UserAppRoutes.forgotPasswordScreen.path,
