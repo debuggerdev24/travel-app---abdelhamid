@@ -20,74 +20,7 @@ class GuideChatScreen extends StatefulWidget {
 }
 
 class _GuideChatScreenState extends State<GuideChatScreen> {
-  bool _showTracking = false;
   int _selectedTab = 0;
-  final Completer<GoogleMapController> _mapController = Completer();
-  final Set<Marker> _markers = {};
-
-  // Sample traveler data with coordinates (Mecca area coordinates)
-  final List<Map<String, dynamic>> _travelers = [
-    {
-      'name': 'Ahmed Mohamed',
-      'location': 'Near Grand Mosque',
-      'status': 'Active',
-      'lastSeen': '2 min ago',
-      'isOnline': true,
-      'lat': 21.4225,
-      'lng': 39.8262,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Sarah Johnson',
-      'location': 'Hotel Lobby',
-      'status': 'Active',
-      'lastSeen': '5 min ago',
-      'isOnline': true,
-      'lat': 21.4250,
-      'lng': 39.8300,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Omar Hassan',
-      'location': 'Restaurant Area',
-      'status': 'Active',
-      'lastSeen': '10 min ago',
-      'isOnline': true,
-      'lat': 21.4180,
-      'lng': 39.8220,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Fatima Ali',
-      'location': 'Shopping District',
-      'status': 'Active',
-      'lastSeen': '15 min ago',
-      'isOnline': false,
-      'lat': 21.4280,
-      'lng': 39.8350,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Group A (5 members)',
-      'location': 'Tour Bus Stop',
-      'status': 'Together',
-      'lastSeen': '20 min ago',
-      'isOnline': true,
-      'lat': 21.4200,
-      'lng': 39.8280,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Family Trip (8 members)',
-      'location': 'Museum Entrance',
-      'status': 'Together',
-      'lastSeen': '25 min ago',
-      'isOnline': true,
-      'lat': 21.4150,
-      'lng': 39.8240,
-      'image': AppAssets.profilePhoto,
-    },
-  ];
 
   // Local message storage for static chats
   static final Map<String, List<Map<String, dynamic>>> _localMessages = {
@@ -204,159 +137,27 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
     },
   ];
 
+  late final ChatProvider _chatProvider;
+
   @override
   void initState() {
     super.initState();
-    _loadMarkers();
-    // Listen to ChatProvider for message updates in local chats
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChatProvider>().addListener(_onChatProviderUpdate);
-    });
+    _chatProvider = context.read<ChatProvider>();
+    _chatProvider.addListener(_onChatProviderUpdate);
   }
 
   @override
   void dispose() {
-    context.read<ChatProvider>().removeListener(_onChatProviderUpdate);
+    _chatProvider.removeListener(_onChatProviderUpdate);
     super.dispose();
   }
 
   void _onChatProviderUpdate() {
     // Sync messages back to local storage when they change
-    final chatProvider = context.read<ChatProvider>();
-    final activeChatId = chatProvider.activeChatId;
+    final activeChatId = _chatProvider.activeChatId;
     if (activeChatId != null && _localMessages.containsKey(activeChatId)) {
-      _localMessages[activeChatId] = List.from(chatProvider.messages);
+      _localMessages[activeChatId] = List.from(_chatProvider.messages);
     }
-  }
-
-  /// Load markers for all travelers
-  Future<void> _loadMarkers() async {
-    for (int i = 0; i < _travelers.length; i++) {
-      final traveler = _travelers[i];
-      final markerIcon = await _createCustomMarker(
-        traveler['name'],
-        traveler['image'],
-        traveler['isOnline'] ? Colors.green : Colors.grey,
-      );
-
-      setState(() {
-        _markers.add(
-          Marker(
-            markerId: MarkerId('traveler_$i'),
-            position: LatLng(traveler['lat'], traveler['lng']),
-            icon: markerIcon,
-            infoWindow: InfoWindow(
-              title: traveler['name'],
-              snippet: traveler['location'],
-            ),
-          ),
-        );
-      });
-    }
-  }
-
-  /// Create custom marker with traveler image and name
-  Future<BitmapDescriptor> _createCustomMarker(
-    String name,
-    String imagePath,
-    Color statusColor,
-  ) async {
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-
-    const markerSize = 120.0;
-    const imageSize = 80.0;
-    const radius = imageSize / 2;
-
-    // Draw pin background
-    final pinPaint = Paint()
-      ..color = statusColor
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(markerSize / 2, markerSize);
-    path.lineTo(markerSize / 2 - 30, markerSize - 40);
-    path.quadraticBezierTo(
-      markerSize / 2 - 30,
-      markerSize / 2 - 20,
-      markerSize / 2,
-      markerSize / 2 - 20,
-    );
-    path.quadraticBezierTo(
-      markerSize / 2 + 30,
-      markerSize / 2 - 20,
-      markerSize / 2 + 30,
-      markerSize - 40,
-    );
-    path.close();
-    canvas.drawPath(path, pinPaint);
-
-    // Draw white circle for image
-    final circlePaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(
-      Offset(markerSize / 2, markerSize / 2 - 10),
-      radius,
-      circlePaint,
-    );
-
-    // Draw traveler image (using a placeholder circle for now)
-    final imagePaint = Paint()
-      ..color = AppColors.secondary.withValues(alpha: 0.3)
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(
-      Offset(markerSize / 2, markerSize / 2 - 10),
-      radius - 4,
-      imagePaint,
-    );
-
-    // Draw person icon
-    final iconPaint = Paint()
-      ..color = AppColors.secondary
-      ..style = PaintingStyle.fill;
-    final iconPath = Path();
-    // Simple person icon
-    iconPath.addOval(
-      Rect.fromCircle(
-        center: Offset(markerSize / 2, markerSize / 2 - 25),
-        radius: 12,
-      ),
-    );
-    canvas.drawPath(iconPath, iconPaint);
-
-    final bodyPath = Path();
-    bodyPath.addOval(
-      Rect.fromCircle(
-        center: Offset(markerSize / 2, markerSize / 2 + 5),
-        radius: 18,
-      ),
-    );
-    canvas.drawPath(bodyPath, iconPaint);
-
-    // Draw name text
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: name,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      textDirection: ui.TextDirection.ltr,
-    );
-    textPainter.layout(maxWidth: markerSize - 20);
-    textPainter.paint(
-      canvas,
-      Offset((markerSize - textPainter.width) / 2, markerSize - 35),
-    );
-
-    final picture = recorder.endRecording();
-    final image = await picture.toImage(markerSize.toInt(), markerSize.toInt());
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-
-    return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
   }
 
   @override
@@ -369,12 +170,10 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
             20.h.verticalSpace,
             _buildHeader(),
             16.h.verticalSpace,
-            _buildModeToggle(),
+            _buildTabs(),
             16.h.verticalSpace,
-            if (!_showTracking) _buildTabs(),
-            if (!_showTracking) 16.h.verticalSpace,
             Expanded(
-              child: _showTracking ? _buildTrackingView() : _buildChatView(),
+              child: _buildChatView(),
             ),
           ],
         ),
@@ -391,104 +190,18 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
           24.w.horizontalSpace,
           AppText(
             textAlign: TextAlign.center,
-            text: _showTracking ? "Tracking" : "Chat",
+            text: "Chat",
             style: textStyle16SemiBold.copyWith(
               fontSize: 26.sp,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           Icon(
-            _showTracking ? Icons.map_outlined : Icons.search,
+            Icons.search,
             size: 24.sp,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildModeToggle() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 27.w),
-      child: Container(
-        padding: EdgeInsets.all(5.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(130.r),
-          color: Theme.of(context).colorScheme.surface,
-          border: Border.all(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.2),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showTracking = false;
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                  decoration: BoxDecoration(
-                    color: !_showTracking
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(25.r),
-                  ),
-                  child: Center(
-                    child: AppText(
-                      text: "Chat",
-                      style: textStyle14Medium.copyWith(
-                        fontSize: 14.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: !_showTracking
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showTracking = true;
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                  decoration: BoxDecoration(
-                    color: _showTracking
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(25.r),
-                  ),
-                  child: Center(
-                    child: AppText(
-                      text: "Track Travelers",
-                      style: textStyle14Medium.copyWith(
-                        fontSize: 14.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: _showTracking
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -548,55 +261,29 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
   }
 
   Widget _buildChatView() {
+    final displayedChats = _chats.where((chat) {
+      if (_selectedTab == 0) return true;
+      if (_selectedTab == 1) return chat['isGroup'] == true;
+      return chat['isGroup'] == false;
+    }).toList();
+
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
-      itemCount: _chats.length,
+      itemCount: displayedChats.length,
       separatorBuilder: (context, index) => 20.h.verticalSpace,
       itemBuilder: (context, index) {
         return _buildChatItem(
-          chatId: _chats[index]['chatId'],
-          groupId: _chats[index]['groupId'],
-          name: _chats[index]['name'],
-          message: _chats[index]['message'],
-          time: _chats[index]['time'],
-          unread: _chats[index]['unread'],
-          isGroup: _chats[index]['isGroup'],
-          image: _chats[index]['image'],
-          avatarUrl: _chats[index]['avatarUrl'],
+          chatId: displayedChats[index]['chatId'],
+          groupId: displayedChats[index]['groupId'],
+          name: displayedChats[index]['name'],
+          message: displayedChats[index]['message'],
+          time: displayedChats[index]['time'],
+          unread: displayedChats[index]['unread'],
+          isGroup: displayedChats[index]['isGroup'],
+          image: displayedChats[index]['image'],
+          avatarUrl: displayedChats[index]['avatarUrl'],
         );
       },
-    );
-  }
-
-  Widget _buildTrackingView() {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: AppText(
-            text: "Traveler Locations",
-            style: textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ),
-        16.h.verticalSpace,
-        Expanded(
-          child: GoogleMap(
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(21.4225, 39.8262), // Mecca coordinates
-              zoom: 14,
-            ),
-            markers: _markers,
-            onMapCreated: (controller) {
-              _mapController.complete(controller);
-            },
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-            zoomControlsEnabled: true,
-          ),
-        ),
-      ],
     );
   }
 
@@ -615,6 +302,8 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
       _localMessages[chatId] = [];
     }
 
+    chatProvider.primeChatOpen(chatId);
+    
     // Load local messages into ChatProvider
     chatProvider.loadLocalMessages(chatId, _localMessages[chatId]!);
 
@@ -627,7 +316,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
       'isGroup': isGroup,
       'isLocalChat': true, // Flag to indicate this is a local/static chat
     };
-    chatProvider.primeChatOpen(chatId);
+    
     context.pushNamed(UserAppRoutes.chatDetailScreen.name, extra: extra);
   }
 

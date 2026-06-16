@@ -39,6 +39,13 @@ class TripDocumentsBundle {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'memberDocuments': memberDocuments.map((e) => e.toJson()).toList(),
+      'tripDocuments': tripDocuments.toJson(),
+    };
+  }
+
   bool get hasAnyRemoteContent {
     if (tripDocuments.hotel != null ||
         tripDocuments.insurance != null ||
@@ -82,6 +89,15 @@ class MemberTripDocuments {
           : MemberDocsPayload.empty(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'memberId': memberId,
+      'name': name,
+      'relationship': relationship,
+      'documents': documents.toJson(),
+    };
+  }
 }
 
 class MemberDocsPayload {
@@ -119,6 +135,15 @@ class MemberDocsPayload {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'visa': visa?.toJson(),
+      'passport': passport?.toJson(),
+      'medicalCertificate': medicalCertificate?.toJson(),
+      'flightTickets': flightTickets.map((e) => e.toJson()).toList(),
+    };
+  }
+
   static PersonalDoc? _parsePersonal(dynamic v) {
     if (v == null) return null;
     if (v is! Map) return null;
@@ -149,6 +174,16 @@ class PersonalDoc {
       fileType: json['fileType']?.toString(),
       uploadedDate: json['uploadedDate']?.toString(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'documentName': documentName,
+      'photo': photo,
+      'fileType': fileType,
+      'uploadedDate': uploadedDate,
+    };
   }
 
   String? get resolvedViewUrl {
@@ -188,6 +223,18 @@ class FlightTicketDoc {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'assignmentId': assignmentId,
+      'ticketImage': ticketImage,
+      'fileType': fileType,
+      'uploadedDate': uploadedDate,
+      'flightName': flightName,
+      'date': date,
+      'flightType': flightType,
+    };
+  }
+
   String? get resolvedTicketUrl => serverMediaUrl(ticketImage);
 }
 
@@ -218,6 +265,14 @@ class TripLevelDocuments {
             )
           : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'hotel': hotel?.toJson(),
+      'insurance': insurance?.toJson(),
+      'checklist': checklist?.toJson(),
+    };
   }
 }
 
@@ -250,6 +305,18 @@ class BundleHotelDoc {
       fileType: json['fileType']?.toString(),
       uploadedDate: json['uploadedDate']?.toString(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'hotelName': hotelName,
+      'checkIn': checkIn,
+      'checkOut': checkOut,
+      'hotelImage': hotelImage,
+      'fileType': fileType,
+      'uploadedDate': uploadedDate,
+    };
   }
 
   String? get resolvedImageUrl => serverMediaUrl(hotelImage);
@@ -286,6 +353,18 @@ class BundleInsuranceDoc {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'policyName': policyName,
+      'coverage': coverage,
+      'emergencyDetails': emergencyDetails,
+      'image': image,
+      'document': document,
+      'fileType': fileType,
+      'uploadedDate': uploadedDate,
+    };
+  }
+
   /// Prefer image for thumbnail; [document] is often PDF path.
   String? get resolvedThumbnailUrl =>
       serverMediaUrl(image) ?? serverMediaUrl(document);
@@ -314,6 +393,15 @@ class BundleChecklistDoc {
       fileType: json['fileType']?.toString(),
       uploadedDate: json['uploadedDate']?.toString(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'image': image,
+      'document': document,
+      'fileType': fileType,
+      'uploadedDate': uploadedDate,
+    };
   }
 
   String? get resolvedThumbnailUrl =>

@@ -6,6 +6,7 @@ import 'package:travel_app_abdelhamid/features/chat/chat_detail_screen.dart';
 import 'package:travel_app_abdelhamid/features/chat/chat_screen.dart';
 import 'package:travel_app_abdelhamid/features/chat/group_info_screen.dart';
 import 'package:travel_app_abdelhamid/features/chat/live_location_screen.dart';
+import 'package:travel_app_abdelhamid/features/chat/track_travelers_screen.dart';
 
 List<RouteBase> get chatRoutes => [
   GoRoute(
@@ -27,6 +28,7 @@ List<RouteBase> get chatRoutes => [
         image: data['image'] as String,
         avatarUrl: data['avatarUrl'] as String?,
         isGroup: data['isGroup'] ?? false,
+        isLocalChat: data['isLocalChat'] ?? false,
       );
     },
   ),
@@ -48,5 +50,18 @@ List<RouteBase> get chatRoutes => [
     path: UserAppRoutes.liveLocationScreen.path,
     name: UserAppRoutes.liveLocationScreen.name,
     builder: (context, state) => LiveLocationScreen(),
+  ),
+  GoRoute(
+    path: UserAppRoutes.trackTravelersScreen.path,
+    name: UserAppRoutes.trackTravelersScreen.name,
+    builder: (context, state) {
+      final data = state.extra as Map<String, dynamic>;
+      return TrackTravelersScreen(
+        chatId: data['chatId'] as String,
+        groupId: data['groupId'] as String?,
+        name: data['name'] as String,
+        isGroup: data['isGroup'] as bool? ?? true,
+      );
+    },
   ),
 ];

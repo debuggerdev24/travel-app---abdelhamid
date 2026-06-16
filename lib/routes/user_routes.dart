@@ -44,4 +44,6 @@ enum UserAppRoutes {
   profileFeedbackScreen,
   prayerTimesScreen,
   notificationScreen,
+  trackTravelersScreen,
+  offlineAccessScreen,
 }

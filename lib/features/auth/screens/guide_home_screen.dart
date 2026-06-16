@@ -12,15 +12,6 @@ class GuideHomeScreen extends StatefulWidget {
 }
 
 class _GuideHomeScreenState extends State<GuideHomeScreen> {
-  final TextEditingController _emergencyMessageController =
-      TextEditingController();
-
-  @override
-  void dispose() {
-    _emergencyMessageController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,8 +37,6 @@ class _GuideHomeScreenState extends State<GuideHomeScreen> {
                 _buildStatsGrid(),
                 16.h.verticalSpace,
                 _buildQuickActions(),
-                16.h.verticalSpace,
-                _buildEmergencyButton(),
                 20.h.verticalSpace,
               ],
             ),
@@ -228,115 +217,5 @@ class _GuideHomeScreenState extends State<GuideHomeScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildEmergencyButton() {
-    return Container(
-      height: 52.h,
-      decoration: BoxDecoration(
-        color: AppColors.redColor,
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _showEmergencyMessageDialog,
-          borderRadius: BorderRadius.circular(8.r),
-          child: Row(
-            children: [
-              16.w.horizontalSpace,
-              Icon(Icons.emergency, color: Colors.white, size: 20.sp),
-              16.w.horizontalSpace,
-              AppText(
-                text: "Send Emergency Message",
-                style: textStyle14Regular.copyWith(color: Colors.white),
-              ),
-              Spacer(),
-              Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp),
-              16.w.horizontalSpace,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showEmergencyMessageDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: AppText(
-          text: "Emergency Broadcast",
-          style: textStyle18Bold.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppText(
-                text: "This message will be sent to all travelers immediately.",
-                style: textStyle14Regular.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              16.h.verticalSpace,
-              TextField(
-                controller: _emergencyMessageController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: "Enter emergency message...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: AppText(
-              text: "Cancel",
-              style: textStyle14Regular.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (_emergencyMessageController.text.trim().isNotEmpty) {
-                _sendEmergencyMessage();
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.redColor,
-            ),
-            child: AppText(
-              text: "Send to All",
-              style: textStyle14Regular.copyWith(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _sendEmergencyMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: AppText(
-          text: "Emergency message sent to all travelers!",
-          style: textStyle14Regular.copyWith(color: Colors.white),
-        ),
-        backgroundColor: AppColors.redColor,
-        duration: Duration(seconds: 3),
-      ),
-    );
-    _emergencyMessageController.clear();
   }
 }

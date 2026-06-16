@@ -45,6 +45,8 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _textController = TextEditingController();
+  final TextEditingController _emergencyMessageController =
+      TextEditingController();
   ChatProvider? _chat;
   bool _chatLoadStarted = false;
 
@@ -73,6 +75,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   void dispose() {
     _textController.dispose();
+    _emergencyMessageController.dispose();
     // Skip leaveChatRoom for local chats
     if (!widget.isLocalChat) {
       _chat?.leaveChatRoom();
@@ -118,7 +121,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   padding: EdgeInsets.only(left: 18.h, right: 10.w),
                   child: GestureDetector(
                     onTap: () => context.pop(),
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    child: SvgIcon(
+                      AppAssets.backIcon,
+                      size: 28.5.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -135,6 +142,36 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 if (!widget.isGroup) 35.w.horizontalSpace,
 
                 SizedBox(width: 10.w),
+                if (widget.isGroup) ...[
+                  GestureDetector(
+                    onTap: _showEmergencyMessageDialog,
+                    child: Icon(
+                      Icons.emergency,
+                      size: 24.w,
+                      color: AppColors.redColor,
+                    ),
+                  ),
+                  SizedBox(width: 15.w),
+                ],
+                GestureDetector(
+                  onTap: () {
+                    context.pushNamed(
+                      UserAppRoutes.trackTravelersScreen.name,
+                      extra: {
+                        'chatId': widget.chatId,
+                        'groupId': widget.groupId ?? widget.chatId,
+                        'name': widget.name,
+                        'isGroup': widget.isGroup,
+                      },
+                    );
+                  },
+                  child: Icon(
+                    Icons.map_outlined,
+                    size: 24.w,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                SizedBox(width: 15.w),
                 GestureDetector(
                   onTap: () {
                     if (widget.isGroup) {
@@ -151,11 +188,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     } else {}
                   },
                   child: widget.isGroup
-                      ? SvgIcon(AppAssets.info, size: 24.w)
+                      ? SvgIcon(
+                          AppAssets.info,
+                          size: 24.w,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        )
                       : SvgIcon(
                           AppAssets.call,
                           size: 24.w,
-                          color: AppColors.greyColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                 ),
                 SizedBox(width: widget.isGroup ? 18.h : 10.w),
@@ -945,7 +986,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               SizedBox(width: 4.w),
               _chatInputIconButton(
                 onTap: () => _pickAndUploadImage(provider, ImageSource.gallery),
-                child: SvgIcon(AppAssets.photo, size: 22.w),
+                child: SvgIcon(
+                  AppAssets.photo,
+                  size: 22.w,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               SizedBox(width: 4.w),
               _chatInputIconButton(
@@ -953,7 +998,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 child: SvgIcon(
                   AppAssets.pin,
                   size: 22.w,
-                  color: AppColors.primaryColor,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -989,6 +1034,90 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         builder: (ctx) => _ChatFullScreenImagePage(imageUrl: imageUrl),
       ),
     );
+  }
+
+  void _showEmergencyMessageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: AppText(
+          text: "Emergency Broadcast",
+          style: textStyle18Bold.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppText(
+                text: "This message will be sent to all members in this group immediately.",
+                style: textStyle14Regular.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              16.h.verticalSpace,
+              TextField(
+                controller: _emergencyMessageController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: "Enter emergency message...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: AppText(
+              text: "Cancel",
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (_emergencyMessageController.text.trim().isNotEmpty) {
+                _sendEmergencyMessage();
+                Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.redColor,
+            ),
+            child: AppText(
+              text: "Send",
+              style: textStyle14Regular.copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _sendEmergencyMessage() {
+    final msg = _emergencyMessageController.text.trim();
+    if (msg.isNotEmpty) {
+      context.read<ChatProvider>().sendSocketText("🚨 EMERGENCY: $msg");
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: AppText(
+          text: "Emergency message sent to group!",
+          style: textStyle14Regular.copyWith(color: Colors.white),
+        ),
+        backgroundColor: AppColors.redColor,
+        duration: Duration(seconds: 3),
+      ),
+    );
+    _emergencyMessageController.clear();
   }
 }
 

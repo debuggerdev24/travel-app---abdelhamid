@@ -18,6 +18,13 @@ class UserItineraryResponseModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'trip': trip.toJson(),
+      'itinerary': itinerary.toJson(),
+    };
+  }
+
   factory UserItineraryResponseModel.empty() {
     return UserItineraryResponseModel(
       trip: UserItineraryTripInfo(
@@ -64,6 +71,16 @@ class UserItineraryTripInfo {
       endDate: json['endDate']?.toString(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tripName': tripName,
+      'location': location,
+      'bannerImage': bannerImage,
+      'startDate': startDate,
+      'endDate': endDate,
+    };
+  }
 }
 
 class UserItineraryDay {
@@ -106,6 +123,18 @@ class UserItineraryDay {
           const [],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'dayTitle': dayTitle,
+      'dayNumber': dayNumber,
+      'notes': notes,
+      'date': date,
+      'status': status,
+      'activities': activities.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class UserItineraryActivity {
@@ -128,6 +157,15 @@ class UserItineraryActivity {
       activityTitle: (json['activityTitle'] ?? '').toString(),
       order: (json['order'] is int) ? json['order'] as int : int.tryParse('${json['order']}'),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'icon': icon,
+      'times': times,
+      'activityTitle': activityTitle,
+      'order': order,
+    };
   }
 }
 

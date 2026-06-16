@@ -22,6 +22,7 @@ import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.da
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
 import 'package:travel_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
+import 'package:travel_app_abdelhamid/core/utils/offline_storage_helper.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/user_flight_provider.dart';
 import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
@@ -29,6 +30,7 @@ import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TripScreen extends StatefulWidget {
   final Function(bool)? onShowTripDetails;
@@ -116,6 +118,19 @@ class _TripScreenState extends State<TripScreen> {
                     ),
                   ),
                 ),
+                Positioned(
+                  right: 27.w,
+                  child: GestureDetector(
+                    onTap: () {
+                      context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
+                    },
+                    child: Icon(
+                      Icons.cloud_off,
+                      size: 28.w,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -165,6 +180,19 @@ class _TripScreenState extends State<TripScreen> {
                   style: textStyle32Bold.copyWith(
                     fontSize: 26.sp,
                     color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 27.w,
+                child: GestureDetector(
+                  onTap: () {
+                    context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
+                  },
+                  child: Icon(
+                    Icons.cloud_off,
+                    size: 28.w,
+                    color: AppColors.primaryColor,
                   ),
                 ),
               ),
@@ -383,6 +411,36 @@ class _TripScreenState extends State<TripScreen> {
                       ),
                     ),
                   ),
+                  if (trip != null)
+                    GestureDetector(
+                      onTap: () async {
+                        // Save trip to offline
+                        await OfflineStorageHelper.saveTripForOffline(trip);
+                        
+                        // Try to get itinerary
+                        final today = tripProvider.todayItinerary;
+                        if (today != null) {
+                          await OfflineStorageHelper.saveOfflineItinerary(trip.id!, today);
+                        }
+                        
+                        // Try to get documents
+                        final docs = provider.tripDocumentsBundle;
+                        if (docs != null) {
+                          await OfflineStorageHelper.saveOfflineDocuments(trip.id!, docs);
+                        }
+
+                        Fluttertoast.showToast(
+                          msg: "Trip saved for offline access",
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                        );
+                      },
+                      child: Icon(
+                        Icons.download_for_offline,
+                        size: 30.w,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
                 ],
               ),
             ),

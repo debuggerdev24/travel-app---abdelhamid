@@ -41,6 +41,21 @@ class TripModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'tripName': title,
+      'location': location,
+      'bannerImage': image,
+      // We pass the formatted date string here, or parse it if we want. For simplicity, we just save the formatted string as startDate and clear endDate.
+      'startDate': date,
+      'endDate': null,
+      'status': status,
+      'description': description,
+      'packages': packages?.map((e) => e.toJson()).toList(),
+    };
+  }
+
   /// Nested `trip` from `GET /api/user-payment/my-trip` (`name`, `bannerImage`, dates — may omit `_id`).
   factory TripModel.fromUserPaymentMyTripJson(Map<String, dynamic> json) {
     final rawId = json['_id'] ?? json['tripId'];
@@ -157,6 +172,17 @@ class PackageDetails {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'packageName': title,
+      'roomDetails': roomDetails.map((e) => e.toJson()).toList(),
+      'childDetails': childDetails.map((e) => e.toJson()).toList(),
+      'inclusion': inclusions,
+      'exclusion': exclusions,
+    };
+  }
+
   static List<String> _parseStringList(dynamic raw) {
     if (raw == null) return [];
     if (raw is List) {
@@ -203,6 +229,15 @@ class RoomDetailModel {
       status: json['status'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'roomType': roomType,
+      'roomPrice': roomPrice,
+      'status': status,
+    };
+  }
 }
 
 class ChildDetailModel {
@@ -228,6 +263,16 @@ class ChildDetailModel {
       bedAllocated: json['bedAllocated'] ?? '',
       childPrice: (json['childPrice'] ?? 0).toDouble(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'childName': childName,
+      'ageRange': ageRange,
+      'bedAllocated': bedAllocated,
+      'childPrice': childPrice,
+    };
   }
 }
 

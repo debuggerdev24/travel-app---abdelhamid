@@ -26,6 +26,7 @@ class GroupInfoScreen extends StatefulWidget {
   final String name;
   final String image;
   final String? avatarUrl;
+  final bool isLocalChat;
 
   const GroupInfoScreen({
     super.key,
@@ -34,6 +35,7 @@ class GroupInfoScreen extends StatefulWidget {
     required this.name,
     required this.image,
     this.avatarUrl,
+    this.isLocalChat = false,
   });
 
   @override
@@ -47,6 +49,8 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   bool _actionInProgress = false;
   bool _notificationsOn = true;
   bool _showAllMembers = false;
+  final TextEditingController _emergencyMessageController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -54,11 +58,61 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     _loadGroupInfo();
   }
 
+  @override
+  void dispose() {
+    _emergencyMessageController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadGroupInfo() async {
     setState(() {
       _loading = true;
       _error = null;
     });
+
+    if (widget.isLocalChat) {
+      // Mock data for local chat
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+      setState(() {
+        _info = GroupInfoModel(
+          chatId: widget.chatId,
+          name: widget.name,
+          imageUrl: widget.image,
+          description: 'A mock group for tracking travelers and local chat.',
+          destination: 'Mecca, SA',
+          dateRange: 'Nov 1 - Nov 10, 2026',
+          createdByLabel: 'Guide User',
+          createdOnLabel: 'Oct 15, 2026',
+          sharedMedia: [],
+          members: [
+            GroupMemberModel(
+              memberId: 'self',
+              userId: currentUserIdOrNull() ?? 'user_1',
+              name: 'You',
+              role: 'Guide',
+              avatarUrl: widget.avatarUrl ?? '',
+            ),
+            GroupMemberModel(
+              memberId: 'mem_1',
+              userId: 'u1',
+              name: 'Ahmed Mohamed',
+              role: 'Member',
+              avatarUrl: '',
+            ),
+            GroupMemberModel(
+              memberId: 'mem_2',
+              userId: 'u2',
+              name: 'Sarah Johnson',
+              role: 'Member',
+              avatarUrl: '',
+            ),
+          ],
+        );
+        _loading = false;
+      });
+      return;
+    }
 
     try {
       final profileFuture = ChatApiService.instance.getChatProfile(
@@ -124,6 +178,14 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     if (confirmed != true || !mounted) return;
 
     setState(() => _actionInProgress = true);
+    if (widget.isLocalChat) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+      ToastHelper.showSuccess('You left the group (mock).');
+      _popToChatList();
+      return;
+    }
+
     try {
       await ChatApiService.instance.removeGroupMember(
         chatId: widget.groupId,
@@ -142,7 +204,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   Future<void> _deleteGroup() async {
     final info = _info;
     if (info == null || _actionInProgress) return;
-    if (!info.isCurrentUserAdmin) {
+    if (!info.isCurrentUserAdmin && !widget.isLocalChat) {
       ToastHelper.showError('Only admins can delete this group.');
       return;
     }
@@ -156,6 +218,14 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     if (confirmed != true || !mounted) return;
 
     setState(() => _actionInProgress = true);
+    if (widget.isLocalChat) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+      ToastHelper.showSuccess('Group deleted (mock).');
+      _popToChatList();
+      return;
+    }
+
     try {
       await ChatApiService.instance.deleteChat(chatId: widget.chatId);
       if (!mounted) return;
@@ -360,6 +430,10 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           14.h.verticalSpace,
           _buildMembersList(info, visibleMembers),
           35.h.verticalSpace,
+          if (info.isCurrentUserAdmin) ...[
+            _buildEmergencyButton(),
+            20.h.verticalSpace,
+          ],
           if (_actionInProgress)
             const Center(child: CircularProgressIndicator())
           else
@@ -581,5 +655,115 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildEmergencyButton() {
+    return Container(
+      height: 52.h,
+      decoration: BoxDecoration(
+        color: AppColors.redColor,
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _showEmergencyMessageDialog,
+          borderRadius: BorderRadius.circular(8.r),
+          child: Row(
+            children: [
+              16.w.horizontalSpace,
+              Icon(Icons.emergency, color: Colors.white, size: 20.sp),
+              16.w.horizontalSpace,
+              AppText(
+                text: "Send Emergency Message",
+                style: textStyle14Regular.copyWith(color: Colors.white),
+              ),
+              Spacer(),
+              Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp),
+              16.w.horizontalSpace,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showEmergencyMessageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: AppText(
+          text: "Emergency Broadcast",
+          style: textStyle18Bold.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppText(
+                text: "This message will be sent to all members in this group immediately.",
+                style: textStyle14Regular.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              16.h.verticalSpace,
+              TextField(
+                controller: _emergencyMessageController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: "Enter emergency message...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: AppText(
+              text: "Cancel",
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (_emergencyMessageController.text.trim().isNotEmpty) {
+                _sendEmergencyMessage();
+                Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.redColor,
+            ),
+            child: AppText(
+              text: "Send",
+              style: textStyle14Regular.copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _sendEmergencyMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: AppText(
+          text: "Emergency message sent to group!",
+          style: textStyle14Regular.copyWith(color: Colors.white),
+        ),
+        backgroundColor: AppColors.redColor,
+        duration: Duration(seconds: 3),
+      ),
+    );
+    _emergencyMessageController.clear();
   }
 }

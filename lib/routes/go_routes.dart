@@ -13,7 +13,9 @@ import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 class UserAppRoute {
   static final GoRouter goRouter = GoRouter(
     initialLocation: PrefHelper.isLoggedIn()
-        ? UserAppRoutes.tabScreen.path
+        ? (PrefHelper.getAccessToken() == 'static_guide_token'
+            ? UserAppRoutes.guideDashboard.path
+            : UserAppRoutes.tabScreen.path)
         : UserAppRoutes.signInScreen.path,
     routes: [
       ...authRoutes,

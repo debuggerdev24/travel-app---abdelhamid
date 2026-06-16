@@ -19,6 +19,7 @@ import 'package:travel_app_abdelhamid/features/trip/trip_screen.dart';
 import 'package:travel_app_abdelhamid/features/trip/umrah_guide_screen.dart';
 import 'package:travel_app_abdelhamid/features/trip/view_receipt_screen.dart';
 import 'package:travel_app_abdelhamid/features/trip/view_screen.dart';
+import 'package:travel_app_abdelhamid/features/trip/offline_access_screen.dart';
 
 /// When [GoRouterState.extra] is an [int] from [freshRouteNonce], forces a new
 /// widget [State] so essentials detail screens refetch on every navigation.
@@ -141,5 +142,10 @@ List<RouteBase> get tripRoutes => [
         address: data['address'] as String,
       );
     },
+  ),
+  GoRoute(
+    path: UserAppRoutes.offlineAccessScreen.path,
+    name: UserAppRoutes.offlineAccessScreen.name,
+    builder: (context, state) => const OfflineAccessScreen(),
   ),
 ];
