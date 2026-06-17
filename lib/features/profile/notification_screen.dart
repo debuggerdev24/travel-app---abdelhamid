@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -53,7 +54,7 @@ class NotificationScreen extends StatelessWidget {
                     ),
                   ),
                   AppText(
-                    text: "Notifications",
+                    text: "Notifications".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -68,10 +69,10 @@ class NotificationScreen extends StatelessWidget {
                     _buildPremiumNotificationCard(
                       context,
                       notification: NotificationModel(
-                        title: "Premium Feature Unlocked",
+                        title: "Premium Feature Unlocked".tr(),
                         message:
-                            "You now have access to exclusive travel deals and discounts!",
-                        time: "2 hours ago",
+                            "You now have access to exclusive travel deals and discounts!".tr(),
+                        time: "2 hours ago".tr(),
                         icon: AppAssets.travel,
                         isPremium: true,
                         isRead: false,
@@ -81,10 +82,10 @@ class NotificationScreen extends StatelessWidget {
                     _buildPremiumNotificationCard(
                       context,
                       notification: NotificationModel(
-                        title: "Trip Reminder",
+                        title: "Trip Reminder".tr(),
                         message:
-                            "Your trip to Mecca starts in 3 days. Don't forget to pack!",
-                        time: "5 hours ago",
+                            "Your trip to Mecca starts in 3 days. Don't forget to pack!".tr(),
+                        time: "5 hours ago".tr(),
                         icon: AppAssets.alarm,
                         isPremium: true,
                         isRead: false,
@@ -94,10 +95,10 @@ class NotificationScreen extends StatelessWidget {
                     _buildPremiumNotificationCard(
                       context,
                       notification: NotificationModel(
-                        title: "Special Offer",
+                        title: "Special Offer".tr(),
                         message:
-                            "Get 20% off on hotel bookings with code: TRAVEL20",
-                        time: "1 day ago",
+                            "Get 20% off on hotel bookings with code: TRAVEL20".tr(),
+                        time: "1 day ago".tr(),
                         icon: AppAssets.cash,
                         isPremium: true,
                         isRead: true,
@@ -107,9 +108,9 @@ class NotificationScreen extends StatelessWidget {
                     _buildPremiumNotificationCard(
                       context,
                       notification: NotificationModel(
-                        title: "Prayer Time Alert",
-                        message: "Maghrib prayer is in 30 minutes",
-                        time: "2 days ago",
+                        title: "Prayer Time Alert".tr(),
+                        message: "Maghrib prayer is in 30 minutes".tr(),
+                        time: "2 days ago".tr(),
                         icon: AppAssets.alarm,
                         isPremium: false,
                         isRead: true,
@@ -119,10 +120,10 @@ class NotificationScreen extends StatelessWidget {
                     _buildPremiumNotificationCard(
                       context,
                       notification: NotificationModel(
-                        title: "Payment Successful",
+                        title: "Payment Successful".tr(),
                         message:
-                            "Your payment of \$500 has been processed successfully",
-                        time: "3 days ago",
+                            "Your payment of \$500 has been processed successfully".tr(),
+                        time: "3 days ago".tr(),
                         icon: AppAssets.cash,
                         isPremium: false,
                         isRead: true,
@@ -244,7 +245,7 @@ class NotificationScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                         child: AppText(
-                          text: "PREMIUM",
+                          text: "PREMIUM".tr(),
                           style: textStyle10Regular.copyWith(
                             fontSize: 10.sp,
                             color: Colors.white,

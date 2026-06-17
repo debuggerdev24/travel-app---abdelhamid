@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
 import 'package:travel_app_abdelhamid/core/utils/image_compress_helper.dart';
@@ -19,13 +20,10 @@ class ProfileProvider extends ChangeNotifier {
   String? get error => _error;
 
   List<String> languageOptions = [
+    "Dutch",
     "English",
-    "Arabic",
-    "Hindi",
-    "Gujarati",
-    "Spanish",
     "French",
-    "Urdu",
+    "Arabic",
   ];
 
   List<String> selectedLanguages = [];
@@ -90,11 +88,11 @@ class ProfileProvider extends ChangeNotifier {
       selectedLanguages = normalizeSelectedLanguages(
         _profile?.languages ?? selectedLanguages,
       );
-      ToastHelper.showSuccess('Profile updated');
+      ToastHelper.showSuccess('Profile updated'.tr());
       return true;
     } catch (e) {
       _error = e.toString();
-      ToastHelper.showError('Failed to update profile');
+      ToastHelper.showError('Failed to update profile'.tr());
       return false;
     } finally {
       _loading = false;
@@ -117,24 +115,24 @@ class ProfileProvider extends ChangeNotifier {
         _profile = _profile!.copyWith(profileImageRaw: url);
       }
       if (url != null && url.isNotEmpty) {
-        ToastHelper.showSuccess('Profile image updated');
+        ToastHelper.showSuccess('Profile image updated'.tr());
         return true;
       }
-      ToastHelper.showError('Failed to update profile image');
+      ToastHelper.showError('Failed to update profile image'.tr());
       return false;
     } on ApiException catch (e) {
       _error = e.message;
       if (e.statusCode == 413) {
         ToastHelper.showError(
-          'Image is too large. Please choose a smaller photo.',
+          'Image is too large. Please choose a smaller photo.'.tr(),
         );
       } else {
-        ToastHelper.showError('Failed to update profile image');
+        ToastHelper.showError('Failed to update profile image'.tr());
       }
       return false;
     } catch (e) {
       _error = e.toString();
-      ToastHelper.showError('Failed to update profile image');
+      ToastHelper.showError('Failed to update profile image'.tr());
       return false;
     } finally {
       _updatingProfileImage = false;

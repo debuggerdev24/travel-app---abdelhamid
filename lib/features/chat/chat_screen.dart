@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -73,7 +74,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           Center(
                             child: AppText(
                               textAlign: TextAlign.center,
-                              text: 'No conversations yet.',
+                              text: 'No conversations yet.'.tr(),
                               style: textStyle14Regular.copyWith(
                                 color: Theme.of(
                                   context,
@@ -118,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
           24.w.horizontalSpace,
           AppText(
             textAlign: TextAlign.center,
-            text: "Chat",
+            text: "Chat".tr(),
             style: textStyle16SemiBold.copyWith(
               fontSize: 26.sp,
               color: Theme.of(context).colorScheme.onSurface,
@@ -149,9 +150,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           child: Row(
             children: [
-              _tabItem(context, provider, "All", 0),
-              _tabItem(context, provider, "Groups", 1),
-              _tabItem(context, provider, "Direct", 2),
+              _tabItem(context, provider, "All".tr(), 0),
+              _tabItem(context, provider, "Groups".tr(), 1),
+              _tabItem(context, provider, "Direct".tr(), 2),
             ],
           ),
         );
@@ -168,10 +169,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final bool isSelected = provider.selectedTabIndex == index;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return GestureDetector(
-      onTap: () => provider.changeTab(index),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 39.w),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => provider.changeTab(index),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 10.h),
         decoration: BoxDecoration(
           color: isSelected
               ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
@@ -198,6 +200,7 @@ class _ChatScreenState extends State<ChatScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
+        ),
         ),
       ),
     );
@@ -239,7 +242,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     children: [
                       Expanded(
                         child: AppText(
-                          text: data.name,
+                          text: data.name.startsWith('Trip: ')
+                              ? '${"Trip".tr()}: ${data.name.substring(6)}'
+                              : (data.name.startsWith('Trip:')
+                                  ? '${"Trip".tr()}:${data.name.substring(5)}'
+                                  : data.name),
                           overflow: TextOverflow.ellipsis,
                           style: textStyle18Bold.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,

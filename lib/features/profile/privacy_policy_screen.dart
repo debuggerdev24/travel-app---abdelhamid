@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -76,7 +77,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               20.h.verticalSpace,
               AppText(
                 textAlign: TextAlign.center,
-                text: 'Privacy policy is not available yet',
+                text: 'Privacy policy is not available yet'.tr(),
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 17.sp,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -86,7 +87,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               AppText(
                 textAlign: TextAlign.center,
                 text:
-                    'We could not load any privacy policy from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need details on how we handle your data.',
+                    'We could not load any privacy policy from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need details on how we handle your data.'.tr(),
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,
@@ -156,11 +157,11 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   AppText(
-                    text: "Privacy Policy",
+                    text: "Privacy Policy".tr(),
                     style: textStyle16SemiBold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -192,7 +193,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                       TextButton(
                         onPressed: _load,
                         child: AppText(
-                          text: "Retry",
+                          text: "Retry".tr(),
                           style: textStyle14Medium.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -25,39 +26,39 @@ class GuideProfileScreen extends StatelessWidget {
             20.h.verticalSpace,
             Center(
               child: AppText(
-                text: "Guide Profile",
+                text: "Guide Profile".tr(),
                 style: textStyle32Bold.copyWith(color: AppColors.secondary),
               ),
             ),
             40.h.verticalSpace,
             _buildProfileItem(
-              title: "Name",
+              title: "Name".tr(),
               value: "Guide User",
               icon: Icons.person,
             ),
             20.h.verticalSpace,
             _buildProfileItem(
-              title: "Email",
+              title: "Email".tr(),
               value: "guide@gmail.com",
               icon: Icons.email,
             ),
             20.h.verticalSpace,
             _buildProfileItem(
-              title: "Role",
+              title: "Role".tr(),
               value: "Tour Guide",
               icon: Icons.work,
             ),
             20.h.verticalSpace,
             _buildProfileItem(
-              title: "Experience",
+              title: "Experience".tr(),
               value: "5+ Years",
               icon: Icons.star,
             ),
             40.h.verticalSpace,
-            AppText(text: "Settings", style: textStyle18Bold),
+            AppText(text: "Settings".tr(), style: textStyle18Bold),
             20.h.verticalSpace,
             _buildSettingItem(
-              title: "Edit Profile",
+              title: "Edit Profile".tr(),
               icon: Icons.edit,
               onTap: () {
                 // Static action - no API
@@ -65,7 +66,7 @@ class GuideProfileScreen extends StatelessWidget {
             ),
             10.h.verticalSpace,
             _buildSettingItem(
-              title: "Notifications",
+              title: "Notifications".tr(),
               icon: Icons.notifications,
               onTap: () {
                 // Static action - no API
@@ -73,7 +74,7 @@ class GuideProfileScreen extends StatelessWidget {
             ),
             10.h.verticalSpace,
             _buildSettingItem(
-              title: "Privacy Policy",
+              title: "Privacy Policy".tr(),
               icon: Icons.privacy_tip,
               onTap: () {
                 // Static action - no API
@@ -81,7 +82,7 @@ class GuideProfileScreen extends StatelessWidget {
             ),
             40.h.verticalSpace,
             AppButton(
-              title: "Logout",
+              title: "Logout".tr(),
               onTap: () async {
                 await PrefHelper.clearTokens();
                 if (context.mounted) {

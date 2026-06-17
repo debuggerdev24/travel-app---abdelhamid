@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -104,13 +105,13 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                     padding: EdgeInsets.only(bottom: 35.h),
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   50.w.horizontalSpace,
                   AppText(
                     textAlign: TextAlign.center,
-                    text: "Social Media \nLinks",
+                    text: "Social Media \nLinks".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -121,7 +122,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
               12.h.verticalSpace,
               AppText(
                 text:
-                    "Stay connected with us! Follow our latest updates, photos, and travel stories on social media.",
+                    "Stay connected with us! Follow our latest updates, photos, and travel stories on social media.".tr(),
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -151,7 +152,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                       TextButton(
                         onPressed: _load,
                         child: AppText(
-                          text: "Retry",
+                          text: "Retry".tr(),
                           style: textStyle14Medium.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -164,7 +165,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                 Expanded(
                   child: Center(
                     child: AppText(
-                      text: "No social links available yet.",
+                      text: "No social links available yet.".tr(),
                       style: textStyle14Regular.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),

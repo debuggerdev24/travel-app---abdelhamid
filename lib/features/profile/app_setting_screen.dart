@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -70,11 +71,11 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   AppText(
-                    text: "App Settings",
+                    text: "App Settings".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -86,7 +87,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               22.h.verticalSpace,
 
               _settingTile(
-                title: "Light mode",
+                title: "Light mode".tr(),
                 value: lightMode,
                 onChanged: (v) {
                   setState(() {
@@ -103,7 +104,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               SizedBox(height: 16),
 
               _settingTile(
-                title: "Dark mode",
+                title: "Dark mode".tr(),
                 value: darkMode,
                 onChanged: (v) {
                   setState(() {
@@ -120,7 +121,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               SizedBox(height: 16),
 
               _settingTile(
-                title: "System default",
+                title: "System default".tr(),
                 value: systemDefault,
                 onChanged: (v) {
                   setState(() {
@@ -137,7 +138,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               SizedBox(height: 16),
 
               _settingTile(
-                title: "Auto App Update",
+                title: "Auto App Update".tr(),
                 value: autoUpdate,
                 onChanged: (v) {
                   setState(() {

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
@@ -75,13 +76,13 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                           padding: EdgeInsets.only(bottom: 35.h),
                           child: GestureDetector(
                             onTap: () => context.pop(),
-                            child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                            child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                           ),
                         ),
                         80.w.horizontalSpace,
                         AppText(
                           textAlign: TextAlign.center,
-                          text: "Add New \nDocument",
+                          text: "Add New \nDocument".tr(),
                           style: textStyle32Bold.copyWith(
                             fontSize: 26.sp,
                             color: AppColors.secondary,
@@ -91,7 +92,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                     ),
                     CustomMultiSelectDropdown(
                       labelText: "",
-                      hintText: "Select Document Type",
+                      hintText: "Select Document Type".tr(),
                       items: myTrip.documentTypes,
                       selectedItems: myTrip.selectedDocumentType,
                       onChanged: myTrip.selectDocumentType,
@@ -100,7 +101,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                     ),
                     22.h.verticalSpace,
                     AppTextField(
-                      hintText: "Enter Document Name",
+                      hintText: "Enter Document Name".tr(),
                       labelText: "",
                       controller: _documentNameController,
                     ),
@@ -134,16 +135,16 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                     ),
                     350.h.verticalSpace,
                     AppButton(
-                      title: "Save Document",
+                      title: "Save Document".tr(),
                       isLoading: myTrip.isUploadingDocument,
                       onTap: myTrip.isUploadingDocument
                           ? null
                           : () async {
                               if (resolvedTripId.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                      "No trip selected. Open this screen from My Trips.",
+                                      "No trip selected. Open this screen from My Trips.".tr(),
                                     ),
                                   ),
                                 );
@@ -151,9 +152,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               }
                               if (myTrip.selectedDocumentType.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                      "Please select document type",
+                                      "Please select document type".tr(),
                                     ),
                                   ),
                                 );
@@ -161,9 +162,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               }
                               if (pickedImage == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                      "Please upload document image",
+                                      "Please upload document image".tr(),
                                     ),
                                   ),
                                 );
@@ -198,8 +199,8 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               setState(() => pickedImage = null);
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Document added successfully!"),
+                                SnackBar(
+                                  content: Text("Document added successfully!".tr()),
                                 ),
                               );
                               context.pop();

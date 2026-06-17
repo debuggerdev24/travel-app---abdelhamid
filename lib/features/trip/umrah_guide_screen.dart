@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -70,13 +71,13 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
                     onTap: () => context.pop(),
                     child: Padding(
                       padding: EdgeInsets.only(top: 2.h),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   Expanded(
                     child: AppText(
                       textAlign: TextAlign.center,
-                      text: "Umrah Guide\n(Step-by-Step)",
+                      text: "Umrah Guide\n(Step-by-Step)".tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
                         color: AppColors.secondary,
@@ -131,7 +132,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
           TextButton(
             onPressed: _load,
             child: AppText(
-              text: 'Retry',
+              text: 'Retry'.tr(),
               style: textStyle14Medium.copyWith(color: AppColors.secondary),
             ),
           ),
@@ -150,7 +151,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
                   child: AppText(
-                    text: 'No Umrah guide steps available yet',
+                    text: 'No Umrah guide steps available yet'.tr(),
                     textAlign: TextAlign.center,
                     style: textStyle14Regular.copyWith(
                       color: AppColors.primaryColor.setOpacity(0.7),
@@ -202,7 +203,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
                 SvgIcon(AppAssets.save, size: 20.w),
                 10.w.horizontalSpace,
                 AppText(
-                  text: " Download",
+                  text: " Download".tr(),
                   style: textStyle14Medium.copyWith(color: AppColors.blueColor),
                 ),
               ],
@@ -236,7 +237,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
                   SvgIcon(AppAssets.eye, size: 20.w),
                   10.w.horizontalSpace,
                   AppText(
-                    text: " View Dua List",
+                    text: " View Dua List".tr(),
                     style: textStyle14Medium.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),

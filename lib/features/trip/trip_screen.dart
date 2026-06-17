@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -111,7 +112,7 @@ class _TripScreenState extends State<TripScreen> {
               children: [
                 Center(
                   child: AppText(
-                    text: "My Trips",
+                    text: "My Trips".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -146,14 +147,14 @@ class _TripScreenState extends State<TripScreen> {
                   ),
                   24.h.verticalSpace,
                   AppText(
-                    text: "No enrolled trips found",
+                    text: "No enrolled trips found".tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   8.h.verticalSpace,
                   AppText(
-                    text: "Start exploring and book your first trip!",
+                    text: "Start exploring and book your first trip!".tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -176,7 +177,7 @@ class _TripScreenState extends State<TripScreen> {
             children: [
               Center(
                 child: AppText(
-                  text: "My Trips",
+                  text: "My Trips".tr(),
                   style: textStyle32Bold.copyWith(
                     fontSize: 26.sp,
                     color: Theme.of(context).colorScheme.onSurface,
@@ -398,7 +399,7 @@ class _TripScreenState extends State<TripScreen> {
                       });
                       widget.onShowTripDetails?.call(false);
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                   ),
                   30.w.horizontalSpace,
                   Expanded(
@@ -514,12 +515,12 @@ class _TripScreenState extends State<TripScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildTab("Payment", AppAssets.payment, 0),
-                    _buildTab("Flights", AppAssets.flight, 1),
-                    _buildTab("Hotels", AppAssets.hotel, 2),
-                    _buildTab("Itinerary", AppAssets.itinerary, 3),
-                    _buildTab("Essentials", AppAssets.essential, 4),
-                    _buildTab("Documents", AppAssets.document, 5),
+                    _buildTab("Payment".tr(), AppAssets.payment, 0),
+                    _buildTab("Flights".tr(), AppAssets.flight, 1),
+                    _buildTab("Hotels".tr(), AppAssets.hotel, 2),
+                    _buildTab("Itinerary".tr(), AppAssets.itinerary, 3),
+                    _buildTab("Essentials".tr(), AppAssets.essential, 4),
+                    _buildTab("Documents".tr(), AppAssets.document, 5),
                   ],
                 ),
               ),
@@ -647,7 +648,7 @@ class _TripScreenState extends State<TripScreen> {
             padding: EdgeInsets.symmetric(vertical: 40.h),
             child: Center(
               child: AppText(
-                text: "No flight details available",
+                text: "No flight details available".tr(),
                 style: textStyle14Regular.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -670,8 +671,8 @@ class _TripScreenState extends State<TripScreen> {
                   children: [
                     TripDetailsCard(
                       title: flight.flightType == 'outbound'
-                          ? 'Outbound Flight'
-                          : 'Return Flight',
+                          ? 'Outbound Flight'.tr()
+                          : 'Return Flight'.tr(),
                       infoMap: flight.infoMap,
                     ),
                     if (index < flights.length - 1) SizedBox(height: 20.h),
@@ -733,14 +734,14 @@ class _TripScreenState extends State<TripScreen> {
                 child: Column(
                   children: [
                     AppText(
-                      text: "Failed to load hotel details",
+                      text: "Failed to load hotel details".tr(),
                       style: textStyle14Regular.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     12.h.verticalSpace,
                     AppButton(
-                      title: "Retry",
+                      title: "Retry".tr(),
                       onTap: tripId == null || tripId.isEmpty
                           ? null
                           : () => context
@@ -754,7 +755,7 @@ class _TripScreenState extends State<TripScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 24.h),
                 child: AppText(
-                  text: "No hotel details available",
+                  text: "No hotel details available".tr(),
                   style: textStyle14Regular.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
@@ -768,24 +769,24 @@ class _TripScreenState extends State<TripScreen> {
                 final facilities = hotel.facilitiesDisplayText;
 
                 final info = <String, String>{
-                  "Name": hotel.hotelName.isEmpty ? "-" : hotel.hotelName,
-                  "Address": hotel.hotelAddress.isEmpty
+                  "Name".tr(): hotel.hotelName.isEmpty ? "-" : hotel.hotelName,
+                  "Address".tr(): hotel.hotelAddress.isEmpty
                       ? "-"
                       : hotel.hotelAddress,
-                  "Phone": hotel.hotelContact.isEmpty
+                  "Phone".tr(): hotel.hotelContact.isEmpty
                       ? "-"
                       : hotel.hotelContact,
-                  "Check-in": formatDateTimeForDisplay(hotel.stayInfo.checkIn),
-                  "Check-out": formatDateTimeForDisplay(
+                  "Check-in".tr(): formatDateTimeForDisplay(hotel.stayInfo.checkIn),
+                  "Check-out".tr(): formatDateTimeForDisplay(
                     hotel.stayInfo.checkOut,
                   ),
                   if (room != null)
-                    "Room Type": room.roomType.isEmpty ? "-" : room.roomType,
+                    "Room Type".tr(): room.roomType.isEmpty ? "-" : room.roomType,
                   if (room != null)
-                    "Room No": room.roomNumber.isEmpty ? "-" : room.roomNumber,
+                    "Room No".tr(): room.roomNumber.isEmpty ? "-" : room.roomNumber,
                   if (room != null && room.guests.isNotEmpty)
-                    "Guests": room.guests.join(', '),
-                  if (facilities.isNotEmpty) "Facilities": facilities,
+                    "Guests".tr(): room.guests.join(', '),
+                  if (facilities.isNotEmpty) "Facilities".tr(): facilities,
                 };
 
                 return Padding(
@@ -843,14 +844,14 @@ class _TripScreenState extends State<TripScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 AppText(
-                  text: "Failed to load itinerary",
+                  text: "Failed to load itinerary".tr(),
                   style: textStyle14Regular.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 12.h.verticalSpace,
                 AppButton(
-                  title: "Retry",
+                  title: "Retry".tr(),
                   onTap: tripId == null || tripId.isEmpty
                       ? null
                       : () => context.read<TripProvider>().fetchTodayItinerary(
@@ -862,7 +863,7 @@ class _TripScreenState extends State<TripScreen> {
             )
           : activities.isEmpty
           ? AppText(
-              text: "No itinerary available",
+              text: "No itinerary available".tr(),
               style: textStyle14Regular.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -931,13 +932,13 @@ class _TripScreenState extends State<TripScreen> {
 
   Widget _essentialsSection() {
     final List<String> essentialsItems = [
-      "Packing List",
-      "Currency & Money",
-      "Emergency Contacts",
-      "Local Info/Haramain Train",
-      "Health & Safety Tips",
-      "Umrah Guide (Step-by-Step)",
-      "Dua List",
+      "Packing List".tr(),
+      "Currency & Money".tr(),
+      "Emergency Contacts".tr(),
+      "Local Info/Haramain Train".tr(),
+      "Health & Safety Tips".tr(),
+      "Umrah Guide (Step-by-Step)".tr(),
+      "Dua List".tr(),
     ];
 
     return ListView.separated(
@@ -1112,7 +1113,7 @@ class _TripScreenState extends State<TripScreen> {
       padding: EdgeInsets.only(bottom: 12.h),
       child: DocumentCard(
         doc: DocumentModel(
-          subtitle: 'Flight Ticket',
+          subtitle: 'Flight Ticket'.tr(),
           image: AppAssets.hotel,
           title: title,
           networkThumbnailUrl: ticket.resolvedTicketUrl,
@@ -1195,7 +1196,7 @@ class _TripScreenState extends State<TripScreen> {
           image: AppAssets.hotel3,
           networkThumbnailUrl: d.resolvedThumbnailUrl,
           title: d.policyName ?? 'Travel Insurance',
-          subtitle: 'Travel Insurance',
+          subtitle: 'Travel Insurance'.tr(),
           info: info,
           button1: 'View',
           button2: 'Helpline',
@@ -1226,8 +1227,8 @@ class _TripScreenState extends State<TripScreen> {
         doc: DocumentModel(
           image: AppAssets.hotel3,
           networkThumbnailUrl: d.resolvedThumbnailUrl,
-          title: 'Checklist',
-          subtitle: 'Travel Document',
+          title: 'Checklist'.tr(),
+          subtitle: 'Travel Document'.tr(),
           info: {
             if (d.fileType != null) 'File Type': d.fileType!,
             if (d.uploadedDate != null && d.uploadedDate!.isNotEmpty)
@@ -1252,7 +1253,7 @@ class _TripScreenState extends State<TripScreen> {
         },
         onSecondaryTap: () {
           final url = d.resolvedPrimaryFileUrl ?? d.resolvedThumbnailUrl;
-          _shareDocument(context, networkUrl: url, title: 'Checklist');
+          _shareDocument(context, networkUrl: url, title: 'Checklist'.tr());
         },
       ),
     );
@@ -1364,7 +1365,7 @@ class _TripScreenState extends State<TripScreen> {
                 ),
                 16.h.verticalSpace,
                 AppButton(
-                  title: 'Retry',
+                  title: 'Retry'.tr(),
                   onTap: tripId == null || tripId.isEmpty
                       ? null
                       : () async {
@@ -1477,7 +1478,7 @@ class _TripScreenState extends State<TripScreen> {
                             ),
                             SizedBox(width: 8.w),
                             AppText(
-                              text: "Add More",
+                              text: "Add More".tr(),
                               style: textPoppinsMedium.copyWith(
                                 color: Theme.of(context).colorScheme.surface,
                                 fontSize: 14.sp,
@@ -1496,7 +1497,7 @@ class _TripScreenState extends State<TripScreen> {
                     ) ||
                     hasPassVisaApi) ...[
                   AppText(
-                    text: "Passport & Visa",
+                    text: "Passport & Visa".tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -1547,7 +1548,7 @@ class _TripScreenState extends State<TripScreen> {
                 if (docs.any((d) => d["type"] == "Flight Ticket") ||
                     hasFlightApi) ...[
                   AppText(
-                    text: "Round Trip Tickets",
+                    text: "Round Trip Tickets".tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -1560,7 +1561,7 @@ class _TripScreenState extends State<TripScreen> {
                           padding: EdgeInsets.only(bottom: 12.h),
                           child: DocumentCard(
                             doc: DocumentModel(
-                              subtitle: "Return Ticket",
+                              subtitle: "Return Ticket".tr(),
                               image: AppAssets.hotel,
                               title: doc["name"],
                               fileImage: doc["file"],
@@ -1598,7 +1599,7 @@ class _TripScreenState extends State<TripScreen> {
                 if (docs.any((d) => d["type"] == "Medical Certificate") ||
                     hasMedApi) ...[
                   AppText(
-                    text: "Medical Certificate",
+                    text: "Medical Certificate".tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -1612,7 +1613,7 @@ class _TripScreenState extends State<TripScreen> {
                           child: DocumentCard(
                             doc: DocumentModel(
                               image: AppAssets.hotel2,
-                              title: "Medical Certificate",
+                              title: "Medical Certificate".tr(),
                               fileImage: doc["file"],
                               info: {"File Type": "JPG"},
                               button1: "View",
@@ -1643,7 +1644,7 @@ class _TripScreenState extends State<TripScreen> {
 
                 if (hasHotelRows) ...[
                   AppText(
-                    text: "Hotel Vouchers",
+                    text: "Hotel Vouchers".tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -1659,7 +1660,7 @@ class _TripScreenState extends State<TripScreen> {
 
                 if (hasTravelAdmin) ...[
                   AppText(
-                    text: "Travel Document",
+                    text: "Travel Document".tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -1702,7 +1703,7 @@ class _TripScreenState extends State<TripScreen> {
           Image.asset(AppAssets.upload, width: 60.w, height: 60.h),
           SizedBox(height: 10.h),
           AppText(
-            text: "No documents uploaded yet",
+            text: "No documents uploaded yet".tr(),
             style: textStyle16SemiBold.copyWith(
               fontSize: 21.sp,
               fontWeight: FontWeight.w600,
@@ -1711,7 +1712,7 @@ class _TripScreenState extends State<TripScreen> {
           ),
           10.h.verticalSpace,
           AppText(
-            text: "Add your Passport, Visa, Tickets here.",
+            text: "Add your Passport, Visa, Tickets here.".tr(),
             style: textStyle14Regular.copyWith(
               fontSize: 16.sp,
               color: Theme.of(context).colorScheme.onSurface,
@@ -1719,7 +1720,7 @@ class _TripScreenState extends State<TripScreen> {
           ),
           40.h.verticalSpace,
           AppButton(
-            title: "Add New Document",
+            title: "Add New Document".tr(),
             onTap: () {
               context.pushNamed(
                 UserAppRoutes.addDocumentScreen.name,

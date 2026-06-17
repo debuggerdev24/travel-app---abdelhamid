@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 
 import 'package:flutter/gestures.dart';
@@ -78,20 +79,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     onTap: () {
                       context.pop();
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 11.h.verticalSpace,
                 Align(
                   child: RichText(
                     text: TextSpan(
-                      text: "Verify",
+                      text: "Verify".tr(),
                       style: textStyle32Bold.copyWith(
                         color: AppColors.secondary,
                       ),
                       children: [
                         TextSpan(
-                          text: " Your Account",
+                          text: " Your Account".tr(),
                           style: textStyle32Bold.copyWith(
                             color: AppColors.primaryColor,
                           ),
@@ -103,7 +104,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 6.h.verticalSpace,
                 AppText(
                   textAlign: TextAlign.center,
-                  text: "Enter the 6-digit code we sent to your email",
+                  text: "Enter the 6-digit code we sent to your email".tr(),
                   style: textStyle14Italic,
                 ),
                 40.h.verticalSpace,
@@ -172,7 +173,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   builder: (context, isLoading, child) {
                     if (isLoading) const CircularProgressIndicator();
                     return AppButton(
-                      title: "Verify",
+                      title: "Verify".tr(),
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
                           context.read<AuthProvider>().verifyOtp(
@@ -240,7 +241,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   },
                   child: AppText(
                     textAlign: TextAlign.center,
-                    text: "Change phone/email",
+                    text: "Change phone/email".tr(),
                     style: textStyle14Regular.copyWith(
                       color: AppColors.secondary,
                       decoration: TextDecoration.underline,

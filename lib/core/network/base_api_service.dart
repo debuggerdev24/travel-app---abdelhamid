@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -259,7 +260,7 @@ class BaseApiService {
         stackTrace,
       );
       if (showErrorToast) {
-        ToastHelper.showError("An unexpected error occurred.");
+        ToastHelper.showError("An unexpected error occurred.".tr());
       }
       rethrow;
     }
@@ -369,7 +370,7 @@ class BaseApiService {
         stackTrace,
       );
       if (showErrorToast) {
-        ToastHelper.showError("An unexpected error occurred.");
+        ToastHelper.showError("An unexpected error occurred.".tr());
       }
       rethrow;
     }
@@ -481,7 +482,7 @@ class BaseApiService {
         stackTrace,
       );
       if (showErrorToast) {
-        ToastHelper.showError("An unexpected error occurred.");
+        ToastHelper.showError("An unexpected error occurred.".tr());
       }
       rethrow;
     }

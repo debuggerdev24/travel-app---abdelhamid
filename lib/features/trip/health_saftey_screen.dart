@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -71,14 +72,14 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
                     padding: EdgeInsets.only(bottom: 8.h),
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   16.w.horizontalSpace,
                   Expanded(
                     child: AppText(
                       textAlign: TextAlign.center,
-                      text: "Health & Safety \nTips",
+                      text: "Health & Safety \nTips".tr(),
                       style: textStyle16SemiBold.copyWith(
                         fontSize: 26.sp,
                         color: AppColors.secondary,
@@ -125,7 +126,7 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
             TextButton(
               onPressed: _load,
               child: AppText(
-                text: "Retry",
+                text: "Retry".tr(),
                 style: textStyle14Medium.copyWith(color: AppColors.secondary),
               ),
             ),
@@ -145,7 +146,7 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
                   child: AppText(
-                    text: "No health tips available",
+                    text: "No health tips available".tr(),
                     textAlign: TextAlign.center,
                     style: textStyle14Regular.copyWith(
                       color: AppColors.primaryColor.setOpacity(0.7),

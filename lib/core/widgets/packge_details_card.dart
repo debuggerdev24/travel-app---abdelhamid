@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
@@ -60,28 +61,28 @@ class PackageDetailsCard extends StatelessWidget {
               if (package.roomOptions.isNotEmpty)
                 _buildSection(
                   context: context,
-                  title: 'Room Options :',
+                  title: 'Room Options :'.tr(),
                   items: package.roomOptions,
                 ),
 
               if (package.childPrices.isNotEmpty)
                 _buildSection(
                   context: context,
-                  title: 'Child Prices :',
+                  title: 'Child Prices :'.tr(),
                   items: package.childPrices,
                 ),
 
               if (package.inclusions.isNotEmpty)
                 _buildSection(
                   context: context,
-                  title: 'Inclusions :',
+                  title: 'Inclusions :'.tr(),
                   items: package.inclusions,
                 ),
 
               if (package.exclusions.isNotEmpty)
                 _buildSection(
                   context: context,
-                  title: 'Exclusions:',
+                  title: 'Exclusions:'.tr(),
                   items: package.exclusions,
                   isLast: true,
                 ),

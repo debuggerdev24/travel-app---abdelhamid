@@ -8,6 +8,7 @@ import 'package:travel_app_abdelhamid/app/app.dart';
 import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/firebase_options.dart';
 import 'package:travel_app_abdelhamid/services/push_notification_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -15,6 +16,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   if (Platform.isAndroid || Platform.isIOS) {
     await Firebase.initializeApp(
@@ -33,7 +35,19 @@ void main() async {
     Stripe.merchantIdentifier = AppConstants.stripeApplePayMerchantId;
   }
 
-  runApp(const App());
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en'),
+        Locale('nl'),
+        Locale('fr'),
+        Locale('ar'),
+      ],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: const App(),
+    ),
+  );
 }
  
 

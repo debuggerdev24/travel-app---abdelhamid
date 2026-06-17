@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,12 +37,12 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
     if (_submitting) return;
     final rating = ratingProvider.rating;
     if (rating < 1) {
-      ToastHelper.showError('Please select a star rating.');
+      ToastHelper.showError('Please select a star rating.'.tr());
       return;
     }
     final text = reviewController.text.trim();
     if (text.isEmpty) {
-      ToastHelper.showError('Please write your feedback.');
+      ToastHelper.showError('Please write your feedback.'.tr());
       return;
     }
     setState(() => _submitting = true);
@@ -55,7 +56,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
       if (!context.mounted) return;
       ratingProvider.setReview(text);
       ratingProvider.submitReview();
-      ToastHelper.showSuccess('Thank you for your feedback!');
+      ToastHelper.showSuccess('Thank you for your feedback!'.tr());
       context.pop();
     } catch (_) {
       // Error toast from API layer
@@ -101,11 +102,15 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                                 child: SvgPicture.asset(
                                   AppAssets.backIcon,
                                   width: 28.5.w,
+                                  colorFilter: ColorFilter.mode(
+                                    Theme.of(context).colorScheme.onSurface,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
                             ),
                             AppText(
-                              text: "Your Feedback",
+                              text: "Your Feedback".tr(),
                               style: textStyle32Bold.copyWith(
                                 fontSize: 26.sp,
                                 color: Theme.of(context).colorScheme.onSurface,
@@ -117,7 +122,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                         25.h.verticalSpace,
 
                         AppText(
-                          text: "How was your experience with the app?",
+                          text: "How was your experience with the app?".tr(),
                           style: textStyle16SemiBold.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -150,7 +155,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                         52.h.verticalSpace,
 
                         AppText(
-                          text: "Your feedback helps us improve!",
+                          text: "Your feedback helps us improve!".tr(),
                           style: textStyle16SemiBold.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -172,7 +177,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                           ),
                           child: AppTextField(
                             controller: reviewController,
-                            hintText: "Write your feedback here...",
+                            hintText: "Write your feedback here...".tr(),
                             maxLines: 4,
                           ),
                         ),
@@ -184,7 +189,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
                 ),
 
                 AppButton(
-                  title: "Done",
+                  title: "Done".tr(),
                   isLoading: _submitting,
                   onTap: () => _submit(context, ratingProvider),
                 ),

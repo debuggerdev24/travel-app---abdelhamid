@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,13 +52,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     11.h.verticalSpace,
                     RichText(
                       text: TextSpan(
-                        text: "Create An",
+                        text: "Create An".tr(),
                         style: textStyle32Bold.copyWith(
                           color: AppColors.secondary,
                         ),
                         children: [
                           TextSpan(
-                            text: " Account",
+                            text: " Account".tr(),
                             style: textStyle32Bold.copyWith(
                               color: AppColors.secondary,
                             ),
@@ -69,7 +70,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     AppText(
                       textAlign: TextAlign.center,
                       text:
-                          "“Start your journey with us – create your account today!”",
+                          "“Start your journey with us – create your account today!”".tr(),
                       style: textStyle14Italic,
                     ),
                     36.h.verticalSpace,
@@ -80,7 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           AppTextField(
                             controller: emailController,
-                            hintText: "Email Address",
+                            hintText: "Email Address".tr(),
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -96,7 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           AppTextField(
                             controller: phoneController,
-                            hintText: "Phone Number",
+                            hintText: "Phone Number".tr(),
                             keyboardType: TextInputType.phone,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -110,7 +111,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           AppTextField(
                             controller: passwordController,
-                            hintText: "Password",
+                            hintText: "Password".tr(),
                             obSecureText: true,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -129,7 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     authProvider.isLoading
                         ? const CircularProgressIndicator()
                         : AppButton(
-                            title: "Sign Up",
+                            title: "Sign Up".tr(),
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
                                 final success = await authProvider.register(
@@ -155,7 +156,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     10.h.verticalSpace,
                     RichText(
                       text: TextSpan(
-                        text: "Already have an account? ",
+                        text: "Already have an account? ".tr(),
                         style: textStyle14Regular.copyWith(letterSpacing: 0.4),
                         children: [
                           TextSpan(
@@ -165,7 +166,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   UserAppRoutes.signInScreen.name,
                                 );
                               },
-                            text: "Sign In",
+                            text: "Sign In".tr(),
                             style: textStyle18Bold.copyWith(
                               fontSize: 14.sp,
                               color: AppColors.secondary,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -49,13 +50,13 @@ class _SignInScreenState extends State<SignInScreen> {
                     11.h.verticalSpace,
                     RichText(
                       text: TextSpan(
-                        text: "Welcome ",
+                        text: "Welcome ".tr(),
                         style: textStyle32Bold.copyWith(
                           color: AppColors.secondary,
                         ),
                         children: [
                           TextSpan(
-                            text: "Back!",
+                            text: "Back!".tr(),
                             style: textStyle32Bold.copyWith(
                               color: AppColors.secondary,
                             ),
@@ -67,7 +68,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     AppText(
                       textAlign: TextAlign.center,
                       text:
-                          "“Access your trips, bookings, and adventures in one place.”",
+                          "“Access your trips, bookings, and adventures in one place.”".tr(),
                       style: textStyle14Italic,
                     ),
                     36.h.verticalSpace,
@@ -78,7 +79,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         children: [
                           AppTextField(
                             controller: personalCodeController,
-                            hintText: "Enter Your Personal Code",
+                            hintText: "Enter Your Personal Code".tr(),
                             onChanged: (value) {
                               if (value != null) {
                                 final trimmedValue = value.trim();
@@ -98,13 +99,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           AppTextField(
                             controller: emailController,
-                            hintText: "Email Address / Phone",
+                            hintText: "Email Address / Phone".tr(),
                             keyboardType: TextInputType.emailAddress,
                             validator: Validator.validateEmailOrMobile,
                           ),
                           AppTextField(
                             controller: passwordController,
-                            hintText: "Password",
+                            hintText: "Password".tr(),
                             obSecureText: true,
                             validator: Validator.validatePassword,
                           ),
@@ -121,7 +122,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           );
                         },
                         child: AppText(
-                          text: "Forgot Password ?",
+                          text: "Forgot Password ?".tr(),
                           style: textStyle14Regular.copyWith(
                             color: AppColors.secondary,
                           ),
@@ -132,7 +133,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     authProvider.isLoading
                         ? const CircularProgressIndicator()
                         : AppButton(
-                            title: "Sign In",
+                            title: "Sign In".tr(),
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
                                 final success = await authProvider.login(
@@ -157,7 +158,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     10.h.verticalSpace,
                     RichText(
                       text: TextSpan(
-                        text: "Don’t have an account? ",
+                        text: "Don’t have an account? ".tr(),
                         style: textStyle14Regular.copyWith(letterSpacing: 0.4),
                         children: [
                           TextSpan(
@@ -167,7 +168,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   UserAppRoutes.signUpScreen.name,
                                 );
                               },
-                            text: "Sign Up",
+                            text: "Sign Up".tr(),
                             style: textStyle18Bold.copyWith(
                               fontSize: 14.sp,
                               color: AppColors.secondary,

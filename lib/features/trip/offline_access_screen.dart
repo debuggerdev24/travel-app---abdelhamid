@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/utils/offline_storage_helper.dart';
@@ -44,7 +44,7 @@ class _OfflineAccessScreenState extends State<OfflineAccessScreen> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: "Offline Access",
+          text: "Offline Access".tr(),
           style: textStyle18Bold.copyWith(
             fontSize: 20.sp,
             color: Theme.of(context).colorScheme.onSurface,
@@ -52,26 +52,29 @@ class _OfflineAccessScreenState extends State<OfflineAccessScreen> {
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _savedTrips.isEmpty
-              ? Center(
-                  child: AppText(
-                    text: "No trips saved for offline access.",
-                    style: textStyle16SemiBold.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface),
-                  ),
-                )
-              : ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                  itemCount: _savedTrips.length,
-                  itemBuilder: (context, index) {
-                    final trip = _savedTrips[index];
-                    return _TripOfflineCard(trip: trip, onRemove: _loadSavedTrips);
-                  },
+          ? Center(
+              child: AppText(
+                text: "No trips saved for offline access.".tr(),
+                style: textStyle16SemiBold.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
+              ),
+            )
+          : ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              itemCount: _savedTrips.length,
+              itemBuilder: (context, index) {
+                final trip = _savedTrips[index];
+                return _TripOfflineCard(trip: trip, onRemove: _loadSavedTrips);
+              },
+            ),
     );
   }
 }
@@ -94,10 +97,14 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
   Future<void> _loadTripData() async {
     if (_itinerary != null || _documents != null) return;
     setState(() => _isLoadingData = true);
-    
-    final it = await OfflineStorageHelper.getOfflineItinerary(widget.trip.id ?? '');
-    final docs = await OfflineStorageHelper.getOfflineDocuments(widget.trip.id ?? '');
-    
+
+    final it = await OfflineStorageHelper.getOfflineItinerary(
+      widget.trip.id ?? '',
+    );
+    final docs = await OfflineStorageHelper.getOfflineDocuments(
+      widget.trip.id ?? '',
+    );
+
     setState(() {
       _itinerary = it;
       _documents = docs;
@@ -113,8 +120,12 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: ExpansionTile(
         title: AppText(
-          text: widget.trip.title.isNotEmpty ? widget.trip.title : "Unnamed Trip",
-          style: textStyle16SemiBold.copyWith(color: Theme.of(context).colorScheme.onSurface),
+          text: widget.trip.title.isNotEmpty
+              ? widget.trip.title
+              : "Unnamed Trip",
+          style: textStyle16SemiBold.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
         subtitle: AppText(
           text: widget.trip.date,
@@ -139,16 +150,18 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
                   _buildDocumentsSection(),
                   20.h.verticalSpace,
                   AppButton(
-                    title: "Remove from Offline",
+                    title: "Remove from Offline".tr(),
                     onTap: () async {
-                      await OfflineStorageHelper.removeOfflineTrip(widget.trip.id ?? '');
+                      await OfflineStorageHelper.removeOfflineTrip(
+                        widget.trip.id ?? '',
+                      );
                       widget.onRemove();
                     },
                   ),
                 ],
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -157,14 +170,14 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
   Widget _buildItinerarySection() {
     if (_itinerary == null) {
       return AppText(
-        text: "No itinerary saved.",
+        text: "No itinerary saved.".tr(),
         style: textStyle14Regular.copyWith(color: Colors.grey),
       );
     }
-    
+
     final activities = (_itinerary?.itinerary.activities ?? []).toList()
       ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
-      
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -174,19 +187,19 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
         ),
         10.h.verticalSpace,
         if (activities.isEmpty)
-           AppText(
-            text: "No activities found.",
+          AppText(
+            text: "No activities found.".tr(),
             style: textStyle14Regular.copyWith(color: Colors.grey),
           )
         else
           ...activities.map((a) {
-             return ItineraryStep(
-               time: a.times,
-               title: a.activityTitle,
-               icon: a.icon,
-               isCompleted: false,
-             );
-          })
+            return ItineraryStep(
+              time: a.times,
+              title: a.activityTitle,
+              icon: a.icon,
+              isCompleted: false,
+            );
+          }),
       ],
     );
   }
@@ -194,48 +207,65 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
   Widget _buildDocumentsSection() {
     if (_documents == null || !_documents!.hasAnyRemoteContent) {
       return AppText(
-        text: "No documents saved.",
+        text: "No documents saved.".tr(),
         style: textStyle14Regular.copyWith(color: Colors.grey),
       );
     }
-    
+
     // Simplistic view for offline docs showing what is available
     List<String> availableDocs = [];
     final tDocs = _documents!.tripDocuments;
-    if (tDocs.hotel != null) availableDocs.add("Hotel Voucher: ${tDocs.hotel?.hotelName}");
-    if (tDocs.insurance != null) availableDocs.add("Insurance: ${tDocs.insurance?.policyName}");
+    if (tDocs.hotel != null) {
+      availableDocs.add("Hotel Voucher: ${tDocs.hotel?.hotelName}");
+    }
+    if (tDocs.insurance != null) {
+      availableDocs.add("Insurance: ${tDocs.insurance?.policyName}");
+    }
     if (tDocs.checklist != null) availableDocs.add("Checklist Document");
-    
+
     for (var m in _documents!.memberDocuments) {
       if (m.documents.visa != null) availableDocs.add("Visa for ${m.name}");
-      if (m.documents.passport != null) availableDocs.add("Passport for ${m.name}");
-      if (m.documents.flightTickets.isNotEmpty) availableDocs.add("Flight Tickets for ${m.name}");
+      if (m.documents.passport != null) {
+        availableDocs.add("Passport for ${m.name}");
+      }
+      if (m.documents.flightTickets.isNotEmpty) {
+        availableDocs.add("Flight Tickets for ${m.name}");
+      }
     }
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText(
-          text: "Documents Available",
+          text: "Documents Available".tr(),
           style: textStyle16SemiBold.copyWith(color: AppColors.primaryColor),
         ),
         10.h.verticalSpace,
         if (availableDocs.isEmpty)
-           AppText(
-            text: "No specific documents found.",
+          AppText(
+            text: "No specific documents found.".tr(),
             style: textStyle14Regular.copyWith(color: Colors.grey),
           )
         else
-          ...availableDocs.map((doc) => Padding(
-            padding: EdgeInsets.symmetric(vertical: 4.h),
-            child: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 16.w),
-                8.w.horizontalSpace,
-                Expanded(child: AppText(text: doc, style: textStyle14Regular.copyWith(color: Theme.of(context).colorScheme.onSurface))),
-              ],
+          ...availableDocs.map(
+            (doc) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.h),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green, size: 16.w),
+                  8.w.horizontalSpace,
+                  Expanded(
+                    child: AppText(
+                      text: doc,
+                      style: textStyle14Regular.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ))
+          ),
       ],
     );
   }

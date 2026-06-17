@@ -13,6 +13,7 @@ import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
 import 'package:travel_app_abdelhamid/provider/trip/currency_converter_provider.dart';
 import 'package:travel_app_abdelhamid/provider/theme_provider.dart';
 import 'package:travel_app_abdelhamid/routes/go_routes.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Root widget of the application.
 /// Wraps the app with [MultiProvider] and configures [MaterialApp.router].
@@ -41,7 +42,10 @@ class App extends StatelessWidget {
         designSize: const Size(402, 874),
         builder: (context, child) {
           return MaterialApp.router(
-            title: 'TRAEL APP',
+            title: 'TRAEL APP'.tr(),
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,

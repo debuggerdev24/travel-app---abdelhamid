@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -288,7 +289,7 @@ class ChatProvider extends ChangeNotifier {
   Future<bool> _ensureLocationReady() async {
     final serviceOn = await Geolocator.isLocationServiceEnabled();
     if (!serviceOn) {
-      ToastHelper.showError('Please turn on location services.');
+      ToastHelper.showError('Please turn on location services.'.tr());
       return false;
     }
     var perm = await Geolocator.checkPermission();
@@ -297,7 +298,7 @@ class ChatProvider extends ChangeNotifier {
     }
     if (perm == LocationPermission.denied ||
         perm == LocationPermission.deniedForever) {
-      ToastHelper.showError('Location permission is required.');
+      ToastHelper.showError('Location permission is required.'.tr());
       return false;
     }
     return true;
@@ -323,7 +324,7 @@ class ChatProvider extends ChangeNotifier {
       await loadConversations(silent: true);
     } catch (e, st) {
       LogHelper.instance.error('sendCurrentLocationFromGps', e, st);
-      ToastHelper.showError('Could not get current location.');
+      ToastHelper.showError('Could not get current location.'.tr());
     }
   }
 
@@ -348,7 +349,7 @@ class ChatProvider extends ChangeNotifier {
       await loadConversations(silent: true);
     } catch (e, st) {
       LogHelper.instance.error('startLiveLocationFromGps', e, st);
-      ToastHelper.showError('Could not start live location.');
+      ToastHelper.showError('Could not start live location.'.tr());
     }
   }
 
@@ -367,7 +368,7 @@ class ChatProvider extends ChangeNotifier {
       await loadConversations(silent: true);
     } catch (e, st) {
       LogHelper.instance.error('uploadChatImage', e, st);
-      ToastHelper.showError('Could not send image. Please try again.');
+      ToastHelper.showError('Could not send image. Please try again.'.tr());
     }
   }
 

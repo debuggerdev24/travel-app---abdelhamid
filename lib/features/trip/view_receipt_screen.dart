@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -72,24 +73,24 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
     final url = _detail?.pdfDownloadUrl;
     if (url == null || url.isEmpty) {
       ToastHelper.showError(
-        'Receipt PDF is not available yet. It usually appears after Stripe confirms the payment.',
+        'Receipt PDF is not available yet. It usually appears after Stripe confirms the payment.'.tr(),
       );
       return;
     }
     final uri = Uri.tryParse(url);
     if (uri == null || !(uri.isScheme('https') || uri.isScheme('http'))) {
-      ToastHelper.showError('Invalid receipt link.');
+      ToastHelper.showError('Invalid receipt link.'.tr());
       return;
     }
     try {
       final ok = await canLaunchUrl(uri);
       if (!ok) {
-        ToastHelper.showError('Cannot open receipt on this device.');
+        ToastHelper.showError('Cannot open receipt on this device.'.tr());
         return;
       }
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
-      ToastHelper.showError('Could not open receipt.');
+      ToastHelper.showError('Could not open receipt.'.tr());
     }
   }
 
@@ -109,7 +110,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                       ? _openReceiptPdf
                       : () {
                           ToastHelper.showError(
-                            'Receipt PDF is not available yet. It usually appears after Stripe confirms the payment.',
+                            'Receipt PDF is not available yet. It usually appears after Stripe confirms the payment.'.tr(),
                           );
                         },
                   child: Container(
@@ -147,13 +148,13 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                       children: [
                         GestureDetector(
                           onTap: () => context.pop(),
-                          child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                          child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
                         ),
                         SizedBox(width: 10.w),
                         Expanded(
                           child: Center(
                             child: AppText(
-                              text: 'Payment Receipt',
+                              text: 'Payment Receipt'.tr(),
                               style: textStyle32Bold.copyWith(
                                 fontSize: 24.sp,
                                 color: AppColors.secondary,
@@ -175,7 +176,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                         children: [
                           Center(
                             child: AppText(
-                              text: 'Company Pvt. Ltd.',
+                              text: 'Company Pvt. Ltd.'.tr(),
                               style: textStyle16SemiBold.copyWith(
                                 color: AppColors.primaryColor,
                               ),
@@ -258,7 +259,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                           SizedBox(height: 4.h),
                           Center(
                             child: AppText(
-                              text: 'Support: +91 XXXXX XXXXX',
+                              text: 'Support: +91 XXXXX XXXXX'.tr(),
                               style: textStyle14Regular.copyWith(
                                 color: AppColors.primaryColor.setOpacity(.5),
                               ),

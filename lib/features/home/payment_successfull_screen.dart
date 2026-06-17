@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +40,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                   56.h.verticalSpace,
                   AppText(
                     textAlign: TextAlign.center,
-                    text: "Payment Successful!",
+                    text: "Payment Successful!".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -59,7 +60,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                   14.h.verticalSpace,
                   AppText(
                     text:
-                        "Thank you for booking with us! Your trip is now confirmed – happy travels ahead!",
+                        "Thank you for booking with us! Your trip is now confirmed – happy travels ahead!".tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(
                         context,
@@ -70,7 +71,7 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                   ),
                   Spacer(),
                   AppButton(
-                    title: "Back to My Trip",
+                    title: "Back to My Trip".tr(),
                     onTap: () {
                       // Pop first so callers awaiting [pushNamed] to this screen complete,
                       // then replace stack to the Trips tab.

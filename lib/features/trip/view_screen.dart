@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,8 +44,8 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
         widget.networkFileUrl!.trim().isNotEmpty;
     if (!hasLocal && !hasNet) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No downloadable file for this document.'),
+        SnackBar(
+          content: Text('No downloadable file for this document.'.tr()),
         ),
       );
       return;
@@ -80,7 +81,7 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   AppText(
@@ -116,7 +117,7 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
               padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 40.h),
 
               child: AppButton(
-                title: "Download",
+                title: "Download".tr(),
                 isLoading: _downloading,
                 onTap: _onDownload,
               ),

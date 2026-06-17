@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -72,11 +73,11 @@ class _FaqScreenState extends State<FaqScreen> {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                        child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                     AppText(
-                      text: "FAQ",
+                      text: "FAQ".tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -118,14 +119,14 @@ class _FaqScreenState extends State<FaqScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AppText(
-                            text: "Travel-related FAQs",
+                            text: "Travel-related FAQs".tr(),
                             style: textStyle16SemiBold.copyWith(
                               fontSize: 18.sp,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           AppText(
-                            text: "Answers from your travel team",
+                            text: "Answers from your travel team".tr(),
                             style: textStyle14Regular.copyWith(
                               color: Theme.of(
                                 context,
@@ -165,7 +166,7 @@ class _FaqScreenState extends State<FaqScreen> {
                       TextButton(
                         onPressed: _load,
                         child: AppText(
-                          text: "Retry",
+                          text: "Retry".tr(),
                           style: textStyle14Medium.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -178,7 +179,7 @@ class _FaqScreenState extends State<FaqScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 32.h),
                   child: AppText(
-                    text: "No FAQs available yet.",
+                    text: "No FAQs available yet.".tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),

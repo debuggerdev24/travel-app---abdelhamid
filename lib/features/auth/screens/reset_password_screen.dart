@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -52,20 +53,20 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     onTap: () {
                       context.pop();
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 11.h.verticalSpace,
                 Align(
                   child: RichText(
                     text: TextSpan(
-                      text: "Change ",
+                      text: "Change ".tr(),
                       style: textStyle32Bold.copyWith(
                         color: AppColors.secondary,
                       ),
                       children: [
                         TextSpan(
-                          text: "Password",
+                          text: "Password".tr(),
                           style: textStyle32Bold.copyWith(
                             color: AppColors.secondary,
                           ),
@@ -77,7 +78,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 6.h.verticalSpace,
                 AppText(
                   textAlign: TextAlign.center,
-                  text: "Enter your new password to update your account.",
+                  text: "Enter your new password to update your account.".tr(),
                   style: textStyle14Italic,
                 ),
                 36.h.verticalSpace,
@@ -87,13 +88,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     spacing: 22.h,
                     children: [
                       AppTextField(
-                        hintText: "New Password",
+                        hintText: "New Password".tr(),
                         controller: passwordController,
                         obSecureText: true,
                         validator: Validator.validatePassword,
                       ),
                       AppTextField(
-                        hintText: "Confirm Password",
+                        hintText: "Confirm Password".tr(),
                         controller: confirmPasswordController,
                         obSecureText: true,
                         validator: (value) {
@@ -115,7 +116,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   builder: (context, isLoading, child) {
                     if (isLoading) return const CircularProgressIndicator();
                     return AppButton(
-                      title: "Change Password",
+                      title: "Change Password".tr(),
                       onTap: () async {
                         if (_formKey.currentState!.validate()) {
                           await context.read<AuthProvider>().resetPassword(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -24,21 +25,21 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       final shouldPop = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Discard unsaved data?'),
-          content: const Text(
-            'You have unsaved booking data. Do you want to discard it and go back?',
+          title: Text('Discard unsaved data?'.tr()),
+          content: Text(
+            'You have unsaved booking data. Do you want to discard it and go back?'.tr(),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text('Cancel'.tr()),
             ),
             TextButton(
               onPressed: () {
                 tripBookingProvider.clearLocalData();
                 Navigator.pop(context, true);
               },
-              child: const Text('Discard'),
+              child: Text('Discard'.tr()),
             ),
           ],
         ),
@@ -103,7 +104,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     );
 
     if (trip == null) {
-      return const Scaffold(body: Center(child: Text("No Trip Selected")));
+      return Scaffold(body: Center(child: Text("No Trip Selected".tr())));
     }
 
     return WillPopScope(
@@ -124,11 +125,11 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                        child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                     AppText(
-                      text: "Umrah Trip 2025",
+                      text: "Umrah Trip 2025".tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -216,19 +217,19 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                 ),
                               ),
                               _buildSection(
-                                title: 'Room Options :',
+                                title: 'Room Options :'.tr(),
                                 items: selectedPackage.roomOptions,
                               ),
                               _buildSection(
-                                title: 'Child Prices :',
+                                title: 'Child Prices :'.tr(),
                                 items: selectedPackage.childPrices,
                               ),
                               _buildSection(
-                                title: 'Inclusions :',
+                                title: 'Inclusions :'.tr(),
                                 items: selectedPackage.inclusions,
                               ),
                               _buildSection(
-                                title: 'Exclusions :',
+                                title: 'Exclusions :'.tr(),
                                 items: selectedPackage.exclusions,
                               ),
                             ],
@@ -237,10 +238,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
                       20.h.verticalSpace,
 
-                      /// Example Price Rows
-                      _priceRow("2 Person (Adult)", "€7,000"),
-                      _priceRow("2 Child", "€2500"),
-                      _priceRow("1 Baby", "€500"),
+                      _priceRow("2 Person (Adult)".tr(), "€7,000"),
+                      _priceRow("2 Child".tr(), "€2500"),
+                      _priceRow("1 Baby".tr(), "€500"),
 
                       Divider(
                         height: 30.h,
@@ -249,7 +249,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                         ).colorScheme.onSurface.withValues(alpha: 0.2),
                         endIndent: 60,
                       ),
-                      _priceRow("TOTAL COST", "€10,000"),
+                      _priceRow("TOTAL COST".tr(), "€10,000"),
                       52.h.verticalSpace,
                       AppButton(
                         onTap: () {
@@ -260,7 +260,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                             UserAppRoutes.paymentOptionScreen.name,
                           );
                         },
-                        title: "Book Now",
+                        title: "Book Now".tr(),
                       ),
                       46.h.verticalSpace,
                     ],

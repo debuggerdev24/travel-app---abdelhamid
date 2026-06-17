@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -69,14 +70,14 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
 
     setState(() {
       if (bookingProvider.selectedRoomTypeId == null) {
-        _roomTypeError = "Please select a room type";
+        _roomTypeError = "Please select a room type".tr();
         isValid = false;
       } else {
         _roomTypeError = null;
       }
 
       if (bookingProvider.selectedBedType == null) {
-        _bedTypeError = "Please select a bed type";
+        _bedTypeError = "Please select a bed type".tr();
         isValid = false;
       } else {
         _bedTypeError = null;
@@ -122,7 +123,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                         ),
                       ),
                       AppText(
-                        text: "Room Details",
+                        text: "Room Details".tr(),
                         style: textStyle32Bold.copyWith(
                           fontSize: 26.sp,
                           color: Theme.of(context).colorScheme.onSurface,
@@ -139,17 +140,17 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                       child: Column(
                         children: [
                           AppTextField(
-                            labelText: "Person",
-                            hintText: "Enter Person Number",
+                            labelText: "Person".tr(),
+                            hintText: "Enter Person Number".tr(),
                             keyboardType: TextInputType.number,
                             controller: _personController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Please enter number of persons";
+                                return "Please enter number of persons".tr();
                               }
                               final n = int.tryParse(value);
                               if (n == null || n < 1) {
-                                return "Please enter a valid number (min 1)";
+                                return "Please enter a valid number (min 1)".tr();
                               }
                               return null;
                             },
@@ -166,8 +167,8 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           IgnorePointer(
                             ignoring: bookingProvider.isRoomPreferenceSaved,
                             child: CustomMultiSelectDropdown(
-                              labelText: "Room Type",
-                              hintText: "Select Room Type",
+                              labelText: "Room Type".tr(),
+                              hintText: "Select Room Type".tr(),
                               errorText: _roomTypeError,
                               items:
                                   selectedPackage?.roomOptions ??
@@ -213,13 +214,13 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   }
                                 }
                               },
-                              titleText: "Room Type",
+                              titleText: "Room Type".tr(),
                               showRadio: true,
                             ),
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
-                            labelText: "Default Price (Adult)",
+                            labelText: "Default Price (Adult)".tr(),
                             hintText: bookingProvider.totalAmount > 0
                                 ? "€${bookingProvider.totalAmount}"
                                 : "Auto Filled",
@@ -233,8 +234,8 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           IgnorePointer(
                             ignoring: bookingProvider.isRoomPreferenceSaved,
                             child: CustomMultiSelectDropdown(
-                              labelText: "Bed Type",
-                              hintText: "Select Bed Type",
+                              labelText: "Bed Type".tr(),
+                              hintText: "Select Bed Type".tr(),
                               errorText: _bedTypeError,
                               items: tripProvider.bedTypes,
                               selectedItems:
@@ -252,7 +253,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   setState(() => _bedTypeError = null);
                                 }
                               },
-                              titleText: "Bed Type",
+                              titleText: "Bed Type".tr(),
                               showRadio: true,
                             ),
                           ),
@@ -260,8 +261,8 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           IgnorePointer(
                             ignoring: bookingProvider.isRoomPreferenceSaved,
                             child: CustomMultiSelectDropdown(
-                              labelText: "Child",
-                              hintText: "Select Child",
+                              labelText: "Child".tr(),
+                              hintText: "Select Child".tr(),
                               items:
                                   selectedPackage?.childPrices ??
                                   tripProvider.childOptions,
@@ -308,7 +309,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   }
                                 }
                               },
-                              titleText: "Child",
+                              titleText: "Child".tr(),
                               showRadio: true,
                             ),
                           ),
@@ -316,8 +317,8 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           IgnorePointer(
                             ignoring: bookingProvider.isRoomPreferenceSaved,
                             child: CustomMultiSelectDropdown(
-                              labelText: "No. of Child",
-                              hintText: "Select Child Count",
+                              labelText: "No. of Child".tr(),
+                              hintText: "Select Child Count".tr(),
                               items: tripProvider.numberOfChildren,
                               selectedItems: [
                                 bookingProvider.selectedChildCount
@@ -334,13 +335,13 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   );
                                 }
                               },
-                              titleText: "Select Child Count",
+                              titleText: "Select Child Count".tr(),
                               showRadio: true,
                             ),
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
-                            labelText: "Child Price",
+                            labelText: "Child Price".tr(),
                             hintText:
                                 bookingProvider.selectedChildDetailsId !=
                                         null &&
@@ -358,8 +359,8 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           IgnorePointer(
                             ignoring: bookingProvider.isRoomPreferenceSaved,
                             child: CustomMultiSelectDropdown(
-                              labelText: "Baby",
-                              hintText: "Select Baby",
+                              labelText: "Baby".tr(),
+                              hintText: "Select Baby".tr(),
                               items: tripProvider.babyOptions,
                               selectedItems: tripProvider.selectedBabyTypes,
                               onChanged: (values) {
@@ -368,7 +369,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                 }
                                 tripProvider.updateBabyTypes(values);
                               },
-                              titleText: "Baby",
+                              titleText: "Baby".tr(),
                               showRadio: true,
                             ),
                           ),
@@ -376,8 +377,8 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           IgnorePointer(
                             ignoring: bookingProvider.isRoomPreferenceSaved,
                             child: CustomMultiSelectDropdown(
-                              labelText: "No. of Baby",
-                              hintText: "Select No. of Baby",
+                              labelText: "No. of Baby".tr(),
+                              hintText: "Select No. of Baby".tr(),
                               items: tripProvider.numberOfBaby,
                               selectedItems: [
                                 bookingProvider.babyCount.toString().padLeft(
@@ -395,13 +396,13 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   );
                                 }
                               },
-                              titleText: "Select Baby Count",
+                              titleText: "Select Baby Count".tr(),
                               showRadio: true,
                             ),
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
-                            labelText: "Baby Price",
+                            labelText: "Baby Price".tr(),
                             hintText: bookingProvider.babyCount > 0
                                 ? "€${500 * bookingProvider.babyCount}"
                                 : "Auto filled",
@@ -437,7 +438,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   12.w.horizontalSpace,
                                   Expanded(
                                     child: AppText(
-                                      text: "Room preferences already saved",
+                                      text: "Room preferences already saved".tr(),
                                       style: textStyle14Regular.copyWith(
                                         color: Theme.of(
                                           context,
@@ -450,7 +451,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             ),
                             SizedBox(height: 22.h),
                             AppButton(
-                              title: "Continue to Personal Details",
+                              title: "Continue to Personal Details".tr(),
                               onTap: () {
                                 if (context.mounted) {
                                   context.pushNamed(
@@ -461,7 +462,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             ),
                           ] else
                             AppButton(
-                              title: "Next",
+                              title: "Next".tr(),
                               isLoading: bookingProvider.isLoading,
                               onTap: () async {
                                 final isFormValid = _formKey.currentState!
@@ -473,7 +474,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                       .saveRoomPreference();
                                   if (success) {
                                     ToastHelper.showSuccess(
-                                      "Preferences saved successfully",
+                                      "Preferences saved successfully".tr(),
                                     );
                                     if (context.mounted) {
                                       context.pushNamed(
@@ -485,7 +486,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   }
                                 } else {
                                   ToastHelper.showError(
-                                    "Please fix the errors in the form",
+                                    "Please fix the errors in the form".tr(),
                                   );
                                 }
                               },

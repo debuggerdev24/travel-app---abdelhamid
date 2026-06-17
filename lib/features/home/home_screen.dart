@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -69,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 16.h.verticalSpace,
                 Center(
                   child: AppText(
-                    text: "My Trip",
+                    text: "My Trip".tr(),
                     style: textStyle12semiBold.copyWith(
                       fontSize: 28.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -102,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         16.w.horizontalSpace,
                         AppText(
-                          text: "Next Prayer",
+                          text: "Next Prayer".tr(),
                           style: textStyle14Regular.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -182,13 +183,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       children: [
                         CustomTabButton(
-                          text: "Current",
+                          text: "Current".tr(),
                           index: 0,
                           selectedTab: selectedTab,
                           onTap: () => setState(() => selectedTab = 0),
                         ),
                         CustomTabButton(
-                          text: "Past",
+                          text: "Past".tr(),
                           index: 1,
                           selectedTab: selectedTab,
                           onTap: () => setState(() => selectedTab = 1),

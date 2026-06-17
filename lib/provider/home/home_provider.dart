@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
 import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
@@ -299,58 +300,58 @@ class TripProvider extends ChangeNotifier {
 
   final List<PackageDetails> _packageList = [
     PackageDetails(
-      title: 'Premium Package',
+      title: 'Premium Package'.tr(),
       roomDetails: [],
       childDetails: [],
       inclusions: [
-        'Business Class Flights',
-        '5★ Hotels (Kaaba View in Makkah, Luxury Hotel in Madinah)',
-        'VIP Transport (Private Bus)',
-        'Dedicated Guide & Escort',
-        'Free SIM Card + Internet Package',
+        'Business Class Flights'.tr(),
+        '5★ Hotels (Kaaba View in Makkah, Luxury Hotel in Madinah)'.tr(),
+        'VIP Transport (Private Bus)'.tr(),
+        'Dedicated Guide & Escort'.tr(),
+        'Free SIM Card + Internet Package'.tr(),
       ],
       exclusions: [
-        'All Meals Not Included (Buffet)',
-        'Personal shopping',
-        'Extra excursions outside package',
+        'All Meals Not Included (Buffet)'.tr(),
+        'Personal shopping'.tr(),
+        'Extra excursions outside package'.tr(),
       ],
     ),
     PackageDetails(
-      title: 'Gold Package',
+      title: 'Gold Package'.tr(),
       roomDetails: [],
       childDetails: [],
       inclusions: [
-        'Economy Flights',
-        '4★ Hotels (Close to Haram / Masjid Nabawi)',
-        'Group Transport (AC Bus)',
-        'Dedicated Guide Support',
+        'Economy Flights'.tr(),
+        '4★ Hotels (Close to Haram / Masjid Nabawi)'.tr(),
+        'Group Transport (AC Bus)'.tr(),
+        'Dedicated Guide Support'.tr(),
       ],
-      exclusions: ['All Meals Not Included (Buffet)', 'Personal expenses'],
+      exclusions: ['All Meals Not Included (Buffet)'.tr(), 'Personal expenses'.tr()],
     ),
     PackageDetails(
-      title: 'Silver Package',
+      title: 'Silver Package'.tr(),
       roomDetails: [],
       childDetails: [],
       inclusions: [
-        'Economy Flights',
-        '3★ Hotels (Walking distance ~500m)',
-        'Group Transport (Shared Bus)',
-        'Guide Support via WhatsApp',
+        'Economy Flights'.tr(),
+        '3★ Hotels (Walking distance ~500m)'.tr(),
+        'Group Transport (Shared Bus)'.tr(),
+        'Guide Support via WhatsApp'.tr(),
       ],
-      exclusions: ['All Meals Not Included (Buffet)', 'No personal SIM card'],
+      exclusions: ['All Meals Not Included (Buffet)'.tr(), 'No personal SIM card'.tr()],
     ),
     PackageDetails(
-      title: 'Standard / Economy Package',
+      title: 'Standard / Economy Package'.tr(),
       roomDetails: [],
       childDetails: [],
       inclusions: [
-        'Basic Economy Flights',
-        '2★ Hotels (outside Haram radius, shuttle provided)',
-        'Shared Transport (Shuttle Bus)',
+        'Basic Economy Flights'.tr(),
+        '2★ Hotels (outside Haram radius, shuttle provided)'.tr(),
+        'Shared Transport (Shuttle Bus)'.tr(),
       ],
       exclusions: [
-        'All Meals Not Included (Buffet)',
-        'No escort, only group leader support',
+        'All Meals Not Included (Buffet)'.tr(),
+        'No escort, only group leader support'.tr(),
       ],
     ),
   ];
@@ -461,19 +462,19 @@ class TripProvider extends ChangeNotifier {
   // -------------------------------
   // ... methods omitted for brevity as they are same ...
 
-  final List<String> roomTypes = ["Double", "Triple", "Quadruple"];
+  final List<String> roomTypes = ["Double".tr(), "Triple".tr(), "Quadruple".tr()];
 
-  final List<String> bedTypes = ["Single Bed", "King Size Bed"];
+  final List<String> bedTypes = ["Single Bed".tr(), "King Size Bed".tr()];
 
   final List<String> childOptions = [
-    "Child (2–10 yrs) No Bed - €1,250",
-    "Child (2–10 yrs) With Bed - rate\nwith a child discount of €150",
-    "Child (10–12 yrs) With Bed - rate\nwith a child discount of €125",
+    "Child (2–10 yrs) No Bed - €1,250".tr(),
+    "Child (2–10 yrs) With Bed - rate\nwith a child discount of €150".tr(),
+    "Child (10–12 yrs) With Bed - rate\nwith a child discount of €125".tr(),
   ];
 
   final List<String> numberOfChildren = ["00", "01", "02"];
 
-  final List<String> babyOptions = ["Baby (0–2 yrs) No Bed - €500"];
+  final List<String> babyOptions = ["Baby (0–2 yrs) No Bed - €500".tr()];
 
   final List<String> numberOfBaby = ["00", "01", "02"];
 }

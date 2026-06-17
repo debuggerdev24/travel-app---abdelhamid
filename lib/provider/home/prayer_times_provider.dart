@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/core/utils/prayer_time_helpers.dart';
@@ -72,7 +73,7 @@ class PrayerTimesProvider extends ChangeNotifier {
   /// Line for home chip: `"Fajr  05:00 AM"` or placeholder.
   String get homePrayerLine {
     if (_items.isEmpty) {
-      return _error != null ? '—' : 'No times set';
+      return _error != null ? '—' : 'No times set'.tr();
     }
     final n = nextPrayerDisplay;
     if (n == null) return '—';

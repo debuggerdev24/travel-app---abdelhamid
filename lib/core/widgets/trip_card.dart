@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
@@ -160,7 +161,7 @@ class TripCard extends StatelessWidget {
                     Row(
                       children: [
                         AppText(
-                          text: "Status : ",
+                          text: "Status : ".tr(),
                           style: textStyle14Regular.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),

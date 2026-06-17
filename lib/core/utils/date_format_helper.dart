@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 const _monthAbbrev = [
   'Jan',
   'Feb',
@@ -89,7 +91,7 @@ String formatDateForDisplay(String? raw) {
   if (raw == null || raw.trim().isEmpty) return '—';
   final dt = parseApiDate(raw);
   if (dt == null) return raw.trim();
-  return '${dt.day} ${_monthAbbrev[dt.month - 1]} ${dt.year}';
+  return '${dt.day} ${_monthAbbrev[dt.month - 1].tr()} ${dt.year}';
 }
 
 /// Date with optional local time, e.g. `10 Jun 2026 · 11:11` for ISO timestamps.
@@ -99,7 +101,7 @@ String formatDateTimeForDisplay(String? raw) {
   if (dt == null) return raw.trim();
   final local = dt.toLocal();
   final date =
-      '${local.day} ${_monthAbbrev[local.month - 1]} ${local.year}';
+      '${local.day} ${_monthAbbrev[local.month - 1].tr()} ${local.year}';
   final trimmed = raw.trim();
   final hasTime =
       trimmed.contains('T') ||
@@ -115,6 +117,6 @@ String formatDateRangeForDisplay(String? start, String? end) {
   final startDt = parseApiDate(start);
   final endDt = parseApiDate(end);
   if (startDt == null || endDt == null) return '—';
-  return '${startDt.day} ${_monthAbbrev[startDt.month - 1]} – '
-      '${endDt.day} ${_monthAbbrev[endDt.month - 1]} ${endDt.year}';
+  return '${startDt.day} ${_monthAbbrev[startDt.month - 1].tr()} – '
+      '${endDt.day} ${_monthAbbrev[endDt.month - 1].tr()} ${endDt.year}';
 }

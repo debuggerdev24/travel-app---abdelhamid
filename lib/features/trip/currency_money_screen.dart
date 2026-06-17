@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -183,7 +184,7 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
                   ),
                   16.w.horizontalSpace,
                   AppText(
-                    text: "Currency Converter",
+                    text: "Currency Converter".tr(),
                     style: textStyle18Bold.copyWith(
                       color: isDark ? Colors.white : AppColors.primaryColor,
                       fontSize: 22.sp,
@@ -246,7 +247,7 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText(
-          text: "Amount",
+          text: "Amount".tr(),
           style: textStyle14Medium.copyWith(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.7)
@@ -338,7 +339,7 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
       children: [
         Expanded(
           child: _currencyDropdown(
-            label: "From",
+            label: "From".tr(),
             selectedCurrency: provider.fromCurrency,
             currencies: CurrencyData.commonCurrencies,
             onChanged: (currency) {
@@ -375,7 +376,7 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
         12.w.horizontalSpace,
         Expanded(
           child: _currencyDropdown(
-            label: "To",
+            label: "To".tr(),
             selectedCurrency: provider.toCurrency,
             currencies: CurrencyData.commonCurrencies,
             onChanged: (currency) {
@@ -669,7 +670,7 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
                   ),
                   8.w.horizontalSpace,
                   AppText(
-                    text: "Exchange rate not available",
+                    text: "Exchange rate not available".tr(),
                     style: textStyle14Medium.copyWith(
                       color: isDark
                           ? Colors.white.withValues(alpha: 0.6)
@@ -795,7 +796,7 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
           ),
           16.w.horizontalSpace,
           AppText(
-            text: "Currency & Money",
+            text: "Currency & Money".tr(),
             style: textStyle32Bold.copyWith(
               fontSize: 28.sp,
               color: isDark ? Colors.white : AppColors.primaryColor,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,7 +32,7 @@ class FeedbackReviewCard extends StatelessWidget {
         children: [
           /// Title
           Text(
-            "Your Feedback",
+            "Your Feedback".tr(),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -69,7 +70,7 @@ class FeedbackReviewCard extends StatelessWidget {
 
                   6.verticalSpace,
                   AppText(
-                    text: "1 Review",
+                    text: "1 Review".tr(),
                     style: textStyle14Regular.copyWith(
                       fontSize: 12.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -119,7 +120,7 @@ class FeedbackReviewCard extends StatelessWidget {
                     Row(
                       children: [
                         AppText(
-                          text: "Aisha Khan",
+                          text: "Aisha Khan".tr(),
                           style: textStyle14Medium.copyWith(
                             fontWeight: FontWeight.w500,
                             color: Theme.of(context).colorScheme.onSurface,
@@ -137,7 +138,7 @@ class FeedbackReviewCard extends StatelessWidget {
                     ),
                     4.h.verticalSpace,
                     AppText(
-                      text: "Jan 26, 2025",
+                      text: "Jan 26, 2025".tr(),
                       style: textStyle14Regular.copyWith(
                         fontSize: 12.sp,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -153,7 +154,7 @@ class FeedbackReviewCard extends StatelessWidget {
           14.h.verticalSpace,
           AppText(
             text:
-                "“My stay at Zenstone Retreat was absolutely wonderful. The atmosphere is so peaceful, surrounded by nature with beautiful stone pathways and a calming koi pond. The staff were incredibly welcoming and made sure everything was perfect. If you’re looking for a place to relax, recharge, and enjoy pure tranquility, this is the spot!”",
+                "“My stay at Zenstone Retreat was absolutely wonderful. The atmosphere is so peaceful, surrounded by nature with beautiful stone pathways and a calming koi pond. The staff were incredibly welcoming and made sure everything was perfect. If you’re looking for a place to relax, recharge, and enjoy pure tranquility, this is the spot!”".tr(),
             style: textStyle14Regular.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
             ),

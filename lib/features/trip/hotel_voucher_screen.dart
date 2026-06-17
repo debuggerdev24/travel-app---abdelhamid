@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -44,11 +45,11 @@ class HotelVoucherScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                        child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                     AppText(
-                      text: "Hotel Voucher",
+                      text: "Hotel Voucher".tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -141,7 +142,7 @@ class HotelVoucherScreen extends StatelessWidget {
               _inputBox(context, "Hotel Email", "reservations@swissotel.com"),
 
               Text(
-                "Facilities",
+                "Facilities".tr(),
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
@@ -165,7 +166,7 @@ class HotelVoucherScreen extends StatelessWidget {
         child: SizedBox(
           height: 50.h,
           width: double.infinity,
-          child: AppButton(title: "Download"),
+          child: AppButton(title: "Download".tr()),
         ),
       ),
     );
@@ -234,7 +235,7 @@ class HotelVoucherScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppText(
-            text: "Stay Info",
+            text: "Stay Info".tr(),
             style: textStyle14Regular.copyWith(
               fontSize: 12.sp,
               color: Theme.of(

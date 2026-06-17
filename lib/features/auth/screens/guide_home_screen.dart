@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
@@ -27,7 +27,7 @@ class _GuideHomeScreenState extends State<GuideHomeScreen> {
                 _buildHeader(),
                 12.h.verticalSpace,
                 AppText(
-                  text: "Guide Dashboard",
+                  text: "Guide Dashboard".tr(),
                   style: textStyle12semiBold.copyWith(
                     fontSize: 28.sp,
                     color: Theme.of(context).colorScheme.onSurface,
@@ -51,7 +51,7 @@ class _GuideHomeScreenState extends State<GuideHomeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
-          text: "Welcome, Guide!",
+          text: "Welcome, Guide!".tr(),
           style: textStyle14Regular.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -97,21 +97,21 @@ class _GuideHomeScreenState extends State<GuideHomeScreen> {
       childAspectRatio: 1.4,
       children: [
         _buildStatCard(
-          title: "Active Trips",
+          title: "Active Trips".tr(),
           value: "5",
           icon: Icons.flight_takeoff,
         ),
         _buildStatCard(
-          title: "Total Travelers",
+          title: "Total Travelers".tr(),
           value: "128",
           icon: Icons.people,
         ),
         _buildStatCard(
-          title: "Upcoming Tours",
+          title: "Upcoming Tours".tr(),
           value: "3",
           icon: Icons.calendar_today,
         ),
-        _buildStatCard(title: "Messages", value: "24", icon: Icons.message),
+        _buildStatCard(title: "Messages".tr(), value: "24", icon: Icons.message),
       ],
     );
   }
@@ -163,18 +163,18 @@ class _GuideHomeScreenState extends State<GuideHomeScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         AppText(
-          text: "Quick Actions",
+          text: "Quick Actions".tr(),
           style: textStyle14Regular.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         12.h.verticalSpace,
-        _buildActionButton(title: "Manage Trips", icon: Icons.directions),
+        _buildActionButton(title: "Manage Trips".tr(), icon: Icons.directions),
         8.h.verticalSpace,
-        _buildActionButton(title: "View Travelers", icon: Icons.group),
+        _buildActionButton(title: "View Travelers".tr(), icon: Icons.group),
         8.h.verticalSpace,
         _buildActionButton(
-          title: "Send Notifications",
+          title: "Send Notifications".tr(),
           icon: Icons.notifications,
         ),
       ],

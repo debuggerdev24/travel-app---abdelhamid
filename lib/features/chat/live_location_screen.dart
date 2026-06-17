@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -137,11 +138,11 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   AppText(
-                    text: "Live Location",
+                    text: "Live Location".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 24.sp,
                       color: AppColors.secondary,
@@ -170,7 +171,7 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
               child: AppButton(
-                title: "Share My Location",
+                title: "Share My Location".tr(),
                 onTap: () {
                   context.pop({
                     "lat": currentLocation.latitude,

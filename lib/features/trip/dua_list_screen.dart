@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -87,7 +88,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
         setState(() => _playingId = null);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Could not play audio')));
+        ).showSnackBar(SnackBar(content: Text('Could not play audio'.tr())));
       }
     }
   }
@@ -109,13 +110,13 @@ class _DuaListScreenState extends State<DuaListScreen> {
                     onTap: () => context.pop(),
                     child: Padding(
                       padding: EdgeInsets.only(top: 2.h),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   Expanded(
                     child: AppText(
                       textAlign: TextAlign.center,
-                      text: 'Dua List',
+                      text: 'Dua List'.tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
                         color: AppColors.secondary,
@@ -166,7 +167,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
           TextButton(
             onPressed: _load,
             child: AppText(
-              text: 'Retry',
+              text: 'Retry'.tr(),
               style: textStyle14Medium.copyWith(color: AppColors.secondary),
             ),
           ),
@@ -185,7 +186,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
                   child: AppText(
-                    text: 'No duas available yet',
+                    text: 'No duas available yet'.tr(),
                     textAlign: TextAlign.center,
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,

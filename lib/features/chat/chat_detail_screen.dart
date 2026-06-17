@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,7 @@ import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/services/essential_service.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String chatId;
@@ -98,10 +100,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        ToastHelper.showError('Could not open Maps');
+        ToastHelper.showError('Could not open Maps'.tr());
       }
     } catch (_) {
-      ToastHelper.showError('Could not open Maps');
+      ToastHelper.showError('Could not open Maps'.tr());
     }
   }
 
@@ -131,7 +133,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 Expanded(
                   child: AppText(
                     textAlign: TextAlign.center,
-                    text: widget.name,
+                    text: widget.name.startsWith('Trip: ')
+                        ? '${"Trip".tr()}: ${widget.name.substring(6)}'
+                        : (widget.name.startsWith('Trip:')
+                            ? '${"Trip".tr()}:${widget.name.substring(5)}'
+                            : widget.name),
                     overflow: TextOverflow.ellipsis,
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
@@ -173,7 +179,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 ),
                 SizedBox(width: 15.w),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (widget.isGroup) {
                       context.pushNamed(
                         UserAppRoutes.groupInfoScreen.name,
@@ -185,7 +191,25 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           'avatarUrl': widget.avatarUrl,
                         },
                       );
-                    } else {}
+                    } else {
+                      try {
+                        final data = await EssentialService.instance
+                            .getEmergencyContacts(showErrorToast: false);
+                        final number = data?.groupLeader?.leaderNumber;
+                        if (number != null && number.isNotEmpty) {
+                          final uri = Uri.parse('tel:$number');
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri);
+                          } else {
+                            ToastHelper.showError('Could not launch phone dialer'.tr());
+                          }
+                        } else {
+                          ToastHelper.showError('Guide phone number not available'.tr());
+                        }
+                      } catch (e) {
+                        ToastHelper.showError('Could not fetch guide phone number'.tr());
+                      }
+                    }
                   },
                   child: widget.isGroup
                       ? SvgIcon(
@@ -212,7 +236,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           const CircularProgressIndicator(),
                           16.h.verticalSpace,
                           AppText(
-                            text: 'Loading messages…',
+                            text: 'Loading messages…'.tr(),
                             style: textStyle14Regular.copyWith(
                               color: Theme.of(
                                 context,
@@ -281,7 +305,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             if (canEdit)
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
-                title: const Text('Edit message'),
+                title: Text('Edit message'.tr()),
                 onTap: () {
                   Navigator.pop(ctx);
                   _showEditMessageDialog(
@@ -295,7 +319,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ListTile(
               leading: Icon(Icons.delete_outline, color: AppColors.redColor),
               title: Text(
-                'Delete for everyone',
+                'Delete for everyone'.tr(),
                 style: TextStyle(color: AppColors.redColor),
               ),
               onTap: () {
@@ -320,7 +344,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: AppText(
-          text: 'Edit message',
+          text: 'Edit message'.tr(),
           style: textStyle16SemiBold.copyWith(color: AppColors.primaryColor),
         ),
         content: TextField(
@@ -331,13 +355,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text('Cancel'.tr()),
           ),
           TextButton(
             onPressed: () async {
               final t = controller.text.trim();
               if (t.isEmpty) {
-                ToastHelper.showError('Message cannot be empty');
+                ToastHelper.showError('Message cannot be empty'.tr());
                 return;
               }
               Navigator.pop(ctx);
@@ -346,7 +370,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 newText: t,
               );
             },
-            child: const Text('Save'),
+            child: Text('Save'.tr()),
           ),
         ],
       ),
@@ -361,19 +385,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete message?'),
-        content: const Text('Are you sure you want to delete this message?'),
+        title: Text('Delete message?'.tr()),
+        content: Text('Are you sure you want to delete this message?'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text('Cancel'.tr()),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await provider.deleteOwnMessage(messageId);
             },
-            child: Text('Delete', style: TextStyle(color: AppColors.redColor)),
+            child: Text('Delete'.tr(), style: TextStyle(color: AppColors.redColor)),
           ),
         ],
       ),
@@ -412,7 +436,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               Padding(
                 padding: EdgeInsets.only(bottom: 8.h),
                 child: AppText(
-                  text: 'Share location',
+                  text: 'Share location'.tr(),
                   textAlign: TextAlign.center,
                   style: textStyle16SemiBold.copyWith(
                     color: AppColors.secondary,
@@ -426,13 +450,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   color: AppColors.primaryColor,
                 ),
                 title: AppText(
-                  text: 'Current location',
+                  text: 'Current location'.tr(),
                   style: textStyle14Medium.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 subtitle: AppText(
-                  text: 'Send a map pin of where you are now',
+                  text: 'Send a map pin of where you are now'.tr(),
                   style: textStyle14Regular.copyWith(
                     color: Theme.of(
                       context,
@@ -450,7 +474,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: AppText(
-                    text: 'Live location',
+                    text: 'Live location'.tr(),
                     style: textStyle12semiBold.copyWith(
                       color: AppColors.primaryColor.setOpacity(0.65),
                     ),
@@ -732,7 +756,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         if (msg['edited'] == true) ...[
           4.h.verticalSpace,
           AppText(
-            text: 'Edited',
+            text: 'Edited'.tr(),
             textAlign: textAlign,
             style: textStyle14Regular.copyWith(
               color: Theme.of(
@@ -809,7 +833,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               Icon(Icons.radar, size: 16.sp, color: _liveLocationAccent),
               6.w.horizontalSpace,
               AppText(
-                text: 'Live location',
+                text: 'Live location'.tr(),
                 style: textStyle12semiBold.copyWith(
                   color: _liveLocationAccent,
                   fontSize: 12.sp,
@@ -817,7 +841,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               ),
               6.w.horizontalSpace,
               AppText(
-                text: '· updating',
+                text: '· updating'.tr(),
                 style: textStyle14Regular.copyWith(
                   color: _liveLocationAccent.setOpacity(0.75),
                   fontSize: 11.sp,
@@ -843,7 +867,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             Icon(Icons.place_outlined, size: 16.sp, color: AppColors.secondary),
             6.w.horizontalSpace,
             AppText(
-              text: 'Current location',
+              text: 'Current location'.tr(),
               style: textStyle12semiBold.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 12.sp,
@@ -851,7 +875,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ),
             6.w.horizontalSpace,
             AppText(
-              text: '· one-time pin',
+              text: '· one-time pin'.tr(),
               style: textStyle14Regular.copyWith(
                 color: Theme.of(
                   context,
@@ -958,7 +982,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     horizontal: 4.w,
                     vertical: 8.h,
                   ),
-                  hintText: 'Type Here...',
+                  hintText: 'Type Here...'.tr(),
                   hintStyle: textStyle14Regular.copyWith(
                     color: Theme.of(
                       context,
@@ -1041,7 +1065,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: AppText(
-          text: "Emergency Broadcast",
+          text: "Emergency Broadcast".tr(),
           style: textStyle18Bold.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -1052,7 +1076,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppText(
-                text: "This message will be sent to all members in this group immediately.",
+                text: "This message will be sent to all members in this group immediately.".tr(),
                 style: textStyle14Regular.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -1062,7 +1086,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 controller: _emergencyMessageController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: "Enter emergency message...",
+                  hintText: "Enter emergency message...".tr(),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
@@ -1075,7 +1099,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: AppText(
-              text: "Cancel",
+              text: "Cancel".tr(),
               style: textStyle14Regular.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -1092,7 +1116,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               backgroundColor: AppColors.redColor,
             ),
             child: AppText(
-              text: "Send",
+              text: "Send".tr(),
               style: textStyle14Regular.copyWith(color: Colors.white),
             ),
           ),
@@ -1110,7 +1134,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: AppText(
-          text: "Emergency message sent to group!",
+          text: "Emergency message sent to group!".tr(),
           style: textStyle14Regular.copyWith(color: Colors.white),
         ),
         backgroundColor: AppColors.redColor,

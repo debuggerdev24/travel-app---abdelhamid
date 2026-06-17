@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -32,14 +33,14 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
       final shouldPop = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Discard unsaved data?'),
-          content: const Text(
-            'You have unsaved booking data. Do you want to discard it and go back?',
+          title: Text('Discard unsaved data?'.tr()),
+          content: Text(
+            'You have unsaved booking data. Do you want to discard it and go back?'.tr(),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text('Cancel'.tr()),
             ),
             TextButton(
               onPressed: () {
@@ -47,7 +48,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                 _personDetailsProvider.clearLocalData();
                 Navigator.pop(context, true);
               },
-              child: const Text('Discard'),
+              child: Text('Discard'.tr()),
             ),
           ],
         ),
@@ -109,11 +110,11 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                             alignment: Alignment.centerLeft,
                             child: GestureDetector(
                               onTap: () => context.pop(),
-                              child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                              child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                             ),
                           ),
                           AppText(
-                            text: "Person Details",
+                            text: "Person Details".tr(),
                             style: textStyle32Bold.copyWith(
                               fontSize: 26.sp,
                               color: AppColors.secondary,
@@ -141,7 +142,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                               Align(
                                 alignment: Alignment.bottomLeft,
                                 child: AppText(
-                                  text: "Surviving Family Members",
+                                  text: "Surviving Family Members".tr(),
                                   style: textStyle14Medium.copyWith(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w500,
@@ -149,8 +150,8 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                                 ),
                               ),
                               AppTextField(
-                                labelText: "First Name",
-                                hintText: "Enter Your First Name",
+                                labelText: "First Name".tr(),
+                                hintText: "Enter Your First Name".tr(),
                                 controller:
                                     personProvider.familyFirstNameController,
                                 validator: (v) => Validator.validatePersonName(
@@ -161,8 +162,8 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                                     AutovalidateMode.onUserInteraction,
                               ),
                               AppTextField(
-                                labelText: "Surname",
-                                hintText: "Enter Your Surname",
+                                labelText: "Surname".tr(),
+                                hintText: "Enter Your Surname".tr(),
                                 controller:
                                     personProvider.familySurnameController,
                                 validator: (v) =>
@@ -171,8 +172,8 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                                     AutovalidateMode.onUserInteraction,
                               ),
                               AppTextField(
-                                labelText: "Phone Number",
-                                hintText: "Enter Your Phone Number",
+                                labelText: "Phone Number".tr(),
+                                hintText: "Enter Your Phone Number".tr(),
                                 controller:
                                     personProvider.familyPhoneNumberController,
                                 keyboardType: TextInputType.phone,
@@ -182,9 +183,9 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                                     AutovalidateMode.onUserInteraction,
                               ),
                               AppTextField(
-                                labelText: "Relationship",
+                                labelText: "Relationship".tr(),
                                 hintText:
-                                    "Enter a relationship with this person.",
+                                    "Enter a relationship with this person.".tr(),
                                 controller:
                                     personProvider.familyRelationshipController,
                                 validator: (v) =>
@@ -200,8 +201,8 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                               24.h.verticalSpace,
                               AppButton(
                                 title: personProvider.isFamilyLoading
-                                    ? "Saving..."
-                                    : "Done & Next",
+                                    ? "Saving...".tr()
+                                    : "Done & Next".tr(),
                                 onTap: personProvider.isFamilyLoading
                                     ? null
                                     : () async {

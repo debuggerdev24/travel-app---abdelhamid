@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,17 +39,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     if (_submitting) return;
     final tripId = ratingProvider.selectedTrip?.id;
     if (tripId == null || tripId.isEmpty) {
-      ToastHelper.showError('Select a trip first, then try again.');
+      ToastHelper.showError('Select a trip first, then try again.'.tr());
       return;
     }
     final rating = ratingProvider.rating;
     if (rating < 1) {
-      ToastHelper.showError('Please select a star rating.');
+      ToastHelper.showError('Please select a star rating.'.tr());
       return;
     }
     final text = reviewController.text.trim();
     if (text.isEmpty) {
-      ToastHelper.showError('Please enter your review.');
+      ToastHelper.showError('Please enter your review.'.tr());
       return;
     }
     setState(() => _submitting = true);
@@ -63,7 +64,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       if (!context.mounted) return;
       ratingProvider.setReview(text);
       ratingProvider.submitReview();
-      ToastHelper.showSuccess('Thank you for your review!');
+      ToastHelper.showSuccess('Thank you for your review!'.tr());
       context.pop();
     } catch (_) {
       // Error toast from API layer
@@ -96,11 +97,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             child: SvgPicture.asset(
                               AppAssets.backIcon,
                               width: 28.5.w,
+                              colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.onSurface,
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
                           24.w.horizontalSpace,
                           AppText(
-                            text: "Your Feedback",
+                            text: "Your Feedback".tr(),
                             style: textStyle32Bold.copyWith(
                               fontSize: 26.sp,
                               color: AppColors.secondary,
@@ -113,7 +118,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
                       AppText(
                         text:
-                            "Give this trip a star rating based on your experience.",
+                            "Give this trip a star rating based on your experience.".tr(),
                         style: textStyle16SemiBold,
                       ),
 
@@ -144,7 +149,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       52.h.verticalSpace,
 
                       AppText(
-                        text: "Traveler's Review",
+                        text: "Traveler's Review".tr(),
                         style: textStyle16SemiBold,
                       ),
 
@@ -164,7 +169,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         ),
                         child: AppTextField(
                           controller: reviewController,
-                          hintText: "Enter Comment Here...",
+                          hintText: "Enter Comment Here...".tr(),
                           maxLines: 4,
                         ),
                       ),
@@ -176,7 +181,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
 
               AppButton(
-                title: "Done",
+                title: "Done".tr(),
                 isLoading: _submitting,
                 onTap: () => _submit(context, ratingProvider),
               ),

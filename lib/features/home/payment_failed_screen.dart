@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +25,7 @@ class PaymentFailedScreen extends StatelessWidget {
                 56.h.verticalSpace,
                 AppText(
                   textAlign: TextAlign.center,
-                  text: "Payment Failed",
+                  text: "Payment Failed".tr(),
                   style: textStyle32Bold.copyWith(
                     fontSize: 26.sp,
                     color: AppColors.secondary,
@@ -35,7 +36,7 @@ class PaymentFailedScreen extends StatelessWidget {
                 52.h.verticalSpace,
                 AppText(
                   text:
-                      "We couldn’t process your payment at the moment. Please try again or use another method.",
+                      "We couldn’t process your payment at the moment. Please try again or use another method.".tr(),
                   style: textStyle14Regular.copyWith(
                     color: AppColors.primaryColor,
                     fontSize: 18.sp,
@@ -45,7 +46,7 @@ class PaymentFailedScreen extends StatelessWidget {
 
                 Spacer(),
                 AppButton(
-                  title: "Try Again",
+                  title: "Try Again".tr(),
                   onTap: () {
                     context.pushNamed(UserAppRoutes.tabScreen.name);
                   },

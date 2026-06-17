@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -64,7 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       initialDate: initial,
       firstDate: DateTime(1900, 1, 1),
       lastDate: DateTime.now(),
-      helpText: 'Select date of birth',
+      helpText: 'Select date of birth'.tr(),
     );
     if (picked == null) return;
     // Keep a stable format for backend: YYYY-MM-DD
@@ -115,11 +116,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final fullName = _fullName.text.trim();
 
     if (fullName.isEmpty) {
-      ToastHelper.showError('Full name is required');
+      ToastHelper.showError('Full name is required'.tr());
       return;
     }
     if (provider.selectedLanguages.isEmpty) {
-      ToastHelper.showError('Select a language');
+      ToastHelper.showError('Select a language'.tr());
       return;
     }
 
@@ -190,7 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         children: [
                           Center(
                             child: AppText(
-                              text: "Edit Profile",
+                              text: "Edit Profile".tr(),
                               style: textStyle32Bold.copyWith(
                                 fontSize: 26.sp,
                                 color: AppColors.secondary,
@@ -236,8 +237,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           : () => _pickAndUploadImage(provider),
                       child: AppText(
                         text: provider.isUpdatingProfileImage
-                            ? 'Updating picture...'
-                            : 'Change Picture',
+                            ? 'Updating picture...'.tr()
+                            : 'Change Picture'.tr(),
                         style: textStyle14Medium.copyWith(
                           fontSize: 16.sp,
                           color: provider.isUpdatingProfileImage
@@ -254,7 +255,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
-                            text: "Personal Information",
+                            text: "Personal Information".tr(),
                             style: textStyle16SemiBold.copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -264,12 +265,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Column(
                           children: [
                             AppTextField(
-                              hintText: "Full Name",
+                              hintText: "Full Name".tr(),
                               controller: _fullName,
                             ),
                             18.h.verticalSpace,
                             AppTextField(
-                              hintText: "Date of Birth",
+                              hintText: "Date of Birth".tr(),
                               controller: _dob,
                               readOnly: true,
                               onTap: _pickDob,
@@ -277,43 +278,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             18.h.verticalSpace,
 
                             AppTextField(
-                              hintText: "Age (Auto Generated)",
+                              hintText: "Age (Auto Generated)".tr(),
                               controller: _age,
                               readOnly: true,
                             ),
                             18.h.verticalSpace,
 
                             AppTextField(
-                              hintText: "Gender",
+                              hintText: "Gender".tr(),
                               controller: _gender,
                             ),
                             18.h.verticalSpace,
 
                             AppTextField(
-                              hintText: "Nationality",
+                              hintText: "Nationality".tr(),
                               controller: _nationality,
                             ),
                             18.h.verticalSpace,
 
                             AppTextField(
-                              hintText: "Passport Number",
+                              hintText: "Passport Number".tr(),
                               controller: _passport,
                             ),
                             18.h.verticalSpace,
 
                             CustomMultiSelectDropdown(
-                              hintText: "Language",
+                              hintText: "Language".tr(),
                               items: provider.languageOptions,
                               selectedItems: provider.selectedLanguages,
                               onChanged: provider.updateSelectedLanguages,
-                              titleText: "Language",
+                              titleText: "Language".tr(),
                               showRadio: true,
                             ),
                           ],
                         ),
                         42.h.verticalSpace,
                         AppButton(
-                          title: "Save",
+                          title: "Save".tr(),
                           isLoading: provider.isLoading,
                           onTap: provider.isLoading
                               ? null

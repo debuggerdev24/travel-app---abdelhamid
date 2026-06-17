@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
@@ -141,7 +142,7 @@ class DocumentCard extends StatelessWidget {
                   children: [
                     if (doc.subtitle != null) ...[
                       AppText(
-                        text: doc.subtitle!,
+                        text: doc.subtitle!.tr(),
                         style: textStyle14Medium.copyWith(
                           fontSize: 12.sp,
                           color: Theme.of(
@@ -164,7 +165,7 @@ class DocumentCard extends StatelessWidget {
                     if (doc.info != null)
                       ...doc.info!.entries.map(
                         (entry) =>
-                            _buildInfoRow(context, entry.key, entry.value),
+                            _buildInfoRow(context, entry.key.tr(), entry.value),
                       ),
                   ],
                 ),
@@ -202,7 +203,7 @@ class DocumentCard extends StatelessWidget {
                           ),
                           12.w.horizontalSpace,
                           AppText(
-                            text: doc.button1,
+                            text: doc.button1.tr(),
                             style: textStyle14Medium.copyWith(
                               color: Theme.of(context).colorScheme.surface,
                               fontSize: 14.sp,
@@ -244,7 +245,7 @@ class DocumentCard extends StatelessWidget {
                           SvgIcon(doc.icon, size: 20.w),
                           12.w.horizontalSpace,
                           AppText(
-                            text: doc.button2,
+                            text: doc.button2.tr(),
                             style: textStyle14Medium.copyWith(
                               color: AppColors.blueColor,
                               fontSize: 14.sp,

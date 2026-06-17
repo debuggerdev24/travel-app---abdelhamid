@@ -1,11 +1,8 @@
-import 'dart:async';
-import 'dart:ui' as ui;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -172,9 +169,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
             16.h.verticalSpace,
             _buildTabs(),
             16.h.verticalSpace,
-            Expanded(
-              child: _buildChatView(),
-            ),
+            Expanded(child: _buildChatView()),
           ],
         ),
       ),
@@ -190,7 +185,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
           24.w.horizontalSpace,
           AppText(
             textAlign: TextAlign.center,
-            text: "Chat",
+            text: "Chat".tr(),
             style: textStyle16SemiBold.copyWith(
               fontSize: 26.sp,
               color: Theme.of(context).colorScheme.onSurface,
@@ -219,9 +214,9 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
       ),
       child: Row(
         children: [
-          _tabItem("All", 0),
-          _tabItem("Groups", 1),
-          _tabItem("Direct", 2),
+          _tabItem("All".tr(), 0),
+          _tabItem("Groups".tr(), 1),
+          _tabItem("Direct".tr(), 2),
         ],
       ),
     );
@@ -303,7 +298,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
     }
 
     chatProvider.primeChatOpen(chatId);
-    
+
     // Load local messages into ChatProvider
     chatProvider.loadLocalMessages(chatId, _localMessages[chatId]!);
 
@@ -316,7 +311,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
       'isGroup': isGroup,
       'isLocalChat': true, // Flag to indicate this is a local/static chat
     };
-    
+
     context.pushNamed(UserAppRoutes.chatDetailScreen.name, extra: extra);
   }
 
@@ -369,7 +364,11 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
                     children: [
                       Expanded(
                         child: AppText(
-                          text: name,
+                          text: name.startsWith('Trip: ')
+                              ? '${"Trip".tr()}: ${name.substring(6)}'
+                              : (name.startsWith('Trip:')
+                                  ? '${"Trip".tr()}:${name.substring(5)}'
+                                  : name),
                           overflow: TextOverflow.ellipsis,
                           style: textStyle18Bold.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,

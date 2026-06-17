@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -70,7 +71,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
         rows.add(["Ambulance", medical.ambulanceCode!]);
       }
       if (rows.isNotEmpty) {
-        cards.add(_contactCard(title: "Medical", rows: rows));
+        cards.add(_contactCard(title: "Medical".tr(), rows: rows));
       }
     }
 
@@ -85,7 +86,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
           : "Police";
       cards.add(
         _contactCard(
-          title: "Police",
+          title: "Police".tr(),
           rows: [
             [title, pl],
           ],
@@ -136,12 +137,12 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   13.w.horizontalSpace,
                   AppText(
-                    text: "Emergency Contacts",
+                    text: "Emergency Contacts".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: AppColors.secondary,
@@ -188,7 +189,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
             TextButton(
               onPressed: _load,
               child: AppText(
-                text: "Retry",
+                text: "Retry".tr(),
                 style: textStyle14Medium.copyWith(color: AppColors.secondary),
               ),
             ),
@@ -211,7 +212,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 27.w),
                     child: AppText(
-                      text: "No emergency contacts available",
+                      text: "No emergency contacts available".tr(),
                       textAlign: TextAlign.center,
                       style: textStyle14Regular.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
@@ -238,7 +239,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
                   child: AppText(
-                    text: "No emergency contacts available",
+                    text: "No emergency contacts available".tr(),
                     textAlign: TextAlign.center,
                     style: textStyle14Regular.copyWith(
                       color: AppColors.primaryColor.setOpacity(0.7),

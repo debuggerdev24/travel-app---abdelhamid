@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,8 @@ import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
 import 'package:travel_app_abdelhamid/model/chat/group_info_model.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/services/chat_api_service.dart';
+import 'package:travel_app_abdelhamid/services/essential_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GroupInfoScreen extends StatefulWidget {
   /// Chat document id (messages, delete chat).
@@ -166,12 +169,12 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     final uid = currentUserIdOrNull();
     final self = info.memberForUser(uid);
     if (self == null) {
-      ToastHelper.showError('Could not find your membership in this group.');
+      ToastHelper.showError('Could not find your membership in this group.'.tr());
       return;
     }
 
     final confirmed = await _confirmAction(
-      title: 'Exit group?',
+      title: 'Exit group?'.tr(),
       message: 'You will no longer receive messages from this group.',
       confirmLabel: 'Exit',
     );
@@ -181,7 +184,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     if (widget.isLocalChat) {
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
-      ToastHelper.showSuccess('You left the group (mock).');
+      ToastHelper.showSuccess('You left the group (mock).'.tr());
       _popToChatList();
       return;
     }
@@ -193,7 +196,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       );
       if (!mounted) return;
       context.read<ChatProvider>().loadConversations(silent: true);
-      ToastHelper.showSuccess('You left the group.');
+      ToastHelper.showSuccess('You left the group.'.tr());
       _popToChatList();
     } catch (e, st) {
       LogHelper.instance.error('exitGroup', e, st);
@@ -205,12 +208,12 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     final info = _info;
     if (info == null || _actionInProgress) return;
     if (!info.isCurrentUserAdmin && !widget.isLocalChat) {
-      ToastHelper.showError('Only admins can delete this group.');
+      ToastHelper.showError('Only admins can delete this group.'.tr());
       return;
     }
 
     final confirmed = await _confirmAction(
-      title: 'Delete group?',
+      title: 'Delete group?'.tr(),
       message: 'This will permanently delete the group for everyone.',
       confirmLabel: 'Delete',
       isDestructive: true,
@@ -221,7 +224,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     if (widget.isLocalChat) {
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
-      ToastHelper.showSuccess('Group deleted (mock).');
+      ToastHelper.showSuccess('Group deleted (mock).'.tr());
       _popToChatList();
       return;
     }
@@ -230,7 +233,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       await ChatApiService.instance.deleteChat(chatId: widget.chatId);
       if (!mounted) return;
       context.read<ChatProvider>().loadConversations(silent: true);
-      ToastHelper.showSuccess('Group deleted.');
+      ToastHelper.showSuccess('Group deleted.'.tr());
       _popToChatList();
     } catch (e, st) {
       LogHelper.instance.error('deleteGroup', e, st);
@@ -260,7 +263,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'.tr()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -306,7 +309,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             ),
             20.h.verticalSpace,
             AppActionButton(
-              label: 'Retry',
+              label: 'Retry'.tr(),
               icon: AppAssets.arrow,
               color: AppColors.blueColor,
               onTap: _loadGroupInfo,
@@ -336,12 +339,12 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                   left: 0,
                   child: GestureDetector(
                     onTap: () => context.pop(),
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 Center(
                   child: AppText(
-                    text: 'Group Info',
+                    text: 'Group Info'.tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: AppColors.secondary,
@@ -366,10 +369,10 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppText(
-                      text: '${info.name} - Group',
+                      text: '${info.name} - ${"Group".tr()}',
                       style: textStyle18Bold.copyWith(
                         fontSize: 18.sp,
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     if (info.destination != null) ...[
@@ -378,7 +381,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                         text: info.destination!,
                         style: textStyle14Regular.copyWith(
                           fontSize: 16.sp,
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -387,7 +390,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                       AppText(
                         text: info.dateRange!,
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -402,7 +405,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
               text: info.description!,
               style: textStyle14Regular.copyWith(
                 fontSize: 16.sp,
-                color: AppColors.primaryColor,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
@@ -412,7 +415,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           if (info.createdByLabel != null && info.createdByLabel!.isNotEmpty)
             5.h.verticalSpace,
           if (info.createdByLabel != null && info.createdByLabel!.isNotEmpty)
-            Divider(color: AppColors.primaryColor.setOpacity(0.2)),
+            Divider(color: Theme.of(context).colorScheme.onSurface.setOpacity(0.2)),
           if (info.createdOnLabel != null &&
               info.createdOnLabel!.isNotEmpty) ...[
             5.h.verticalSpace,
@@ -424,14 +427,17 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           _buildSharedMedia(info),
           25.h.verticalSpace,
           AppText(
-            text: 'Members',
-            style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
+            text: 'Members'.tr(),
+            style: textStyle18Bold.copyWith(color: Theme.of(context).colorScheme.onSurface),
           ),
           14.h.verticalSpace,
           _buildMembersList(info, visibleMembers),
           35.h.verticalSpace,
           if (info.isCurrentUserAdmin) ...[
             _buildEmergencyButton(),
+            20.h.verticalSpace,
+          ] else ...[
+            _buildCallGuideButton(),
             20.h.verticalSpace,
           ],
           if (_actionInProgress)
@@ -441,7 +447,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
               children: [
                 Expanded(
                   child: AppActionButton(
-                    label: 'Exit',
+                    label: 'Exit'.tr(),
                     icon: AppAssets.exit,
                     color: AppColors.blueColor,
                     onTap: _exitGroup,
@@ -451,7 +457,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                 if (info.isCurrentUserAdmin)
                   Expanded(
                     child: AppActionButton(
-                      label: 'Delete',
+                      label: 'Delete'.tr(),
                       icon: AppAssets.delete,
                       color: AppColors.redColor,
                       onTap: _deleteGroup,
@@ -472,7 +478,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
         AppText(
           text: label,
           style: textStyle14Medium.copyWith(
-            color: AppColors.primaryColor.setOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurface.setOpacity(0.5),
             fontSize: 14.sp,
           ),
         ),
@@ -480,7 +486,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           child: AppText(
             textAlign: TextAlign.end,
             text: value,
-            style: textStyle14Regular.copyWith(color: AppColors.primaryColor),
+            style: textStyle14Regular.copyWith(color: Theme.of(context).colorScheme.onSurface),
           ),
         ),
       ],
@@ -492,8 +498,8 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
-          text: 'Notification',
-          style: textStyle18Bold.copyWith(color: AppColors.primaryColor),
+          text: 'Notification'.tr(),
+          style: textStyle18Bold.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         CustomSwitchButton(
           value: _notificationsOn,
@@ -513,9 +519,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppText(
-              text: 'Shared Media & Docs',
+              text: 'Shared Media & Docs'.tr(),
               style: textStyle18Bold.copyWith(
-                color: AppColors.primaryColor,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 18.sp,
               ),
             ),
@@ -527,7 +533,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                   border: Border.all(color: AppColors.secondary),
                 ),
                 child: AppText(
-                  text: 'View All',
+                  text: 'View All'.tr(),
                   style: textStyle14Medium.copyWith(
                     color: AppColors.secondary,
                     fontSize: 12.sp,
@@ -539,9 +545,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
         19.h.verticalSpace,
         if (media.isEmpty)
           AppText(
-            text: 'No shared media yet.',
+            text: 'No shared media yet.'.tr(),
             style: textStyle14Regular.copyWith(
-              color: AppColors.primaryColor.setOpacity(0.45),
+              color: Theme.of(context).colorScheme.onSurface.setOpacity(0.45),
             ),
           )
         else
@@ -583,7 +589,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface.setOpacity(0.2)),
         borderRadius: BorderRadius.circular(15.r),
         boxShadow: [
           BoxShadow(
@@ -598,9 +604,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
         children: [
           if (visibleMembers.isEmpty)
             AppText(
-              text: 'No members found.',
+              text: 'No members found.'.tr(),
               style: textStyle14Regular.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.setOpacity(0.5),
               ),
             )
           else
@@ -619,7 +625,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                       child: AppText(
                         text: member.name,
                         style: textStyle12Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 16.sp,
                         ),
                       ),
@@ -627,7 +633,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                     AppText(
                       text: member.role,
                       style: textStyle14Medium.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.8),
+                        color: Theme.of(context).colorScheme.onSurface.setOpacity(0.8),
                       ),
                     ),
                   ],
@@ -675,7 +681,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
               Icon(Icons.emergency, color: Colors.white, size: 20.sp),
               16.w.horizontalSpace,
               AppText(
-                text: "Send Emergency Message",
+                text: "Send Emergency Message".tr(),
                 style: textStyle14Regular.copyWith(color: Colors.white),
               ),
               Spacer(),
@@ -693,7 +699,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: AppText(
-          text: "Emergency Broadcast",
+          text: "Emergency Broadcast".tr(),
           style: textStyle18Bold.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -704,7 +710,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppText(
-                text: "This message will be sent to all members in this group immediately.",
+                text: "This message will be sent to all members in this group immediately.".tr(),
                 style: textStyle14Regular.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -714,7 +720,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                 controller: _emergencyMessageController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: "Enter emergency message...",
+                  hintText: "Enter emergency message...".tr(),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
@@ -727,7 +733,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: AppText(
-              text: "Cancel",
+              text: "Cancel".tr(),
               style: textStyle14Regular.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -744,7 +750,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
               backgroundColor: AppColors.redColor,
             ),
             child: AppText(
-              text: "Send",
+              text: "Send".tr(),
               style: textStyle14Regular.copyWith(color: Colors.white),
             ),
           ),
@@ -757,7 +763,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: AppText(
-          text: "Emergency message sent to group!",
+          text: "Emergency message sent to group!".tr(),
           style: textStyle14Regular.copyWith(color: Colors.white),
         ),
         backgroundColor: AppColors.redColor,
@@ -765,5 +771,54 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       ),
     );
     _emergencyMessageController.clear();
+  }
+
+  Widget _buildCallGuideButton() {
+    return Container(
+      height: 52.h,
+      decoration: BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () async {
+            try {
+              final data = await EssentialService.instance
+                  .getEmergencyContacts(showErrorToast: false);
+              final number = data?.groupLeader?.leaderNumber;
+              if (number != null && number.isNotEmpty) {
+                final uri = Uri.parse('tel:$number');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                } else {
+                  ToastHelper.showError('Could not launch phone dialer'.tr());
+                }
+              } else {
+                ToastHelper.showError('Guide phone number not available'.tr());
+              }
+            } catch (e) {
+              ToastHelper.showError('Could not fetch guide phone number'.tr());
+            }
+          },
+          borderRadius: BorderRadius.circular(8.r),
+          child: Row(
+            children: [
+              16.w.horizontalSpace,
+              Icon(Icons.phone, color: Colors.white, size: 20.sp),
+              16.w.horizontalSpace,
+              AppText(
+                text: "Call Guide".tr(),
+                style: textStyle14Regular.copyWith(color: Colors.white),
+              ),
+              Spacer(),
+              Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16.sp),
+              16.w.horizontalSpace,
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

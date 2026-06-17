@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -90,11 +91,11 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                   alignment: Alignment.centerLeft,
                   child: GestureDetector(
                     onTap: () => context.pop(),
-                    child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                    child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 AppText(
-                  text: 'Payment History',
+                  text: 'Payment History'.tr(),
                   style: textStyle32Bold.copyWith(
                     fontSize: 26.sp,
                     color: AppColors.secondary,
@@ -109,7 +110,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                 : _items.isEmpty
                 ? Center(
                     child: AppText(
-                      text: 'No payments yet.',
+                      text: 'No payments yet.'.tr(),
                       style: textStyle14Regular.copyWith(
                         color: AppColors.primaryColor.setOpacity(0.6),
                       ),

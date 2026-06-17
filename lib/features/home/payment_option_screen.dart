@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,14 +64,14 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey',
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
       );
       return;
     }
 
     // Check if a package is selected locally
     if (bookingProvider.selectedPackage == null) {
-      ToastHelper.showError('Please select a package first.');
+      ToastHelper.showError('Please select a package first.'.tr());
       return;
     }
 
@@ -81,7 +82,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
         final saved = await bookingProvider.saveAllBookingData();
         if (!saved) {
           ToastHelper.showError(
-            'Failed to save booking data. Please try again.',
+            'Failed to save booking data. Please try again.'.tr(),
           );
           setState(() => _paying = false);
           return;
@@ -95,14 +96,14 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
 
     final bookingId = bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
-      ToastHelper.showError('Failed to create booking. Please try again.');
+      ToastHelper.showError('Failed to create booking. Please try again.'.tr());
       setState(() => _paying = false);
       return;
     }
 
     final amount = bookingProvider.totalAmount;
     if (amount <= 0) {
-      ToastHelper.showError('Amount must be greater than 0.');
+      ToastHelper.showError('Amount must be greater than 0.'.tr());
       setState(() => _paying = false);
       return;
     }
@@ -141,7 +142,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
               currencyCode: 'eur',
               cartItems: [
                 ApplePayCartSummaryItem.immediate(
-                  label: 'Trip booking',
+                  label: 'Trip booking'.tr(),
                   amount: amount.toStringAsFixed(2),
                 ),
               ],
@@ -191,7 +192,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
     if (!mounted) return;
 
     tripProvider.notifyPaymentHistoryRefresh();
-    ToastHelper.showSuccess('Payment successful');
+    ToastHelper.showSuccess('Payment successful'.tr());
     await context.pushNamed(
       UserAppRoutes.paymentSuccessfullScreen.name,
       extra: PaymentSuccessRouteExtra(amountEur: amount),
@@ -205,14 +206,14 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey',
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
       );
       return;
     }
 
     if (method.isOfflineCash) {
       ToastHelper.showError(
-        'Cash payment is arranged offline. Please contact support.',
+        'Cash payment is arranged offline. Please contact support.'.tr(),
       );
       return;
     }
@@ -226,7 +227,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
 
     // Check if a package is selected locally
     if (bookingProvider.selectedPackage == null) {
-      ToastHelper.showError('Please select a package first.');
+      ToastHelper.showError('Please select a package first.'.tr());
       return;
     }
 
@@ -237,7 +238,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
         final saved = await bookingProvider.saveAllBookingData();
         if (!saved) {
           ToastHelper.showError(
-            'Failed to save booking data. Please try again.',
+            'Failed to save booking data. Please try again.'.tr(),
           );
           setState(() => _paying = false);
           return;
@@ -251,14 +252,14 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
 
     final bookingId = bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
-      ToastHelper.showError('Failed to create booking. Please try again.');
+      ToastHelper.showError('Failed to create booking. Please try again.'.tr());
       setState(() => _paying = false);
       return;
     }
 
     final amount = bookingProvider.totalAmount;
     if (amount <= 0) {
-      ToastHelper.showError('Amount must be greater than 0.');
+      ToastHelper.showError('Amount must be greater than 0.'.tr());
       setState(() => _paying = false);
       return;
     }
@@ -334,7 +335,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
                       ),
 
                       AppText(
-                        text: "Payment Options",
+                        text: "Payment Options".tr(),
                         style: textStyle32Bold.copyWith(
                           fontSize: 26.sp,
                           color: Theme.of(context).colorScheme.onSurface,
@@ -391,7 +392,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
                       ),
                       24.h.verticalSpace,
                       AppButton(
-                        title: 'Confirm & Pay Now',
+                        title: 'Confirm & Pay Now'.tr(),
                         isLoading: _paying,
                         onTap: _paying ? null : _payNow,
                       ),

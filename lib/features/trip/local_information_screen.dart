@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -67,12 +68,12 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   14.w.horizontalSpace,
                   AppText(
-                    text: "Local Information",
+                    text: "Local Information".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: AppColors.secondary,
@@ -119,7 +120,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
             TextButton(
               onPressed: _load,
               child: AppText(
-                text: "Retry",
+                text: "Retry".tr(),
                 style: textStyle14Medium.copyWith(color: AppColors.secondary),
               ),
             ),
@@ -141,7 +142,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 27.w),
                     child: AppText(
-                      text: "No local information available",
+                      text: "No local information available".tr(),
                       textAlign: TextAlign.center,
                       style: textStyle14Regular.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,

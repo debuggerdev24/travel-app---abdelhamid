@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/guide_chat_screen.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/guide_home_screen.dart';
@@ -31,10 +32,10 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'.tr(context: context)),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'.tr(context: context)),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'.tr(context: context)),
         ],
       ),
     );

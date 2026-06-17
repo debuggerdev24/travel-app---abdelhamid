@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +131,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
         context.read<TripBookingProvider>().bookingId;
 
     // Show success screen immediately after payment succeeds
-    ToastHelper.showSuccess('Payment successful');
+    ToastHelper.showSuccess('Payment successful'.tr());
     await context.pushNamed(
       UserAppRoutes.paymentSuccessfullScreen.name,
       extra: PaymentSuccessRouteExtra(amountEur: paidAmountEur),
@@ -179,7 +180,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey',
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
       );
       return;
     }
@@ -187,18 +188,18 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     final bookingId =
         tripProvider.enrolledBookingId ?? bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
-      ToastHelper.showError('No booking found. Complete a package first.');
+      ToastHelper.showError('No booking found. Complete a package first.'.tr());
       return;
     }
 
     if (payment == null) {
-      ToastHelper.showError('Payment details unavailable. Pull to refresh.');
+      ToastHelper.showError('Payment details unavailable. Pull to refresh.'.tr());
       return;
     }
 
     final pending = payment.pendingAmount;
     if (pending <= 0) {
-      ToastHelper.showError('Nothing to pay.');
+      ToastHelper.showError('Nothing to pay.'.tr());
       return;
     }
 
@@ -287,14 +288,14 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey',
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
       );
       return;
     }
 
     if (method.isOfflineCash) {
       ToastHelper.showError(
-        'Cash payment is arranged offline. Please contact support.',
+        'Cash payment is arranged offline. Please contact support.'.tr(),
       );
       return;
     }
@@ -302,18 +303,18 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     final bookingId =
         tripProvider.enrolledBookingId ?? bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
-      ToastHelper.showError('No booking found. Complete a package first.');
+      ToastHelper.showError('No booking found. Complete a package first.'.tr());
       return;
     }
 
     if (payment == null) {
-      ToastHelper.showError('Payment details unavailable. Pull to refresh.');
+      ToastHelper.showError('Payment details unavailable. Pull to refresh.'.tr());
       return;
     }
 
     final pending = payment.pendingAmount;
     if (pending <= 0) {
-      ToastHelper.showError('Nothing to pay.');
+      ToastHelper.showError('Nothing to pay.'.tr());
       return;
     }
 
@@ -440,7 +441,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   AppText(
-                    text: 'No active booking yet',
+                    text: 'No active booking yet'.tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 18.sp,
@@ -450,7 +451,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   8.h.verticalSpace,
                   AppText(
                     text:
-                        'Choose a package to start booking. You can pay after selecting your package.',
+                        'Choose a package to start booking. You can pay after selecting your package.'.tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 14.sp,
@@ -459,7 +460,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   ),
                   16.h.verticalSpace,
                   AppButton(
-                    title: 'Book now',
+                    title: 'Book now'.tr(),
                     onTap: () async {
                       await tripProvider.ensureSelectedTripFromUpcoming();
                       // Use the same kind of trip object as Home upcoming list tap
@@ -579,7 +580,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: AppButton(
-                    title: 'Pay now',
+                    title: 'Pay now'.tr(),
                     isLoading: _paying,
                     onTap: _paying ? null : _onPayNow,
                   ),
@@ -623,7 +624,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: AppText(
                     text:
-                        'No payment due. Your balance is fully paid — thank you!',
+                        'No payment due. Your balance is fully paid — thank you!'.tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 15.sp,
@@ -651,7 +652,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
             children: [
               Expanded(
                 child: AppText(
-                  text: 'Past Payment',
+                  text: 'Past Payment'.tr(),
                   style: textStyle16SemiBold.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 18.sp,
@@ -666,7 +667,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   );
                 },
                 child: AppText(
-                  text: 'View All',
+                  text: 'View All'.tr(),
                   style: textStyle14Medium.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                     decoration: TextDecoration.underline,
@@ -694,7 +695,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
             Padding(
               padding: EdgeInsets.only(top: 8.h, bottom: 4.h),
               child: AppText(
-                text: 'No payment activity yet.',
+                text: 'No payment activity yet.'.tr(),
                 style: textStyle14Regular.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

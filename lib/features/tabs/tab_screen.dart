@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -85,13 +86,13 @@ class _TabScreenState extends State<TabScreen> {
             ProfileScreen(),
           ],
         ),
-        bottomNavigationBar: _showBottomNav ? bottomNavigationBar() : null,
+        bottomNavigationBar: _showBottomNav ? bottomNavigationBar(context) : null,
       ),
     );
   }
 
   // ... rest of code unchanged
-  Widget bottomNavigationBar() {
+  Widget bottomNavigationBar(BuildContext context) {
     return KBottomNavBar(
       currentIndex: currentIndex,
       onTap: (index) {
@@ -120,22 +121,22 @@ class _TabScreenState extends State<TabScreen> {
         BottomNavItem(
           icon: AppAssets.homeTab,
           isSelected: currentIndex == 0,
-          label: "Home",
+          label: "Home".tr(context: context),
         ),
         BottomNavItem(
           icon: AppAssets.tripTab,
           isSelected: currentIndex == 1,
-          label: "Trip",
+          label: "Trip".tr(context: context),
         ),
         BottomNavItem(
           icon: AppAssets.chatTab,
           isSelected: currentIndex == 2,
-          label: "Chat",
+          label: "Chat".tr(context: context),
         ),
         BottomNavItem(
           icon: AppAssets.profileTab,
           isSelected: currentIndex == 3,
-          label: "Profile",
+          label: "Profile".tr(context: context),
         ),
       ],
     );

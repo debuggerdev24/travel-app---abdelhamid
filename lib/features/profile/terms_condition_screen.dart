@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -76,7 +77,7 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
               20.h.verticalSpace,
               AppText(
                 textAlign: TextAlign.center,
-                text: 'Terms & conditions are not available yet',
+                text: 'Terms & conditions are not available yet'.tr(),
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 17.sp,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -86,7 +87,7 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
               AppText(
                 textAlign: TextAlign.center,
                 text:
-                    'We could not load any terms from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need a copy of the terms.',
+                    'We could not load any terms from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need a copy of the terms.'.tr(),
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,
@@ -158,11 +159,11 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   AppText(
-                    text: "Terms & Conditions",
+                    text: "Terms & Conditions".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -194,7 +195,7 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
                       TextButton(
                         onPressed: _load,
                         child: AppText(
-                          text: "Retry",
+                          text: "Retry".tr(),
                           style: textStyle14Medium.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -22,7 +23,7 @@ Future<void> shareDocumentFile({
     if (localFile != null) {
       if (!localFile.existsSync()) {
         messenger?.showSnackBar(
-          const SnackBar(content: Text('File is no longer available.')),
+          SnackBar(content: Text('File is no longer available.'.tr())),
         );
         return;
       }
@@ -41,13 +42,13 @@ Future<void> shareDocumentFile({
     final url = _resolveDownloadUrl(networkUrl);
     if (url == null) {
       messenger?.showSnackBar(
-        const SnackBar(content: Text('No file available to download.')),
+        SnackBar(content: Text('No file available to download.'.tr())),
       );
       return;
     }
 
     messenger?.showSnackBar(
-      const SnackBar(content: Text('Preparing download…')),
+      SnackBar(content: Text('Preparing download…'.tr())),
     );
 
     final downloaded = await _downloadNetworkFile(url, label);
@@ -62,16 +63,16 @@ Future<void> shareDocumentFile({
   } on DioException {
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
-      const SnackBar(
-        content: Text('Could not download the file. Please try again.'),
+      SnackBar(
+        content: Text('Could not download the file. Please try again.'.tr()),
       ),
     );
   } catch (e) {
     messenger?.hideCurrentSnackBar();
     debugPrint('shareDocumentFile error: $e');
     messenger?.showSnackBar(
-      const SnackBar(
-        content: Text('Could not save the file. Please try again.'),
+      SnackBar(
+        content: Text('Could not save the file. Please try again.'.tr()),
       ),
     );
   }
@@ -156,7 +157,7 @@ Future<void> _saveOrShare({
       return;
     }
     messenger?.showSnackBar(
-      const SnackBar(content: Text('File saved successfully.')),
+      SnackBar(content: Text('File saved successfully.'.tr())),
     );
     return;
   }

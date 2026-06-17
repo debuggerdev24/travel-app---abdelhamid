@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -43,7 +44,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       return Scaffold(
         body: Center(
           child: Text(
-            "No Trip Selected",
+            "No Trip Selected".tr(),
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
         ),
@@ -167,7 +168,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 ),
 
                                 38.h.verticalSpace,
-                                sectionTitle("About Us"),
+                                sectionTitle("About Us".tr()),
                                 2.h.verticalSpace,
                                 AppText(
                                   text: display.description,
@@ -180,7 +181,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 22.h.verticalSpace,
                                 if (isUpcoming) ...[
                                   AppText(
-                                    text: "Package Details",
+                                    text: "Package Details".tr(),
                                     style: textStyle16SemiBold.copyWith(
                                       color: Theme.of(
                                         context,
@@ -205,7 +206,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   else if (details != null)
                                     AppText(
                                       text:
-                                          'No packages available for this trip.',
+                                          'No packages available for this trip.'.tr(),
                                       style: textStyle14Regular.copyWith(
                                         color: Theme.of(
                                           context,
@@ -214,7 +215,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     ),
 
                                   AppText(
-                                    text: "Note:",
+                                    text: "Note:".tr(),
                                     style: textStyle16SemiBold.copyWith(
                                       color: Theme.of(
                                         context,
@@ -224,7 +225,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   8.h.verticalSpace,
                                   AppText(
                                     text:
-                                        "Prices may vary depending on airline & hotel:",
+                                        "Prices may vary depending on airline & hotel:".tr(),
                                     style: textStyle14Regular.copyWith(
                                       color: Theme.of(
                                         context,
@@ -234,8 +235,8 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   42.h.verticalSpace,
                                   AppButton(
                                     title: bookingProvider.isBooked
-                                        ? 'Continue to Room Type'
-                                        : 'Select Package & Room Type',
+                                        ? 'Continue to Room Type'.tr()
+                                        : 'Select Package & Room Type'.tr(),
                                     isLoading: bookingProvider.isLoading,
                                     onTap: () async {
                                       final success = await bookingProvider
@@ -246,7 +247,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                       if (success) {
                                         if (!bookingProvider.isBooked) {
                                           ToastHelper.showSuccess(
-                                            'Package selected successfully',
+                                            'Package selected successfully'.tr(),
                                           );
                                         }
                                         context.pushNamed(
@@ -263,10 +264,10 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   statusTag(trip.status),
                                   22.h.verticalSpace,
                                   simpleCard(
-                                    title: "Payment Summary",
+                                    title: "Payment Summary".tr(),
                                     rows: [
                                       rowItem(
-                                        "Package Cost",
+                                        "Package Cost".tr(),
                                         details?.packages?.isNotEmpty ?? false
                                             ? details!
                                                   .packages!
@@ -275,7 +276,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                                   .first
                                             : "\$2,500",
                                       ),
-                                      rowItem("Status", "Paid"),
+                                      rowItem("Status".tr(), "Paid".tr()),
                                     ],
                                   ),
                                   20.h.verticalSpace,
@@ -290,7 +291,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           AppText(
-                                            text: "Support Contact",
+                                            text: "Support Contact".tr(),
                                             style: textStyle16SemiBold.copyWith(
                                               color: Theme.of(
                                                 context,
@@ -311,8 +312,8 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   42.h.verticalSpace,
                                   AppButton(
                                     title: tripProvider.reviewSubmitted
-                                        ? "Share on Google Review"
-                                        : "Share on Review",
+                                        ? "Share on Google Review".tr()
+                                        : "Share on Review".tr(),
                                     onTap: () => context.pushNamed(
                                       UserAppRoutes.feedbackScreen.name,
                                     ),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -68,11 +69,11 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 26.w),
+                        child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                     AppText(
-                      text: "Our Locations",
+                      text: "Our Locations".tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -105,7 +106,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                       TextButton(
                         onPressed: _load,
                         child: AppText(
-                          text: "Retry",
+                          text: "Retry".tr(),
                           style: textStyle14Medium.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -156,7 +157,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
               20.h.verticalSpace,
               AppText(
                 textAlign: TextAlign.center,
-                text: 'No office locations yet',
+                text: 'No office locations yet'.tr(),
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 17.sp,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -166,7 +167,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
               AppText(
                 textAlign: TextAlign.center,
                 text:
-                    'Locations will appear here once they are added in the admin panel.',
+                    'Locations will appear here once they are added in the admin panel.'.tr(),
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,

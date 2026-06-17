@@ -248,7 +248,7 @@ class _TrackTravelersScreenState extends State<TrackTravelersScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   AppText(

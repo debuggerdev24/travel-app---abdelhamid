@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
@@ -39,11 +40,11 @@ class TravelInsuranceScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 28.w),
+                        child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                     AppText(
-                      text: "Travel Insurance",
+                      text: "Travel Insurance".tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 24.sp,
                         color: AppColors.secondary,
@@ -85,7 +86,7 @@ class TravelInsuranceScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppText(
-                      text: "Coverage Details:",
+                      text: "Coverage Details:".tr(),
                       style: textStyle16SemiBold.copyWith(
                         color: AppColors.primaryColor,
                       ),
@@ -120,7 +121,7 @@ class TravelInsuranceScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppText(
-                      text: "Emergency Contact:",
+                      text: "Emergency Contact:".tr(),
                       style: textStyle16SemiBold.copyWith(
                         color: AppColors.primaryColor,
                       ),
@@ -142,7 +143,7 @@ class TravelInsuranceScreen extends StatelessWidget {
                     Row(
                       children: [
                         AppText(
-                          text: "travelhelp@icicilombard.com",
+                          text: "travelhelp@icicilombard.com".tr(),
                           style: textStyle14Regular.copyWith(
                             color: AppColors.primaryColor,
                           ),
@@ -167,7 +168,7 @@ class TravelInsuranceScreen extends StatelessWidget {
         child: SizedBox(
           height: 50.h,
           width: double.infinity,
-          child: AppButton(title: "Download", onTap: () {}),
+          child: AppButton(title: "Download".tr(), onTap: () {}),
         ),
       ),
     );

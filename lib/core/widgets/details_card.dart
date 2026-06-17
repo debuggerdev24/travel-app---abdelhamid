@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
@@ -41,7 +42,7 @@ class TripDetailsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppText(text: title, style: textStyle16SemiBold),
+              AppText(text: title.tr(), style: textStyle16SemiBold),
               SvgIcon(AppAssets.download, size: 24.w),
             ],
           ),
@@ -65,7 +66,7 @@ class TripDetailsCard extends StatelessWidget {
           SizedBox(
             width: labelWidth.w,
             child: AppText(
-              text: key,
+              text: key.tr(),
               style: textStyle14Regular.copyWith(
                 fontSize: 15.sp,
                 color: AppColors.primaryColor.setOpacity(0.8),
@@ -117,7 +118,7 @@ class EscortContactCard extends StatelessWidget {
         children: [
           /// Title
           AppText(
-            text: "Escort Contact",
+            text: "Escort Contact".tr(),
             style: textStyle16SemiBold.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -126,14 +127,14 @@ class EscortContactCard extends StatelessWidget {
           SizedBox(height: 10.h),
 
           /// Contact Name
-          _buildRow(context, "Escort Name", name),
+          _buildRow(context, "Escort Name".tr(), name),
 
           SizedBox(height: 12.h),
 
           /// Phone Row with icon
           Row(
             children: [
-              Expanded(child: _buildRow(context, "Phone", phone)),
+              Expanded(child: _buildRow(context, "Phone".tr(), phone)),
               SvgIcon(
                 AppAssets.phone,
                 size: 20.sp,

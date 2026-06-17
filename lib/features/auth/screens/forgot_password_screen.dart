@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -49,20 +50,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     onTap: () {
                       context.pop();
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 11.h.verticalSpace,
                 Align(
                   child: RichText(
                     text: TextSpan(
-                      text: "Forgot ",
+                      text: "Forgot ".tr(),
                       style: textStyle32Bold.copyWith(
                         color: AppColors.secondary,
                       ),
                       children: [
                         TextSpan(
-                          text: "Password ? ",
+                          text: "Password ? ".tr(),
                           style: textStyle32Bold.copyWith(
                             color: AppColors.secondary,
                           ),
@@ -81,7 +82,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Form(
                   key: _formKey,
                   child: AppTextField(
-                    hintText: "Email Address",
+                    hintText: "Email Address".tr(),
                     controller: emailController,
                     validator: Validator.validateEmail,
                   ),
@@ -93,7 +94,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   builder: (context, isLoading, child) {
                     if (isLoading) return const CircularProgressIndicator();
                     return AppButton(
-                      title: "Get OTP",
+                      title: "Get OTP".tr(),
                       onTap: () async {
                         if (_formKey.currentState!.validate()) {
                           bool result = await context

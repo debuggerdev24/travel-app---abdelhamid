@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -44,11 +45,11 @@ class _PackageListScreenState extends State<PackageListScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   AppText(
-                    text: "Packing List",
+                    text: "Packing List".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: AppColors.secondary,
@@ -73,7 +74,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           AppText(
-                            text: "Failed to load packing list",
+                            text: "Failed to load packing list".tr(),
                             style: textStyle14Regular.copyWith(
                               color: AppColors.primaryColor,
                             ),
@@ -85,7 +86,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                               onPressed: () => context
                                   .read<MyTripProvider>()
                                   .fetchPackingList(force: true),
-                              child: const Text("Retry"),
+                              child: Text("Retry".tr()),
                             ),
                           ),
                         ],
@@ -96,7 +97,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                   if (provider.packingCategories.isEmpty) {
                     return Center(
                       child: AppText(
-                        text: "No packing list available",
+                        text: "No packing list available".tr(),
                         style: textStyle14Regular.copyWith(
                           color: AppColors.primaryColor,
                         ),

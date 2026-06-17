@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -47,11 +48,15 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                       child: SvgPicture.asset(
                         AppAssets.backIcon,
                         width: 28.5.w,
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurface,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),
                   AppText(
-                    text: "Prayer Times",
+                    text: "Prayer Times".tr(),
                     style: textStyle32Bold.copyWith(
                       fontSize: 26.sp,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -77,7 +82,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         child: AppText(
                           textAlign: TextAlign.center,
                           text:
-                              'Could not load prayer times. Pull to refresh from home or try again later.',
+                              'Could not load prayer times. Pull to refresh from home or try again later.'.tr(),
                           style: textStyle14Regular.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -89,7 +94,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         child: AppText(
                           textAlign: TextAlign.center,
                           text:
-                              'No prayer times have been set yet. They can be added from the admin panel.',
+                              'No prayer times have been set yet. They can be added from the admin panel.'.tr(),
                           style: textStyle14Regular.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),

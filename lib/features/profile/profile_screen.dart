@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:travel_app_abdelhamid/core/core.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Center(
                     child: AppText(
-                      text: "Profile",
+                      text: "profile.title".tr(),
                       style: textStyle32Bold.copyWith(
                         fontSize: 26.sp,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -91,7 +92,7 @@ class ProfileScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
-                            text: "Personal Information",
+                            text: "profile.personal_information".tr(),
                             style: textStyle16SemiBold.copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -101,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                         _infoCard(context, [
                           _infoRow(
                             context,
-                            "Date of Birth",
+                            "profile.date_of_birth".tr(),
                             p != null ? p.displayDateOfBirth : "—",
                           ),
                           Divider(
@@ -109,7 +110,7 @@ class ProfileScreen extends StatelessWidget {
                               context,
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
-                          _infoRow(context, "Age", p?.displayAgeLabel ?? "—"),
+                          _infoRow(context, "profile.age".tr(), p?.displayAgeLabel ?? "—"),
                           Divider(
                             color: Theme.of(
                               context,
@@ -118,7 +119,7 @@ class ProfileScreen extends StatelessWidget {
 
                           _infoRow(
                             context,
-                            "Gender",
+                            "profile.gender".tr(),
                             p?.gender.isNotEmpty == true ? p!.gender : "—",
                           ),
                           Divider(
@@ -129,7 +130,7 @@ class ProfileScreen extends StatelessWidget {
 
                           _infoRow(
                             context,
-                            "Nationality",
+                            "profile.nationality".tr(),
                             p?.nationality.isNotEmpty == true
                                 ? p!.nationality
                                 : "—",
@@ -142,7 +143,7 @@ class ProfileScreen extends StatelessWidget {
 
                           _infoRow(
                             context,
-                            "Passport Number",
+                            "profile.passport_number".tr(),
                             p?.passportNumber.isNotEmpty == true
                                 ? p!.passportNumber
                                 : "—",
@@ -155,7 +156,7 @@ class ProfileScreen extends StatelessWidget {
 
                           _infoRow(
                             context,
-                            "Contact",
+                            "profile.contact".tr(),
                             p?.phoneNumber.isNotEmpty == true
                                 ? p!.phoneNumber
                                 : "—",
@@ -168,7 +169,7 @@ class ProfileScreen extends StatelessWidget {
 
                           _infoRow(
                             context,
-                            "Language",
+                            "profile.language".tr(),
                             p?.languages.isNotEmpty == true
                                 ? p!.languages.join(', ')
                                 : "—",
@@ -182,7 +183,7 @@ class ProfileScreen extends StatelessWidget {
                               UserAppRoutes.prayerTimesScreen.name,
                             );
                           },
-                          child: _menuTile(context, "Prayer Times"),
+                          child: _menuTile(context, "profile.prayer_times".tr()),
                         ),
 
                         22.h.verticalSpace,
@@ -193,7 +194,15 @@ class ProfileScreen extends StatelessWidget {
                               extra: DateTime.now().millisecondsSinceEpoch,
                             );
                           },
-                          child: _menuTile(context, "Currency Converter"),
+                          child: _menuTile(context, "profile.currency_converter".tr()),
+                        ),
+
+                        22.h.verticalSpace,
+                        GestureDetector(
+                          onTap: () {
+                            _showLanguageBottomSheet(context, provider);
+                          },
+                          child: _menuTile(context, "profile.language".tr()),
                         ),
 
                         22.h.verticalSpace,
@@ -202,7 +211,7 @@ class ProfileScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
-                            text: "Help & Support",
+                            text: "profile.help_support".tr(),
                             style: textStyle16SemiBold.copyWith(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w600,
@@ -212,7 +221,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         16.h.verticalSpace,
                         _infoCard(context, [
-                          _menuitems(context, "FAQs", () {
+                          _menuitems(context, "profile.faqs".tr(), () {
                             context.pushNamed(UserAppRoutes.faqScreen.name);
                           }),
                           Divider(
@@ -221,7 +230,7 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "Social Media Links", () {
+                          _menuitems(context, "profile.social_media_links".tr(), () {
                             context.pushNamed(
                               UserAppRoutes.socialMediaScreen.name,
                             );
@@ -232,7 +241,7 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "Terms & Conditions", () {
+                          _menuitems(context, "profile.terms_conditions".tr(), () {
                             context.pushNamed(
                               UserAppRoutes.termsConditionScreen.name,
                             );
@@ -243,7 +252,7 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "Privacy Policy", () {
+                          _menuitems(context, "profile.privacy_policy".tr(), () {
                             context.pushNamed(
                               UserAppRoutes.privacyPolicyScreen.name,
                             );
@@ -254,7 +263,7 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "Our Locations", () {
+                          _menuitems(context, "profile.our_locations".tr(), () {
                             context.pushNamed(
                               UserAppRoutes.ourLocationsScreen.name,
                             );
@@ -265,7 +274,7 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "Meet Our Team", () {
+                          _menuitems(context, "profile.meet_our_team".tr(), () {
                             context.pushNamed(
                               UserAppRoutes.meetOurTeamScreen.name,
                             );
@@ -276,7 +285,7 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "Feedback", () {
+                          _menuitems(context, "profile.feedback".tr(), () {
                             context.pushNamed(
                               UserAppRoutes.profileFeedbackScreen.name,
                             );
@@ -287,7 +296,7 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "App Settings", () {
+                          _menuitems(context, "profile.app_settings".tr(), () {
                             context.pushNamed(
                               UserAppRoutes.appSettignScreen.name,
                             );
@@ -301,7 +310,7 @@ class ProfileScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
-                            text: "Copyright Notice - Tawheed App",
+                            text: "Copyright Notice - Tawheed App".tr(),
                             style: textStyle16SemiBold.copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -321,7 +330,7 @@ class ProfileScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AppText(
-                                text: "© Temheed Reizen - All rights reserved.",
+                                text: "© Temheed Reizen - All rights reserved.".tr(),
                                 style: textStyle14Regular.copyWith(
                                   color: Theme.of(
                                     context,
@@ -330,7 +339,7 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               8.h.verticalSpace,
                               AppText(
-                                text: "Version: 2025",
+                                text: "Version: 2025".tr(),
                                 style: textStyle14Medium.copyWith(
                                   fontSize: 14.sp,
                                   color: Theme.of(context).colorScheme.onSurface
@@ -343,7 +352,7 @@ class ProfileScreen extends StatelessWidget {
                         22.h.verticalSpace,
                         AppText(
                           text:
-                              "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.",
+                              "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.".tr(),
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
                             color: Theme.of(
@@ -354,7 +363,7 @@ class ProfileScreen extends StatelessWidget {
                         10.h.verticalSpace,
                         AppText(
                           text:
-                              "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.",
+                              "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.".tr(),
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
                             color: Theme.of(
@@ -370,7 +379,7 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: AppActionButton(
-                                label: "Edit Profile",
+                                label: "profile.edit_profile".tr(),
                                 icon: AppAssets.exit,
                                 color: AppColors.blueColor,
                                 onTap: () {
@@ -383,27 +392,27 @@ class ProfileScreen extends StatelessWidget {
                             SizedBox(width: 15.w),
                             Expanded(
                               child: AppActionButton(
-                                label: "Logout",
+                                label: "profile.logout".tr(),
                                 icon: AppAssets.exit,
                                 color: AppColors.redColor,
                                 onTap: () async {
                                   final confirmed = await showDialog<bool>(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      title: const Text('Logout'),
-                                      content: const Text(
-                                        'Are you sure you want to logout?',
+                                      title: Text('Logout'.tr()),
+                                      content: Text(
+                                        'Are you sure you want to logout?'.tr(),
                                       ),
                                       actions: [
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context, false),
-                                          child: const Text('Cancel'),
+                                          child: Text('Cancel'.tr()),
                                         ),
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context, true),
-                                          child: const Text('Yes'),
+                                          child: Text('Yes'.tr()),
                                         ),
                                       ],
                                     ),
@@ -506,7 +515,7 @@ class ProfileScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppText(
-                text: "Notification",
+                text: "profile.notification".tr(),
                 style: textStyle16SemiBold.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -548,6 +557,72 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLanguageBottomSheet(BuildContext context, ProfileProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (context) {
+        return Material(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+            children: [
+              AppText(
+                text: "profile.select_language".tr(),
+                style: textStyle16SemiBold.copyWith(
+                  fontSize: 18.sp,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              20.h.verticalSpace,
+              ...provider.languageOptions.map((lang) {
+                final isSelected =
+                    provider.profile?.languages.contains(lang) ?? false;
+                return ListTile(
+                  title: AppText(
+                    text: lang,
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  trailing: isSelected
+                      ? const Icon(Icons.check_circle, color: AppColors.blueColor)
+                      : null,
+                  onTap: () async {
+                    if (lang == 'Dutch') {
+                      context.setLocale(const Locale('nl'));
+                    } else if (lang == 'English') {
+                      context.setLocale(const Locale('en'));
+                    } else if (lang == 'French') {
+                      context.setLocale(const Locale('fr'));
+                    } else if (lang == 'Arabic') {
+                      context.setLocale(const Locale('ar'));
+                    }
+                    
+                    Navigator.pop(context);
+                    
+                    if (provider.profile != null) {
+                      final updated = provider.profile!.copyWith(
+                        languages: [lang],
+                      );
+                      await provider.saveProfile(updated);
+                    }
+                  },
+                );
+              }),
+            ],
+          ),
+         ),
+        );
+      },
     );
   }
 

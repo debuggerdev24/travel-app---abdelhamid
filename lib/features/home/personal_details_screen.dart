@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -34,14 +35,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       final shouldPop = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Discard unsaved data?'),
-          content: const Text(
-            'You have unsaved booking data. Do you want to discard it and go back?',
+          title: Text('Discard unsaved data?'.tr()),
+          content: Text(
+            'You have unsaved booking data. Do you want to discard it and go back?'.tr(),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text('Cancel'.tr()),
             ),
             TextButton(
               onPressed: () {
@@ -49,7 +50,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 _provider.clearLocalData();
                 Navigator.pop(context, true);
               },
-              child: const Text('Discard'),
+              child: Text('Discard'.tr()),
             ),
           ],
         ),
@@ -153,11 +154,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             alignment: Alignment.centerLeft,
                             child: GestureDetector(
                               onTap: () => context.pop(),
-                              child: SvgIcon(AppAssets.backIcon, size: 28.5.w),
+                              child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                             ),
                           ),
                           AppText(
-                            text: "Person Details",
+                            text: "Person Details".tr(),
                             style: textStyle32Bold.copyWith(
                               fontSize: 26.sp,
                               color: AppColors.secondary,
@@ -178,7 +179,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                               Align(
                                 alignment: Alignment.bottomLeft,
                                 child: AppText(
-                                  text: "Personal details of the main booker",
+                                  text: "Personal details of the main booker".tr(),
                                   style: textStyle14Medium.copyWith(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w500,
@@ -186,8 +187,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                 ),
                               ),
                               AppTextField(
-                                labelText: "First Name",
-                                hintText: "Enter Your First Name",
+                                labelText: "First Name".tr(),
+                                hintText: "Enter Your First Name".tr(),
                                 controller: provider.firstNameController,
                                 validator: (v) => Validator.validatePersonName(
                                   v,
@@ -195,15 +196,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                 ),
                               ),
                               AppTextField(
-                                labelText: "Surname",
-                                hintText: "Enter Your Surname",
+                                labelText: "Surname".tr(),
+                                hintText: "Enter Your Surname".tr(),
                                 controller: provider.surnameController,
                                 validator: (v) =>
                                     Validator.validatePersonName(v, 'Surname'),
                               ),
                               AppTextField(
-                                labelText: "Date of Birth",
-                                hintText: "Select Date of Birth",
+                                labelText: "Date of Birth".tr(),
+                                hintText: "Select Date of Birth".tr(),
                                 controller: provider.dateOfBirthController,
                                 validator: Validator.validateIsoDateOfBirth,
                                 readOnly: true,
@@ -214,8 +215,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                 ),
                               ),
                               AppTextField(
-                                labelText: "Place of birth",
-                                hintText: "Enter Your Place of birth",
+                                labelText: "Place of birth".tr(),
+                                hintText: "Enter Your Place of birth".tr(),
                                 controller: provider.placeOfBirthController,
                                 validator: (v) =>
                                     Validator.validateRequiredText(
@@ -224,8 +225,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                     ),
                               ),
                               AppTextField(
-                                labelText: "Nationality",
-                                hintText: "Enter Your Nationality",
+                                labelText: "Nationality".tr(),
+                                hintText: "Enter Your Nationality".tr(),
                                 controller: provider.nationalityController,
                                 validator: (v) =>
                                     Validator.validateRequiredText(
@@ -234,15 +235,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                     ),
                               ),
                               AppTextField(
-                                labelText: "Email Address",
-                                hintText: "Enter Your Email Address",
+                                labelText: "Email Address".tr(),
+                                hintText: "Enter Your Email Address".tr(),
                                 controller: provider.emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 validator: Validator.validateEmail,
                               ),
                               AppTextField(
-                                labelText: "Address",
-                                hintText: "Enter Your Address",
+                                labelText: "Address".tr(),
+                                hintText: "Enter Your Address".tr(),
                                 controller: provider.addressController,
                                 validator: (v) =>
                                     Validator.validateRequiredText(
@@ -251,8 +252,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                     ),
                               ),
                               AppTextField(
-                                labelText: "House number",
-                                hintText: "Enter Your House number",
+                                labelText: "House number".tr(),
+                                hintText: "Enter Your House number".tr(),
                                 controller: provider.houseNumberController,
                                 validator: (v) =>
                                     Validator.validateRequiredText(
@@ -263,8 +264,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                     ),
                               ),
                               AppTextField(
-                                labelText: "Postal code",
-                                hintText: "Enter Postal code",
+                                labelText: "Postal code".tr(),
+                                hintText: "Enter Postal code".tr(),
                                 controller: provider.postalCodeController,
                                 validator: (v) =>
                                     Validator.validateRequiredText(
@@ -275,8 +276,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                     ),
                               ),
                               AppTextField(
-                                labelText: "Place of residence",
-                                hintText: "Enter Place of residence",
+                                labelText: "Place of residence".tr(),
+                                hintText: "Enter Place of residence".tr(),
                                 controller: provider.placeOfResidenceController,
                                 validator: (v) =>
                                     Validator.validateRequiredText(
@@ -285,8 +286,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                     ),
                               ),
                               AppTextField(
-                                labelText: "Phone Number",
-                                hintText: "Enter Your Phone Number",
+                                labelText: "Phone Number".tr(),
+                                hintText: "Enter Your Phone Number".tr(),
                                 controller: provider.phoneNumberController,
                                 keyboardType: TextInputType.phone,
                                 validator:
@@ -296,8 +297,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                               2.h.verticalSpace,
                               AppButton(
                                 title: provider.isLoading
-                                    ? "Saving..."
-                                    : "Add Second Person Details",
+                                    ? "Saving...".tr()
+                                    : "Add Second Person Details".tr(),
                                 onTap: provider.isLoading
                                     ? null
                                     : () async {
