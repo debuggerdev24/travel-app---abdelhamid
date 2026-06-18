@@ -326,18 +326,18 @@ class CurrencyConverterProvider extends ChangeNotifier {
       }
     }
 
-    setState(true, null);
+    _setLoadingAndError(true, null);
     try {
       await _fetchRatesFromAPI();
-      setState(false, null);
+      _setLoadingAndError(false, null);
     } catch (e) {
       if (_exchangeRates.isEmpty) {
-        setState(
+        _setLoadingAndError(
           false,
           'Failed to load exchange rates. Please check your connection.',
         );
       } else {
-        setState(false, 'Using cached exchange rates (offline mode)');
+        _setLoadingAndError(false, 'Using cached exchange rates (offline mode)');
       }
     }
   }
@@ -470,7 +470,7 @@ class CurrencyConverterProvider extends ChangeNotifier {
     }
   }
 
-  void setState(bool loading, String? error) {
+  void _setLoadingAndError(bool loading, String? error) {
     _isLoading = loading;
     _error = error;
     notifyListeners();

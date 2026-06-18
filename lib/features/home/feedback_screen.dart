@@ -15,16 +15,36 @@ import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/services/profile_content_service.dart';
 
-class FeedbackScreen extends StatefulWidget {
+class FeedbackState extends ChangeNotifier {
+  bool _submitting = false;
+  bool get submitting => _submitting;
+  void setSubmitting(bool value) {
+    _submitting = value;
+    notifyListeners();
+  }
+}
+
+class FeedbackScreen extends StatelessWidget {
   const FeedbackScreen({super.key});
 
   @override
-  State<FeedbackScreen> createState() => _FeedbackScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => FeedbackState(),
+      child: const _FeedbackView(),
+    );
+  }
 }
 
-class _FeedbackScreenState extends State<FeedbackScreen> {
+class _FeedbackView extends StatefulWidget {
+  const _FeedbackView();
+
+  @override
+  State<_FeedbackView> createState() => _FeedbackViewState();
+}
+
+class _FeedbackViewState extends State<_FeedbackView> {
   final TextEditingController reviewController = TextEditingController();
-  bool _submitting = false;
 
   @override
   void dispose() {
@@ -36,7 +56,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     BuildContext context,
     TripProvider ratingProvider,
   ) async {
-    if (_submitting) return;
+    final state = context.read<FeedbackState>();
+    if (state.submitting) return;
     final tripId = ratingProvider.selectedTrip?.id;
     if (tripId == null || tripId.isEmpty) {
       ToastHelper.showError('Select a trip first, then try again.'.tr());
@@ -52,7 +73,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ToastHelper.showError('Please enter your review.'.tr());
       return;
     }
-    setState(() => _submitting = true);
+    state.setSubmitting(true);
     try {
       await ProfileContentService.instance.submitReview(
         forTrip: true,
@@ -69,7 +90,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     } catch (_) {
       // Error toast from API layer
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (mounted) state.setSubmitting(false);
     }
   }
 
@@ -182,7 +203,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
               AppButton(
                 title: "Done".tr(),
-                isLoading: _submitting,
+                isLoading: context.watch<FeedbackState>().submitting,
                 onTap: () => _submit(context, ratingProvider),
               ),
             ],

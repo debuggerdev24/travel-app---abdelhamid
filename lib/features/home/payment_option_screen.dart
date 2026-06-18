@@ -22,39 +22,68 @@ import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/services/payment_service.dart';
 import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
-class PaymentOptionScreen extends StatefulWidget {
-  const PaymentOptionScreen({super.key});
-
-  @override
-  State<PaymentOptionScreen> createState() => _PaymentOptionScreenState();
-}
-
-class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
+class PaymentOptionState extends ChangeNotifier {
   bool _paying = false;
   bool? _platformPaySupported;
 
+  bool get paying => _paying;
+  bool? get platformPaySupported => _platformPaySupported;
+
+  void setPaying(bool value) {
+    _paying = value;
+    notifyListeners();
+  }
+
+  void setPlatformPaySupported(bool? value) {
+    _platformPaySupported = value;
+    notifyListeners();
+  }
+}
+
+class PaymentOptionScreen extends StatelessWidget {
+  const PaymentOptionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => PaymentOptionState(),
+      child: const _PaymentOptionView(),
+    );
+  }
+}
+
+class _PaymentOptionView extends StatefulWidget {
+  const _PaymentOptionView();
+
+  @override
+  State<_PaymentOptionView> createState() => _PaymentOptionViewState();
+}
+
+class _PaymentOptionViewState extends State<_PaymentOptionView> {
   @override
   void initState() {
     super.initState();
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       _checkPlatformPaySupport();
     } else {
-      _platformPaySupported = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<PaymentOptionState>().setPlatformPaySupported(false);
+      });
     }
   }
 
   Future<void> _checkPlatformPaySupport() async {
     if (AppConstants.stripePublishableKey.isEmpty) {
-      if (mounted) setState(() => _platformPaySupported = false);
+      if (mounted) context.read<PaymentOptionState>().setPlatformPaySupported(false);
       return;
     }
     try {
       final ok = await Stripe.instance.isPlatformPaySupported(
         googlePay: IsGooglePaySupportedParams(testEnv: kDebugMode),
       );
-      if (mounted) setState(() => _platformPaySupported = ok);
+      if (mounted) context.read<PaymentOptionState>().setPlatformPaySupported(ok);
     } catch (_) {
-      if (mounted) setState(() => _platformPaySupported = false);
+      if (mounted) context.read<PaymentOptionState>().setPlatformPaySupported(false);
     }
   }
 
@@ -75,21 +104,21 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
       return;
     }
 
-    // Save all local booking data to backend before payment
+    final state = context.read<PaymentOptionState>();
     if (bookingProvider.hasAnyUnsavedData) {
-      setState(() => _paying = true);
+      state.setPaying(true);
       try {
         final saved = await bookingProvider.saveAllBookingData();
         if (!saved) {
           ToastHelper.showError(
             'Failed to save booking data. Please try again.'.tr(),
           );
-          setState(() => _paying = false);
+          state.setPaying(false);
           return;
         }
       } catch (e) {
         ToastHelper.showError('Failed to save booking data: $e');
-        setState(() => _paying = false);
+        state.setPaying(false);
         return;
       }
     }
@@ -97,18 +126,18 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
     final bookingId = bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
       ToastHelper.showError('Failed to create booking. Please try again.'.tr());
-      setState(() => _paying = false);
+      state.setPaying(false);
       return;
     }
 
     final amount = bookingProvider.totalAmount;
     if (amount <= 0) {
       ToastHelper.showError('Amount must be greater than 0.'.tr());
-      setState(() => _paying = false);
+      state.setPaying(false);
       return;
     }
 
-    setState(() => _paying = true);
+    state.setPaying(true);
     try {
       PaymentFlowLog.log('PaymentOptionScreen: platform pay intent', {
         'bookingId': bookingId,
@@ -163,7 +192,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
     } catch (e) {
       ToastHelper.showError(e.toString());
     } finally {
-      if (mounted) setState(() => _paying = false);
+      if (mounted) state.setPaying(false);
     }
   }
 
@@ -231,21 +260,21 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
       return;
     }
 
-    // Save all local booking data to backend before payment
+    final state = context.read<PaymentOptionState>();
     if (bookingProvider.hasAnyUnsavedData) {
-      setState(() => _paying = true);
+      state.setPaying(true);
       try {
         final saved = await bookingProvider.saveAllBookingData();
         if (!saved) {
           ToastHelper.showError(
             'Failed to save booking data. Please try again.'.tr(),
           );
-          setState(() => _paying = false);
+          state.setPaying(false);
           return;
         }
       } catch (e) {
         ToastHelper.showError('Failed to save booking data: $e');
-        setState(() => _paying = false);
+        state.setPaying(false);
         return;
       }
     }
@@ -253,18 +282,18 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
     final bookingId = bookingProvider.bookingId;
     if (bookingId == null || bookingId.isEmpty) {
       ToastHelper.showError('Failed to create booking. Please try again.'.tr());
-      setState(() => _paying = false);
+      state.setPaying(false);
       return;
     }
 
     final amount = bookingProvider.totalAmount;
     if (amount <= 0) {
       ToastHelper.showError('Amount must be greater than 0.'.tr());
-      setState(() => _paying = false);
+      state.setPaying(false);
       return;
     }
 
-    setState(() => _paying = true);
+    state.setPaying(true);
     try {
       final types = method.stripePaymentMethodTypes;
       PaymentFlowLog.log('PaymentOptionScreen: creating intent', {
@@ -300,12 +329,13 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
     } catch (e) {
       ToastHelper.showError(e.toString());
     } finally {
-      if (mounted) setState(() => _paying = false);
+      if (mounted) state.setPaying(false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<PaymentOptionState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer<TripProvider>(
@@ -393,16 +423,16 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
                       24.h.verticalSpace,
                       AppButton(
                         title: 'Confirm & Pay Now'.tr(),
-                        isLoading: _paying,
-                        onTap: _paying ? null : _payNow,
+                        isLoading: state.paying,
+                        onTap: state.paying ? null : _payNow,
                       ),
-                      if (_platformPaySupported != null &&
-                          _platformPaySupported!) ...[
+                      if (state.platformPaySupported != null &&
+                          state.platformPaySupported!) ...[
                         12.h.verticalSpace,
                         Opacity(
-                          opacity: _paying ? 0.55 : 1,
+                          opacity: state.paying ? 0.55 : 1,
                           child: AbsorbPointer(
-                            absorbing: _paying,
+                            absorbing: state.paying,
                             child: SizedBox(
                               width: double.infinity,
                               height: 50.h,
@@ -418,7 +448,7 @@ class _PaymentOptionScreenState extends State<PaymentOptionScreen> {
                                         ? PaymentMethodEnum.googlePay
                                         : PaymentMethodEnum.applepay,
                                   );
-                                  if (_paying) return;
+                                  if (state.paying) return;
                                   _payWithPlatformPay();
                                 },
                               ),

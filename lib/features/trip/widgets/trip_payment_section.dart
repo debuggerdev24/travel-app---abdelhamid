@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
@@ -34,15 +33,8 @@ class TripPaymentSection extends StatefulWidget {
 }
 
 class _TripPaymentSectionState extends State<TripPaymentSection> {
-  bool _paying = false;
-
-  /// Whether native Google Pay / Apple Pay is available on this device.
-  bool? _platformPaySupported;
-
   String? _lastHistoryBookingIdForLoad;
   int _lastSeenPaymentHistoryToken = -1;
-  List<UserPaymentHistoryItem> _pastPayments = [];
-  bool _pastPaymentsLoading = false;
 
   @override
   void initState() {
@@ -50,52 +42,24 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       _checkPlatformPaySupport();
     } else {
-      _platformPaySupported = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<TripProvider>().setPlatformPaySupported(false);
+      });
     }
   }
 
   Future<void> _checkPlatformPaySupport() async {
     if (AppConstants.stripePublishableKey.isEmpty) {
-      if (mounted) setState(() => _platformPaySupported = false);
+      if (mounted) context.read<TripProvider>().setPlatformPaySupported(false);
       return;
     }
     try {
       final ok = await Stripe.instance.isPlatformPaySupported(
         googlePay: IsGooglePaySupportedParams(testEnv: kDebugMode),
       );
-      if (mounted) setState(() => _platformPaySupported = ok);
+      if (mounted) context.read<TripProvider>().setPlatformPaySupported(ok);
     } catch (_) {
-      if (mounted) setState(() => _platformPaySupported = false);
-    }
-  }
-
-  Future<void> _loadPastPayments(String? bookingId) async {
-    if (!mounted) return;
-    if (bookingId == null || bookingId.isEmpty) {
-      setState(() {
-        _pastPayments = [];
-        _pastPaymentsLoading = false;
-      });
-      return;
-    }
-    setState(() => _pastPaymentsLoading = true);
-    try {
-      final list = await TripsService.instance.fetchUserPaymentHistory(
-        bookingId: bookingId,
-        showErrorToast: false,
-      );
-      final listed = list.where((e) => e.includeInHistoryList).toList()
-        ..sort((a, b) {
-          final da = a.date;
-          final db = b.date;
-          if (da == null && db == null) return 0;
-          if (da == null) return 1;
-          if (db == null) return -1;
-          return db.compareTo(da);
-        });
-      if (mounted) setState(() => _pastPayments = listed);
-    } finally {
-      if (mounted) setState(() => _pastPaymentsLoading = false);
+      if (mounted) context.read<TripProvider>().setPlatformPaySupported(false);
     }
   }
 
@@ -180,7 +144,8 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'
+            .tr(),
       );
       return;
     }
@@ -193,7 +158,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     }
 
     if (payment == null) {
-      ToastHelper.showError('Payment details unavailable. Pull to refresh.'.tr());
+      ToastHelper.showError(
+        'Payment details unavailable. Pull to refresh.'.tr(),
+      );
       return;
     }
 
@@ -203,7 +170,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       return;
     }
 
-    setState(() => _paying = true);
+    tripProvider.setPaying(true);
     try {
       PaymentFlowLog.log('_payWithPlatformPay: creating intent', {
         'bookingId': bookingId,
@@ -276,7 +243,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       PaymentFlowLog.log('_payWithPlatformPay: error', {'error': e.toString()});
       ToastHelper.showError(e.toString());
     } finally {
-      if (mounted) setState(() => _paying = false);
+      if (mounted) tripProvider.setPaying(false);
     }
   }
 
@@ -288,7 +255,8 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'
+            .tr(),
       );
       return;
     }
@@ -308,7 +276,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     }
 
     if (payment == null) {
-      ToastHelper.showError('Payment details unavailable. Pull to refresh.'.tr());
+      ToastHelper.showError(
+        'Payment details unavailable. Pull to refresh.'.tr(),
+      );
       return;
     }
 
@@ -318,7 +288,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       return;
     }
 
-    setState(() => _paying = true);
+    tripProvider.setPaying(true);
     try {
       final types = method.stripePaymentMethodTypes;
       PaymentFlowLog.log('_onPayNow: creating intent', {
@@ -376,7 +346,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       PaymentFlowLog.log('_onPayNow: error', {'error': e.toString()});
       ToastHelper.showError(e.toString());
     } finally {
-      if (mounted) setState(() => _paying = false);
+      if (mounted) tripProvider.setPaying(false);
     }
   }
 
@@ -391,7 +361,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
         final bid = tripProvider.enrolledBookingId;
         if (bid != _lastHistoryBookingIdForLoad) {
           _lastHistoryBookingIdForLoad = bid;
-          Future.microtask(() => _loadPastPayments(bid));
+          Future.microtask(
+            () => context.read<TripProvider>().loadPastPayments(bid),
+          );
         }
 
         final historyToken = tripProvider.paymentHistoryRefreshToken;
@@ -401,7 +373,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
           _lastSeenPaymentHistoryToken = historyToken;
           if (bid != null && bid.isNotEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) _loadPastPayments(bid);
+              if (mounted) context.read<TripProvider>().loadPastPayments(bid);
             });
           }
         }
@@ -451,7 +423,8 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   8.h.verticalSpace,
                   AppText(
                     text:
-                        'Choose a package to start booking. You can pay after selecting your package.'.tr(),
+                        'Choose a package to start booking. You can pay after selecting your package.'
+                            .tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 14.sp,
@@ -546,7 +519,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
               ),
             ),
             if (!loading && bid != null && bid.isNotEmpty)
-              _pastPaymentsBlock(context, bid),
+              _pastPaymentsBlock(context, bid, tripProvider),
             if (!loading) ...[
               if (payment != null && payment.pendingAmount > 0) ...[
                 Padding(
@@ -581,21 +554,21 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: AppButton(
                     title: 'Pay now'.tr(),
-                    isLoading: _paying,
-                    onTap: _paying ? null : _onPayNow,
+                    isLoading: tripProvider.isPaying,
+                    onTap: tripProvider.isPaying ? null : _onPayNow,
                   ),
                 ),
                 15.verticalSpace,
-                if (_platformPaySupported == true) ...[
+                if (tripProvider.platformPaySupported == true) ...[
                   Padding(
                     padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Opacity(
-                          opacity: _paying ? 0.55 : 1,
+                          opacity: tripProvider.isPaying ? 0.55 : 1,
                           child: AbsorbPointer(
-                            absorbing: _paying,
+                            absorbing: tripProvider.isPaying,
                             child: SizedBox(
                               width: double.infinity,
                               height: 50.h,
@@ -606,7 +579,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                                 appearance: PlatformButtonStyle.automatic,
                                 borderRadius: 8,
                                 onPressed: () {
-                                  if (!_paying) {
+                                  if (!tripProvider.isPaying) {
                                     _payWithPlatformPay();
                                   }
                                 },
@@ -624,7 +597,8 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: AppText(
                     text:
-                        'No payment due. Your balance is fully paid — thank you!'.tr(),
+                        'No payment due. Your balance is fully paid — thank you!'
+                            .tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 15.sp,
@@ -642,7 +616,11 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     );
   }
 
-  Widget _pastPaymentsBlock(BuildContext context, String bookingId) {
+  Widget _pastPaymentsBlock(
+    BuildContext context,
+    String bookingId,
+    TripProvider tripProvider,
+  ) {
     return Padding(
       padding: EdgeInsets.fromLTRB(24.w, 4.h, 24.w, 8.h),
       child: Column(
@@ -677,7 +655,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
               ),
             ],
           ),
-          if (_pastPaymentsLoading)
+          if (tripProvider.isPastPaymentsLoading)
             Padding(
               padding: EdgeInsets.symmetric(vertical: 16.h),
               child: Center(
@@ -691,7 +669,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 ),
               ),
             )
-          else if (_pastPayments.isEmpty)
+          else if (tripProvider.pastPayments.isEmpty)
             Padding(
               padding: EdgeInsets.only(top: 8.h, bottom: 4.h),
               child: AppText(
@@ -702,7 +680,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
               ),
             )
           else
-            ..._pastPayments
+            ...tripProvider.pastPayments
                 .take(3)
                 .map(
                   (e) => PastPaymentItem(

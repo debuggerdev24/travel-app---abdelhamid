@@ -509,28 +509,22 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 17.h),
       decoration: _boxDecoration(context),
-      child: StatefulBuilder(
-        builder: (context, setState) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AppText(
-                text: "profile.notification".tr(),
-                style: textStyle16SemiBold.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-
-              CustomSwitchButton(
-                value: true,
-
-                onChanged: (value) {
-                  log("Notification status: $value");
-                },
-              ),
-            ],
-          );
-        },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          AppText(
+            text: "profile.notification".tr(),
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          CustomSwitchButton(
+            value: true,
+            onChanged: (value) {
+              log("Notification status: $value");
+            },
+          ),
+        ],
       ),
     );
   }

@@ -14,17 +14,45 @@ import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dar
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart' as hp;
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
-class RoomDetailsScreen extends StatefulWidget {
+class RoomDetailsState extends ChangeNotifier {
+  String? _roomTypeError;
+  String? _bedTypeError;
+
+  String? get roomTypeError => _roomTypeError;
+  String? get bedTypeError => _bedTypeError;
+
+  void setRoomTypeError(String? error) {
+    _roomTypeError = error;
+    notifyListeners();
+  }
+
+  void setBedTypeError(String? error) {
+    _bedTypeError = error;
+    notifyListeners();
+  }
+}
+
+class RoomDetailsScreen extends StatelessWidget {
   const RoomDetailsScreen({super.key});
 
   @override
-  State<RoomDetailsScreen> createState() => _RoomDetailsScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => RoomDetailsState(),
+      child: const _RoomDetailsView(),
+    );
+  }
 }
 
-class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
+class _RoomDetailsView extends StatefulWidget {
+  const _RoomDetailsView();
+
+  @override
+  State<_RoomDetailsView> createState() => _RoomDetailsViewState();
+}
+
+class _RoomDetailsViewState extends State<_RoomDetailsView> {
   final _formKey = GlobalKey<FormState>();
-  String? _roomTypeError;
-  String? _bedTypeError;
   late TextEditingController _personController;
 
   @override
@@ -48,11 +76,8 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
       if (bookingProvider.isRoomPreferenceSaved &&
           bookingProvider.bookingId != null) {
         await bookingProvider.fetchSavedRoomPreference();
-        // Update the controller with the fetched adult count
         if (mounted) {
-          setState(() {
-            _personController.text = bookingProvider.adultCount.toString();
-          });
+          _personController.text = bookingProvider.adultCount.toString();
         }
       }
     });
@@ -68,27 +93,28 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
     final bookingProvider = context.read<TripBookingProvider>();
     bool isValid = true;
 
-    setState(() {
-      if (bookingProvider.selectedRoomTypeId == null) {
-        _roomTypeError = "Please select a room type".tr();
-        isValid = false;
-      } else {
-        _roomTypeError = null;
-      }
+    final state = context.read<RoomDetailsState>();
 
-      if (bookingProvider.selectedBedType == null) {
-        _bedTypeError = "Please select a bed type".tr();
-        isValid = false;
-      } else {
-        _bedTypeError = null;
-      }
-    });
+    if (bookingProvider.selectedRoomTypeId == null) {
+      state.setRoomTypeError("Please select a room type".tr());
+      isValid = false;
+    } else {
+      state.setRoomTypeError(null);
+    }
+
+    if (bookingProvider.selectedBedType == null) {
+      state.setBedTypeError("Please select a bed type".tr());
+      isValid = false;
+    } else {
+      state.setBedTypeError(null);
+    }
 
     return isValid;
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<RoomDetailsState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer2<hp.TripProvider, TripBookingProvider>(
@@ -169,7 +195,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             child: CustomMultiSelectDropdown(
                               labelText: "Room Type".tr(),
                               hintText: "Select Room Type".tr(),
-                              errorText: _roomTypeError,
+                              errorText: state.roomTypeError,
                               items:
                                   selectedPackage?.roomOptions ??
                                   tripProvider.roomTypes,
@@ -210,7 +236,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                     bookingProvider.updateSelectedRoomTypeId(
                                       rooms.first.id,
                                     );
-                                    setState(() => _roomTypeError = null);
+                                    context.read<RoomDetailsState>().setRoomTypeError(null);
                                   }
                                 }
                               },
@@ -236,7 +262,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             child: CustomMultiSelectDropdown(
                               labelText: "Bed Type".tr(),
                               hintText: "Select Bed Type".tr(),
-                              errorText: _bedTypeError,
+                              errorText: state.bedTypeError,
                               items: tripProvider.bedTypes,
                               selectedItems:
                                   bookingProvider.selectedBedType != null
@@ -250,7 +276,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                   bookingProvider.updateSelectedBedType(
                                     values.first,
                                   );
-                                  setState(() => _bedTypeError = null);
+                                  context.read<RoomDetailsState>().setBedTypeError(null);
                                 }
                               },
                               titleText: "Bed Type".tr(),

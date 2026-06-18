@@ -72,10 +72,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final y = picked.year.toString().padLeft(4, '0');
     final m = picked.month.toString().padLeft(2, '0');
     final d = picked.day.toString().padLeft(2, '0');
-    setState(() {
-      _dob.text = '$y-$m-$d';
-      _age.text = (ageFromDateOfBirth(_dob.text)?.toString() ?? '');
-    });
+    _dob.text = '$y-$m-$d';
+    _age.text = (ageFromDateOfBirth(_dob.text)?.toString() ?? '');
   }
 
   DateTime? _tryParseDob(String raw) {

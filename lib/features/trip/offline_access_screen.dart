@@ -11,36 +11,78 @@ import 'package:travel_app_abdelhamid/model/home/user_itinerary_model.dart';
 import 'package:travel_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
 import 'package:travel_app_abdelhamid/core/widgets/itinerarystep_card.dart';
 
-class OfflineAccessScreen extends StatefulWidget {
-  const OfflineAccessScreen({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<OfflineAccessScreen> createState() => _OfflineAccessScreenState();
-}
-
-class _OfflineAccessScreenState extends State<OfflineAccessScreen> {
+class OfflineAccessState extends ChangeNotifier {
   List<TripModel> _savedTrips = [];
   bool _isLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedTrips();
+  List<TripModel> get savedTrips => _savedTrips;
+  bool get isLoading => _isLoading;
+
+  OfflineAccessState() {
+    loadSavedTrips();
   }
 
-  Future<void> _loadSavedTrips() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> loadSavedTrips() async {
+    _isLoading = true;
+    notifyListeners();
     final trips = await OfflineStorageHelper.getSavedOfflineTrips();
-    setState(() {
-      _savedTrips = trips;
-      _isLoading = false;
-    });
+    _savedTrips = trips;
+    _isLoading = false;
+    notifyListeners();
   }
+}
+
+class TripOfflineCardState extends ChangeNotifier {
+  final TripModel trip;
+  UserItineraryResponseModel? _itinerary;
+  TripDocumentsBundle? _documents;
+  bool _isLoadingData = false;
+
+  UserItineraryResponseModel? get itinerary => _itinerary;
+  TripDocumentsBundle? get documents => _documents;
+  bool get isLoadingData => _isLoadingData;
+
+  TripOfflineCardState(this.trip);
+
+  Future<void> loadTripData() async {
+    if (_itinerary != null || _documents != null) return;
+    _isLoadingData = true;
+    notifyListeners();
+
+    final it = await OfflineStorageHelper.getOfflineItinerary(
+      trip.id ?? '',
+    );
+    final docs = await OfflineStorageHelper.getOfflineDocuments(
+      trip.id ?? '',
+    );
+
+    _itinerary = it;
+    _documents = docs;
+    _isLoadingData = false;
+    notifyListeners();
+  }
+}
+
+class OfflineAccessScreen extends StatelessWidget {
+  const OfflineAccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => OfflineAccessState(),
+      child: const _OfflineAccessScreenView(),
+    );
+  }
+}
+
+class _OfflineAccessScreenView extends StatelessWidget {
+  const _OfflineAccessScreenView();
+
+  Widget build(BuildContext context) {
+    final state = context.watch<OfflineAccessState>();
+
     return Scaffold(
       appBar: AppBar(
         title: AppText(
@@ -56,9 +98,9 @@ class _OfflineAccessScreenState extends State<OfflineAccessScreen> {
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
-      body: _isLoading
+      body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _savedTrips.isEmpty
+          : state.savedTrips.isEmpty
           ? Center(
               child: AppText(
                 text: "No trips saved for offline access.".tr(),
@@ -69,71 +111,59 @@ class _OfflineAccessScreenState extends State<OfflineAccessScreen> {
             )
           : ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-              itemCount: _savedTrips.length,
+              itemCount: state.savedTrips.length,
               itemBuilder: (context, index) {
-                final trip = _savedTrips[index];
-                return _TripOfflineCard(trip: trip, onRemove: _loadSavedTrips);
+                final trip = state.savedTrips[index];
+                return _TripOfflineCard(trip: trip, onRemove: () => context.read<OfflineAccessState>().loadSavedTrips());
               },
             ),
     );
   }
 }
 
-class _TripOfflineCard extends StatefulWidget {
+class _TripOfflineCard extends StatelessWidget {
   final TripModel trip;
   final VoidCallback onRemove;
 
   const _TripOfflineCard({required this.trip, required this.onRemove});
 
   @override
-  State<_TripOfflineCard> createState() => _TripOfflineCardState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => TripOfflineCardState(trip),
+      child: _TripOfflineCardView(onRemove: onRemove),
+    );
+  }
 }
 
-class _TripOfflineCardState extends State<_TripOfflineCard> {
-  UserItineraryResponseModel? _itinerary;
-  TripDocumentsBundle? _documents;
-  bool _isLoadingData = false;
+class _TripOfflineCardView extends StatelessWidget {
+  final VoidCallback onRemove;
 
-  Future<void> _loadTripData() async {
-    if (_itinerary != null || _documents != null) return;
-    setState(() => _isLoadingData = true);
+  const _TripOfflineCardView({required this.onRemove});
 
-    final it = await OfflineStorageHelper.getOfflineItinerary(
-      widget.trip.id ?? '',
-    );
-    final docs = await OfflineStorageHelper.getOfflineDocuments(
-      widget.trip.id ?? '',
-    );
-
-    setState(() {
-      _itinerary = it;
-      _documents = docs;
-      _isLoadingData = false;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final state = context.watch<TripOfflineCardState>();
+
     return Card(
       margin: EdgeInsets.only(bottom: 16.h),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: ExpansionTile(
         title: AppText(
-          text: widget.trip.title.isNotEmpty
-              ? widget.trip.title
+          text: state.trip.title.isNotEmpty
+              ? state.trip.title
               : "Unnamed Trip",
           style: textStyle16SemiBold.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         subtitle: AppText(
-          text: widget.trip.date,
+          text: state.trip.date,
           style: textStyle12Regular.copyWith(color: Colors.grey),
         ),
         onExpansionChanged: (expanded) {
           if (expanded) {
-            _loadTripData();
+            context.read<TripOfflineCardState>().loadTripData();
           }
         },
         children: [
@@ -142,20 +172,20 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_isLoadingData)
+                if (state.isLoadingData)
                   const Center(child: CircularProgressIndicator())
                 else ...[
-                  _buildItinerarySection(),
+                  _buildItinerarySection(state),
                   20.h.verticalSpace,
-                  _buildDocumentsSection(),
+                  _buildDocumentsSection(state, context),
                   20.h.verticalSpace,
                   AppButton(
                     title: "Remove from Offline".tr(),
                     onTap: () async {
                       await OfflineStorageHelper.removeOfflineTrip(
-                        widget.trip.id ?? '',
+                        state.trip.id ?? '',
                       );
-                      widget.onRemove();
+                      onRemove();
                     },
                   ),
                 ],
@@ -167,22 +197,22 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
     );
   }
 
-  Widget _buildItinerarySection() {
-    if (_itinerary == null) {
+  Widget _buildItinerarySection(TripOfflineCardState state) {
+    if (state.itinerary == null) {
       return AppText(
         text: "No itinerary saved.".tr(),
         style: textStyle14Regular.copyWith(color: Colors.grey),
       );
     }
 
-    final activities = (_itinerary?.itinerary.activities ?? []).toList()
+    final activities = (state.itinerary?.itinerary.activities ?? []).toList()
       ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText(
-          text: "Itinerary - ${_itinerary?.itinerary.dayTitle ?? 'Day'}",
+          text: "Itinerary - ${state.itinerary?.itinerary.dayTitle ?? 'Day'}",
           style: textStyle16SemiBold.copyWith(color: AppColors.primaryColor),
         ),
         10.h.verticalSpace,
@@ -204,8 +234,8 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
     );
   }
 
-  Widget _buildDocumentsSection() {
-    if (_documents == null || !_documents!.hasAnyRemoteContent) {
+  Widget _buildDocumentsSection(TripOfflineCardState state, BuildContext context) {
+    if (state.documents == null || !state.documents!.hasAnyRemoteContent) {
       return AppText(
         text: "No documents saved.".tr(),
         style: textStyle14Regular.copyWith(color: Colors.grey),
@@ -214,7 +244,7 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
 
     // Simplistic view for offline docs showing what is available
     List<String> availableDocs = [];
-    final tDocs = _documents!.tripDocuments;
+    final tDocs = state.documents!.tripDocuments;
     if (tDocs.hotel != null) {
       availableDocs.add("Hotel Voucher: ${tDocs.hotel?.hotelName}");
     }
@@ -223,7 +253,7 @@ class _TripOfflineCardState extends State<_TripOfflineCard> {
     }
     if (tDocs.checklist != null) availableDocs.add("Checklist Document");
 
-    for (var m in _documents!.memberDocuments) {
+    for (var m in state.documents!.memberDocuments) {
       if (m.documents.visa != null) availableDocs.add("Visa for ${m.name}");
       if (m.documents.passport != null) {
         availableDocs.add("Passport for ${m.name}");

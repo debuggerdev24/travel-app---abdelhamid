@@ -9,19 +9,57 @@ import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/model/cms/cms_models.dart';
 import 'package:travel_app_abdelhamid/services/cms_content_service.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SocialMediaScreen extends StatefulWidget {
-  const SocialMediaScreen({super.key});
-
-  @override
-  State<SocialMediaScreen> createState() => _SocialMediaScreenState();
-}
-
-class _SocialMediaScreenState extends State<SocialMediaScreen> {
+class SocialMediaState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<SocialLinkItem> _items = [];
+
+  bool get loading => _loading;
+  String? get error => _error;
+  List<SocialLinkItem> get items => _items;
+
+  void loadStart() {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+  }
+
+  void loadSuccess(List<SocialLinkItem> list) {
+    _items = list;
+    _loading = false;
+    notifyListeners();
+  }
+
+  void loadError(String err) {
+    _error = err;
+    _loading = false;
+    notifyListeners();
+  }
+}
+
+class SocialMediaScreen extends StatelessWidget {
+  const SocialMediaScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => SocialMediaState(),
+      child: const _SocialMediaView(),
+    );
+  }
+}
+
+class _SocialMediaView extends StatefulWidget {
+  const _SocialMediaView();
+
+  @override
+  State<_SocialMediaView> createState() => _SocialMediaViewState();
+}
+
+class _SocialMediaViewState extends State<_SocialMediaView> {
 
   @override
   void initState() {
@@ -30,25 +68,17 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    final state = context.read<SocialMediaState>();
+    state.loadStart();
     try {
       final list = await CmsContentService.instance.getSocials(
         showErrorToast: false,
       );
       if (!mounted) return;
-      setState(() {
-        _items = list;
-        _loading = false;
-      });
+      state.loadSuccess(list);
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      state.loadError(userFacingApiError(e));
     }
   }
 
@@ -89,8 +119,8 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
     return SvgIcon(_fallbackAssetForName(item.name), size: 40.w);
   }
 
-  @override
   Widget build(BuildContext context) {
+    final state = context.watch<SocialMediaState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -130,7 +160,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                 textAlign: TextAlign.center,
               ),
               22.h.verticalSpace,
-              if (_loading)
+              if (state.loading)
                 Expanded(
                   child: Center(
                     child: CircularProgressIndicator(
@@ -138,13 +168,13 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                     ),
                   ),
                 )
-              else if (_error != null)
+              else if (state.error != null)
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AppText(
-                        text: _error!,
+                        text: state.error!,
                         style: textStyle14Regular.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -161,7 +191,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                     ],
                   ),
                 )
-              else if (_items.isEmpty)
+              else if (state.items.isEmpty)
                 Expanded(
                   child: Center(
                     child: AppText(
@@ -175,9 +205,9 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
               else
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _items.length,
+                    itemCount: state.items.length,
                     itemBuilder: (context, index) {
-                      final item = _items[index];
+                      final item = state.items[index];
                       return GestureDetector(
                         onTap: () => _openLink(item.link),
                         child: Container(

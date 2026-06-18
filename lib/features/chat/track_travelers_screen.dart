@@ -8,8 +8,19 @@ import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:provider/provider.dart';
 
-class TrackTravelersScreen extends StatefulWidget {
+class TrackTravelersState extends ChangeNotifier {
+  final Set<Marker> _markers = {};
+  Set<Marker> get markers => _markers;
+
+  void addMarker(Marker marker) {
+    _markers.add(marker);
+    notifyListeners();
+  }
+}
+
+class TrackTravelersScreen extends StatelessWidget {
   final String chatId;
   final String? groupId;
   final String name;
@@ -24,12 +35,38 @@ class TrackTravelersScreen extends StatefulWidget {
   });
 
   @override
-  State<TrackTravelersScreen> createState() => _TrackTravelersScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => TrackTravelersState(),
+      child: _TrackTravelersView(
+        chatId: chatId,
+        groupId: groupId,
+        name: name,
+        isGroup: isGroup,
+      ),
+    );
+  }
 }
 
-class _TrackTravelersScreenState extends State<TrackTravelersScreen> {
+class _TrackTravelersView extends StatefulWidget {
+  final String chatId;
+  final String? groupId;
+  final String name;
+  final bool isGroup;
+
+  const _TrackTravelersView({
+    required this.chatId,
+    this.groupId,
+    required this.name,
+    required this.isGroup,
+  });
+
+  @override
+  State<_TrackTravelersView> createState() => _TrackTravelersViewState();
+}
+
+class _TrackTravelersViewState extends State<_TrackTravelersView> {
   final Completer<GoogleMapController> _mapController = Completer();
-  final Set<Marker> _markers = {};
 
   // Sample traveler data with coordinates (Mecca area coordinates)
   final List<Map<String, dynamic>> _travelers = [
@@ -112,19 +149,18 @@ class _TrackTravelersScreenState extends State<TrackTravelersScreen> {
         traveler['isOnline'] ? Colors.green : Colors.grey,
       );
 
-      setState(() {
-        _markers.add(
-          Marker(
-            markerId: MarkerId('traveler_$i'),
-            position: LatLng(traveler['lat'], traveler['lng']),
-            icon: markerIcon,
-            infoWindow: InfoWindow(
-              title: traveler['name'],
-              snippet: traveler['location'],
-            ),
+      if (!mounted) return;
+      context.read<TrackTravelersState>().addMarker(
+        Marker(
+          markerId: MarkerId('traveler_$i'),
+          position: LatLng(traveler['lat'], traveler['lng']),
+          icon: markerIcon,
+          infoWindow: InfoWindow(
+            title: traveler['name'],
+            snippet: traveler['location'],
           ),
-        );
-      });
+        ),
+      );
     }
   }
 
@@ -267,7 +303,7 @@ class _TrackTravelersScreenState extends State<TrackTravelersScreen> {
                   target: LatLng(21.4225, 39.8262), // Mecca coordinates
                   zoom: 14,
                 ),
-                markers: _markers,
+                markers: context.watch<TrackTravelersState>().markers,
                 onMapCreated: (controller) {
                   _mapController.complete(controller);
                 },

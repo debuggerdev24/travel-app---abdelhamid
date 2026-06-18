@@ -34,10 +34,16 @@ class FullScreenDocumentViewer extends StatefulWidget {
 }
 
 class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
-  bool _downloading = false;
+  final ValueNotifier<bool> _downloading = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    _downloading.dispose();
+    super.dispose();
+  }
 
   Future<void> _onDownload() async {
-    if (_downloading) return;
+    if (_downloading.value) return;
     final hasLocal = widget.file != null && widget.file!.existsSync();
     final hasNet =
         widget.networkFileUrl != null &&
@@ -51,7 +57,7 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
       return;
     }
 
-    setState(() => _downloading = true);
+    _downloading.value = true;
     try {
       await shareDocumentFile(
         context: context,
@@ -60,7 +66,7 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
         label: widget.title.trim().isNotEmpty ? widget.title : 'Document',
       );
     } finally {
-      if (mounted) setState(() => _downloading = false);
+      if (mounted) _downloading.value = false;
     }
   }
 
@@ -116,10 +122,15 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 40.h),
 
-              child: AppButton(
-                title: "Download".tr(),
-                isLoading: _downloading,
-                onTap: _onDownload,
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _downloading,
+                builder: (context, downloading, child) {
+                  return AppButton(
+                    title: "Download".tr(),
+                    isLoading: downloading,
+                    onTap: _onDownload,
+                  );
+                },
               ),
             ),
           ],

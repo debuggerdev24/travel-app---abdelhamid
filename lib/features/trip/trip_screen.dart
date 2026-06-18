@@ -33,23 +33,61 @@ import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class TripScreen extends StatefulWidget {
+class TripScreenState extends ChangeNotifier {
+  String _selectedMethod = "Credit/Debit Card";
+  int _selectedIndex = 0;
+  bool _showTripList = true;
+  String? _lastRefreshedTripId;
+
+  String get selectedMethod => _selectedMethod;
+  int get selectedIndex => _selectedIndex;
+  bool get showTripList => _showTripList;
+  String? get lastRefreshedTripId => _lastRefreshedTripId;
+
+  void setSelectedMethod(String method) {
+    _selectedMethod = method;
+    notifyListeners();
+  }
+
+  void setSelectedIndex(int index) {
+    _selectedIndex = index;
+    notifyListeners();
+  }
+
+  void setShowTripList(bool show) {
+    _showTripList = show;
+    notifyListeners();
+  }
+
+  void setLastRefreshedTripId(String? id) {
+    _lastRefreshedTripId = id;
+    // Don't notify here to avoid build loops when checking
+  }
+}
+
+class TripScreen extends StatelessWidget {
   final Function(bool)? onShowTripDetails;
   const TripScreen({super.key, this.onShowTripDetails});
 
   @override
-  State<TripScreen> createState() => _TripScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => TripScreenState(),
+      child: _TripScreenView(onShowTripDetails: onShowTripDetails),
+    );
+  }
 }
 
-class _TripScreenState extends State<TripScreen> {
-  String selectedMethod = "Credit/Debit Card";
-  int selectedIndex = 0;
+class _TripScreenView extends StatefulWidget {
+  final Function(bool)? onShowTripDetails;
+  const _TripScreenView({this.onShowTripDetails});
 
-  /// Last trip id we ran [refreshAllTripScopedData] for (avoids duplicate work).
-  String? _lastRefreshedTripId;
+  @override
+  State<_TripScreenView> createState() => _TripScreenViewState();
+}
 
-  /// Whether to show the trip list or the selected trip details
-  bool _showTripList = true;
+class _TripScreenViewState extends State<_TripScreenView> {
+
 
   @override
   void initState() {
@@ -61,13 +99,13 @@ class _TripScreenState extends State<TripScreen> {
     });
   }
 
-  void _scheduleRefreshIfTripChanged(String? tripId) {
+  void _scheduleRefreshIfTripChanged(String? tripId, TripScreenState state) {
     if (tripId == null || tripId.isEmpty) {
-      _lastRefreshedTripId = null;
+      state.setLastRefreshedTripId(null);
       return;
     }
-    if (tripId == _lastRefreshedTripId) return;
-    _lastRefreshedTripId = tripId;
+    if (tripId == state.lastRefreshedTripId) return;
+    state.setLastRefreshedTripId(tripId);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final current = context.read<TripProvider>().tripForTripsTab?.id;
@@ -80,15 +118,16 @@ class _TripScreenState extends State<TripScreen> {
   Widget build(BuildContext context) {
     final tripProvider = context.watch<TripProvider>();
     final enrolledTrips = tripProvider.enrolledTripsList;
+    final state = context.watch<TripScreenState>();
 
     return Consumer<MyTripProvider>(
       builder: (context, provider, child) {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
-            child: _showTripList
-                ? _buildTripList(tripProvider, enrolledTrips)
-                : _buildTripDetails(tripProvider, provider),
+            child: state.showTripList
+                ? _buildTripList(tripProvider, enrolledTrips, state)
+                : _buildTripDetails(tripProvider, provider, state),
           ),
         );
       },
@@ -98,6 +137,7 @@ class _TripScreenState extends State<TripScreen> {
   Widget _buildTripList(
     TripProvider tripProvider,
     List<TripModel> enrolledTrips,
+    TripScreenState state,
   ) {
     final bookings = tripProvider.enrolledBookingsList;
 
@@ -212,10 +252,8 @@ class _TripScreenState extends State<TripScreen> {
                   : null;
               return GestureDetector(
                 onTap: () async {
-                  setState(() {
-                    _showTripList = false;
-                    tripProvider.selectTrip(trip);
-                  });
+                  state.setShowTripList(false);
+                  tripProvider.selectTrip(trip);
                   widget.onShowTripDetails?.call(true);
                   // Load enrolled trip context with booking ID to show payment details
                   if (booking != null && booking.id.isNotEmpty) {
@@ -371,16 +409,14 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  Widget _buildTripDetails(TripProvider tripProvider, MyTripProvider provider) {
+  Widget _buildTripDetails(TripProvider tripProvider, MyTripProvider provider, TripScreenState state) {
     final trip = tripProvider.tripForTripsTab;
 
-    _scheduleRefreshIfTripChanged(trip?.id);
+    _scheduleRefreshIfTripChanged(trip?.id, state);
 
     return WillPopScope(
       onWillPop: () async {
-        setState(() {
-          _showTripList = true;
-        });
+        state.setShowTripList(true);
         widget.onShowTripDetails?.call(false);
         return false;
       },
@@ -394,9 +430,7 @@ class _TripScreenState extends State<TripScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _showTripList = true;
-                      });
+                      state.setShowTripList(true);
                       widget.onShowTripDetails?.call(false);
                     },
                     child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
@@ -515,34 +549,32 @@ class _TripScreenState extends State<TripScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildTab("Payment".tr(), AppAssets.payment, 0),
-                    _buildTab("Flights".tr(), AppAssets.flight, 1),
-                    _buildTab("Hotels".tr(), AppAssets.hotel, 2),
-                    _buildTab("Itinerary".tr(), AppAssets.itinerary, 3),
-                    _buildTab("Essentials".tr(), AppAssets.essential, 4),
-                    _buildTab("Documents".tr(), AppAssets.document, 5),
+                    _buildTab("Payment".tr(), AppAssets.payment, 0, state),
+                    _buildTab("Flights".tr(), AppAssets.flight, 1, state),
+                    _buildTab("Hotels".tr(), AppAssets.hotel, 2, state),
+                    _buildTab("Itinerary".tr(), AppAssets.itinerary, 3, state),
+                    _buildTab("Essentials".tr(), AppAssets.essential, 4, state),
+                    _buildTab("Documents".tr(), AppAssets.document, 5, state),
                   ],
                 ),
               ),
             ),
 
             // Show section based on selected tab
-            _getSelectedSection(provider),
+            _getSelectedSection(provider, state),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTab(String title, String icon, int index) {
+  Widget _buildTab(String title, String icon, int index, TripScreenState state) {
     return AppChip(
-      isSelected: selectedIndex == index,
+      isSelected: state.selectedIndex == index,
       title: title,
       icon: icon,
       onTap: () {
-        setState(() {
-          selectedIndex = index;
-        });
+        state.setSelectedIndex(index);
 
         // Refetch APIs whenever the user selects these tabs (fresh data each visit).
         if (index == 0) {
@@ -580,8 +612,8 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  Widget _getSelectedSection(MyTripProvider provider) {
-    switch (selectedIndex) {
+  Widget _getSelectedSection(MyTripProvider provider, TripScreenState state) {
+    switch (state.selectedIndex) {
       case 0:
         return _paymentSection(provider);
       case 1:

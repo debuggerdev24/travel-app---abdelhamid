@@ -9,50 +9,57 @@ import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/model/umrah/umrah_guide_step_model.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/services/umrah_guide_service.dart';
 
-class UmrahGuideScreen extends StatefulWidget {
-  const UmrahGuideScreen({super.key});
-
-  @override
-  State<UmrahGuideScreen> createState() => _UmrahGuideScreenState();
-}
-
-class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
+class UmrahGuideState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<UmrahGuideStepModel> _steps = const [];
 
-  @override
-  void initState() {
-    super.initState();
-    _load();
+  bool get loading => _loading;
+  String? get error => _error;
+  List<UmrahGuideStepModel> get steps => _steps;
+
+  UmrahGuideState() {
+    load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> load() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
     try {
       final steps = await UmrahGuideService.instance.fetchSteps(
         showErrorToast: false,
       );
-      if (!mounted) return;
-      setState(() {
-        _steps = steps;
-        _loading = false;
-      });
+      _steps = steps;
+      _loading = false;
+      notifyListeners();
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      _error = userFacingApiError(e);
+      _loading = false;
+      notifyListeners();
     }
   }
+}
+
+class UmrahGuideScreen extends StatelessWidget {
+  const UmrahGuideScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => UmrahGuideState(),
+      child: const _UmrahGuideScreenView(),
+    );
+  }
+}
+
+class _UmrahGuideScreenView extends StatelessWidget {
+  const _UmrahGuideScreenView();
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +97,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
 
               16.h.verticalSpace,
 
-              Expanded(child: _body()),
+              Expanded(child: _body(context)),
 
               42.h.verticalSpace,
 
@@ -102,11 +109,13 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
     );
   }
 
-  Widget _body() {
-    if (_loading) {
+  Widget _body(BuildContext context) {
+    final state = context.watch<UmrahGuideState>();
+
+    if (state.loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (state.error != null) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -121,7 +130,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.w),
             child: AppText(
-              text: _error!,
+              text: state.error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
                 color: AppColors.primaryColor.setOpacity(0.65),
@@ -130,7 +139,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
           ),
           16.h.verticalSpace,
           TextButton(
-            onPressed: _load,
+            onPressed: () => context.read<UmrahGuideState>().load(),
             child: AppText(
               text: 'Retry'.tr(),
               style: textStyle14Medium.copyWith(color: AppColors.secondary),
@@ -140,9 +149,9 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
       );
     }
 
-    if (_steps.isEmpty) {
+    if (state.steps.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: () => context.read<UmrahGuideState>().load(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -166,13 +175,13 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () => context.read<UmrahGuideState>().load(),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _steps.length,
+        itemCount: state.steps.length,
         separatorBuilder: (_, __) => SizedBox(height: 20.h),
         itemBuilder: (context, index) {
-          return _UmrahStepTile(step: _steps[index]);
+          return _UmrahStepTile(step: state.steps[index]);
         },
       ),
     );
@@ -185,7 +194,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
           child: Container(
             height: 48.h,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
+              color: Theme.of(con).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
                   color: AppColors.blueColor.setOpacity(0.1),
@@ -239,7 +248,7 @@ class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
                   AppText(
                     text: " View Dua List".tr(),
                     style: textStyle14Medium.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: Theme.of(con).colorScheme.onSurface,
                     ),
                   ),
                 ],

@@ -8,50 +8,56 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/model/essential/emergency_contacts_model.dart';
 import 'package:travel_app_abdelhamid/services/essential_service.dart';
 
-class EmergencyContactsScreen extends StatefulWidget {
-  const EmergencyContactsScreen({super.key});
-
-  @override
-  State<EmergencyContactsScreen> createState() =>
-      _EmergencyContactsScreenState();
-}
-
-class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
+class EmergencyContactsState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   EmergencyContactsData? _data;
 
-  @override
-  void initState() {
-    super.initState();
-    _load();
+  bool get loading => _loading;
+  String? get error => _error;
+  EmergencyContactsData? get data => _data;
+
+  EmergencyContactsState() {
+    load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> load() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
     try {
       final data = await EssentialService.instance.getEmergencyContacts(
         showErrorToast: false,
       );
-      if (!mounted) return;
-      setState(() {
-        _data = data;
-        _loading = false;
-      });
+      _data = data;
+      _loading = false;
+      notifyListeners();
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      _error = userFacingApiError(e);
+      _loading = false;
+      notifyListeners();
     }
   }
+}
+
+class EmergencyContactsScreen extends StatelessWidget {
+  const EmergencyContactsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => EmergencyContactsState(),
+      child: const _EmergencyContactsScreenView(),
+    );
+  }
+}
+
+class _EmergencyContactsScreenView extends StatelessWidget {
+  const _EmergencyContactsScreenView();
 
   List<Widget> _buildCards(EmergencyContactsData d) {
     final cards = <Widget>[];
@@ -71,7 +77,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
         rows.add(["Ambulance", medical.ambulanceCode!]);
       }
       if (rows.isNotEmpty) {
-        cards.add(_contactCard(title: "Medical".tr(), rows: rows));
+        cards.add(_contactCard(context: null, title: "Medical".tr(), rows: rows));
       }
     }
 
@@ -86,6 +92,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
           : "Police";
       cards.add(
         _contactCard(
+          context: null,
           title: "Police".tr(),
           rows: [
             [title, pl],
@@ -109,6 +116,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
       if (rows.isNotEmpty) {
         cards.add(
           _contactCard(
+            context: null,
             title: (gl.contactType != null && gl.contactType!.isNotEmpty)
                 ? gl.contactType!
                 : "Group Leader",
@@ -151,18 +159,20 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                 ],
               ),
             ),
-            Expanded(child: _body()),
+            Expanded(child: _body(context)),
           ],
         ),
       ),
     );
   }
 
-  Widget _body() {
-    if (_loading) {
+  Widget _body(BuildContext context) {
+    final state = context.watch<EmergencyContactsState>();
+
+    if (state.loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (state.error != null) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 27.w),
         child: Column(
@@ -177,7 +187,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
             ),
             10.h.verticalSpace,
             AppText(
-              text: _error!,
+              text: state.error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
                 color: Theme.of(
@@ -187,7 +197,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
             ),
             16.h.verticalSpace,
             TextButton(
-              onPressed: _load,
+              onPressed: () => context.read<EmergencyContactsState>().load(),
               child: AppText(
                 text: "Retry".tr(),
                 style: textStyle14Medium.copyWith(color: AppColors.secondary),
@@ -198,10 +208,10 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
       );
     }
 
-    final data = _data;
+    final data = state.data;
     if (data == null) {
       return RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: () => context.read<EmergencyContactsState>().load(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -227,10 +237,10 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
       );
     }
 
-    final cards = _buildCards(data);
+    final cards = _buildCards(data).map((w) => _injectContext(w, context)).toList();
     if (cards.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: () => context.read<EmergencyContactsState>().load(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -254,7 +264,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () => context.read<EmergencyContactsState>().load(),
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 27.w),
@@ -263,15 +273,49 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     );
   }
 
+  Widget _injectContext(Widget w, BuildContext context) {
+    if (w is _ContactCardWidget) {
+      return _ContactCardWidget(
+        title: w.title,
+        rows: w.rows,
+        context: context,
+      );
+    }
+    return w;
+  }
+
   Widget _contactCard({
     required String title,
     required List<List<String>> rows,
+    BuildContext? context,
   }) {
+    return _ContactCardWidget(
+      title: title,
+      rows: rows,
+      context: context,
+    );
+  }
+}
+
+class _ContactCardWidget extends StatelessWidget {
+  final String title;
+  final List<List<String>> rows;
+  final BuildContext? context;
+
+  const _ContactCardWidget({
+    required this.title,
+    required this.rows,
+    this.context,
+  });
+
+  @override
+  Widget build(BuildContext buildContext) {
+    final ctx = context ?? buildContext;
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10.h),
       padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(ctx).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
         boxShadow: [
@@ -292,7 +336,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                 text: title,
                 style: textStyle16SemiBold.copyWith(
                   fontSize: 18.sp,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(ctx).colorScheme.onSurface,
                 ),
               ),
               SvgIcon(AppAssets.phone, color: AppColors.secondary, size: 24.w),
@@ -311,7 +355,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                       text: e[0],
                       style: textStyle14Regular.copyWith(
                         fontSize: 16.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: Theme.of(ctx).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -319,7 +363,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                     text: " : ",
                     style: textStyle14Regular.copyWith(
                       fontSize: 16.sp,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: Theme.of(ctx).colorScheme.onSurface,
                     ),
                   ),
                   16.w.horizontalSpace,
@@ -328,7 +372,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                       text: e[1],
                       style: textStyle14Regular.copyWith(
                         fontSize: 16.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: Theme.of(ctx).colorScheme.onSurface,
                       ),
                     ),
                   ),

@@ -11,15 +11,38 @@ import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:provider/provider.dart';
 
-class LiveLocationScreen extends StatefulWidget {
+class LiveLocationState extends ChangeNotifier {
+  final Set<Marker> _markers = {};
+  Set<Marker> get markers => _markers;
+
+  void addMarkers(List<Marker> newMarkers) {
+    _markers.addAll(newMarkers);
+    notifyListeners();
+  }
+}
+
+class LiveLocationScreen extends StatelessWidget {
   const LiveLocationScreen({super.key});
 
   @override
-  State<LiveLocationScreen> createState() => _LiveLocationScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => LiveLocationState(),
+      child: const _LiveLocationView(),
+    );
+  }
 }
 
-class _LiveLocationScreenState extends State<LiveLocationScreen> {
+class _LiveLocationView extends StatefulWidget {
+  const _LiveLocationView();
+
+  @override
+  State<_LiveLocationView> createState() => _LiveLocationViewState();
+}
+
+class _LiveLocationViewState extends State<_LiveLocationView> {
   final Completer<GoogleMapController> _controller = Completer();
 
   LatLng currentLocation = const LatLng(47.6062, -122.3321);
@@ -106,20 +129,19 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
       borderWidth: 4,
     );
 
-    setState(() {
-      markers.addAll([
-        Marker(
-          markerId: const MarkerId("user1"),
-          position: const LatLng(47.4104, -122.3000),
-          icon: userIconRed!,
-        ),
-        Marker(
-          markerId: const MarkerId("user2"),
-          position: const LatLng(47.3820, -122.2300),
-          icon: userIconGreen!,
-        ),
-      ]);
-    });
+    if (!mounted) return;
+    context.read<LiveLocationState>().addMarkers([
+      Marker(
+        markerId: const MarkerId("user1"),
+        position: const LatLng(47.4104, -122.3000),
+        icon: userIconRed!,
+      ),
+      Marker(
+        markerId: const MarkerId("user2"),
+        position: const LatLng(47.3820, -122.2300),
+        icon: userIconGreen!,
+      ),
+    ]);
   }
 
   @override
@@ -158,7 +180,7 @@ class _LiveLocationScreenState extends State<LiveLocationScreen> {
                   target: currentLocation,
                   zoom: 10.5,
                 ),
-                markers: markers,
+                markers: context.watch<LiveLocationState>().markers,
                 onMapCreated: (controller) {
                   _controller.complete(controller);
                 },

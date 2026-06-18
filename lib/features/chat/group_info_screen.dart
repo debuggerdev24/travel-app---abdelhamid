@@ -20,7 +20,56 @@ import 'package:travel_app_abdelhamid/services/chat_api_service.dart';
 import 'package:travel_app_abdelhamid/services/essential_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class GroupInfoScreen extends StatefulWidget {
+class GroupInfoState extends ChangeNotifier {
+  GroupInfoModel? _info;
+  bool _loading = true;
+  String? _error;
+  bool _actionInProgress = false;
+  bool _notificationsOn = true;
+  bool _showAllMembers = false;
+
+  GroupInfoModel? get info => _info;
+  bool get loading => _loading;
+  String? get error => _error;
+  bool get actionInProgress => _actionInProgress;
+  bool get notificationsOn => _notificationsOn;
+  bool get showAllMembers => _showAllMembers;
+
+  void loadStart() {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+  }
+
+  void loadSuccess(GroupInfoModel info) {
+    _info = info;
+    _loading = false;
+    notifyListeners();
+  }
+
+  void loadError(String error) {
+    _error = error;
+    _loading = false;
+    notifyListeners();
+  }
+
+  void setActionInProgress(bool value) {
+    _actionInProgress = value;
+    notifyListeners();
+  }
+
+  void setNotificationsOn(bool value) {
+    _notificationsOn = value;
+    notifyListeners();
+  }
+
+  void toggleShowAllMembers() {
+    _showAllMembers = !_showAllMembers;
+    notifyListeners();
+  }
+}
+
+class GroupInfoScreen extends StatelessWidget {
   /// Chat document id (messages, delete chat).
   final String chatId;
 
@@ -42,23 +91,52 @@ class GroupInfoScreen extends StatefulWidget {
   });
 
   @override
-  State<GroupInfoScreen> createState() => _GroupInfoScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => GroupInfoState(),
+      child: _GroupInfoView(
+        chatId: chatId,
+        groupId: groupId,
+        name: name,
+        image: image,
+        avatarUrl: avatarUrl,
+        isLocalChat: isLocalChat,
+      ),
+    );
+  }
 }
 
-class _GroupInfoScreenState extends State<GroupInfoScreen> {
-  GroupInfoModel? _info;
-  bool _loading = true;
-  String? _error;
-  bool _actionInProgress = false;
-  bool _notificationsOn = true;
-  bool _showAllMembers = false;
+class _GroupInfoView extends StatefulWidget {
+  final String chatId;
+  final String groupId;
+  final String name;
+  final String image;
+  final String? avatarUrl;
+  final bool isLocalChat;
+
+  const _GroupInfoView({
+    required this.chatId,
+    required this.groupId,
+    required this.name,
+    required this.image,
+    this.avatarUrl,
+    required this.isLocalChat,
+  });
+
+  @override
+  State<_GroupInfoView> createState() => _GroupInfoViewState();
+}
+
+class _GroupInfoViewState extends State<_GroupInfoView> {
   final TextEditingController _emergencyMessageController =
       TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadGroupInfo();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadGroupInfo();
+    });
   }
 
   @override
@@ -68,52 +146,47 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   }
 
   Future<void> _loadGroupInfo() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    final state = context.read<GroupInfoState>();
+    state.loadStart();
 
     if (widget.isLocalChat) {
       // Mock data for local chat
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
-      setState(() {
-        _info = GroupInfoModel(
-          chatId: widget.chatId,
-          name: widget.name,
-          imageUrl: widget.image,
-          description: 'A mock group for tracking travelers and local chat.',
-          destination: 'Mecca, SA',
-          dateRange: 'Nov 1 - Nov 10, 2026',
-          createdByLabel: 'Guide User',
-          createdOnLabel: 'Oct 15, 2026',
-          sharedMedia: [],
-          members: [
-            GroupMemberModel(
-              memberId: 'self',
-              userId: currentUserIdOrNull() ?? 'user_1',
-              name: 'You',
-              role: 'Guide',
-              avatarUrl: widget.avatarUrl ?? '',
-            ),
-            GroupMemberModel(
-              memberId: 'mem_1',
-              userId: 'u1',
-              name: 'Ahmed Mohamed',
-              role: 'Member',
-              avatarUrl: '',
-            ),
-            GroupMemberModel(
-              memberId: 'mem_2',
-              userId: 'u2',
-              name: 'Sarah Johnson',
-              role: 'Member',
-              avatarUrl: '',
-            ),
-          ],
-        );
-        _loading = false;
-      });
+      state.loadSuccess(GroupInfoModel(
+        chatId: widget.chatId,
+        name: widget.name,
+        imageUrl: widget.image,
+        description: 'A mock group for tracking travelers and local chat.',
+        destination: 'Mecca, SA',
+        dateRange: 'Nov 1 - Nov 10, 2026',
+        createdByLabel: 'Guide User',
+        createdOnLabel: 'Oct 15, 2026',
+        sharedMedia: [],
+        members: [
+          GroupMemberModel(
+            memberId: 'self',
+            userId: currentUserIdOrNull() ?? 'user_1',
+            name: 'You',
+            role: 'Guide',
+            avatarUrl: widget.avatarUrl ?? '',
+          ),
+          GroupMemberModel(
+            memberId: 'mem_1',
+            userId: 'u1',
+            name: 'Ahmed Mohamed',
+            role: 'Member',
+            avatarUrl: '',
+          ),
+          GroupMemberModel(
+            memberId: 'mem_2',
+            userId: 'u2',
+            name: 'Sarah Johnson',
+            role: 'Member',
+            avatarUrl: '',
+          ),
+        ],
+      ));
       return;
     }
 
@@ -136,16 +209,14 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           .toList();
 
       if (!mounted) return;
-      setState(() {
-        _info = GroupInfoModel.fromProfileJson(
-          chatId: widget.chatId,
-          json: profile,
-          members: members,
-          currentUserId: currentUserIdOrNull(),
-        );
-        _loading = false;
-      });
-      final groupImage = _info?.imageUrl;
+      final newInfo = GroupInfoModel.fromProfileJson(
+        chatId: widget.chatId,
+        json: profile,
+        members: members,
+        currentUserId: currentUserIdOrNull(),
+      );
+      state.loadSuccess(newInfo);
+      final groupImage = newInfo.imageUrl;
       if (groupImage != null && groupImage.isNotEmpty) {
         context.read<ChatProvider>().updateConversationAvatar(
           widget.chatId,
@@ -155,16 +226,14 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     } catch (e, st) {
       LogHelper.instance.error('loadGroupInfo', e, st);
       if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _error = 'Could not load group info. Please try again.';
-      });
+      state.loadError('Could not load group info. Please try again.');
     }
   }
 
   Future<void> _exitGroup() async {
-    final info = _info;
-    if (info == null || _actionInProgress) return;
+    final state = context.read<GroupInfoState>();
+    final info = state.info;
+    if (info == null || state.actionInProgress) return;
 
     final uid = currentUserIdOrNull();
     final self = info.memberForUser(uid);
@@ -180,7 +249,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     );
     if (confirmed != true || !mounted) return;
 
-    setState(() => _actionInProgress = true);
+    state.setActionInProgress(true);
     if (widget.isLocalChat) {
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
@@ -200,13 +269,14 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       _popToChatList();
     } catch (e, st) {
       LogHelper.instance.error('exitGroup', e, st);
-      if (mounted) setState(() => _actionInProgress = false);
+      if (mounted) state.setActionInProgress(false);
     }
   }
 
   Future<void> _deleteGroup() async {
-    final info = _info;
-    if (info == null || _actionInProgress) return;
+    final state = context.read<GroupInfoState>();
+    final info = state.info;
+    if (info == null || state.actionInProgress) return;
     if (!info.isCurrentUserAdmin && !widget.isLocalChat) {
       ToastHelper.showError('Only admins can delete this group.'.tr());
       return;
@@ -220,7 +290,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     );
     if (confirmed != true || !mounted) return;
 
-    setState(() => _actionInProgress = true);
+    state.setActionInProgress(true);
     if (widget.isLocalChat) {
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
@@ -237,7 +307,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
       _popToChatList();
     } catch (e, st) {
       LogHelper.instance.error('deleteGroup', e, st);
-      if (mounted) setState(() => _actionInProgress = false);
+      if (mounted) state.setActionInProgress(false);
     }
   }
 
@@ -281,19 +351,20 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<GroupInfoState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: _loading
+        child: state.loading
             ? const Center(child: CircularProgressIndicator())
-            : _error != null
-            ? _buildError()
-            : _buildContent(_info!),
+            : state.error != null
+            ? _buildError(state.error!)
+            : _buildContent(state),
       ),
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(String error) {
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -302,7 +373,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           children: [
             AppText(
               textAlign: TextAlign.center,
-              text: _error!,
+              text: error,
               style: textStyle14Regular.copyWith(
                 color: AppColors.primaryColor.setOpacity(0.6),
               ),
@@ -320,8 +391,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     );
   }
 
-  Widget _buildContent(GroupInfoModel info) {
-    final visibleMembers = _showAllMembers
+  Widget _buildContent(GroupInfoState state) {
+    final info = state.info!;
+    final visibleMembers = state.showAllMembers
         ? info.members
         : info.members.take(3).toList();
 
@@ -422,7 +494,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             _buildInfoRow('Created On', info.createdOnLabel!),
           ],
           20.h.verticalSpace,
-          _buildNotificationSwitch(),
+          _buildNotificationSwitch(state),
           30.h.verticalSpace,
           _buildSharedMedia(info),
           25.h.verticalSpace,
@@ -431,7 +503,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             style: textStyle18Bold.copyWith(color: Theme.of(context).colorScheme.onSurface),
           ),
           14.h.verticalSpace,
-          _buildMembersList(info, visibleMembers),
+          _buildMembersList(info, visibleMembers, state),
           35.h.verticalSpace,
           if (info.isCurrentUserAdmin) ...[
             _buildEmergencyButton(),
@@ -440,7 +512,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             _buildCallGuideButton(),
             20.h.verticalSpace,
           ],
-          if (_actionInProgress)
+          if (state.actionInProgress)
             const Center(child: CircularProgressIndicator())
           else
             Row(
@@ -493,7 +565,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     );
   }
 
-  Widget _buildNotificationSwitch() {
+  Widget _buildNotificationSwitch(GroupInfoState state) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -502,8 +574,8 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
           style: textStyle18Bold.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         CustomSwitchButton(
-          value: _notificationsOn,
-          onChanged: (value) => setState(() => _notificationsOn = value),
+          value: state.notificationsOn,
+          onChanged: (value) => state.setNotificationsOn(value),
         ),
       ],
     );
@@ -584,6 +656,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   Widget _buildMembersList(
     GroupInfoModel info,
     List<GroupMemberModel> visibleMembers,
+    GroupInfoState state,
   ) {
     return Container(
       padding: EdgeInsets.all(15.w),
@@ -644,10 +717,10 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
             Divider(indent: 10.w, endIndent: 10.w),
             10.h.verticalSpace,
             GestureDetector(
-              onTap: () => setState(() => _showAllMembers = !_showAllMembers),
+              onTap: () => state.toggleShowAllMembers(),
               child: Center(
                 child: AppText(
-                  text: _showAllMembers
+                  text: state.showAllMembers
                       ? 'Show Less'
                       : 'View All Members (${info.members.length})',
                   style: textStyle18Bold.copyWith(

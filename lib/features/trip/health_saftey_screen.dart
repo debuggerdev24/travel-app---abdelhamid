@@ -9,52 +9,58 @@ import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/model/essential/health_tip_model.dart';
 import 'package:travel_app_abdelhamid/services/essential_service.dart';
 
-class HealthSafetyScreen extends StatefulWidget {
-  const HealthSafetyScreen({super.key});
-
-  @override
-  State<HealthSafetyScreen> createState() => _HealthSafetyScreenState();
-}
-
-class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
+class HealthSafetyState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<HealthTipItem> _tips = const [];
 
-  @override
-  void initState() {
-    super.initState();
-    _load();
+  bool get loading => _loading;
+  String? get error => _error;
+  List<HealthTipItem> get tips => _tips;
+
+  HealthSafetyState() {
+    load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> load() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
     try {
       final tips = await EssentialService.instance.getHealthTips(
         showErrorToast: false,
       );
-      if (!mounted) return;
-      // Service may return an unmodifiable empty list; sort mutates in place.
       final sorted = List<HealthTipItem>.from(tips)
         ..sort((a, b) => a.tipNumber.compareTo(b.tipNumber));
-      setState(() {
-        _tips = sorted;
-        _loading = false;
-      });
+      _tips = sorted;
+      _loading = false;
+      notifyListeners();
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      _error = userFacingApiError(e);
+      _loading = false;
+      notifyListeners();
     }
   }
+}
+
+class HealthSafetyScreen extends StatelessWidget {
+  const HealthSafetyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => HealthSafetyState(),
+      child: const _HealthSafetyScreenView(),
+    );
+  }
+}
+
+class _HealthSafetyScreenView extends StatelessWidget {
+  const _HealthSafetyScreenView();
 
   @override
   Widget build(BuildContext context) {
@@ -90,18 +96,20 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
                 ],
               ),
             ),
-            Expanded(child: _body()),
+            Expanded(child: _body(context)),
           ],
         ),
       ),
     );
   }
 
-  Widget _body() {
-    if (_loading) {
+  Widget _body(BuildContext context) {
+    final state = context.watch<HealthSafetyState>();
+
+    if (state.loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (state.error != null) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 27.w),
         child: Column(
@@ -116,7 +124,7 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
             ),
             10.h.verticalSpace,
             AppText(
-              text: _error!,
+              text: state.error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
                 color: AppColors.primaryColor.setOpacity(0.65),
@@ -124,7 +132,7 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
             ),
             16.h.verticalSpace,
             TextButton(
-              onPressed: _load,
+              onPressed: () => context.read<HealthSafetyState>().load(),
               child: AppText(
                 text: "Retry".tr(),
                 style: textStyle14Medium.copyWith(color: AppColors.secondary),
@@ -135,9 +143,9 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
       );
     }
 
-    if (_tips.isEmpty) {
+    if (state.tips.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: () => context.read<HealthSafetyState>().load(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -161,20 +169,20 @@ class _HealthSafetyScreenState extends State<HealthSafetyScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () => context.read<HealthSafetyState>().load(),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 8.h),
-        itemCount: _tips.length,
+        itemCount: state.tips.length,
         separatorBuilder: (_, __) => SizedBox(height: 14.h),
         itemBuilder: (context, index) {
-          return _tipCard(_tips[index]);
+          return _tipCard(context, state.tips[index]);
         },
       ),
     );
   }
 
-  Widget _tipCard(HealthTipItem tip) {
+  Widget _tipCard(BuildContext context, HealthTipItem tip) {
     final imageUrl = serverMediaUrl(tip.bannerImagePath);
     final label = tip.tipNumber > 0
         ? "Tip ${tip.tipNumber} : ${tip.tipTitle}"

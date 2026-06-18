@@ -8,49 +8,56 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/model/essential/local_info_model.dart';
 import 'package:travel_app_abdelhamid/services/essential_service.dart';
 
-class LocalInformationScreen extends StatefulWidget {
-  const LocalInformationScreen({super.key});
-
-  @override
-  State<LocalInformationScreen> createState() => _LocalInformationScreenState();
-}
-
-class _LocalInformationScreenState extends State<LocalInformationScreen> {
+class LocalInformationState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<LocalInfoItem> _items = const [];
 
-  @override
-  void initState() {
-    super.initState();
-    _load();
+  bool get loading => _loading;
+  String? get error => _error;
+  List<LocalInfoItem> get items => _items;
+
+  LocalInformationState() {
+    load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> load() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
     try {
       final items = await EssentialService.instance.getLocalInfo(
         showErrorToast: false,
       );
-      if (!mounted) return;
-      setState(() {
-        _items = items;
-        _loading = false;
-      });
+      _items = items;
+      _loading = false;
+      notifyListeners();
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      _error = userFacingApiError(e);
+      _loading = false;
+      notifyListeners();
     }
   }
+}
+
+class LocalInformationScreen extends StatelessWidget {
+  const LocalInformationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => LocalInformationState(),
+      child: const _LocalInformationScreenView(),
+    );
+  }
+}
+
+class _LocalInformationScreenView extends StatelessWidget {
+  const _LocalInformationScreenView();
 
   @override
   Widget build(BuildContext context) {
@@ -82,18 +89,20 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
                 ],
               ),
             ),
-            Expanded(child: _body()),
+            Expanded(child: _body(context)),
           ],
         ),
       ),
     );
   }
 
-  Widget _body() {
-    if (_loading) {
+  Widget _body(BuildContext context) {
+    final state = context.watch<LocalInformationState>();
+
+    if (state.loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (state.error != null) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 27.w),
         child: Column(
@@ -108,7 +117,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
             ),
             10.h.verticalSpace,
             AppText(
-              text: _error!,
+              text: state.error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
                 color: Theme.of(
@@ -118,7 +127,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
             ),
             16.h.verticalSpace,
             TextButton(
-              onPressed: _load,
+              onPressed: () => context.read<LocalInformationState>().load(),
               child: AppText(
                 text: "Retry".tr(),
                 style: textStyle14Medium.copyWith(color: AppColors.secondary),
@@ -129,9 +138,9 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
       );
     }
 
-    if (_items.isEmpty) {
+    if (state.items.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: () => context.read<LocalInformationState>().load(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -158,24 +167,24 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () => context.read<LocalInformationState>().load(),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 8.h),
-        itemCount: _items.length,
+        itemCount: state.items.length,
         separatorBuilder: (_, __) => SizedBox(height: 20.h),
         itemBuilder: (context, index) {
-          final item = _items[index];
-          return _infoCard(item);
+          final item = state.items[index];
+          return _infoCard(context, item);
         },
       ),
     );
   }
 
-  Widget _infoCard(LocalInfoItem item) {
+  Widget _infoCard(BuildContext context, LocalInfoItem item) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
-      decoration: _boxDecoration(),
+      decoration: _boxDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -219,7 +228,7 @@ class _LocalInformationScreenState extends State<LocalInformationScreen> {
     );
   }
 
-  BoxDecoration _boxDecoration() {
+  BoxDecoration _boxDecoration(BuildContext context) {
     return BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
       boxShadow: [

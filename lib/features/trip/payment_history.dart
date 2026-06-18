@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
@@ -11,7 +10,8 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/past_payment_item.dart';
 import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/services/trips_service.dart';
+import 'package:provider/provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 
 class PaymentHistoryScreen extends StatefulWidget {
   const PaymentHistoryScreen({super.key, this.bookingId});
@@ -23,35 +23,12 @@ class PaymentHistoryScreen extends StatefulWidget {
 }
 
 class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
-  List<UserPaymentHistoryItem> _items = [];
-  bool _loading = true;
-
   @override
   void initState() {
     super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() => _loading = true);
-    try {
-      final list = await TripsService.instance.fetchUserPaymentHistory(
-        bookingId: widget.bookingId,
-        showErrorToast: true,
-      );
-      final ok = list.where((e) => e.includeInHistoryList).toList()
-        ..sort((a, b) {
-          final da = a.date;
-          final db = b.date;
-          if (da == null && db == null) return 0;
-          if (da == null) return 1;
-          if (db == null) return -1;
-          return db.compareTo(da);
-        });
-      if (mounted) setState(() => _items = ok);
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TripProvider>().loadPaymentHistory(widget.bookingId);
+    });
   }
 
   String _displayId(UserPaymentHistoryItem e) {
@@ -91,7 +68,11 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                   alignment: Alignment.centerLeft,
                   child: GestureDetector(
                     onTap: () => context.pop(),
-                    child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
+                    child: SvgIcon(
+                      AppAssets.backIcon,
+                      size: 26.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
                 AppText(
@@ -105,41 +86,48 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             ),
           ),
           Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _items.isEmpty
-                ? Center(
+            child: Consumer<TripProvider>(
+              builder: (context, provider, child) {
+                if (provider.isPaymentHistoryLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final items = provider.paymentHistoryItems;
+                if (items.isEmpty) {
+                  return Center(
                     child: AppText(
                       text: 'No payments yet.'.tr(),
                       style: textStyle14Regular.copyWith(
                         color: AppColors.primaryColor.setOpacity(0.6),
                       ),
                     ),
-                  )
-                : ListView.builder(
-                    padding: EdgeInsets.only(bottom: 10.h),
-                    itemCount: _items.length,
-                    itemBuilder: (context, index) {
-                      final e = _items[index];
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: PastPaymentItem(
-                          id: _displayId(e),
-                          amount: _fmtAmount(e),
-                          date: _fmtDate(e.date),
-                          isConfirmed: e.isSucceeded,
-                          onViewReceiptTap: () {
-                            context.pushNamed(
-                              UserAppRoutes.viewPaymentReceiptScreen.name,
-                              extra: <String, dynamic>{
-                                'paymentId': e.paymentId,
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: EdgeInsets.only(bottom: 10.h),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final e = items[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: PastPaymentItem(
+                        id: _displayId(e),
+                        amount: _fmtAmount(e),
+                        date: _fmtDate(e.date),
+                        isConfirmed: e.isSucceeded,
+                        onViewReceiptTap: () {
+                          context.pushNamed(
+                            UserAppRoutes.viewPaymentReceiptScreen.name,
+                            extra: <String, dynamic>{'paymentId': e.paymentId},
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

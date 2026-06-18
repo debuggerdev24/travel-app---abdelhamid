@@ -17,8 +17,6 @@ class GuideChatScreen extends StatefulWidget {
 }
 
 class _GuideChatScreenState extends State<GuideChatScreen> {
-  int _selectedTab = 0;
-
   // Local message storage for static chats
   static final Map<String, List<Map<String, dynamic>>> _localMessages = {
     'chat_1': [
@@ -223,14 +221,12 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
   }
 
   Widget _tabItem(String label, int index) {
-    final bool isSelected = _selectedTab == index;
+    final bool isSelected = context.watch<ChatProvider>().selectedTabIndex == index;
 
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          setState(() {
-            _selectedTab = index;
-          });
+          context.read<ChatProvider>().changeTab(index);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -256,9 +252,10 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
   }
 
   Widget _buildChatView() {
+    final selectedTab = context.watch<ChatProvider>().selectedTabIndex;
     final displayedChats = _chats.where((chat) {
-      if (_selectedTab == 0) return true;
-      if (_selectedTab == 1) return chat['isGroup'] == true;
+      if (selectedTab == 0) return true;
+      if (selectedTab == 1) return chat['isGroup'] == true;
       return chat['isGroup'] == false;
     }).toList();
 

@@ -11,45 +11,36 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
 import 'package:travel_app_abdelhamid/provider/theme_provider.dart';
 
-class AppSettingsScreen extends StatefulWidget {
+class AppSettingsState extends ChangeNotifier {
+  bool _autoUpdate = false;
+  bool get autoUpdate => _autoUpdate;
+
+  void setAutoUpdate(bool value) {
+    _autoUpdate = value;
+    notifyListeners();
+  }
+}
+
+class AppSettingsScreen extends StatelessWidget {
   const AppSettingsScreen({super.key});
 
   @override
-  State<AppSettingsScreen> createState() => _AppSettingsScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => AppSettingsState(),
+      child: const _AppSettingsView(),
+    );
+  }
 }
 
-class _AppSettingsScreenState extends State<AppSettingsScreen> {
-  bool lightMode = true;
-  bool darkMode = false;
-  bool systemDefault = false;
-  bool autoUpdate = false;
+class _AppSettingsView extends StatefulWidget {
+  const _AppSettingsView();
 
   @override
-  void initState() {
-    super.initState();
-    _loadThemeMode();
-  }
+  State<_AppSettingsView> createState() => _AppSettingsViewState();
+}
 
-  void _loadThemeMode() {
-    final themeProvider = context.read<ThemeProvider>();
-    switch (themeProvider.themeModeOption) {
-      case ThemeModeOption.light:
-        lightMode = true;
-        darkMode = false;
-        systemDefault = false;
-        break;
-      case ThemeModeOption.dark:
-        lightMode = false;
-        darkMode = true;
-        systemDefault = false;
-        break;
-      case ThemeModeOption.system:
-        lightMode = false;
-        darkMode = false;
-        systemDefault = true;
-        break;
-    }
-  }
+class _AppSettingsViewState extends State<_AppSettingsView> {
 
   @override
   Widget build(BuildContext context) {
@@ -86,64 +77,43 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
 
               22.h.verticalSpace,
 
-              _settingTile(
-                title: "Light mode".tr(),
-                value: lightMode,
-                onChanged: (v) {
-                  setState(() {
-                    lightMode = true;
-                    darkMode = false;
-                    systemDefault = false;
-                  });
-                  context.read<ThemeProvider>().setThemeMode(
-                    ThemeModeOption.light,
+              Consumer2<ThemeProvider, AppSettingsState>(
+                builder: (context, themeProvider, state, child) {
+                  return Column(
+                    children: [
+                      _settingTile(
+                        title: "Light mode".tr(),
+                        value: themeProvider.themeModeOption == ThemeModeOption.light,
+                        onChanged: (v) {
+                          themeProvider.setThemeMode(ThemeModeOption.light);
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      _settingTile(
+                        title: "Dark mode".tr(),
+                        value: themeProvider.themeModeOption == ThemeModeOption.dark,
+                        onChanged: (v) {
+                          themeProvider.setThemeMode(ThemeModeOption.dark);
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      _settingTile(
+                        title: "System default".tr(),
+                        value: themeProvider.themeModeOption == ThemeModeOption.system,
+                        onChanged: (v) {
+                          themeProvider.setThemeMode(ThemeModeOption.system);
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      _settingTile(
+                        title: "Auto App Update".tr(),
+                        value: state.autoUpdate,
+                        onChanged: (v) {
+                          state.setAutoUpdate(v);
+                        },
+                      ),
+                    ],
                   );
-                },
-              ),
-
-              SizedBox(height: 16),
-
-              _settingTile(
-                title: "Dark mode".tr(),
-                value: darkMode,
-                onChanged: (v) {
-                  setState(() {
-                    darkMode = true;
-                    lightMode = false;
-                    systemDefault = false;
-                  });
-                  context.read<ThemeProvider>().setThemeMode(
-                    ThemeModeOption.dark,
-                  );
-                },
-              ),
-
-              SizedBox(height: 16),
-
-              _settingTile(
-                title: "System default".tr(),
-                value: systemDefault,
-                onChanged: (v) {
-                  setState(() {
-                    systemDefault = true;
-                    lightMode = false;
-                    darkMode = false;
-                  });
-                  context.read<ThemeProvider>().setThemeMode(
-                    ThemeModeOption.system,
-                  );
-                },
-              ),
-
-              SizedBox(height: 16),
-
-              _settingTile(
-                title: "Auto App Update".tr(),
-                value: autoUpdate,
-                onChanged: (v) {
-                  setState(() {
-                    autoUpdate = v;
-                  });
                 },
               ),
             ],

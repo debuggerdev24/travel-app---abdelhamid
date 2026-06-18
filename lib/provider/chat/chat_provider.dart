@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:travel_app_abdelhamid/core/utils/jwt_user_id.dart';
 import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/media_url.dart';

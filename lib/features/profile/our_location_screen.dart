@@ -9,17 +9,56 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/profile/office_location_model.dart';
 import 'package:travel_app_abdelhamid/services/profile_content_service.dart';
 
-class OurLocationsScreen extends StatefulWidget {
-  const OurLocationsScreen({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<OurLocationsScreen> createState() => _OurLocationsScreenState();
-}
-
-class _OurLocationsScreenState extends State<OurLocationsScreen> {
+class OurLocationsState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   Map<String, List<OfficeLocation>> _byCountry = {};
+
+  bool get loading => _loading;
+  String? get error => _error;
+  Map<String, List<OfficeLocation>> get byCountry => _byCountry;
+
+  void loadStart() {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+  }
+
+  void loadSuccess(Map<String, List<OfficeLocation>> map) {
+    _byCountry = map;
+    _loading = false;
+    notifyListeners();
+  }
+
+  void loadError(String err) {
+    _error = err;
+    _loading = false;
+    notifyListeners();
+  }
+}
+
+class OurLocationsScreen extends StatelessWidget {
+  const OurLocationsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => OurLocationsState(),
+      child: const _OurLocationsView(),
+    );
+  }
+}
+
+class _OurLocationsView extends StatefulWidget {
+  const _OurLocationsView();
+
+  @override
+  State<_OurLocationsView> createState() => _OurLocationsViewState();
+}
+
+class _OurLocationsViewState extends State<_OurLocationsView> {
 
   @override
   void initState() {
@@ -28,30 +67,22 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    final state = context.read<OurLocationsState>();
+    state.loadStart();
     try {
       final map = await ProfileContentService.instance.getLocations(
         showErrorToast: false,
       );
       if (!mounted) return;
-      setState(() {
-        _byCountry = map;
-        _loading = false;
-      });
+      state.loadSuccess(map);
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      state.loadError(userFacingApiError(e));
     }
   }
 
-  @override
   Widget build(BuildContext context) {
+    final state = context.watch<OurLocationsState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -82,7 +113,7 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                   ],
                 ),
               ),
-              if (_loading)
+              if (state.loading)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 48.h),
                   child: Center(
@@ -91,14 +122,14 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                     ),
                   ),
                 )
-              else if (_error != null)
+              else if (state.error != null)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 24.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        text: _error!,
+                        text: state.error!,
                         style: textStyle14Regular.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -115,10 +146,10 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
                     ],
                   ),
                 )
-              else if (_byCountry.isEmpty)
+              else if (state.byCountry.isEmpty)
                 _emptyState()
               else
-                ..._buildCountrySections(),
+                ..._buildCountrySections(state.byCountry),
               12.h.verticalSpace,
             ],
           ),
@@ -127,11 +158,11 @@ class _OurLocationsScreenState extends State<OurLocationsScreen> {
     );
   }
 
-  List<Widget> _buildCountrySections() {
-    final keys = _byCountry.keys.toList()..sort();
+  List<Widget> _buildCountrySections(Map<String, List<OfficeLocation>> byCountry) {
+    final keys = byCountry.keys.toList()..sort();
     final out = <Widget>[];
     for (final country in keys) {
-      final list = _byCountry[country] ?? [];
+      final list = byCountry[country] ?? [];
       out.add(_sectionTitle("$country :"));
       for (final loc in list) {
         out.add(_locationCard(loc));

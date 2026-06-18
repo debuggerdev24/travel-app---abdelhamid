@@ -16,38 +16,67 @@ import 'package:travel_app_abdelhamid/features/trip/trip_screen.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/features/chat/chat_screen.dart';
 
-class TabScreen extends StatefulWidget {
+class TabState extends ChangeNotifier {
+  int _currentIndex;
+  bool _showBottomNav = true;
+
+  TabState({int initialIndex = 0}) : _currentIndex = initialIndex;
+
+  int get currentIndex => _currentIndex;
+  bool get showBottomNav => _showBottomNav;
+
+  void setIndex(int index) {
+    _currentIndex = index;
+    _showBottomNav = true;
+    notifyListeners();
+  }
+
+  void setShowBottomNav(bool show) {
+    _showBottomNav = show;
+    notifyListeners();
+  }
+}
+
+class TabScreen extends StatelessWidget {
   final int initialIndex;
   const TabScreen({super.key, this.initialIndex = 0});
 
   @override
-  State<StatefulWidget> createState() => _TabScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => TabState(initialIndex: initialIndex),
+      child: const _TabScreenView(),
+    );
+  }
 }
 
-class _TabScreenState extends State<TabScreen> {
-  late int currentIndex;
+class _TabScreenView extends StatefulWidget {
+  const _TabScreenView();
+
+  @override
+  State<StatefulWidget> createState() => _TabScreenViewState();
+}
+
+class _TabScreenViewState extends State<_TabScreenView> {
   DateTime? lastBackPressed;
-  bool _showBottomNav = true;
 
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex;
-    if (currentIndex == 1) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!context.mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final index = context.read<TabState>().currentIndex;
+      if (index == 1) {
         context.read<TripProvider>().fetchUpcomingBookingsForTripsTab();
-      });
-    } else if (currentIndex == 2) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!context.mounted) return;
+      } else if (index == 2) {
         context.read<ChatProvider>().loadConversations(silent: true);
-      });
-    }
+      }
+    });
   }
 
-  @override
   Widget build(BuildContext context) {
+    final state = context.watch<TabState>();
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -72,34 +101,29 @@ class _TabScreenState extends State<TabScreen> {
       },
       child: Scaffold(
         body: IndexedStack(
-          index: currentIndex,
+          index: state.currentIndex,
           children: [
             HomeScreen(),
             TripScreen(
               onShowTripDetails: (show) {
-                setState(() {
-                  _showBottomNav = !show;
-                });
+                context.read<TabState>().setShowBottomNav(!show);
               },
             ),
             ChatScreen(),
             ProfileScreen(),
           ],
         ),
-        bottomNavigationBar: _showBottomNav ? bottomNavigationBar(context) : null,
+        bottomNavigationBar: state.showBottomNav ? bottomNavigationBar(context, state) : null,
       ),
     );
   }
 
   // ... rest of code unchanged
-  Widget bottomNavigationBar(BuildContext context) {
+  Widget bottomNavigationBar(BuildContext context, TabState state) {
     return KBottomNavBar(
-      currentIndex: currentIndex,
+      currentIndex: state.currentIndex,
       onTap: (index) {
-        setState(() {
-          currentIndex = index;
-          _showBottomNav = true;
-        });
+        context.read<TabState>().setIndex(index);
         if (index == 0) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
@@ -120,22 +144,22 @@ class _TabScreenState extends State<TabScreen> {
       items: [
         BottomNavItem(
           icon: AppAssets.homeTab,
-          isSelected: currentIndex == 0,
+          isSelected: state.currentIndex == 0,
           label: "Home".tr(context: context),
         ),
         BottomNavItem(
           icon: AppAssets.tripTab,
-          isSelected: currentIndex == 1,
+          isSelected: state.currentIndex == 1,
           label: "Trip".tr(context: context),
         ),
         BottomNavItem(
           icon: AppAssets.chatTab,
-          isSelected: currentIndex == 2,
+          isSelected: state.currentIndex == 2,
           label: "Chat".tr(context: context),
         ),
         BottomNavItem(
           icon: AppAssets.profileTab,
-          isSelected: currentIndex == 3,
+          isSelected: state.currentIndex == 3,
           label: "Profile".tr(context: context),
         ),
       ],

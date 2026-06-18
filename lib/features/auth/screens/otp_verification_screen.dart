@@ -17,36 +17,20 @@ import 'package:travel_app_abdelhamid/features/auth/provider/auth_provider.dart'
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
-class OtpVerificationScreen extends StatefulWidget {
-  final String email;
-  const OtpVerificationScreen({super.key, required this.email});
-
-  @override
-  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
-}
-
-class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  final TextEditingController _otpController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class OtpState extends ChangeNotifier {
   Timer? _timer;
   int _secondsRemaining = 60;
 
-  @override
-  void initState() {
-    super.initState();
-    _startTimer();
-  }
+  int get secondsRemaining => _secondsRemaining;
 
-  void _startTimer() {
-    setState(() {
-      _secondsRemaining = 60;
-    });
+  void startTimer() {
+    _secondsRemaining = 60;
+    notifyListeners();
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_secondsRemaining > 0) {
-        setState(() {
-          _secondsRemaining--;
-        });
+        _secondsRemaining--;
+        notifyListeners();
       } else {
         _timer?.cancel();
       }
@@ -56,6 +40,44 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    super.dispose();
+  }
+}
+
+class OtpVerificationScreen extends StatelessWidget {
+  final String email;
+  const OtpVerificationScreen({super.key, required this.email});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => OtpState(),
+      child: _OtpVerificationView(email: email),
+    );
+  }
+}
+
+class _OtpVerificationView extends StatefulWidget {
+  final String email;
+  const _OtpVerificationView({required this.email});
+
+  @override
+  State<_OtpVerificationView> createState() => _OtpVerificationViewState();
+}
+
+class _OtpVerificationViewState extends State<_OtpVerificationView> {
+  final TextEditingController _otpController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OtpState>().startTimer();
+    });
+  }
+
+  @override
+  void dispose() {
     _otpController.dispose();
     _formKey.currentState?.reset();
     super.dispose();
@@ -198,40 +220,44 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   },
                 ),
                 10.h.verticalSpace,
-                RichText(
-                  text: TextSpan(
-                    text: "Didn't receive the code? ",
-                    style: textStyle14Regular.copyWith(letterSpacing: 0.4),
-                    children: [
-                      TextSpan(
-                        recognizer: _secondsRemaining == 0
-                            ? (TapGestureRecognizer()
-                                ..onTap = () {
-                                  context.read<AuthProvider>().resendOtp(
-                                    email: widget.email,
-                                    onError: (error) =>
-                                        ToastService.showError(error),
-                                    onSuccess: () {
-                                      ToastService.showSuccess(
-                                        "OTP resent successful!",
+                Consumer<OtpState>(
+                  builder: (context, otpState, child) {
+                    return RichText(
+                      text: TextSpan(
+                        text: "Didn't receive the code? ",
+                        style: textStyle14Regular.copyWith(letterSpacing: 0.4),
+                        children: [
+                          TextSpan(
+                            recognizer: otpState.secondsRemaining == 0
+                                ? (TapGestureRecognizer()
+                                    ..onTap = () {
+                                      context.read<AuthProvider>().resendOtp(
+                                        email: widget.email,
+                                        onError: (error) =>
+                                            ToastService.showError(error),
+                                        onSuccess: () {
+                                          ToastService.showSuccess(
+                                            "OTP resent successful!",
+                                          );
+                                          context.read<OtpState>().startTimer();
+                                        },
                                       );
-                                      _startTimer();
-                                    },
-                                  );
-                                })
-                            : null,
-                        text: _secondsRemaining == 0
-                            ? "Resend OTP"
-                            : "Resend in ${_secondsRemaining}s",
-                        style: textStyle18Bold.copyWith(
-                          fontSize: 14.sp,
-                          color: _secondsRemaining == 0
-                              ? AppColors.secondary
-                              : AppColors.secondary.setOpacity(0.5),
-                        ),
+                                    })
+                                : null,
+                            text: otpState.secondsRemaining == 0
+                                ? "Resend OTP"
+                                : "Resend in ${otpState.secondsRemaining}s",
+                            style: textStyle18Bold.copyWith(
+                              fontSize: 14.sp,
+                              color: otpState.secondsRemaining == 0
+                                  ? AppColors.secondary
+                                  : AppColors.secondary.setOpacity(0.5),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 59.h.verticalSpace,
 

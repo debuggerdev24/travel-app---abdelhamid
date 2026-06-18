@@ -9,17 +9,56 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/cms/cms_models.dart';
 import 'package:travel_app_abdelhamid/services/cms_content_service.dart';
 
-class TermsConditionScreen extends StatefulWidget {
-  const TermsConditionScreen({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<TermsConditionScreen> createState() => _TermsConditionScreenState();
-}
-
-class _TermsConditionScreenState extends State<TermsConditionScreen> {
+class TermsConditionState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<RuleSection> _sections = [];
+
+  bool get loading => _loading;
+  String? get error => _error;
+  List<RuleSection> get sections => _sections;
+
+  void loadStart() {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+  }
+
+  void loadSuccess(List<RuleSection> list) {
+    _sections = list;
+    _loading = false;
+    notifyListeners();
+  }
+
+  void loadError(String err) {
+    _error = err;
+    _loading = false;
+    notifyListeners();
+  }
+}
+
+class TermsConditionScreen extends StatelessWidget {
+  const TermsConditionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => TermsConditionState(),
+      child: const _TermsConditionView(),
+    );
+  }
+}
+
+class _TermsConditionView extends StatefulWidget {
+  const _TermsConditionView();
+
+  @override
+  State<_TermsConditionView> createState() => _TermsConditionViewState();
+}
+
+class _TermsConditionViewState extends State<_TermsConditionView> {
 
   @override
   void initState() {
@@ -28,31 +67,23 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    final state = context.read<TermsConditionState>();
+    state.loadStart();
     try {
       final list = await CmsContentService.instance.getRules(
         'terms',
         showErrorToast: false,
       );
       if (!mounted) return;
-      setState(() {
-        _sections = list;
-        _loading = false;
-      });
+      state.loadSuccess(list);
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      state.loadError(userFacingApiError(e));
     }
   }
 
-  bool _hasRenderableContent() {
-    for (final s in _sections) {
+  bool _hasRenderableContent(List<RuleSection> sections) {
+    for (final s in sections) {
       if (s.title.trim().isNotEmpty) return true;
       for (final t in s.terms) {
         if (t.trim().isNotEmpty) return true;
@@ -141,8 +172,8 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
     );
   }
 
-  @override
   Widget build(BuildContext context) {
+    final state = context.watch<TermsConditionState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -171,7 +202,7 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
                   ),
                 ],
               ),
-              if (_loading)
+              if (state.loading)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 48.h),
                   child: Center(
@@ -180,14 +211,14 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
                     ),
                   ),
                 )
-              else if (_error != null)
+              else if (state.error != null)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 24.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        text: _error!,
+                        text: state.error!,
                         style: textStyle14Regular.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -204,10 +235,10 @@ class _TermsConditionScreenState extends State<TermsConditionScreen> {
                     ],
                   ),
                 )
-              else if (!_hasRenderableContent())
+              else if (!_hasRenderableContent(state.sections))
                 _emptyState()
               else
-                ..._sections.expand((section) {
+                ...state.sections.expand((section) {
                   return [
                     _sectionTitle(section.title),
                     ...section.terms.map(_bullet),

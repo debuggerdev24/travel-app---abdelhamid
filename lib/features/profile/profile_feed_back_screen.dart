@@ -13,16 +13,38 @@ import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/services/profile_content_service.dart';
 
-class ProfileFeedbackScreen extends StatefulWidget {
+class ProfileFeedbackState extends ChangeNotifier {
+  bool _submitting = false;
+
+  bool get submitting => _submitting;
+
+  void setSubmitting(bool value) {
+    _submitting = value;
+    notifyListeners();
+  }
+}
+
+class ProfileFeedbackScreen extends StatelessWidget {
   const ProfileFeedbackScreen({super.key});
 
   @override
-  State<ProfileFeedbackScreen> createState() => _ProfileFeedbackScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => ProfileFeedbackState(),
+      child: const _ProfileFeedbackView(),
+    );
+  }
 }
 
-class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
+class _ProfileFeedbackView extends StatefulWidget {
+  const _ProfileFeedbackView();
+
+  @override
+  State<_ProfileFeedbackView> createState() => _ProfileFeedbackViewState();
+}
+
+class _ProfileFeedbackViewState extends State<_ProfileFeedbackView> {
   final TextEditingController reviewController = TextEditingController();
-  bool _submitting = false;
 
   @override
   void dispose() {
@@ -34,7 +56,8 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
     BuildContext context,
     TripProvider ratingProvider,
   ) async {
-    if (_submitting) return;
+    final state = context.read<ProfileFeedbackState>();
+    if (state.submitting) return;
     final rating = ratingProvider.rating;
     if (rating < 1) {
       ToastHelper.showError('Please select a star rating.'.tr());
@@ -45,7 +68,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
       ToastHelper.showError('Please write your feedback.'.tr());
       return;
     }
-    setState(() => _submitting = true);
+    state.setSubmitting(true);
     try {
       await ProfileContentService.instance.submitReview(
         forTrip: false,
@@ -61,13 +84,13 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
     } catch (_) {
       // Error toast from API layer
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (mounted) state.setSubmitting(false);
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     final ratingProvider = Provider.of<TripProvider>(context);
+    final state = context.watch<ProfileFeedbackState>();
 
     return PopScope(
       canPop: true,
@@ -190,7 +213,7 @@ class _ProfileFeedbackScreenState extends State<ProfileFeedbackScreen> {
 
                 AppButton(
                   title: "Done".tr(),
-                  isLoading: _submitting,
+                  isLoading: state.submitting,
                   onTap: () => _submit(context, ratingProvider),
                 ),
               ],

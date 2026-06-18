@@ -11,18 +11,66 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/cms/cms_models.dart';
 import 'package:travel_app_abdelhamid/services/cms_content_service.dart';
 
-class FaqScreen extends StatefulWidget {
-  const FaqScreen({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<FaqScreen> createState() => _FaqScreenState();
-}
-
-class _FaqScreenState extends State<FaqScreen> {
+class FaqState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<FaqItem> _faqs = [];
   List<bool> _expanded = [];
+
+  bool get loading => _loading;
+  String? get error => _error;
+  List<FaqItem> get faqs => _faqs;
+  List<bool> get expanded => _expanded;
+
+  void loadStart() {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+  }
+
+  void loadSuccess(List<FaqItem> list) {
+    _faqs = list;
+    _expanded = List<bool>.generate(list.length, (i) => i == 0);
+    _loading = false;
+    notifyListeners();
+  }
+
+  void loadError(String err) {
+    _error = err;
+    _loading = false;
+    notifyListeners();
+  }
+
+  void toggleExpanded(int index) {
+    if (index < _expanded.length) {
+      _expanded[index] = !_expanded[index];
+      notifyListeners();
+    }
+  }
+}
+
+class FaqScreen extends StatelessWidget {
+  const FaqScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => FaqState(),
+      child: const _FaqView(),
+    );
+  }
+}
+
+class _FaqView extends StatefulWidget {
+  const _FaqView();
+
+  @override
+  State<_FaqView> createState() => _FaqViewState();
+}
+
+class _FaqViewState extends State<_FaqView> {
 
   @override
   void initState() {
@@ -31,31 +79,22 @@ class _FaqScreenState extends State<FaqScreen> {
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    final state = context.read<FaqState>();
+    state.loadStart();
     try {
       final list = await CmsContentService.instance.getFaqs(
         showErrorToast: false,
       );
       if (!mounted) return;
-      setState(() {
-        _faqs = list;
-        _expanded = List<bool>.generate(list.length, (i) => i == 0);
-        _loading = false;
-      });
+      state.loadSuccess(list);
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      state.loadError(userFacingApiError(e));
     }
   }
 
-  @override
   Widget build(BuildContext context) {
+    final state = context.watch<FaqState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -142,7 +181,7 @@ class _FaqScreenState extends State<FaqScreen> {
 
               20.h.verticalSpace,
 
-              if (_loading)
+              if (state.loading)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 48.h),
                   child: const Center(
@@ -151,13 +190,13 @@ class _FaqScreenState extends State<FaqScreen> {
                     ),
                   ),
                 )
-              else if (_error != null)
+              else if (state.error != null)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 24.h),
                   child: Column(
                     children: [
                       AppText(
-                        text: _error!,
+                        text: state.error!,
                         style: textStyle14Regular.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -175,7 +214,7 @@ class _FaqScreenState extends State<FaqScreen> {
                     ],
                   ),
                 )
-              else if (_faqs.isEmpty)
+              else if (state.faqs.isEmpty)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 32.h),
                   child: AppText(
@@ -187,13 +226,13 @@ class _FaqScreenState extends State<FaqScreen> {
                 )
               else
                 ListView.builder(
-                  itemCount: _faqs.length,
+                  itemCount: state.faqs.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final faq = _faqs[index];
-                    final isExpanded = index < _expanded.length
-                        ? _expanded[index]
+                    final faq = state.faqs[index];
+                    final isExpanded = index < state.expanded.length
+                        ? state.expanded[index]
                         : false;
 
                     return Column(
@@ -201,11 +240,7 @@ class _FaqScreenState extends State<FaqScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            setState(() {
-                              if (index < _expanded.length) {
-                                _expanded[index] = !isExpanded;
-                              }
-                            });
+                            context.read<FaqState>().toggleExpanded(index);
                           },
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 12.h),

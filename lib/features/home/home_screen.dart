@@ -17,16 +17,35 @@ import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeTabState extends ChangeNotifier {
+  int _selectedTab = 0;
+  int get selectedTab => _selectedTab;
+  void setTab(int index) {
+    _selectedTab = index;
+    notifyListeners();
+  }
+}
+
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => HomeTabState(),
+      child: const _HomeView(),
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int selectedTab = 0;
+class _HomeView extends StatefulWidget {
+  const _HomeView();
 
+  @override
+  State<_HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<_HomeView> {
   @override
   void initState() {
     super.initState();
@@ -185,14 +204,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         CustomTabButton(
                           text: "Current".tr(),
                           index: 0,
-                          selectedTab: selectedTab,
-                          onTap: () => setState(() => selectedTab = 0),
+                          selectedTab: context.watch<HomeTabState>().selectedTab,
+                          onTap: () => context.read<HomeTabState>().setTab(0),
                         ),
                         CustomTabButton(
                           text: "Past".tr(),
                           index: 1,
-                          selectedTab: selectedTab,
-                          onTap: () => setState(() => selectedTab = 1),
+                          selectedTab: context.watch<HomeTabState>().selectedTab,
+                          onTap: () => context.read<HomeTabState>().setTab(1),
                         ),
                       ],
                     ),
@@ -209,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       }
-                      final trips = selectedTab == 0
+                      final trips = context.watch<HomeTabState>().selectedTab == 0
                           ? provider.upcomingTripList
                           : provider.tripList;
                       if (trips.isEmpty) {
@@ -229,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: MediaQuery.sizeOf(context).height * 0.5,
                               child: Center(
                                 child: AppText(
-                                  text: selectedTab == 0
+                                  text: context.watch<HomeTabState>().selectedTab == 0
                                       ? "No Current Trips"
                                       : "No Past Trips",
                                   style: textStyle16SemiBold.copyWith(

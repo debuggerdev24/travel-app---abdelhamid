@@ -6,12 +6,29 @@ import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 
-class DropdownController {
-  static _CustomMultiSelectDropdownState? openedDropdown;
+import 'package:provider/provider.dart';
 
-  static void closeOthers(_CustomMultiSelectDropdownState current) {
+class DropdownState extends ChangeNotifier {
+  bool _isExpanded = false;
+  bool get isExpanded => _isExpanded;
+
+  void setExpanded(bool value) {
+    _isExpanded = value;
+    notifyListeners();
+  }
+
+  void toggleExpanded() {
+    _isExpanded = !_isExpanded;
+    notifyListeners();
+  }
+}
+
+class DropdownController {
+  static DropdownState? openedDropdown;
+
+  static void closeOthers(DropdownState current) {
     if (openedDropdown != null && openedDropdown != current) {
-      openedDropdown!.closeDropdown();
+      openedDropdown!.setExpanded(false);
     }
     openedDropdown = current;
   }
@@ -47,14 +64,21 @@ class CustomMultiSelectDropdown extends StatefulWidget {
 }
 
 class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
-  bool isExpanded = false;
+  late DropdownState _dropdownState;
 
-  void closeDropdown() {
-    if (mounted) {
-      setState(() {
-        isExpanded = false;
-      });
+  @override
+  void initState() {
+    super.initState();
+    _dropdownState = DropdownState();
+  }
+
+  @override
+  void dispose() {
+    if (DropdownController.openedDropdown == _dropdownState) {
+      DropdownController.openedDropdown = null;
     }
+    _dropdownState.dispose();
+    super.dispose();
   }
 
   bool _isItemSelected(String item) {
@@ -83,27 +107,32 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.labelText != null)
-          Text(
-            widget.labelText!,
-            style: textStyle14Medium.copyWith(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
+    return ChangeNotifierProvider.value(
+      value: _dropdownState,
+      child: Consumer<DropdownState>(
+        builder: (context, state, child) {
+          final isExpanded = state.isExpanded;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.labelText != null)
+                Text(
+                  widget.labelText!,
+                  style: textStyle14Medium.copyWith(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
 
-        SizedBox(height: 5.h),
+              SizedBox(height: 5.h),
 
-        // TextField UI
-        GestureDetector(
-          onTap: () {
-            DropdownController.closeOthers(this);
-            setState(() => isExpanded = !isExpanded);
-          },
+              // TextField UI
+              GestureDetector(
+                onTap: () {
+                  DropdownController.closeOthers(_dropdownState);
+                  state.toggleExpanded();
+                },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 16.h),
             decoration: BoxDecoration(
@@ -191,22 +220,20 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
 
                   return InkWell(
                     onTap: () {
-                      setState(() {
-                        if (widget.showRadio) {
-                          widget.onChanged([item]);
-                          isExpanded = false;
+                      if (widget.showRadio) {
+                        widget.onChanged([item]);
+                        state.setExpanded(false);
+                      } else {
+                        final next = List<String>.from(widget.selectedItems);
+                        if (isSelected) {
+                          next.removeWhere(
+                            (s) => s.toLowerCase() == item.toLowerCase(),
+                          );
                         } else {
-                          final next = List<String>.from(widget.selectedItems);
-                          if (isSelected) {
-                            next.removeWhere(
-                              (s) => s.toLowerCase() == item.toLowerCase(),
-                            );
-                          } else {
-                            next.add(item);
-                          }
-                          widget.onChanged(next);
+                          next.add(item);
                         }
-                      });
+                        widget.onChanged(next);
+                      }
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
@@ -231,7 +258,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                                   groupValue: _radioGroupValue(),
                                   onChanged: (val) {
                                     if (val != null) {
-                                      setState(() => isExpanded = false);
+                                      state.setExpanded(false);
                                       widget.onChanged([val]);
                                     }
                                   },
@@ -251,7 +278,10 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
               ],
             ),
           ),
-      ],
+            ],
+          );
+        },
+      ),
     );
   }
 }

@@ -5,6 +5,8 @@ import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
 import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/model/home/user_itinerary_model.dart';
+import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
+import 'package:travel_app_abdelhamid/model/home/payment_receipt_detail.dart';
 import 'package:travel_app_abdelhamid/services/trips_service.dart';
 
 class TripProvider extends ChangeNotifier {
@@ -477,4 +479,124 @@ class TripProvider extends ChangeNotifier {
   final List<String> babyOptions = ["Baby (0–2 yrs) No Bed - €500".tr()];
 
   final List<String> numberOfBaby = ["00", "01", "02"];
+
+  // -------------------------------
+  // Past Payments for TripPaymentSection
+  // -------------------------------
+  List<UserPaymentHistoryItem> _pastPayments = [];
+  List<UserPaymentHistoryItem> get pastPayments => _pastPayments;
+
+  bool _isPastPaymentsLoading = false;
+  bool get isPastPaymentsLoading => _isPastPaymentsLoading;
+
+  Future<void> loadPastPayments(String? bookingId) async {
+    if (bookingId == null || bookingId.isEmpty) {
+      _pastPayments = [];
+      _isPastPaymentsLoading = false;
+      notifyListeners();
+      return;
+    }
+    _isPastPaymentsLoading = true;
+    notifyListeners();
+    try {
+      final list = await TripsService.instance.fetchUserPaymentHistory(
+        bookingId: bookingId,
+        showErrorToast: false,
+      );
+      final listed = list.where((e) => e.includeInHistoryList).toList()
+        ..sort((a, b) {
+          final da = a.date;
+          final db = b.date;
+          if (da == null && db == null) return 0;
+          if (da == null) return 1;
+          if (db == null) return -1;
+          return db.compareTo(da);
+        });
+      _pastPayments = listed;
+    } finally {
+      _isPastPaymentsLoading = false;
+      notifyListeners();
+    }
+  }
+
+  bool _isPaying = false;
+  bool get isPaying => _isPaying;
+
+  void setPaying(bool value) {
+    _isPaying = value;
+    notifyListeners();
+  }
+
+  bool? _platformPaySupported;
+  bool? get platformPaySupported => _platformPaySupported;
+
+  void setPlatformPaySupported(bool? value) {
+    _platformPaySupported = value;
+    notifyListeners();
+  }
+
+  // -------------------------------
+  // Payment History Screen
+  // -------------------------------
+  List<UserPaymentHistoryItem> _paymentHistoryItems = [];
+  List<UserPaymentHistoryItem> get paymentHistoryItems => _paymentHistoryItems;
+
+  bool _isPaymentHistoryLoading = true;
+  bool get isPaymentHistoryLoading => _isPaymentHistoryLoading;
+
+  Future<void> loadPaymentHistory(String? bookingId) async {
+    _isPaymentHistoryLoading = true;
+    notifyListeners();
+    try {
+      final list = await TripsService.instance.fetchUserPaymentHistory(
+        bookingId: bookingId,
+        showErrorToast: true,
+      );
+      final ok = list.where((e) => e.includeInHistoryList).toList()
+        ..sort((a, b) {
+          final da = a.date;
+          final db = b.date;
+          if (da == null && db == null) return 0;
+          if (da == null) return 1;
+          if (db == null) return -1;
+          return db.compareTo(da);
+        });
+      _paymentHistoryItems = ok;
+    } finally {
+      _isPaymentHistoryLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // -------------------------------
+  // View Receipt Screen
+  // -------------------------------
+  PaymentReceiptDetail? _paymentReceiptDetail;
+  PaymentReceiptDetail? get paymentReceiptDetail => _paymentReceiptDetail;
+
+  bool _isReceiptLoading = false;
+  bool get isReceiptLoading => _isReceiptLoading;
+
+  String? _receiptError;
+  String? get receiptError => _receiptError;
+
+  Future<void> fetchPaymentReceipt(String paymentId) async {
+    _isReceiptLoading = true;
+    _receiptError = null;
+    notifyListeners();
+
+    try {
+      final d = await TripsService.instance.fetchPaymentReceipt(
+        paymentId,
+        showErrorToast: true,
+      );
+      _paymentReceiptDetail = d;
+      if (d == null) _receiptError = 'Receipt not found';
+    } catch (e) {
+      _receiptError = e.toString();
+    } finally {
+      _isReceiptLoading = false;
+      notifyListeners();
+    }
+  }
 }

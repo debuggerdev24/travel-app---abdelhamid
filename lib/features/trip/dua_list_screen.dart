@@ -14,14 +14,9 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/dua/dua_item_model.dart';
 import 'package:travel_app_abdelhamid/services/dua_service.dart';
 
-class DuaListScreen extends StatefulWidget {
-  const DuaListScreen({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<DuaListScreen> createState() => _DuaListScreenState();
-}
-
-class _DuaListScreenState extends State<DuaListScreen> {
+class DuaListState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<DuaItemModel> _items = const [];
@@ -30,13 +25,17 @@ class _DuaListScreenState extends State<DuaListScreen> {
   String? _playingId;
   StreamSubscription<void>? _completeSub;
 
-  @override
-  void initState() {
-    super.initState();
+  bool get loading => _loading;
+  String? get error => _error;
+  List<DuaItemModel> get items => _items;
+  String? get playingId => _playingId;
+
+  DuaListState() {
     _completeSub = _player.onPlayerComplete.listen((_) {
-      if (mounted) setState(() => _playingId = null);
+      _playingId = null;
+      notifyListeners();
     });
-    _load();
+    load();
   }
 
   @override
@@ -46,52 +45,68 @@ class _DuaListScreenState extends State<DuaListScreen> {
     super.dispose();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> load() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
     try {
       await _player.stop();
-      if (mounted) setState(() => _playingId = null);
+      _playingId = null;
+      notifyListeners();
 
       final list = await DuaService.instance.fetchDuas(showErrorToast: false);
-      if (!mounted) return;
-      setState(() {
-        _items = list;
-        _loading = false;
-      });
+      _items = list;
+      _loading = false;
+      notifyListeners();
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      _error = userFacingApiError(e);
+      _loading = false;
+      notifyListeners();
     }
   }
 
-  Future<void> _togglePlay(DuaItemModel dua) async {
+  Future<void> togglePlay(DuaItemModel dua, BuildContext context) async {
     final url = serverMediaUrl(dua.audioPath);
     if (url == null || url.isEmpty) return;
 
     try {
       if (_playingId == dua.id) {
         await _player.stop();
-        if (mounted) setState(() => _playingId = null);
+        _playingId = null;
+        notifyListeners();
         return;
       }
       await _player.stop();
-      if (mounted) setState(() => _playingId = dua.id);
+      _playingId = dua.id;
+      notifyListeners();
       await _player.play(UrlSource(url));
     } catch (_) {
-      if (mounted) {
-        setState(() => _playingId = null);
+      _playingId = null;
+      notifyListeners();
+      if (context.mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Could not play audio'.tr())));
       }
     }
   }
+}
+
+class DuaListScreen extends StatelessWidget {
+  const DuaListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => DuaListState(),
+      child: const _DuaListScreenView(),
+    );
+  }
+}
+
+class _DuaListScreenView extends StatelessWidget {
+  const _DuaListScreenView();
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +142,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
                 ],
               ),
               16.h.verticalSpace,
-              Expanded(child: _body()),
+              Expanded(child: _body(context)),
             ],
           ),
         ),
@@ -135,11 +150,13 @@ class _DuaListScreenState extends State<DuaListScreen> {
     );
   }
 
-  Widget _body() {
-    if (_loading) {
+  Widget _body(BuildContext context) {
+    final state = context.watch<DuaListState>();
+
+    if (state.loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (state.error != null) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -154,7 +171,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.w),
             child: AppText(
-              text: _error!,
+              text: state.error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
                 color: Theme.of(
@@ -165,7 +182,7 @@ class _DuaListScreenState extends State<DuaListScreen> {
           ),
           16.h.verticalSpace,
           TextButton(
-            onPressed: _load,
+            onPressed: () => context.read<DuaListState>().load(),
             child: AppText(
               text: 'Retry'.tr(),
               style: textStyle14Medium.copyWith(color: AppColors.secondary),
@@ -175,9 +192,9 @@ class _DuaListScreenState extends State<DuaListScreen> {
       );
     }
 
-    if (_items.isEmpty) {
+    if (state.items.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: () => context.read<DuaListState>().load(),
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
@@ -201,17 +218,17 @@ class _DuaListScreenState extends State<DuaListScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () => context.read<DuaListState>().load(),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _items.length,
+        itemCount: state.items.length,
         separatorBuilder: (_, __) => SizedBox(height: 15.h),
         itemBuilder: (context, index) {
-          final dua = _items[index];
+          final dua = state.items[index];
           return _DuaItemTile(
             dua: dua,
-            isPlaying: _playingId == dua.id,
-            onPlayTap: () => _togglePlay(dua),
+            isPlaying: state.playingId == dua.id,
+            onPlayTap: () => context.read<DuaListState>().togglePlay(dua, context),
           );
         },
       ),

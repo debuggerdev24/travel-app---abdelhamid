@@ -10,17 +10,56 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/profile/team_member_model.dart';
 import 'package:travel_app_abdelhamid/services/profile_content_service.dart';
 
-class MeetOurTeamScreen extends StatefulWidget {
-  const MeetOurTeamScreen({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<MeetOurTeamScreen> createState() => _MeetOurTeamScreenState();
-}
-
-class _MeetOurTeamScreenState extends State<MeetOurTeamScreen> {
+class MeetOurTeamState extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<TeamMemberModel> _members = [];
+
+  bool get loading => _loading;
+  String? get error => _error;
+  List<TeamMemberModel> get members => _members;
+
+  void loadStart() {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+  }
+
+  void loadSuccess(List<TeamMemberModel> list) {
+    _members = list;
+    _loading = false;
+    notifyListeners();
+  }
+
+  void loadError(String err) {
+    _error = err;
+    _loading = false;
+    notifyListeners();
+  }
+}
+
+class MeetOurTeamScreen extends StatelessWidget {
+  const MeetOurTeamScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => MeetOurTeamState(),
+      child: const _MeetOurTeamView(),
+    );
+  }
+}
+
+class _MeetOurTeamView extends StatefulWidget {
+  const _MeetOurTeamView();
+
+  @override
+  State<_MeetOurTeamView> createState() => _MeetOurTeamViewState();
+}
+
+class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
 
   @override
   void initState() {
@@ -29,30 +68,22 @@ class _MeetOurTeamScreenState extends State<MeetOurTeamScreen> {
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    final state = context.read<MeetOurTeamState>();
+    state.loadStart();
     try {
       final list = await ProfileContentService.instance.getTeamMembers(
         showErrorToast: false,
       );
       if (!mounted) return;
-      setState(() {
-        _members = list;
-        _loading = false;
-      });
+      state.loadSuccess(list);
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = userFacingApiError(e);
-        _loading = false;
-      });
+      state.loadError(userFacingApiError(e));
     }
   }
 
-  @override
   Widget build(BuildContext context) {
+    final state = context.watch<MeetOurTeamState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -82,7 +113,7 @@ class _MeetOurTeamScreenState extends State<MeetOurTeamScreen> {
                 ],
               ),
               22.h.verticalSpace,
-              Expanded(child: _buildBody()),
+              Expanded(child: _buildBody(state)),
             ],
           ),
         ),
@@ -90,22 +121,22 @@ class _MeetOurTeamScreenState extends State<MeetOurTeamScreen> {
     );
   }
 
-  Widget _buildBody() {
-    if (_loading) {
+  Widget _buildBody(MeetOurTeamState state) {
+    if (state.loading) {
       return Center(
         child: CircularProgressIndicator(
           color: Theme.of(context).colorScheme.primary,
         ),
       );
     }
-    if (_error != null) {
+    if (state.error != null) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 24.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppText(
-              text: _error!,
+              text: state.error!,
               style: textStyle14Regular.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -123,14 +154,14 @@ class _MeetOurTeamScreenState extends State<MeetOurTeamScreen> {
         ),
       );
     }
-    if (_members.isEmpty) {
+    if (state.members.isEmpty) {
       return SingleChildScrollView(child: _emptyState());
     }
     return ListView.separated(
-      itemCount: _members.length,
+      itemCount: state.members.length,
       separatorBuilder: (_, __) => 24.h.verticalSpace,
       itemBuilder: (context, index) {
-        final m = _members[index];
+        final m = state.members[index];
         return _teamCard(m);
       },
     );

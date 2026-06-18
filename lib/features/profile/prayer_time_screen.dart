@@ -143,12 +143,18 @@ class PrayerTile extends StatefulWidget {
 }
 
 class _PrayerTileState extends State<PrayerTile> {
-  late bool isOn;
+  late final ValueNotifier<bool> _isOnNotifier;
 
   @override
   void initState() {
     super.initState();
-    isOn = widget.initialValue;
+    _isOnNotifier = ValueNotifier<bool>(widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    _isOnNotifier.dispose();
+    super.dispose();
   }
 
   @override
@@ -203,11 +209,16 @@ class _PrayerTileState extends State<PrayerTile> {
 
           const Spacer(),
 
-          CustomSwitchButton(
-            value: isOn,
-            onChanged: (v) {
-              setState(() => isOn = v);
-              widget.onChanged(v);
+          ValueListenableBuilder<bool>(
+            valueListenable: _isOnNotifier,
+            builder: (context, isOn, _) {
+              return CustomSwitchButton(
+                value: isOn,
+                onChanged: (v) {
+                  _isOnNotifier.value = v;
+                  widget.onChanged(v);
+                },
+              );
             },
           ),
         ],

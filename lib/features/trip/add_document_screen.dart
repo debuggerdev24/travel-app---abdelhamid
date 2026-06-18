@@ -26,12 +26,13 @@ class AddDocumentScreen extends StatefulWidget {
 }
 
 class _AddDocumentScreenState extends State<AddDocumentScreen> {
-  File? pickedImage;
+  final ValueNotifier<File?> pickedImage = ValueNotifier(null);
   final TextEditingController _documentNameController = TextEditingController();
 
   @override
   void dispose() {
     _documentNameController.dispose();
+    pickedImage.dispose();
     super.dispose();
   }
 
@@ -40,9 +41,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      setState(() {
-        pickedImage = File(image.path);
-      });
+      pickedImage.value = File(image.path);
     }
   }
 
@@ -119,18 +118,23 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                             width: 1.w,
                           ),
                         ),
-                        child: pickedImage == null
-                            ? Padding(
-                                padding: const EdgeInsets.all(36),
-                                child: SvgIcon(AppAssets.imagePicker),
-                              )
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(8.r),
-                                child: Image.file(
-                                  pickedImage!,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                        child: ValueListenableBuilder<File?>(
+                          valueListenable: pickedImage,
+                          builder: (context, imageFile, child) {
+                            return imageFile == null
+                                ? Padding(
+                                    padding: const EdgeInsets.all(36),
+                                    child: SvgIcon(AppAssets.imagePicker),
+                                  )
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                    child: Image.file(
+                                      imageFile,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                          },
+                        ),
                       ),
                     ),
                     350.h.verticalSpace,
@@ -160,7 +164,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                                 );
                                 return;
                               }
-                              if (pickedImage == null) {
+                              if (pickedImage.value == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
@@ -182,7 +186,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               final err = await myTrip.uploadUserDocument(
                                 tripId: resolvedTripId,
                                 uiDocumentType: selectedType,
-                                file: pickedImage!,
+                                file: pickedImage.value!,
                                 documentName: docName,
                               );
 
@@ -196,7 +200,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               }
 
                               _documentNameController.clear();
-                              setState(() => pickedImage = null);
+                              pickedImage.value = null;
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
