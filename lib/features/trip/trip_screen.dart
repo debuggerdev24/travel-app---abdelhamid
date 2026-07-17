@@ -435,14 +435,13 @@ class _TripScreenViewState extends State<_TripScreenView> {
                     },
                     child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
                   ),
-                  30.w.horizontalSpace,
                   Expanded(
                     child: AppText(
                       text: trip?.title ?? "",
-                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
                       style: textStyle32Bold.copyWith(
-                        fontSize: 26.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 22.sp,
+                        color: AppColors.secondary,
                       ),
                     ),
                   ),
@@ -475,7 +474,9 @@ class _TripScreenViewState extends State<_TripScreenView> {
                         size: 30.w,
                         color: AppColors.primaryColor,
                       ),
-                    ),
+                    )
+                  else
+                    SizedBox(width: 30.w), // Balance the back button for centering
                 ],
               ),
             ),

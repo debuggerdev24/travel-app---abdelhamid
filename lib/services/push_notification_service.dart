@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,8 +29,20 @@ class PushNotificationService {
     await _requestPermission();
     await _initLocalNotifications();
 
-    // Cache the current token then keep it updated.
-    await _persistToken(await _messaging.getToken());
+    try {
+      if (Platform.isIOS) {
+        // Wait for APNS token on iOS before getting FCM token
+        String? apnsToken = await _messaging.getAPNSToken();
+        print('🔥 APNS TOKEN: $apnsToken');
+      }
+      
+      // Cache the current token then keep it updated.
+      String? token = await _messaging.getToken();
+      await _persistToken(token);
+    } catch (e) {
+      print('🔥 Error getting FCM token: $e');
+    }
+
     _messaging.onTokenRefresh.listen(_persistToken);
 
     // Show notifications when the app is in the foreground.
@@ -65,11 +78,14 @@ class PushNotificationService {
     );
 
     await _localNotifications.initialize(initSettings);
-    await _localNotifications
+    final androidImplementation = _localNotifications
         .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(_androidChannel);
+            AndroidFlutterLocalNotificationsPlugin>();
+            
+    if (androidImplementation != null) {
+      await androidImplementation.requestNotificationsPermission();
+      await androidImplementation.createNotificationChannel(_androidChannel);
+    }
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
@@ -113,13 +129,15 @@ class PushNotificationService {
 
   Future<void> _persistToken(String? token) async {
     if (token == null || token.isEmpty) return;
+    print('====================================');
     print('🔥 FCM TOKEN: $token');
+    print('====================================');
     await _prefs?.setString(_tokenKey, token);
   }
 
   Future<String?> getCachedToken() async {
     _prefs ??= await SharedPreferences.getInstance();
-    print('🔥 FCM TOKEN: ${_prefs?.getString(_tokenKey)}');
+    print('🔥 CACHED FCM TOKEN: ${_prefs?.getString(_tokenKey)}');
     return _prefs?.getString(_tokenKey);
   }
 }

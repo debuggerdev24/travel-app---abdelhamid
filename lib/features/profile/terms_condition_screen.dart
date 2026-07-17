@@ -59,7 +59,6 @@ class _TermsConditionView extends StatefulWidget {
 }
 
 class _TermsConditionViewState extends State<_TermsConditionView> {
-
   @override
   void initState() {
     super.initState();
@@ -118,7 +117,8 @@ class _TermsConditionViewState extends State<_TermsConditionView> {
               AppText(
                 textAlign: TextAlign.center,
                 text:
-                    'We could not load any terms from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need a copy of the terms.'.tr(),
+                    'We could not load any terms from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need a copy of the terms.'
+                        .tr(),
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,
@@ -172,6 +172,7 @@ class _TermsConditionViewState extends State<_TermsConditionView> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<TermsConditionState>();
     return Scaffold(
@@ -190,7 +191,11 @@ class _TermsConditionViewState extends State<_TermsConditionView> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 26.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   AppText(

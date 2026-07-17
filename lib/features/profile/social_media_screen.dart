@@ -60,7 +60,6 @@ class _SocialMediaView extends StatefulWidget {
 }
 
 class _SocialMediaViewState extends State<_SocialMediaView> {
-
   @override
   void initState() {
     super.initState();
@@ -119,6 +118,7 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
     return SvgIcon(_fallbackAssetForName(item.name), size: 40.w);
   }
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<SocialMediaState>();
     return Scaffold(
@@ -135,7 +135,11 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
                     padding: EdgeInsets.only(bottom: 35.h),
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.5.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   50.w.horizontalSpace,
@@ -152,7 +156,8 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
               12.h.verticalSpace,
               AppText(
                 text:
-                    "Stay connected with us! Follow our latest updates, photos, and travel stories on social media.".tr(),
+                    "Stay connected with us! Follow our latest updates, photos, and travel stories on social media."
+                        .tr(),
                 style: textStyle14Regular.copyWith(
                   fontSize: 14.sp,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,

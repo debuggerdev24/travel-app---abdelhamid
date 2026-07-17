@@ -74,6 +74,7 @@ class _TabScreenViewState extends State<_TabScreenView> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<TabState>();
 

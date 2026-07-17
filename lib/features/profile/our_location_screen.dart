@@ -59,7 +59,6 @@ class _OurLocationsView extends StatefulWidget {
 }
 
 class _OurLocationsViewState extends State<_OurLocationsView> {
-
   @override
   void initState() {
     super.initState();
@@ -81,6 +80,7 @@ class _OurLocationsViewState extends State<_OurLocationsView> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<OurLocationsState>();
     return Scaffold(
@@ -100,7 +100,11 @@ class _OurLocationsViewState extends State<_OurLocationsView> {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
+                        child: SvgIcon(
+                          AppAssets.backIcon,
+                          size: 26.w,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                     AppText(
@@ -158,7 +162,9 @@ class _OurLocationsViewState extends State<_OurLocationsView> {
     );
   }
 
-  List<Widget> _buildCountrySections(Map<String, List<OfficeLocation>> byCountry) {
+  List<Widget> _buildCountrySections(
+    Map<String, List<OfficeLocation>> byCountry,
+  ) {
     final keys = byCountry.keys.toList()..sort();
     final out = <Widget>[];
     for (final country in keys) {
@@ -198,7 +204,8 @@ class _OurLocationsViewState extends State<_OurLocationsView> {
               AppText(
                 textAlign: TextAlign.center,
                 text:
-                    'Locations will appear here once they are added in the admin panel.'.tr(),
+                    'Locations will appear here once they are added in the admin panel.'
+                        .tr(),
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,

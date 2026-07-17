@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.travel_app_abdelhamid"
+    namespace = "com.temheed.android"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.travel_app_abdelhamid"
+        applicationId = "com.temheed.android"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -50,6 +50,12 @@ tasks.withType<KotlinCompile>().configureEach {
 dependencies {
     // Desugaring for java.time APIs used by flutter_local_notifications
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+
+    // Add the dependencies for Firebase products you want to use
+    implementation("com.google.firebase:firebase-analytics")
 }
 
 flutter {

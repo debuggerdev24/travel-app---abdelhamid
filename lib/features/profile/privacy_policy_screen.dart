@@ -59,7 +59,6 @@ class _PrivacyPolicyView extends StatefulWidget {
 }
 
 class _PrivacyPolicyViewState extends State<_PrivacyPolicyView> {
-
   @override
   void initState() {
     super.initState();
@@ -118,7 +117,8 @@ class _PrivacyPolicyViewState extends State<_PrivacyPolicyView> {
               AppText(
                 textAlign: TextAlign.center,
                 text:
-                    'We could not load any privacy policy from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need details on how we handle your data.'.tr(),
+                    'We could not load any privacy policy from the server. This content is usually added by your travel team in the admin panel.\n\nPlease try again later, or contact support if you need details on how we handle your data.'
+                        .tr(),
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,
@@ -170,6 +170,7 @@ class _PrivacyPolicyViewState extends State<_PrivacyPolicyView> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<PrivacyPolicyState>();
     return Scaffold(
@@ -188,7 +189,11 @@ class _PrivacyPolicyViewState extends State<_PrivacyPolicyView> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   AppText(

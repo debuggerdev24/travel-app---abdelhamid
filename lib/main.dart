@@ -10,6 +10,7 @@ import 'package:travel_app_abdelhamid/firebase_options.dart';
 import 'package:travel_app_abdelhamid/services/push_notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }

@@ -130,11 +130,13 @@ class TripBookingProvider extends ChangeNotifier {
       );
       final tripBooking = bookings.firstWhere(
         (booking) => booking.trip.id == tripId,
-        orElse: () => bookings.firstWhere(
-          (booking) => booking.trip.id == tripId,
-          orElse: () => throw Exception('Booking not found'),
-        ),
+        orElse: () => throw Exception('Booking not found'),
       );
+      
+      if (_bookingId == null || _bookingId!.isEmpty) {
+        _bookingId = tripBooking.id;
+      }
+
       _roomPreferenceId = tripBooking.roomPreferenceId;
       _isRoomPreferenceSaved =
           tripBooking.roomPreferenceId != null &&
@@ -352,12 +354,25 @@ class TripBookingProvider extends ChangeNotifier {
         notifyListeners();
         try {
           await _resolveExistingBookingId();
+          // Try fetching from upcoming bookings if still null
+          if (_bookingId == null || _bookingId!.isEmpty) {
+            final bookings = await TripsService.instance.getUpcomingBookings(showErrorToast: false);
+            final match = bookings.where((b) => b.trip.id == _tripDetails!.id).firstOrNull;
+            if (match != null) {
+              _bookingId = match.id;
+            }
+          }
         } finally {
           _isLoading = false;
           notifyListeners();
         }
       }
-      return true;
+      
+      if (_bookingId != null && _bookingId!.isNotEmpty) {
+        return true;
+      }
+      // If we STILL don't have a booking ID, fall through to bookPackage()
+      // to create a new one.
     }
 
     return bookPackage();
@@ -536,6 +551,9 @@ class TripBookingProvider extends ChangeNotifier {
         }
         _bookingId = response['data']['booking']['_id'];
         LogHelper.instance.info("Booking ID created: $_bookingId");
+      } else if (_bookingId == null || _bookingId!.isEmpty) {
+        _error = "Failed to create booking. Booking ID is missing.";
+        return false;
       }
 
       // Step 2: Save room preference if booking exists

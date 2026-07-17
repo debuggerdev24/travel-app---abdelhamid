@@ -27,24 +27,24 @@ class PastPaymentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 4.w),
+      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 36.r,
-            height: 36.r,
+            width: 24.w,
+            height: 24.w,
             decoration: BoxDecoration(
               color: isConfirmed
-                  ? AppColors.blueColor
+                  ? AppColors.primaryColor
                   : AppColors.primaryColor.setOpacity(0.35),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: Icon(
               isConfirmed ? Icons.check : Icons.schedule,
-              color: Theme.of(context).colorScheme.onSurface,
-              size: 20.sp,
+              color: Colors.white,
+              size: 14.w,
             ),
           ),
           12.w.horizontalSpace,
@@ -57,17 +57,15 @@ class PastPaymentItem extends StatelessWidget {
                   style: textStyle14Medium.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
-                    fontSize: 15.sp,
+                    fontSize: 13.sp,
                   ),
                 ),
                 4.h.verticalSpace,
                 AppText(
                   text: isConfirmed ? 'Paid $date' : 'Pending · $date',
                   style: textStyle14Regular.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.7),
-                    fontSize: 13.sp,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    fontSize: 12.sp,
                   ),
                 ),
               ],
@@ -76,16 +74,16 @@ class PastPaymentItem extends StatelessWidget {
           GestureDetector(
             onTap: onViewReceiptTap,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
                 border: Border.all(color: AppColors.secondary, width: 1),
-                borderRadius: BorderRadius.circular(26.r),
+                borderRadius: BorderRadius.circular(20.r),
               ),
               child: AppText(
                 text: 'View Receipt'.tr(),
                 style: textStyle14Medium.copyWith(
                   color: AppColors.secondary,
-                  fontSize: 12.sp,
+                  fontSize: 11.sp,
                 ),
               ),
             ),

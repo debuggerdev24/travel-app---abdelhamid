@@ -239,13 +239,40 @@ class TripProvider extends ChangeNotifier {
           'enrolledTripsCount': _enrolledBookingsList.length,
         });
       } else {
-        _enrolledTrip = null;
-        _paymentDetails = null;
-        _enrolledBookingId = null;
-        _enrolledBookingsList = [];
-        PaymentFlowLog.log(
-          'loadEnrolledTripForTripsTab: no enrolled context (null)',
-        );
+        bool usedFallback = false;
+        if (effectiveId != null && effectiveId.isNotEmpty) {
+          final fallback = _enrolledBookingsList.where((b) => b.id == effectiveId).firstOrNull;
+          if (fallback != null) {
+            _enrolledTrip = fallback.trip;
+            _enrolledBookingId = fallback.id;
+            
+            final costStr = fallback.packageCost.replaceAll(RegExp(r'[^0-9.]'), '');
+            final cost = double.tryParse(costStr) ?? 0.0;
+            
+            _paymentDetails = TripPaymentDetails(
+              packageName: fallback.package.packageName,
+              totalAmount: cost,
+              paidAmount: 0.0,
+              pendingAmount: cost,
+              isFullyPaid: cost <= 0,
+            );
+            usedFallback = true;
+            PaymentFlowLog.log(
+              'loadEnrolledTripForTripsTab: used fallback booking',
+              {'bookingId': effectiveId}
+            );
+          }
+        }
+        
+        if (!usedFallback) {
+          _enrolledTrip = null;
+          _paymentDetails = null;
+          _enrolledBookingId = null;
+          // Do not clear _enrolledBookingsList here, as they might have other bookings.
+          PaymentFlowLog.log(
+            'loadEnrolledTripForTripsTab: no enrolled context (null)',
+          );
+        }
       }
     } catch (_) {
       // Keep prior enrolled state on errors; BaseApiService may toast.

@@ -88,6 +88,7 @@ class _ProfileFeedbackViewState extends State<_ProfileFeedbackView> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final ratingProvider = Provider.of<TripProvider>(context);
     final state = context.watch<ProfileFeedbackState>();

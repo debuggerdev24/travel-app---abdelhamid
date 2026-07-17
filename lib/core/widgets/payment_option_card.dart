@@ -19,50 +19,52 @@ class PaymentOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 17.w, vertical: 2.h),
-      margin: EdgeInsets.only(bottom: 20.h),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            value.getIcon(),
-            colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.onSurface,
-              BlendMode.srcIn,
+    return GestureDetector(
+      onTap: () => onSelect(value),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        margin: EdgeInsets.only(bottom: 12.h),
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5)),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          children: [
+            SvgPicture.asset(
+              value.getIcon(),
+              width: 24.w,
+              height: 24.w,
+              colorFilter: value == PaymentMethodEnum.googlePay || value == PaymentMethodEnum.paypal || value == PaymentMethodEnum.idealpay
+                  ? null // Keep original colors for these logos if possible
+                  : ColorFilter.mode(
+                      Theme.of(context).colorScheme.onSurface,
+                      BlendMode.srcIn,
+                    ),
             ),
-          ),
-          10.w.horizontalSpace,
-          AppText(
-            text: value.getTitle(),
-            style: textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+            12.w.horizontalSpace,
+            AppText(
+              text: value.getTitle(),
+              style: textStyle14Medium.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
-          ),
-          Spacer(),
-          Radio<PaymentMethodEnum>(
-            side: BorderSide(
-              width: 0.7,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            innerRadius: WidgetStatePropertyAll(6),
-            activeColor: Theme.of(context).colorScheme.primary,
-            value: value,
-            groupValue: selectedValue,
-            onChanged: (value) {
-              {
-                if (value != null) {
-                  onSelect(value);
+            Spacer(),
+            Radio<PaymentMethodEnum>(
+              side: BorderSide(
+                width: 1,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+              ),
+              activeColor: Theme.of(context).colorScheme.primary,
+              value: value,
+              groupValue: selectedValue,
+              onChanged: (val) {
+                if (val != null) {
+                  onSelect(val);
                 }
-              }
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

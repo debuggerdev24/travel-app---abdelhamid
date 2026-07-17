@@ -21,30 +21,28 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBtFphIPB0069unY_uukhlMdK-puecXCbw',
-    appId: '1:416804470692:android:534c5bc0cd77e243ddcb31',
-    messagingSenderId: '416804470692',
-    projectId: 'push-notification-demo-fe62a',
-    storageBucket: 'push-notification-demo-fe62a.firebasestorage.app',
+    apiKey: 'AIzaSyAF5TXcltxOK4IhV8jPUF-SK17SoNb9_-s',
+    appId: '1:963480007795:android:bd697f631cb5338689e606',
+    messagingSenderId: '963480007795',
+    projectId: 'temheed-275c8',
+    storageBucket: 'temheed-275c8.firebasestorage.app',
   );
 
-  // TODO: fill with values from your Firebase project.
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
-    iosBundleId: 'com.example.travel_app_abdelhamid',
+    apiKey: 'AIzaSyB_cBKG8YV2oNcsElcChXhnvjazzXjFmHY',
+    appId: '1:963480007795:ios:0b2b79946d6e4f1a89e606',
+    messagingSenderId: '963480007795',
+    projectId: 'temheed-275c8',
+    storageBucket: 'temheed-275c8.firebasestorage.app',
+    iosBundleId: 'com.temheed.ios',
   );
 
-  // TODO: fill with values from your Firebase project.
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR_MACOS_API_KEY',
-    appId: 'YOUR_MACOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
-    iosBundleId: 'com.example.travel_app_abdelhamid',
+    apiKey: 'AIzaSyB_cBKG8YV2oNcsElcChXhnvjazzXjFmHY',
+    appId: '1:963480007795:ios:0b2b79946d6e4f1a89e606',
+    messagingSenderId: '963480007795',
+    projectId: 'temheed-275c8',
+    storageBucket: 'temheed-275c8.firebasestorage.app',
+    iosBundleId: 'com.temheed.ios',
   );
 }

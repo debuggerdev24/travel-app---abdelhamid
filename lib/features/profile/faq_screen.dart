@@ -71,7 +71,6 @@ class _FaqView extends StatefulWidget {
 }
 
 class _FaqViewState extends State<_FaqView> {
-
   @override
   void initState() {
     super.initState();
@@ -93,6 +92,7 @@ class _FaqViewState extends State<_FaqView> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<FaqState>();
     return Scaffold(
@@ -112,7 +112,11 @@ class _FaqViewState extends State<_FaqView> {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                        child: SvgIcon(
+                          AppAssets.backIcon,
+                          size: 28.5.w,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                     AppText(

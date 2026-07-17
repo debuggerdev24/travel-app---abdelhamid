@@ -36,7 +36,7 @@ class _GuideDashboardView extends StatefulWidget {
 }
 
 class _GuideDashboardViewState extends State<_GuideDashboardView> {
-  int _currentIndex = 0;
+  final int _currentIndex = 0;
 
   final List<Widget> _screens = [
     const GuideHomeScreen(),
@@ -56,9 +56,18 @@ class _GuideDashboardViewState extends State<_GuideDashboardView> {
           context.read<GuideDashboardState>().setIndex(index);
         },
         items: [
-          BottomNavigationBarItem(icon: const Icon(Icons.home), label: 'Home'.tr(context: context)),
-          BottomNavigationBarItem(icon: const Icon(Icons.chat), label: 'Chat'.tr(context: context)),
-          BottomNavigationBarItem(icon: const Icon(Icons.person), label: 'Profile'.tr(context: context)),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: 'Home'.tr(context: context),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.chat),
+            label: 'Chat'.tr(context: context),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: 'Profile'.tr(context: context),
+          ),
         ],
       ),
     );

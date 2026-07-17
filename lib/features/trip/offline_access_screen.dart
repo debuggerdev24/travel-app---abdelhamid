@@ -80,6 +80,7 @@ class OfflineAccessScreen extends StatelessWidget {
 class _OfflineAccessScreenView extends StatelessWidget {
   const _OfflineAccessScreenView();
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<OfflineAccessState>();
 
@@ -141,6 +142,7 @@ class _TripOfflineCardView extends StatelessWidget {
 
   const _TripOfflineCardView({required this.onRemove});
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<TripOfflineCardState>();
 

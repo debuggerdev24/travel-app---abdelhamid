@@ -60,7 +60,6 @@ class _MeetOurTeamView extends StatefulWidget {
 }
 
 class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
-
   @override
   void initState() {
     super.initState();
@@ -82,6 +81,7 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<MeetOurTeamState>();
     return Scaffold(
@@ -100,7 +100,11 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   AppText(
@@ -193,7 +197,8 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
               AppText(
                 textAlign: TextAlign.center,
                 text:
-                    'Team profiles will show here once they are added in the admin panel.'.tr(),
+                    'Team profiles will show here once they are added in the admin panel.'
+                        .tr(),
                 style: textStyle14Regular.copyWith(
                   height: 1.5,
                   fontSize: 14.sp,
