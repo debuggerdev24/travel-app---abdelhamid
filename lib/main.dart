@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -19,7 +20,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
-  if (Platform.isAndroid || Platform.isIOS) {
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -32,7 +33,7 @@ void main() async {
   if (AppConstants.stripePublishableKey.isNotEmpty) {
     Stripe.publishableKey = AppConstants.stripePublishableKey;
   }
-  if (Platform.isIOS && AppConstants.stripeApplePayMerchantId.isNotEmpty) {
+  if (!kIsWeb && Platform.isIOS && AppConstants.stripeApplePayMerchantId.isNotEmpty) {
     Stripe.merchantIdentifier = AppConstants.stripeApplePayMerchantId;
   }
 

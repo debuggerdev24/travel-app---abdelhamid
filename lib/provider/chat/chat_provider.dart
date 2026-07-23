@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:travel_app_abdelhamid/core/utils/jwt_user_id.dart';
 import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
@@ -919,6 +920,25 @@ class ChatProvider extends ChangeNotifier {
       return n < 0 ? 0 : n;
     }
     return int.tryParse(raw.toString()) ?? 0;
+  }
+
+  bool _deferredNotifyScheduled = false;
+
+  @override
+  void notifyListeners() {
+    final phase = WidgetsBinding.instance.schedulerPhase;
+    if (phase == SchedulerPhase.persistentCallbacks ||
+        phase == SchedulerPhase.midFrameMicrotasks) {
+      if (!_deferredNotifyScheduled) {
+        _deferredNotifyScheduled = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _deferredNotifyScheduled = false;
+          super.notifyListeners();
+        });
+      }
+    } else {
+      super.notifyListeners();
+    }
   }
 
   @override

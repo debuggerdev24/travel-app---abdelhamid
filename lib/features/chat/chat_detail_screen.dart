@@ -80,7 +80,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     _emergencyMessageController.dispose();
     // Skip leaveChatRoom for local chats
     if (!widget.isLocalChat) {
-      _chat?.leaveChatRoom();
+      final chat = _chat;
+      if (chat != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          chat.leaveChatRoom();
+        });
+      }
     }
     super.dispose();
   }

@@ -22,6 +22,7 @@ String? userIdFromAccessToken(String? token) {
 
 /// Persisted user id from login, or JWT fallback for older sessions.
 String? currentUserIdOrNull() {
+  if (!PrefHelper.isLoggedIn()) return null;
   final stored = PrefHelper.getUserId();
   if (stored != null && stored.isNotEmpty) return stored;
   return userIdFromAccessToken(PrefHelper.getAccessToken());

@@ -6,7 +6,6 @@ export 'constants/app_assets.dart';
 export 'constants/app_colors.dart';
 export 'constants/text_style.dart';
 export 'extensions/routes_extensions.dart';
-export 'enums/chat_enum.dart';
 export 'enums/payment_option_enum.dart';
 export 'theme/app_theme.dart';
 export 'utils/validators.dart';

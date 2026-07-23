@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/core/utils/prayer_time_helpers.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/model/prayer/prayer_time_model.dart';
 import 'package:travel_app_abdelhamid/services/prayer_service.dart';
 
@@ -32,6 +33,12 @@ class PrayerTimesProvider extends ChangeNotifier {
   /// Fetches from API. Uses `showErrorToast: false` so home stays quiet on failure.
   /// Safe to call repeatedly (pull-to-refresh, tab switch, returning from Prayer Times screen).
   Future<void> fetchPrayerTimes() async {
+    if (!PrefHelper.isLoggedIn()) {
+      _items = [];
+      _loading = false;
+      notifyListeners();
+      return;
+    }
     final id = ++_fetchGeneration;
     _loading = true;
     _error = null;

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefHelper {
@@ -40,16 +41,43 @@ class PrefHelper {
     return _prefs.getString(_userIdKey);
   }
 
-  /// Clears both access and refresh tokens (useful for logout)
+  /// Clears access token, refresh token, and user ID (useful for logout / session expiry)
   static Future<void> clearTokens() async {
     await _prefs.remove(_accessTokenKey);
+    await _prefs.remove(_refreshTokenKey);
     await _prefs.remove(_userIdKey);
   }
 
-  /// Checks if the user is logged in by checking for an access token
+  /// Helper to check if a JWT token is expired
+  static bool isJwtExpired(String token) {
+    if (token == 'static_guide_token') return false;
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return false;
+      final normalized = base64Url.normalize(parts[1]);
+      final payload =
+          jsonDecode(utf8.decode(base64Url.decode(normalized)))
+              as Map<String, dynamic>;
+      final exp = payload['exp'];
+      if (exp is int) {
+        final expDate = DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true);
+        return DateTime.now().toUtc().isAfter(expDate);
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Checks if the user is logged in by checking for a valid, non-expired access token
   static bool isLoggedIn() {
     final token = getAccessToken();
-    return token != null && token.isNotEmpty;
+    if (token == null || token.isEmpty) return false;
+    if (isJwtExpired(token)) {
+      clearTokens();
+      return false;
+    }
+    return true;
   }
 
   /// Saves the theme mode to local storage

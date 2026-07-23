@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
 import 'package:travel_app_abdelhamid/core/utils/image_compress_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/model/profile/user_profile_model.dart';
 import 'package:travel_app_abdelhamid/services/user_profile_service.dart';
@@ -58,6 +59,12 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> loadProfile({bool force = false}) async {
+    if (!PrefHelper.isLoggedIn()) {
+      _profile = null;
+      _loading = false;
+      notifyListeners();
+      return;
+    }
     if (_loading) return;
     if (!force && _profile != null) return;
     _loading = true;

@@ -2,31 +2,29 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/model/profile/app_notification_model.dart';
+import 'package:travel_app_abdelhamid/provider/profile/notification_provider.dart';
 
-class NotificationModel {
-  final String title;
-  final String message;
-  final String time;
-  final String icon;
-  final bool isPremium;
-  final bool isRead;
+class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
 
-  NotificationModel({
-    required this.title,
-    required this.message,
-    required this.time,
-    required this.icon,
-    required this.isPremium,
-    this.isRead = false,
-  });
+  @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({super.key});
+class _NotificationScreenState extends State<NotificationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationProvider>().fetchNotifications();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,72 +62,47 @@ class NotificationScreen extends StatelessWidget {
               ),
               30.h.verticalSpace,
               Expanded(
-                child: ListView(
-                  children: [
-                    _buildPremiumNotificationCard(
-                      context,
-                      notification: NotificationModel(
-                        title: "Premium Feature Unlocked".tr(),
-                        message:
-                            "You now have access to exclusive travel deals and discounts!".tr(),
-                        time: "2 hours ago".tr(),
-                        icon: AppAssets.travel,
-                        isPremium: true,
-                        isRead: false,
+                child: Consumer<NotificationProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.isLoading && provider.notifications.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (provider.notifications.isEmpty) {
+                      return Center(
+                        child: AppText(
+                          text: "No notifications yet".tr(),
+                          style: textStyle16Regular.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        await provider.fetchNotifications();
+                      },
+                      child: ListView.separated(
+                        itemCount: provider.notifications.length,
+                        separatorBuilder: (context, index) => 16.h.verticalSpace,
+                        itemBuilder: (context, index) {
+                          final notification = provider.notifications[index];
+                          return GestureDetector(
+                            onTap: () {
+                              if (!notification.isRead) {
+                                provider.markAsRead(notification.id);
+                              }
+                            },
+                            child: _buildNotificationCard(
+                              context,
+                              notification: notification,
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                    16.h.verticalSpace,
-                    _buildPremiumNotificationCard(
-                      context,
-                      notification: NotificationModel(
-                        title: "Trip Reminder".tr(),
-                        message:
-                            "Your trip to Mecca starts in 3 days. Don't forget to pack!".tr(),
-                        time: "5 hours ago".tr(),
-                        icon: AppAssets.alarm,
-                        isPremium: true,
-                        isRead: false,
-                      ),
-                    ),
-                    16.h.verticalSpace,
-                    _buildPremiumNotificationCard(
-                      context,
-                      notification: NotificationModel(
-                        title: "Special Offer".tr(),
-                        message:
-                            "Get 20% off on hotel bookings with code: TRAVEL20".tr(),
-                        time: "1 day ago".tr(),
-                        icon: AppAssets.cash,
-                        isPremium: true,
-                        isRead: true,
-                      ),
-                    ),
-                    16.h.verticalSpace,
-                    _buildPremiumNotificationCard(
-                      context,
-                      notification: NotificationModel(
-                        title: "Prayer Time Alert".tr(),
-                        message: "Maghrib prayer is in 30 minutes".tr(),
-                        time: "2 days ago".tr(),
-                        icon: AppAssets.alarm,
-                        isPremium: false,
-                        isRead: true,
-                      ),
-                    ),
-                    16.h.verticalSpace,
-                    _buildPremiumNotificationCard(
-                      context,
-                      notification: NotificationModel(
-                        title: "Payment Successful".tr(),
-                        message:
-                            "Your payment of \$500 has been processed successfully".tr(),
-                        time: "3 days ago".tr(),
-                        icon: AppAssets.cash,
-                        isPremium: false,
-                        isRead: true,
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
             ],
@@ -139,9 +112,9 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPremiumNotificationCard(
+  Widget _buildNotificationCard(
     BuildContext context, {
-    required NotificationModel notification,
+    required AppNotificationModel notification,
   }) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
@@ -200,7 +173,7 @@ class NotificationScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.r),
             ),
             child: SvgIcon(
-              notification.icon,
+              notification.icon ?? AppAssets.alarm, // Fallback to a default icon
               size: 24.sp,
               color: notification.isPremium
                   ? Colors.white
@@ -260,7 +233,7 @@ class NotificationScreen extends StatelessWidget {
                       Container(
                         width: 8.w,
                         height: 8.w,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppColors.blueColor,
                           shape: BoxShape.circle,
                         ),
@@ -280,16 +253,18 @@ class NotificationScreen extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                8.h.verticalSpace,
-                AppText(
-                  text: notification.time,
-                  style: textStyle12Regular.copyWith(
-                    fontSize: 12.sp,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.5),
+                if (notification.time != null && notification.time!.isNotEmpty) ...[
+                  8.h.verticalSpace,
+                  AppText(
+                    text: notification.time!,
+                    style: textStyle12Regular.copyWith(
+                      fontSize: 12.sp,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

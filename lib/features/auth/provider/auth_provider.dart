@@ -4,6 +4,7 @@ import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/features/auth/model/login_response_model.dart';
 import 'package:travel_app_abdelhamid/features/auth/model/verify_otp_response_model.dart';
 import 'package:travel_app_abdelhamid/features/auth/service/auth_service.dart';
+import 'package:travel_app_abdelhamid/services/push_notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -58,6 +59,7 @@ class AuthProvider extends ChangeNotifier {
       if (response.id.isNotEmpty) {
         await PrefHelper.saveUserId(response.id);
       }
+      PushNotificationService.instance.sendTokenToBackend();
       _setLoading(false);
       return true;
     } catch (e) {

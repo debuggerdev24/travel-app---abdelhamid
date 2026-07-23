@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
+import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 
 /// Handles permission requests, token retrieval, and local token caching.
 class PushNotificationService {
@@ -133,6 +137,22 @@ class PushNotificationService {
     print('🔥 FCM TOKEN: $token');
     print('====================================');
     await _prefs?.setString(_tokenKey, token);
+    
+    // Only send to backend if user is logged in
+    if (PrefHelper.isLoggedIn()) {
+      await sendTokenToBackend();
+    }
+  }
+
+  Future<void> sendTokenToBackend() async {
+    final token = await getCachedToken();
+    if (token == null || token.isEmpty || !PrefHelper.isLoggedIn()) return;
+    try {
+      await BaseApiService.instance.post(Endpoints.deviceToken, body: {'device_token': token}, showErrorToast: false);
+      LogHelper.instance.info('Device token sent to backend successfully');
+    } catch (e) {
+      LogHelper.instance.error('Error sending device token to backend', e);
+    }
   }
 
   Future<String?> getCachedToken() async {

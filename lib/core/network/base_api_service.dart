@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
@@ -74,8 +73,6 @@ class BaseApiService {
   }
 
   static final BaseApiService instance = BaseApiService._internal();
-
-  static const String _authTokenKey = 'auth_token';
 
   late final Dio _dio;
 
@@ -488,10 +485,18 @@ class BaseApiService {
     }
   }
 
-  Future<void> _handleUnauthorized() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_authTokenKey);
+  bool _isHandlingUnauthorized = false;
 
-    UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
+  Future<void> _handleUnauthorized() async {
+    if (_isHandlingUnauthorized) return;
+    _isHandlingUnauthorized = true;
+    try {
+      await PrefHelper.clearTokens();
+      UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
+    } catch (e) {
+      LogHelper.instance.error('Error during handleUnauthorized', e);
+    } finally {
+      _isHandlingUnauthorized = false;
+    }
   }
 }

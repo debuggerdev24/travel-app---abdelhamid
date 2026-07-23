@@ -38,6 +38,11 @@ final textStyle16SemiBold = TextStyle(
   fontFamily: 'Roboto',
   fontWeight: FontWeight.w600,
 );
+final textStyle16Regular = TextStyle(
+  fontSize: 16.sp,
+  fontFamily: 'Roboto',
+  fontWeight: FontWeight.w400,
+);
 final textStyle14Medium = TextStyle(
   fontSize: 14.sp,
   fontFamily: 'Roboto',

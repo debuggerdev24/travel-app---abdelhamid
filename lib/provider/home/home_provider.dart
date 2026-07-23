@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
 import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/model/home/user_itinerary_model.dart';
@@ -178,6 +179,12 @@ class TripProvider extends ChangeNotifier {
 
   /// Fetches all upcoming bookings from API and populates enrolledBookingsList.
   Future<void> fetchUpcomingBookingsForTripsTab() async {
+    if (!PrefHelper.isLoggedIn()) {
+      _enrolledBookingsList = [];
+      _isEnrolledTripsLoading = false;
+      notifyListeners();
+      return;
+    }
     _isEnrolledTripsLoading = true;
     notifyListeners();
     try {
@@ -204,6 +211,15 @@ class TripProvider extends ChangeNotifier {
   ///
   /// [bookingId] overrides; otherwise uses [rememberLatestPaymentBookingId], then last my-trip id.
   Future<void> loadEnrolledTripForTripsTab({String? bookingId}) async {
+    if (!PrefHelper.isLoggedIn()) {
+      _enrolledTrip = null;
+      _paymentDetails = null;
+      _enrolledBookingId = null;
+      _isEnrolledTripLoading = false;
+      _isPaymentLoading = false;
+      notifyListeners();
+      return;
+    }
     _isEnrolledTripLoading = true;
     _isPaymentLoading = true;
     notifyListeners();
@@ -293,6 +309,13 @@ class TripProvider extends ChangeNotifier {
   /// Loads home lists from `GET /api/user/trips/list?type=upcoming` and `?type=past`.
   /// [showGlobalLoading] false for pull-to-refresh (keeps list visible; only the indicator shows).
   Future<void> fetchTrips({bool showGlobalLoading = true}) async {
+    if (!PrefHelper.isLoggedIn()) {
+      _upcomingtripList = [];
+      _pasttripList = [];
+      if (showGlobalLoading) _isLoading = false;
+      notifyListeners();
+      return;
+    }
     if (showGlobalLoading) {
       _isLoading = true;
       notifyListeners();
