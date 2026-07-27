@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
 import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
 import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
@@ -15,8 +14,6 @@ class NotificationProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  String _url(String path) => '${AppConstants.apiPublicRoot}$path';
-
   Future<void> fetchNotifications() async {
     if (!PrefHelper.isLoggedIn()) {
       _notifications = [];
@@ -28,7 +25,7 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.get(_url(Endpoints.notificationList), showErrorToast: false);
+      final response = await _apiService.get(Endpoints.notificationList, showErrorToast: false);
       if (response != null && response['data'] != null) {
         final List data = response['data'] is List ? response['data'] : (response['data']['data'] ?? []);
         _notifications = data.map((e) => AppNotificationModel.fromJson(e)).toList();
@@ -48,7 +45,7 @@ class NotificationProvider extends ChangeNotifier {
 
   Future<void> markAsRead(int id) async {
     try {
-      await _apiService.get('${_url(Endpoints.readNotification)}/$id', showErrorToast: false);
+      await _apiService.get('${Endpoints.readNotification}/$id', showErrorToast: false);
       final index = _notifications.indexWhere((element) => element.id == id);
       if (index != -1) {
         _notifications[index] = _notifications[index].copyWith(isRead: true);
@@ -61,7 +58,16 @@ class NotificationProvider extends ChangeNotifier {
 
   Future<void> sendDeviceToken(String token) async {
     try {
-      await _apiService.post(_url(Endpoints.deviceToken), body: {'device_token': token}, showErrorToast: false);
+      await _apiService.post(
+        Endpoints.deviceToken,
+        body: {
+          'device_token': token,
+          'fcm_token': token,
+          'fcmToken': token,
+          'token': token,
+        },
+        showErrorToast: false,
+      );
       LogHelper.instance.info('Device token sent successfully');
     } catch (e) {
       LogHelper.instance.error('Error sending device token', e);

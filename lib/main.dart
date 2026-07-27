@@ -19,6 +19,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await PrefHelper.init();
 
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await Firebase.initializeApp(
@@ -28,12 +29,12 @@ void main() async {
     await PushNotificationService.instance.init();
   }
 
-  await PrefHelper.init();
-
   if (AppConstants.stripePublishableKey.isNotEmpty) {
     Stripe.publishableKey = AppConstants.stripePublishableKey;
   }
-  if (!kIsWeb && Platform.isIOS && AppConstants.stripeApplePayMerchantId.isNotEmpty) {
+  if (!kIsWeb &&
+      Platform.isIOS &&
+      AppConstants.stripeApplePayMerchantId.isNotEmpty) {
     Stripe.merchantIdentifier = AppConstants.stripeApplePayMerchantId;
   }
 

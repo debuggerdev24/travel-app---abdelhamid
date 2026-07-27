@@ -145,10 +145,30 @@ class PushNotificationService {
   }
 
   Future<void> sendTokenToBackend() async {
-    final token = await getCachedToken();
+    String? token = await getCachedToken();
+    if (token == null || token.isEmpty) {
+      try {
+        token = await _messaging.getToken();
+        if (token != null && token.isNotEmpty) {
+          _prefs ??= await SharedPreferences.getInstance();
+          await _prefs?.setString(_tokenKey, token);
+        }
+      } catch (e) {
+        print('🔥 Error retrieving FCM token for backend: $e');
+      }
+    }
     if (token == null || token.isEmpty || !PrefHelper.isLoggedIn()) return;
     try {
-      await BaseApiService.instance.post(Endpoints.deviceToken, body: {'device_token': token}, showErrorToast: false);
+      await BaseApiService.instance.post(
+        Endpoints.deviceToken,
+        body: {
+          'device_token': token,
+          'fcm_token': token,
+          'fcmToken': token,
+          'token': token,
+        },
+        showErrorToast: false,
+      );
       LogHelper.instance.info('Device token sent to backend successfully');
     } catch (e) {
       LogHelper.instance.error('Error sending device token to backend', e);

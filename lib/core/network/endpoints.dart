@@ -81,6 +81,8 @@ class Endpoints {
 
   // --- Notifications ---
   static const String deviceToken = '/notifications/device-token';
-  static const String notificationList = '/notifications/notifications-list';
-  static const String readNotification = '/notifications/notifications/read';
+  static const String notificationList =
+      '/notifications/notifications-list';
+  static const String readNotification =
+      '/notifications/read';
 }
