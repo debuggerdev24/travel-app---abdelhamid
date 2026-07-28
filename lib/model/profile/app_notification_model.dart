@@ -1,5 +1,5 @@
 class AppNotificationModel {
-  final int id;
+  final String id;
   final String title;
   final String message;
   final String? time;
@@ -29,14 +29,13 @@ class AppNotificationModel {
     );
   }
 
-  static int _parseId(dynamic value) {
-    if (value is int) return value;
-    if (value is String) return int.tryParse(value) ?? 0;
-    return 0;
+  static String _parseId(dynamic value) {
+    if (value == null) return '';
+    return value.toString();
   }
 
   AppNotificationModel copyWith({
-    int? id,
+    String? id,
     String? title,
     String? message,
     String? time,

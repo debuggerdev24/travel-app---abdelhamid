@@ -43,9 +43,9 @@ class NotificationProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> markAsRead(int id) async {
+  Future<void> markAsRead(String id) async {
     try {
-      await _apiService.get('${Endpoints.readNotification}/$id', showErrorToast: false);
+      await _apiService.post('${Endpoints.readNotification}/$id', showErrorToast: false);
       final index = _notifications.indexWhere((element) => element.id == id);
       if (index != -1) {
         _notifications[index] = _notifications[index].copyWith(isRead: true);

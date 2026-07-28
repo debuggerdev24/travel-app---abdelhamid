@@ -84,5 +84,5 @@ class Endpoints {
   static const String notificationList =
       '/notifications/notifications-list';
   static const String readNotification =
-      '/notifications/read';
+      '/notifications/notifications/read';
 }

@@ -166,6 +166,7 @@ class PushNotificationService {
           'fcm_token': token,
           'fcmToken': token,
           'token': token,
+          'device_type': Platform.isIOS ? 'ios' : 'android',
         },
         showErrorToast: false,
       );
