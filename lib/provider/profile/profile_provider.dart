@@ -20,12 +20,7 @@ class ProfileProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
-  List<String> languageOptions = [
-    "Dutch",
-    "English",
-    "French",
-    "Arabic",
-  ];
+  List<String> languageOptions = ["Dutch", "English", "French", "Arabic"];
 
   List<String> selectedLanguages = [];
 
@@ -55,6 +50,13 @@ class ProfileProvider extends ChangeNotifier {
       final canonical = canonicalLanguage(pick);
       selectedLanguages = canonical != null ? [canonical] : [];
     }
+    if (values.isEmpty) {
+      selectedLanguages = [];
+    } else {
+      final pick = values.length == 1 ? values.first : values.last;
+      final canonical = canonicalLanguage(pick);
+      selectedLanguages = canonical != null ? [canonical] : [];
+    }
     notifyListeners();
   }
 
@@ -74,6 +76,7 @@ class ProfileProvider extends ChangeNotifier {
       final p = await UserProfileService.instance.getUserDetails();
       _profile = p;
       if (p != null) {
+        selectedLanguages = normalizeSelectedLanguages(p.languages);
         selectedLanguages = normalizeSelectedLanguages(p.languages);
       }
     } catch (e) {

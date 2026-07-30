@@ -82,7 +82,8 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         child: AppText(
                           textAlign: TextAlign.center,
                           text:
-                              'Could not load prayer times. Pull to refresh from home or try again later.'.tr(),
+                              'Could not load prayer times. Pull to refresh from home or try again later.'
+                                  .tr(),
                           style: textStyle14Regular.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -94,7 +95,8 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         child: AppText(
                           textAlign: TextAlign.center,
                           text:
-                              'No prayer times have been set yet. They can be added from the admin panel.'.tr(),
+                              'No prayer times have been set yet. They can be added from the admin panel.'
+                                  .tr(),
                           style: textStyle14Regular.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),

@@ -60,7 +60,8 @@ class PaymentSuccessfullScreen extends StatelessWidget {
                   14.h.verticalSpace,
                   AppText(
                     text:
-                        "Thank you for booking with us! Your trip is now confirmed – happy travels ahead!".tr(),
+                        "Thank you for booking with us! Your trip is now confirmed – happy travels ahead!"
+                            .tr(),
                     style: textStyle14Regular.copyWith(
                       color: Theme.of(
                         context,

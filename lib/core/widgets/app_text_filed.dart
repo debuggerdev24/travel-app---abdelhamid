@@ -71,11 +71,15 @@ class AppTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final InputBorder normalBorder =
         border ??
+    final InputBorder normalBorder =
+        border ??
         outlineInputBorder ??
         OutlineInputBorder(
           borderSide: BorderSide.none,
           borderRadius: BorderRadius.circular(8.r),
         );
+    final InputBorder invalidBorder =
+        errorBorder ??
     final InputBorder invalidBorder =
         errorBorder ??
         OutlineInputBorder(
@@ -183,6 +187,8 @@ class AppTextField extends StatelessWidget {
           SizedBox(height: 4.h),
           Text(
             bottomText!,
+            style:
+                bottomTextStyle ??
             style:
                 bottomTextStyle ??
                 textStyle14Regular.copyWith(

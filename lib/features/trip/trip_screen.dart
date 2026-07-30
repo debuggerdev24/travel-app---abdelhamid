@@ -800,6 +800,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
                 final hotel = entry.value;
                 final room = hotel.rooms.isNotEmpty ? hotel.rooms.first : null;
                 final facilities = hotel.facilitiesDisplayText;
+                final facilities = hotel.facilitiesDisplayText;
 
                 final info = <String, String>{
                   "Name".tr(): hotel.hotelName.isEmpty ? "-" : hotel.hotelName,
@@ -1090,6 +1091,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
       'File Type': doc.fileType ?? '—',
       if (doc.uploadedDate != null && doc.uploadedDate!.isNotEmpty)
         'Uploaded': formatDateForDisplay(doc.uploadedDate),
+        'Uploaded': formatDateForDisplay(doc.uploadedDate),
     };
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
@@ -1135,6 +1137,8 @@ class _TripScreenViewState extends State<_TripScreenView> {
     final info = <String, String>{
       if (ticket.flightName != null && ticket.flightName!.isNotEmpty)
         'Flight': ticket.flightName!,
+      if (ticket.date != null && ticket.date!.isNotEmpty)
+        'Date': formatDateForDisplay(ticket.date),
       if (ticket.date != null && ticket.date!.isNotEmpty)
         'Date': formatDateForDisplay(ticket.date),
       'File Type': ticket.fileType ?? '—',
@@ -1189,6 +1193,8 @@ class _TripScreenViewState extends State<_TripScreenView> {
           info: {
             'Check-in': formatDateTimeForDisplay(h.checkIn),
             'Check-out': formatDateTimeForDisplay(h.checkOut),
+            'Check-in': formatDateTimeForDisplay(h.checkIn),
+            'Check-out': formatDateTimeForDisplay(h.checkOut),
             'File Type': h.fileType ?? 'Image',
           },
           button1: 'View',
@@ -1217,9 +1223,12 @@ class _TripScreenViewState extends State<_TripScreenView> {
   }
 
   Widget _buildBundleInsuranceCard(BuildContext context, BundleInsuranceDoc d) {
+  Widget _buildBundleInsuranceCard(BuildContext context, BundleInsuranceDoc d) {
     final info = <String, String>{
       if (d.coverage != null && d.coverage!.isNotEmpty) 'Coverage': d.coverage!,
+      if (d.coverage != null && d.coverage!.isNotEmpty) 'Coverage': d.coverage!,
       if (d.uploadedDate != null && d.uploadedDate!.isNotEmpty)
+        'Uploaded': formatDateForDisplay(d.uploadedDate),
         'Uploaded': formatDateForDisplay(d.uploadedDate),
     };
     return Padding(
@@ -1254,6 +1263,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
   }
 
   Widget _buildBundleChecklistCard(BuildContext context, BundleChecklistDoc d) {
+  Widget _buildBundleChecklistCard(BuildContext context, BundleChecklistDoc d) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: DocumentCard(
@@ -1264,6 +1274,8 @@ class _TripScreenViewState extends State<_TripScreenView> {
           subtitle: 'Travel Document'.tr(),
           info: {
             if (d.fileType != null) 'File Type': d.fileType!,
+            if (d.uploadedDate != null && d.uploadedDate!.isNotEmpty)
+              'Uploaded': formatDateForDisplay(d.uploadedDate),
             if (d.uploadedDate != null && d.uploadedDate!.isNotEmpty)
               'Uploaded': formatDateForDisplay(d.uploadedDate),
           },
@@ -1297,6 +1309,8 @@ class _TripScreenViewState extends State<_TripScreenView> {
     HotelVoucherModel h,
   ) {
     final thumb = serverMediaUrl(h.hotelImage) ?? '';
+    final checkIn = formatDateTimeForDisplay(h.stayInfo.checkIn);
+    final checkOut = formatDateTimeForDisplay(h.stayInfo.checkOut);
     final checkIn = formatDateTimeForDisplay(h.stayInfo.checkIn);
     final checkOut = formatDateTimeForDisplay(h.stayInfo.checkOut);
 
@@ -1416,6 +1430,8 @@ class _TripScreenViewState extends State<_TripScreenView> {
 
         final showEmpty =
             !hasLocal && !hasRemote && !hasHotelRows && !hasTravelAdmin;
+        final showEmpty =
+            !hasLocal && !hasRemote && !hasHotelRows && !hasTravelAdmin;
 
         final apiPassVisaWidgets = <Widget>[];
         final apiFlightWidgets = <Widget>[];
@@ -1527,6 +1543,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
 
                 if (docs.any(
                       (d) => d["type"] == "Passport" || d["type"] == "Visa",
+                      (d) => d["type"] == "Passport" || d["type"] == "Visa",
                     ) ||
                     hasPassVisaApi) ...[
                   AppText(
@@ -1538,6 +1555,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
                   12.h.verticalSpace,
                   ...docs
                       .where(
+                        (d) => d["type"] == "Passport" || d["type"] == "Visa",
                         (d) => d["type"] == "Passport" || d["type"] == "Visa",
                       )
                       .map(

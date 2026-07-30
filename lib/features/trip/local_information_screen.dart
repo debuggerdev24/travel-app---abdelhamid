@@ -75,7 +75,11 @@ class _LocalInformationScreenView extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.5.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   14.w.horizontalSpace,

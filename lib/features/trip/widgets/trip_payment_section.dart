@@ -222,6 +222,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       PaymentFlowLog.log(
         '_payWithPlatformPay: Stripe confirm OK, calling _onPaymentSucceeded',
       );
+      PaymentFlowLog.log(
+        '_payWithPlatformPay: Stripe confirm OK, calling _onPaymentSucceeded',
+      );
       await _onPaymentSucceeded(pending);
     } on StripeException catch (e) {
       final code = e.error.code;
@@ -235,6 +238,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       });
       ToastHelper.showError(e.error.message ?? 'Payment failed');
     } on StripeError catch (e) {
+      PaymentFlowLog.log('_payWithPlatformPay: StripeError', {
+        'message': e.message,
+      });
       PaymentFlowLog.log('_payWithPlatformPay: StripeError', {
         'message': e.message,
       });
@@ -344,6 +350,9 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
       PaymentFlowLog.log(
         '_onPayNow: sheet completed, calling _onPaymentSucceeded',
       );
+      PaymentFlowLog.log(
+        '_onPayNow: sheet completed, calling _onPaymentSucceeded',
+      );
       await _onPaymentSucceeded(pending);
     } on StripeException catch (e) {
       final code = e.error.code;
@@ -395,6 +404,8 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
 
         // No enrolled booking OR backend returned "all zeros" → show empty state CTA.
         // Some environments return `{ total:0, paid:0, pending:0 }` even without a booking.
+        final allZero =
+            payment != null &&
         final allZero =
             payment != null &&
             payment.totalAmount.abs() < 0.0001 &&

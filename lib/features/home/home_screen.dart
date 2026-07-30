@@ -16,6 +16,19 @@ import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/custom_header.dart';
+import 'package:travel_app_abdelhamid/core/widgets/tab_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/trip_card.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
+import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
+import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class HomeTabState extends ChangeNotifier {
   int _selectedTab = 0;
@@ -53,6 +66,7 @@ class _HomeViewState extends State<_HomeView> {
       if (mounted) {
         context.read<TripProvider>().fetchTrips();
         context.read<PrayerTimesProvider>().fetchPrayerTimes();
+        context.read<ProfileProvider>().loadProfile();
         context.read<ProfileProvider>().loadProfile();
       }
     });
@@ -204,13 +218,17 @@ class _HomeViewState extends State<_HomeView> {
                         CustomTabButton(
                           text: "Current".tr(),
                           index: 0,
-                          selectedTab: context.watch<HomeTabState>().selectedTab,
+                          selectedTab: context
+                              .watch<HomeTabState>()
+                              .selectedTab,
                           onTap: () => context.read<HomeTabState>().setTab(0),
                         ),
                         CustomTabButton(
                           text: "Past".tr(),
                           index: 1,
-                          selectedTab: context.watch<HomeTabState>().selectedTab,
+                          selectedTab: context
+                              .watch<HomeTabState>()
+                              .selectedTab,
                           onTap: () => context.read<HomeTabState>().setTab(1),
                         ),
                       ],
@@ -228,7 +246,8 @@ class _HomeViewState extends State<_HomeView> {
                           ),
                         );
                       }
-                      final trips = context.watch<HomeTabState>().selectedTab == 0
+                      final trips =
+                          context.watch<HomeTabState>().selectedTab == 0
                           ? provider.upcomingTripList
                           : provider.tripList;
                       if (trips.isEmpty) {
@@ -248,7 +267,11 @@ class _HomeViewState extends State<_HomeView> {
                               height: MediaQuery.sizeOf(context).height * 0.5,
                               child: Center(
                                 child: AppText(
-                                  text: context.watch<HomeTabState>().selectedTab == 0
+                                  text:
+                                      context
+                                              .watch<HomeTabState>()
+                                              .selectedTab ==
+                                          0
                                       ? "No Current Trips"
                                       : "No Past Trips",
                                   style: textStyle16SemiBold.copyWith(

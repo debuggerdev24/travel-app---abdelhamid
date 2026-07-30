@@ -37,7 +37,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         builder: (context) => AlertDialog(
           title: Text('Discard unsaved data?'.tr()),
           content: Text(
-            'You have unsaved booking data. Do you want to discard it and go back?'.tr(),
+            'You have unsaved booking data. Do you want to discard it and go back?'
+                .tr(),
           ),
           actions: [
             TextButton(
@@ -79,6 +80,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     final initial =
         _tryParseDob(provider.dateOfBirthController.text) ??
         DateTime(2000, 1, 1);
+    _tryParseDob(provider.dateOfBirthController.text) ?? DateTime(2000, 1, 1);
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -154,7 +156,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             alignment: Alignment.centerLeft,
                             child: GestureDetector(
                               onTap: () => context.pop(),
-                              child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                              child: SvgIcon(
+                                AppAssets.backIcon,
+                                size: 28.5.w,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
                           ),
                           AppText(
@@ -179,7 +185,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                               Align(
                                 alignment: Alignment.bottomLeft,
                                 child: AppText(
-                                  text: "Personal details of the main booker".tr(),
+                                  text: "Personal details of the main booker"
+                                      .tr(),
                                   style: textStyle14Medium.copyWith(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w500,

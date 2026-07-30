@@ -114,7 +114,9 @@ class _TabScreenViewState extends State<_TabScreenView> {
             ProfileScreen(),
           ],
         ),
-        bottomNavigationBar: state.showBottomNav ? bottomNavigationBar(context, state) : null,
+        bottomNavigationBar: state.showBottomNav
+            ? bottomNavigationBar(context, state)
+            : null,
       ),
     );
   }

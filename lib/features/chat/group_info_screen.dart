@@ -533,8 +533,13 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
                       icon: AppAssets.delete,
                       color: AppColors.redColor,
                       onTap: _deleteGroup,
+                      onTap: _deleteGroup,
                     ),
                   ),
+              ],
+            ),
+          42.h.verticalSpace,
+        ],
               ],
             ),
           42.h.verticalSpace,
@@ -581,6 +586,8 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
     );
   }
 
+  Widget _buildSharedMedia(GroupInfoModel info) {
+    final media = info.sharedMedia.where((m) => m.isImage).toList();
   Widget _buildSharedMedia(GroupInfoModel info) {
     final media = info.sharedMedia.where((m) => m.isImage).toList();
 
@@ -636,7 +643,23 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
                     media[index].url,
                     width: 100.w,
                     height: 100.h,
+                  child: Image.network(
+                    media[index].url,
+                    width: 100.w,
+                    height: 100.h,
                     fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 100.w,
+                      height: 100.h,
+                      color: Colors.grey.shade200,
+                      alignment: Alignment.center,
+                      child: SvgIcon(AppAssets.photo, size: 28.w),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
                     errorBuilder: (_, __, ___) => Container(
                       width: 100.w,
                       height: 100.h,
@@ -668,6 +691,7 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
           BoxShadow(
             color: AppColors.blueColor.setOpacity(0.1),
             blurRadius: 6,
+            offset: const Offset(0, 2),
             offset: const Offset(0, 2),
           ),
         ],

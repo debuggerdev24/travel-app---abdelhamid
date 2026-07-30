@@ -139,7 +139,8 @@ class _FeedbackViewState extends State<_FeedbackView> {
 
                       AppText(
                         text:
-                            "Give this trip a star rating based on your experience.".tr(),
+                            "Give this trip a star rating based on your experience."
+                                .tr(),
                         style: textStyle16SemiBold,
                       ),
 

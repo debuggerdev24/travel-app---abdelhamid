@@ -107,7 +107,6 @@ class DuaListScreen extends StatelessWidget {
 class _DuaListScreenView extends StatelessWidget {
   const _DuaListScreenView();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,7 +124,11 @@ class _DuaListScreenView extends StatelessWidget {
                     onTap: () => context.pop(),
                     child: Padding(
                       padding: EdgeInsets.only(top: 2.h),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.5.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -228,7 +231,8 @@ class _DuaListScreenView extends StatelessWidget {
           return _DuaItemTile(
             dua: dua,
             isPlaying: state.playingId == dua.id,
-            onPlayTap: () => context.read<DuaListState>().togglePlay(dua, context),
+            onPlayTap: () =>
+                context.read<DuaListState>().togglePlay(dua, context),
           );
         },
       ),
@@ -249,6 +253,7 @@ class _DuaItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasAudio = dua.audioPath != null && dua.audioPath!.trim().isNotEmpty;
     final hasAudio = dua.audioPath != null && dua.audioPath!.trim().isNotEmpty;
 
     return Column(

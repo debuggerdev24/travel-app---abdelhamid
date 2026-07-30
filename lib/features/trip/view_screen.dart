@@ -11,9 +11,17 @@ import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
+import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class FullScreenDocumentViewer extends StatefulWidget {
   final File? file;
+
 
   /// Remote PDF or image URL (e.g. from [serverMediaUrl]).
   final String? networkFileUrl;
@@ -46,6 +54,8 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
     if (_downloading.value) return;
     final hasLocal = widget.file != null && widget.file!.existsSync();
     final hasNet =
+        widget.networkFileUrl != null &&
+        widget.networkFileUrl!.trim().isNotEmpty;
         widget.networkFileUrl != null &&
         widget.networkFileUrl!.trim().isNotEmpty;
     if (!hasLocal && !hasNet) {
@@ -116,6 +126,20 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
                   borderRadius: BorderRadius.circular(8.r),
                   child: _buildViewer(),
                 ),
+            Center(
+              child: Container(
+                height: 300.h,
+                width: 348.w,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppColors.primaryColor.setOpacity(0.2),
+                  ),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: _buildViewer(),
+                ),
               ),
             ),
             Spacer(),
@@ -171,12 +195,47 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
             alignment: Alignment.center,
           ),
         ),
+      return _imageFitContain(
+        Image.network(
+          net,
+          width: 348.w,
+          height: 300.h,
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+          errorBuilder: (_, __, ___) => Image.asset(
+            widget.assetImage,
+            width: 348.w,
+            height: 300.h,
+            fit: BoxFit.contain,
+            alignment: Alignment.center,
+          ),
+        ),
       );
     }
     if (widget.file != null) {
       final isPdf = widget.file!.path.toLowerCase().endsWith('.pdf');
       if (isPdf) {
         return SfPdfViewer.file(widget.file!);
+      }
+      return _imageFitContain(
+        Image.file(
+          widget.file!,
+          width: 348.w,
+          height: 300.h,
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+        ),
+      );
+    }
+    return _imageFitContain(
+      Image.asset(
+        widget.assetImage,
+        width: 348.w,
+        height: 300.h,
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
+      ),
+    );
       }
       return _imageFitContain(
         Image.file(

@@ -27,9 +27,14 @@ class ChatProvider extends ChangeNotifier {
 
   final List<StreamSubscription<dynamic>> _socketSubs = [];
   bool _socketListenersAttached = false;
+  bool _socketListenersAttached = false;
 
   /// Debounced reload when socket payload is incomplete (unknown chat, edits, deletes).
+  /// Debounced reload when socket payload is incomplete (unknown chat, edits, deletes).
   Timer? _conversationListRefreshDebounce;
+
+  /// Debounced mark-as-read while viewing an active chat (WhatsApp-style).
+  Timer? _markReadDebounce;
 
   /// Debounced mark-as-read while viewing an active chat (WhatsApp-style).
   Timer? _markReadDebounce;
@@ -85,6 +90,7 @@ class ChatProvider extends ChangeNotifier {
     _messages = [];
     loadingMessages = true;
     _setConversationUnread(chatId, 0);
+    _setConversationUnread(chatId, 0);
   }
 
   Future<void> loadConversations({bool silent = false}) async {
@@ -102,11 +108,13 @@ class ChatProvider extends ChangeNotifier {
     try {
       await ChatSocketService.instance.connect(uid);
       _ensureSocketListenersAttached();
+      _ensureSocketListenersAttached();
       final raw = await ChatApiService.instance.getConversations(
         userId: uid,
         showErrorToast: !silent,
       );
       _conversations = raw.map(_conversationFromJson).toList();
+      _sortConversationsByRecent();
       _sortConversationsByRecent();
     } catch (e, st) {
       conversationsError = 'Could not load conversations.';
@@ -168,12 +176,17 @@ class ChatProvider extends ChangeNotifier {
     if (_activeChatId != chatId) return;
 
     _ensureSocketListenersAttached();
+    _ensureSocketListenersAttached();
 
     try {
       final raw = await historyFuture;
       if (_activeChatId != chatId) return;
       final list = raw['messages'];
       if (list is List) {
+        final senderAvatars = mergeParticipantImages(
+          senderAvatarMapFromMessages(list),
+          raw,
+        );
         final senderAvatars = mergeParticipantImages(
           senderAvatarMapFromMessages(list),
           raw,
@@ -187,8 +200,16 @@ class ChatProvider extends ChangeNotifier {
                 senderAvatars: senderAvatars,
               ),
             )
+            .map(
+              (e) => _serverMessageToBubble(
+                Map<String, dynamic>.from(e),
+                uid,
+                senderAvatars: senderAvatars,
+              ),
+            )
             .toList();
       }
+      await _markChatAsRead(chatId);
       await _markChatAsRead(chatId);
     } catch (e, st) {
       if (_activeChatId == chatId) {
@@ -207,6 +228,8 @@ class ChatProvider extends ChangeNotifier {
     _roomLoadFutureChatId = null;
     _conversationListRefreshDebounce?.cancel();
     _conversationListRefreshDebounce = null;
+    _markReadDebounce?.cancel();
+    _markReadDebounce = null;
     _markReadDebounce?.cancel();
     _markReadDebounce = null;
     _activeChatId = null;
@@ -424,6 +447,10 @@ class ChatProvider extends ChangeNotifier {
           senderAvatarMapFromMessages(list),
           raw,
         );
+        final senderAvatars = mergeParticipantImages(
+          senderAvatarMapFromMessages(list),
+          raw,
+        );
         _messages = list
             .whereType<Map>()
             .map(
@@ -587,6 +614,7 @@ class ChatProvider extends ChangeNotifier {
       }
     }
     return map;
+
   }
 
   void _handleEnvelope(Map<String, dynamic> env) {
@@ -945,6 +973,8 @@ class ChatProvider extends ChangeNotifier {
   void dispose() {
     _conversationListRefreshDebounce?.cancel();
     _conversationListRefreshDebounce = null;
+    _markReadDebounce?.cancel();
+    _markReadDebounce = null;
     _markReadDebounce?.cancel();
     _markReadDebounce = null;
     _detachSocketListeners();

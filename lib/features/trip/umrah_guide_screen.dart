@@ -226,6 +226,9 @@ class _UmrahGuideScreenView extends StatelessWidget {
               UserAppRoutes.duaListScreen.name,
               extra: freshRouteNonce(),
             ),
+              UserAppRoutes.duaListScreen.name,
+              extra: freshRouteNonce(),
+            ),
             child: Container(
               height: 48.h,
               decoration: BoxDecoration(

@@ -257,14 +257,19 @@ class TripProvider extends ChangeNotifier {
       } else {
         bool usedFallback = false;
         if (effectiveId != null && effectiveId.isNotEmpty) {
-          final fallback = _enrolledBookingsList.where((b) => b.id == effectiveId).firstOrNull;
+          final fallback = _enrolledBookingsList
+              .where((b) => b.id == effectiveId)
+              .firstOrNull;
           if (fallback != null) {
             _enrolledTrip = fallback.trip;
             _enrolledBookingId = fallback.id;
-            
-            final costStr = fallback.packageCost.replaceAll(RegExp(r'[^0-9.]'), '');
+
+            final costStr = fallback.packageCost.replaceAll(
+              RegExp(r'[^0-9.]'),
+              '',
+            );
             final cost = double.tryParse(costStr) ?? 0.0;
-            
+
             _paymentDetails = TripPaymentDetails(
               packageName: fallback.package.packageName,
               totalAmount: cost,
@@ -275,11 +280,11 @@ class TripProvider extends ChangeNotifier {
             usedFallback = true;
             PaymentFlowLog.log(
               'loadEnrolledTripForTripsTab: used fallback booking',
-              {'bookingId': effectiveId}
+              {'bookingId': effectiveId},
             );
           }
         }
-        
+
         if (!usedFallback) {
           _enrolledTrip = null;
           _paymentDetails = null;
@@ -378,7 +383,10 @@ class TripProvider extends ChangeNotifier {
         'Group Transport (AC Bus)'.tr(),
         'Dedicated Guide Support'.tr(),
       ],
-      exclusions: ['All Meals Not Included (Buffet)'.tr(), 'Personal expenses'.tr()],
+      exclusions: [
+        'All Meals Not Included (Buffet)'.tr(),
+        'Personal expenses'.tr(),
+      ],
     ),
     PackageDetails(
       title: 'Silver Package'.tr(),
@@ -390,7 +398,10 @@ class TripProvider extends ChangeNotifier {
         'Group Transport (Shared Bus)'.tr(),
         'Guide Support via WhatsApp'.tr(),
       ],
-      exclusions: ['All Meals Not Included (Buffet)'.tr(), 'No personal SIM card'.tr()],
+      exclusions: [
+        'All Meals Not Included (Buffet)'.tr(),
+        'No personal SIM card'.tr(),
+      ],
     ),
     PackageDetails(
       title: 'Standard / Economy Package'.tr(),
@@ -514,7 +525,11 @@ class TripProvider extends ChangeNotifier {
   // -------------------------------
   // ... methods omitted for brevity as they are same ...
 
-  final List<String> roomTypes = ["Double".tr(), "Triple".tr(), "Quadruple".tr()];
+  final List<String> roomTypes = [
+    "Double".tr(),
+    "Triple".tr(),
+    "Quadruple".tr(),
+  ];
 
   final List<String> bedTypes = ["Single Bed".tr(), "King Size Bed".tr()];
 

@@ -74,16 +74,19 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
 
   Future<void> _checkPlatformPaySupport() async {
     if (AppConstants.stripePublishableKey.isEmpty) {
-      if (mounted) context.read<PaymentOptionState>().setPlatformPaySupported(false);
+      if (mounted)
+        context.read<PaymentOptionState>().setPlatformPaySupported(false);
       return;
     }
     try {
       final ok = await Stripe.instance.isPlatformPaySupported(
         googlePay: IsGooglePaySupportedParams(testEnv: kDebugMode),
       );
-      if (mounted) context.read<PaymentOptionState>().setPlatformPaySupported(ok);
+      if (mounted)
+        context.read<PaymentOptionState>().setPlatformPaySupported(ok);
     } catch (_) {
-      if (mounted) context.read<PaymentOptionState>().setPlatformPaySupported(false);
+      if (mounted)
+        context.read<PaymentOptionState>().setPlatformPaySupported(false);
     }
   }
 
@@ -93,7 +96,8 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'
+            .tr(),
       );
       return;
     }
@@ -235,7 +239,8 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
 
     if (AppConstants.stripePublishableKey.isEmpty) {
       ToastHelper.showError(
-        'Add your Stripe publishable key in AppConstants.stripePublishableKey'.tr(),
+        'Add your Stripe publishable key in AppConstants.stripePublishableKey'
+            .tr(),
       );
       return;
     }

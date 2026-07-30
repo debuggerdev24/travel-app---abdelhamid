@@ -28,6 +28,10 @@ class PrayerTimesProvider extends ChangeNotifier {
       const Duration(seconds: 30),
       (_) => notifyListeners(),
     );
+    _tick = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => notifyListeners(),
+    );
   }
 
   /// Fetches from API. Uses `showErrorToast: false` so home stays quiet on failure.

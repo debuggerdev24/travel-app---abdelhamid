@@ -176,7 +176,8 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                               }
                               final n = int.tryParse(value);
                               if (n == null || n < 1) {
-                                return "Please enter a valid number (min 1)".tr();
+                                return "Please enter a valid number (min 1)"
+                                    .tr();
                               }
                               return null;
                             },
@@ -236,7 +237,9 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                     bookingProvider.updateSelectedRoomTypeId(
                                       rooms.first.id,
                                     );
-                                    context.read<RoomDetailsState>().setRoomTypeError(null);
+                                    context
+                                        .read<RoomDetailsState>()
+                                        .setRoomTypeError(null);
                                   }
                                 }
                               },
@@ -276,7 +279,9 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                   bookingProvider.updateSelectedBedType(
                                     values.first,
                                   );
-                                  context.read<RoomDetailsState>().setBedTypeError(null);
+                                  context
+                                      .read<RoomDetailsState>()
+                                      .setBedTypeError(null);
                                 }
                               },
                               titleText: "Bed Type".tr(),
@@ -464,7 +469,8 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                   12.w.horizontalSpace,
                                   Expanded(
                                     child: AppText(
-                                      text: "Room preferences already saved".tr(),
+                                      text: "Room preferences already saved"
+                                          .tr(),
                                       style: textStyle14Regular.copyWith(
                                         color: Theme.of(
                                           context,

@@ -133,151 +133,163 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                   DropdownController.closeOthers(_dropdownState);
                   state.toggleExpanded();
                 },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 16.h),
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.shadow.withValues(alpha: 0.1),
-                  blurRadius: 1,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(8.r),
-              color: Theme.of(context).colorScheme.surface,
-              border: Border.all(
-                color: widget.errorText != null
-                    ? Colors.red.withValues(alpha: 0.5)
-                    : Colors.transparent,
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: AppText(
-                    text: _displaySelectedText(),
-                    style: textStyle14Regular.copyWith(
-                      color: widget.selectedItems.isEmpty
-                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                          : Theme.of(context).colorScheme.onSurface,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                SvgIcon(
-                  AppAssets.dropdown,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  size: 26.w,
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        if (widget.errorText != null)
-          Padding(
-            padding: EdgeInsets.only(top: 8.h, left: 12.w),
-            child: Text(
-              widget.errorText!,
-              style: TextStyle(color: Colors.red, fontSize: 12.sp),
-            ),
-          ),
-
-        // Dropdown
-        if (isExpanded)
-          Container(
-            margin: EdgeInsets.only(top: 6.h),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(color: Colors.transparent),
-              color: Theme.of(context).colorScheme.surface,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title
-                Padding(
+                child: Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 25.w,
+                    horizontal: 22.w,
                     vertical: 16.h,
                   ),
-                  child: AppText(
-                    text: widget.titleText,
-                    style: textStyle18Bold.copyWith(
-                      fontSize: 14.sp,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.shadow.withValues(alpha: 0.1),
+                        blurRadius: 1,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: Theme.of(context).colorScheme.surface,
+                    border: Border.all(
+                      color: widget.errorText != null
+                          ? Colors.red.withValues(alpha: 0.5)
+                          : Colors.transparent,
                     ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AppText(
+                          text: _displaySelectedText(),
+                          text: _displaySelectedText(),
+                          style: textStyle14Regular.copyWith(
+                            color: widget.selectedItems.isEmpty
+                                ? Theme.of(context).colorScheme.onSurfaceVariant
+                                : Theme.of(context).colorScheme.onSurface,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      SvgIcon(
+                        AppAssets.dropdown,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        size: 26.w,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              if (widget.errorText != null)
+                Padding(
+                  padding: EdgeInsets.only(top: 8.h, left: 12.w),
+                  child: Text(
+                    widget.errorText!,
+                    style: TextStyle(color: Colors.red, fontSize: 12.sp),
                   ),
                 ),
 
-                const Divider(height: 2),
-                SizedBox(height: 5.h),
-                // Items List
-                ...widget.items.map((item) {
-                  final isSelected = _isItemSelected(item);
-
-                  return InkWell(
-                    onTap: () {
-                      if (widget.showRadio) {
-                        widget.onChanged([item]);
-                        state.setExpanded(false);
-                      } else {
-                        final next = List<String>.from(widget.selectedItems);
-                        if (isSelected) {
-                          next.removeWhere(
-                            (s) => s.toLowerCase() == item.toLowerCase(),
-                          );
-                        } else {
-                          next.add(item);
-                        }
-                        widget.onChanged(next);
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: widget.showRadio ? 20.w : 25.w,
-                        vertical: widget.showRadio ? 0 : 7.h,
+              // Dropdown
+              if (isExpanded)
+                Container(
+                  margin: EdgeInsets.only(top: 6.h),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    border: Border.all(color: Colors.transparent),
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 25.w,
+                          vertical: 16.h,
+                        ),
+                        child: AppText(
+                          text: widget.titleText,
+                          style: textStyle18Bold.copyWith(
+                            fontSize: 14.sp,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppText(
-                            text: item,
-                            style: textStyle14Regular.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
+
+                      const Divider(height: 2),
+                      SizedBox(height: 5.h),
+                      // Items List
+                      ...widget.items.map((item) {
+                        final isSelected = _isItemSelected(item);
+                        final isSelected = _isItemSelected(item);
+
+                        return InkWell(
+                          onTap: () {
+                            if (widget.showRadio) {
+                              widget.onChanged([item]);
+                              state.setExpanded(false);
+                            } else {
+                              final next = List<String>.from(
+                                widget.selectedItems,
+                              );
+                              if (isSelected) {
+                                next.removeWhere(
+                                  (s) => s.toLowerCase() == item.toLowerCase(),
+                                );
+                              } else {
+                                next.add(item);
+                              }
+                              widget.onChanged(next);
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: widget.showRadio ? 20.w : 25.w,
+                              vertical: widget.showRadio ? 0 : 7.h,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AppText(
+                                  text: item,
+                                  style: textStyle14Regular.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                                widget.showRadio
+                                    ? Radio<String>(
+                                        activeColor: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                        value: item,
+                                        groupValue: _radioGroupValue(),
+                                        groupValue: _radioGroupValue(),
+                                        onChanged: (val) {
+                                          if (val != null) {
+                                            state.setExpanded(false);
+                                            widget.onChanged([val]);
+                                          }
+                                        },
+                                      )
+                                    : SvgIcon(
+                                        isSelected
+                                            ? AppAssets.checkFill
+                                            : AppAssets.checkbox,
+                                        size: 22.w,
+                                      ),
+                              ],
                             ),
                           ),
-                          widget.showRadio
-                              ? Radio<String>(
-                                  activeColor: Theme.of(
-                                    context,
-                                  ).colorScheme.primary,
-                                  value: item,
-                                  groupValue: _radioGroupValue(),
-                                  onChanged: (val) {
-                                    if (val != null) {
-                                      state.setExpanded(false);
-                                      widget.onChanged([val]);
-                                    }
-                                  },
-                                )
-                              : SvgIcon(
-                                  isSelected
-                                      ? AppAssets.checkFill
-                                      : AppAssets.checkbox,
-                                  size: 22.w,
-                                ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-                SizedBox(height: 5.h),
-              ],
-            ),
-          ),
+                        );
+                      }),
+                      SizedBox(height: 5.h),
+                    ],
+                  ),
+                ),
             ],
           );
         },

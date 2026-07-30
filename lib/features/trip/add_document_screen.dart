@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
+import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -61,6 +62,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
       body: Consumer2<MyTripProvider, TripProvider>(
         builder: (context, myTrip, trip, child) {
           final resolvedTripId = widget.tripId ?? trip.selectedTrip?.id ?? '';
+          final resolvedTripId = widget.tripId ?? trip.selectedTrip?.id ?? '';
 
           return SingleChildScrollView(
             child: SafeArea(
@@ -75,7 +77,11 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                           padding: EdgeInsets.only(bottom: 35.h),
                           child: GestureDetector(
                             onTap: () => context.pop(),
-                            child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                            child: SvgIcon(
+                              AppAssets.backIcon,
+                              size: 28.5.w,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
                         ),
                         80.w.horizontalSpace,
@@ -148,7 +154,8 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      "No trip selected. Open this screen from My Trips.".tr(),
+                                      "No trip selected. Open this screen from My Trips."
+                                          .tr(),
                                     ),
                                   ),
                                 );
@@ -196,6 +203,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                                 ScaffoldMessenger.of(
                                   context,
                                 ).showSnackBar(SnackBar(content: Text(err)));
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text(err)));
                                 return;
                               }
 
@@ -204,7 +214,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text("Document added successfully!".tr()),
+                                  content: Text(
+                                    "Document added successfully!".tr(),
+                                  ),
                                 ),
                               );
                               context.pop();

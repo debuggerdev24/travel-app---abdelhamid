@@ -69,10 +69,13 @@ class _EmergencyContactsScreenView extends StatelessWidget {
           (medical.contactType != null && medical.contactType!.isNotEmpty)
           ? medical.contactType!
           : "Medical";
+          ? medical.contactType!
+          : "Medical";
       if (medical.hospitalNumber != null &&
           medical.hospitalNumber!.isNotEmpty) {
         rows.add([label, medical.hospitalNumber!]);
       }
+      if (medical.ambulanceCode != null && medical.ambulanceCode!.isNotEmpty) {
       if (medical.ambulanceCode != null && medical.ambulanceCode!.isNotEmpty) {
         rows.add(["Ambulance", medical.ambulanceCode!]);
       }
@@ -84,8 +87,12 @@ class _EmergencyContactsScreenView extends StatelessWidget {
     final police = d.police;
     if (police != null &&
         police.policeHelpline != null &&
+    if (police != null &&
+        police.policeHelpline != null &&
         police.policeHelpline!.isNotEmpty) {
       final pl = police.policeHelpline!;
+      final title =
+          (police.contactType != null && police.contactType!.isNotEmpty)
       final title =
           (police.contactType != null && police.contactType!.isNotEmpty)
           ? police.contactType!

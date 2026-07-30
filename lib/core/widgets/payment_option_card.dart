@@ -25,7 +25,11 @@ class PaymentOption extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         margin: EdgeInsets.only(bottom: 12.h),
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5)),
+          border: Border.all(
+            color: Theme.of(
+              context,
+            ).colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
           borderRadius: BorderRadius.circular(8.r),
         ),
         child: Row(
@@ -34,7 +38,10 @@ class PaymentOption extends StatelessWidget {
               value.getIcon(),
               width: 24.w,
               height: 24.w,
-              colorFilter: value == PaymentMethodEnum.googlePay || value == PaymentMethodEnum.paypal || value == PaymentMethodEnum.idealpay
+              colorFilter:
+                  value == PaymentMethodEnum.googlePay ||
+                      value == PaymentMethodEnum.paypal ||
+                      value == PaymentMethodEnum.idealpay
                   ? null // Keep original colors for these logos if possible
                   : ColorFilter.mode(
                       Theme.of(context).colorScheme.onSurface,
@@ -52,7 +59,9 @@ class PaymentOption extends StatelessWidget {
             Radio<PaymentMethodEnum>(
               side: BorderSide(
                 width: 1,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
               activeColor: Theme.of(context).colorScheme.primary,
               value: value,

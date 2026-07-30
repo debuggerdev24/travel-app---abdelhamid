@@ -104,8 +104,7 @@ String formatDateTimeForDisplay(String? raw) {
       '${local.day} ${_monthAbbrev[local.month - 1].tr()} ${local.year}';
   final trimmed = raw.trim();
   final hasTime =
-      trimmed.contains('T') ||
-      RegExp(r'\d{1,2}:\d{2}').hasMatch(trimmed);
+      trimmed.contains('T') || RegExp(r'\d{1,2}:\d{2}').hasMatch(trimmed);
   if (!hasTime) return date;
   final h = local.hour.toString().padLeft(2, '0');
   final m = local.minute.toString().padLeft(2, '0');

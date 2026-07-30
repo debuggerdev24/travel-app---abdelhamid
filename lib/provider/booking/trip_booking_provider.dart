@@ -101,9 +101,16 @@ class TripBookingProvider extends ChangeNotifier {
 
     try {
       final result = await TripsService.instance.getTripDetails(
+      final result = await TripsService.instance.getTripDetails(
         tripId,
         showErrorToast: true,
       );
+      _tripDetails = result.trip;
+      _isBooked = result.isBooked;
+      _bookingId = result.bookingId;
+      if (_isBooked && (_bookingId == null || _bookingId!.isEmpty)) {
+        await _resolveExistingBookingId();
+      }
       _tripDetails = result.trip;
       _isBooked = result.isBooked;
       _bookingId = result.bookingId;
@@ -460,6 +467,7 @@ class TripBookingProvider extends ChangeNotifier {
       _error = "Trip or Package not selected";
       notifyListeners();
       return false;
+    }
     }
 
     // Store package data locally instead of calling API immediately

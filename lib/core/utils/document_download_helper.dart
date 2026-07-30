@@ -1,7 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +12,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 
+/// Android: system "Save as" picker. iOS: system share sheet (save to Files, etc.).
 /// Android: system "Save as" picker. iOS: system share sheet (save to Files, etc.).
 Future<void> shareDocumentFile({
   required BuildContext context,
@@ -117,7 +123,18 @@ Future<_DownloadedFile> _downloadNetworkFile(String url, String label) async {
     url,
     options: Options(responseType: ResponseType.bytes, headers: headers),
   );
+  final response = await dio.get<List<int>>(
+    url,
+    options: Options(responseType: ResponseType.bytes, headers: headers),
+  );
 
+  final data = response.data;
+  if (data == null || data.isEmpty) {
+    throw DioException(
+      requestOptions: response.requestOptions,
+      message: 'Empty file',
+    );
+  }
   final data = response.data;
   if (data == null || data.isEmpty) {
     throw DioException(
@@ -129,7 +146,20 @@ Future<_DownloadedFile> _downloadNetworkFile(String url, String label) async {
   final ext = _extensionFromUrl(url, response.headers.value('content-type'));
   final base = _sanitizeFileName(label);
   final fileName = '$base$ext';
+  final ext = _extensionFromUrl(url, response.headers.value('content-type'));
+  final base = _sanitizeFileName(label);
+  final fileName = '$base$ext';
 
+  return _DownloadedFile(bytes: Uint8List.fromList(data), fileName: fileName);
+}
+
+Future<void> _saveOrShare({
+  required ScaffoldMessengerState? messenger,
+  required Uint8List bytes,
+  required String fileName,
+  required String label,
+}) async {
+  if (!kIsWeb && Platform.isIOS) {
   return _DownloadedFile(bytes: Uint8List.fromList(data), fileName: fileName);
 }
 
@@ -159,6 +189,7 @@ Future<void> _saveOrShare({
     messenger?.showSnackBar(
       SnackBar(content: Text('File saved successfully.'.tr())),
     );
+    return;
     return;
   }
 

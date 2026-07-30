@@ -41,7 +41,6 @@ class _AppSettingsView extends StatefulWidget {
 }
 
 class _AppSettingsViewState extends State<_AppSettingsView> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +61,11 @@ class _AppSettingsViewState extends State<_AppSettingsView> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   AppText(
@@ -83,7 +86,9 @@ class _AppSettingsViewState extends State<_AppSettingsView> {
                     children: [
                       _settingTile(
                         title: "Light mode".tr(),
-                        value: themeProvider.themeModeOption == ThemeModeOption.light,
+                        value:
+                            themeProvider.themeModeOption ==
+                            ThemeModeOption.light,
                         onChanged: (v) {
                           themeProvider.setThemeMode(ThemeModeOption.light);
                         },
@@ -91,7 +96,9 @@ class _AppSettingsViewState extends State<_AppSettingsView> {
                       SizedBox(height: 16),
                       _settingTile(
                         title: "Dark mode".tr(),
-                        value: themeProvider.themeModeOption == ThemeModeOption.dark,
+                        value:
+                            themeProvider.themeModeOption ==
+                            ThemeModeOption.dark,
                         onChanged: (v) {
                           themeProvider.setThemeMode(ThemeModeOption.dark);
                         },
@@ -99,7 +106,9 @@ class _AppSettingsViewState extends State<_AppSettingsView> {
                       SizedBox(height: 16),
                       _settingTile(
                         title: "System default".tr(),
-                        value: themeProvider.themeModeOption == ThemeModeOption.system,
+                        value:
+                            themeProvider.themeModeOption ==
+                            ThemeModeOption.system,
                         onChanged: (v) {
                           themeProvider.setThemeMode(ThemeModeOption.system);
                         },

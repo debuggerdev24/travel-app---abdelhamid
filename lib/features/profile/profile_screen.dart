@@ -14,6 +14,14 @@ import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
 import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
+import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
+import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -52,9 +60,15 @@ class ProfileScreen extends StatelessWidget {
                     final name = p?.fullName.isNotEmpty == true
                         ? p!.fullName
                         : '—';
+                    final name = p?.fullName.isNotEmpty == true
+                        ? p!.fullName
+                        : '—';
                     final email = p?.email.isNotEmpty == true ? p!.email : '—';
 
                     final raw = p?.profileImageRaw.trim();
+                    final avatarUrl = raw != null && raw.isNotEmpty
+                        ? serverMediaUrl(raw)
+                        : null;
                     final avatarUrl = raw != null && raw.isNotEmpty
                         ? serverMediaUrl(raw)
                         : null;
@@ -110,7 +124,11 @@ class ProfileScreen extends StatelessWidget {
                               context,
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
-                          _infoRow(context, "profile.age".tr(), p?.displayAgeLabel ?? "—"),
+                          _infoRow(
+                            context,
+                            "profile.age".tr(),
+                            p?.displayAgeLabel ?? "—",
+                          ),
                           Divider(
                             color: Theme.of(
                               context,
@@ -183,7 +201,10 @@ class ProfileScreen extends StatelessWidget {
                               UserAppRoutes.prayerTimesScreen.name,
                             );
                           },
-                          child: _menuTile(context, "profile.prayer_times".tr()),
+                          child: _menuTile(
+                            context,
+                            "profile.prayer_times".tr(),
+                          ),
                         ),
 
                         22.h.verticalSpace,
@@ -194,7 +215,10 @@ class ProfileScreen extends StatelessWidget {
                               extra: DateTime.now().millisecondsSinceEpoch,
                             );
                           },
-                          child: _menuTile(context, "profile.currency_converter".tr()),
+                          child: _menuTile(
+                            context,
+                            "profile.currency_converter".tr(),
+                          ),
                         ),
 
                         22.h.verticalSpace,
@@ -205,6 +229,7 @@ class ProfileScreen extends StatelessWidget {
                           child: _menuTile(context, "profile.language".tr()),
                         ),
 
+                        22.h.verticalSpace,
                         22.h.verticalSpace,
 
                         /// ---------------- HELP & SUPPORT ----------------
@@ -230,33 +255,45 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "profile.social_media_links".tr(), () {
-                            context.pushNamed(
-                              UserAppRoutes.socialMediaScreen.name,
-                            );
-                          }),
+                          _menuitems(
+                            context,
+                            "profile.social_media_links".tr(),
+                            () {
+                              context.pushNamed(
+                                UserAppRoutes.socialMediaScreen.name,
+                              );
+                            },
+                          ),
                           Divider(
                             color: Theme.of(
                               context,
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "profile.terms_conditions".tr(), () {
-                            context.pushNamed(
-                              UserAppRoutes.termsConditionScreen.name,
-                            );
-                          }),
+                          _menuitems(
+                            context,
+                            "profile.terms_conditions".tr(),
+                            () {
+                              context.pushNamed(
+                                UserAppRoutes.termsConditionScreen.name,
+                              );
+                            },
+                          ),
                           Divider(
                             color: Theme.of(
                               context,
                             ).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
 
-                          _menuitems(context, "profile.privacy_policy".tr(), () {
-                            context.pushNamed(
-                              UserAppRoutes.privacyPolicyScreen.name,
-                            );
-                          }),
+                          _menuitems(
+                            context,
+                            "profile.privacy_policy".tr(),
+                            () {
+                              context.pushNamed(
+                                UserAppRoutes.privacyPolicyScreen.name,
+                              );
+                            },
+                          ),
                           Divider(
                             color: Theme.of(
                               context,
@@ -330,7 +367,8 @@ class ProfileScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AppText(
-                                text: "© Temheed Reizen - All rights reserved.".tr(),
+                                text: "© Temheed Reizen - All rights reserved."
+                                    .tr(),
                                 style: textStyle14Regular.copyWith(
                                   color: Theme.of(
                                     context,
@@ -352,7 +390,8 @@ class ProfileScreen extends StatelessWidget {
                         22.h.verticalSpace,
                         AppText(
                           text:
-                              "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed.".tr(),
+                              "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed."
+                                  .tr(),
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
                             color: Theme.of(
@@ -363,7 +402,8 @@ class ProfileScreen extends StatelessWidget {
                         10.h.verticalSpace,
                         AppText(
                           text:
-                              "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages.".tr(),
+                              "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages."
+                                  .tr(),
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
                             color: Theme.of(
@@ -373,6 +413,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         10.h.verticalSpace,
 
+                        22.h.verticalSpace,
                         22.h.verticalSpace,
 
                         Row(
@@ -431,6 +472,7 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
 
+                        SizedBox(height: 40.h),
                         SizedBox(height: 40.h),
                       ],
                     );
@@ -554,7 +596,10 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showLanguageBottomSheet(BuildContext context, ProfileProvider provider) {
+  void _showLanguageBottomSheet(
+    BuildContext context,
+    ProfileProvider provider,
+  ) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -568,53 +613,56 @@ class ProfileScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-            children: [
-              AppText(
-                text: "profile.select_language".tr(),
-                style: textStyle16SemiBold.copyWith(
-                  fontSize: 18.sp,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              20.h.verticalSpace,
-              ...provider.languageOptions.map((lang) {
-                final isSelected =
-                    provider.profile?.languages.contains(lang) ?? false;
-                return ListTile(
-                  title: AppText(
-                    text: lang,
-                    style: textStyle14Medium.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+              children: [
+                AppText(
+                  text: "profile.select_language".tr(),
+                  style: textStyle16SemiBold.copyWith(
+                    fontSize: 18.sp,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  trailing: isSelected
-                      ? const Icon(Icons.check_circle, color: AppColors.blueColor)
-                      : null,
-                  onTap: () async {
-                    if (lang == 'Dutch') {
-                      context.setLocale(const Locale('nl'));
-                    } else if (lang == 'English') {
-                      context.setLocale(const Locale('en'));
-                    } else if (lang == 'French') {
-                      context.setLocale(const Locale('fr'));
-                    } else if (lang == 'Arabic') {
-                      context.setLocale(const Locale('ar'));
-                    }
-                    
-                    Navigator.pop(context);
-                    
-                    if (provider.profile != null) {
-                      final updated = provider.profile!.copyWith(
-                        languages: [lang],
-                      );
-                      await provider.saveProfile(updated);
-                    }
-                  },
-                );
-              }),
-            ],
+                ),
+                20.h.verticalSpace,
+                ...provider.languageOptions.map((lang) {
+                  final isSelected =
+                      provider.profile?.languages.contains(lang) ?? false;
+                  return ListTile(
+                    title: AppText(
+                      text: lang,
+                      style: textStyle14Medium.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    trailing: isSelected
+                        ? const Icon(
+                            Icons.check_circle,
+                            color: AppColors.blueColor,
+                          )
+                        : null,
+                    onTap: () async {
+                      if (lang == 'Dutch') {
+                        context.setLocale(const Locale('nl'));
+                      } else if (lang == 'English') {
+                        context.setLocale(const Locale('en'));
+                      } else if (lang == 'French') {
+                        context.setLocale(const Locale('fr'));
+                      } else if (lang == 'Arabic') {
+                        context.setLocale(const Locale('ar'));
+                      }
+
+                      Navigator.pop(context);
+
+                      if (provider.profile != null) {
+                        final updated = provider.profile!.copyWith(
+                          languages: [lang],
+                        );
+                        await provider.saveProfile(updated);
+                      }
+                    },
+                  );
+                }),
+              ],
+            ),
           ),
-         ),
         );
       },
     );

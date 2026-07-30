@@ -14,8 +14,8 @@ class UserAppRoute {
   static final GoRouter goRouter = GoRouter(
     initialLocation: PrefHelper.isLoggedIn()
         ? (PrefHelper.getAccessToken() == 'static_guide_token'
-            ? UserAppRoutes.guideDashboard.path
-            : UserAppRoutes.tabScreen.path)
+              ? UserAppRoutes.guideDashboard.path
+              : UserAppRoutes.tabScreen.path)
         : UserAppRoutes.signInScreen.path,
     routes: [
       ...authRoutes,

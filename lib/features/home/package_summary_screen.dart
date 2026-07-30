@@ -27,7 +27,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         builder: (context) => AlertDialog(
           title: Text('Discard unsaved data?'.tr()),
           content: Text(
-            'You have unsaved booking data. Do you want to discard it and go back?'.tr(),
+            'You have unsaved booking data. Do you want to discard it and go back?'
+                .tr(),
           ),
           actions: [
             TextButton(
@@ -74,6 +75,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         debugPrint(
           '❌ [PackageSummaryScreen] tripId is null — cannot fetch package options',
         );
+        debugPrint(
+          '❌ [PackageSummaryScreen] tripId is null — cannot fetch package options',
+        );
       }
     });
   }
@@ -84,6 +88,24 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final trip = provider.tripDetails;
     final selectedPackage = provider.selectedPackage;
 
+    debugPrint(
+      '🔵 [PackageSummaryScreen] build — isLoading: ${provider.isLoading}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] selectedPackage: ${selectedPackage?.title}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] roomOptions: ${selectedPackage?.roomOptions}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] childPrices: ${selectedPackage?.childPrices}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] inclusions: ${selectedPackage?.inclusions}',
+    );
+    debugPrint(
+      '🔵 [PackageSummaryScreen] exclusions: ${selectedPackage?.exclusions}',
+    );
     debugPrint(
       '🔵 [PackageSummaryScreen] build — isLoading: ${provider.isLoading}',
     );
@@ -125,7 +147,11 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () => context.pop(),
-                        child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
+                        child: SvgIcon(
+                          AppAssets.backIcon,
+                          size: 26.w,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                     AppText(

@@ -154,7 +154,8 @@ class FeedbackReviewCard extends StatelessWidget {
           14.h.verticalSpace,
           AppText(
             text:
-                "“My stay at Zenstone Retreat was absolutely wonderful. The atmosphere is so peaceful, surrounded by nature with beautiful stone pathways and a calming koi pond. The staff were incredibly welcoming and made sure everything was perfect. If you’re looking for a place to relax, recharge, and enjoy pure tranquility, this is the spot!”".tr(),
+                "“My stay at Zenstone Retreat was absolutely wonderful. The atmosphere is so peaceful, surrounded by nature with beautiful stone pathways and a calming koi pond. The staff were incredibly welcoming and made sure everything was perfect. If you’re looking for a place to relax, recharge, and enjoy pure tranquility, this is the spot!”"
+                    .tr(),
             style: textStyle14Regular.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
             ),

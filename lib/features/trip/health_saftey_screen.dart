@@ -78,7 +78,11 @@ class _HealthSafetyScreenView extends StatelessWidget {
                     padding: EdgeInsets.only(bottom: 8.h),
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.5.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   16.w.horizontalSpace,

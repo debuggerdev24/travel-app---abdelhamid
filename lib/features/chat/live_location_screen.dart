@@ -160,7 +160,11 @@ class _LiveLocationViewState extends State<_LiveLocationView> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   AppText(

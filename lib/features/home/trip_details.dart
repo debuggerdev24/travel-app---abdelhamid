@@ -54,6 +54,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     final isUpcoming = tripProvider.upcomingTripList.contains(trip);
     final details = bookingProvider.tripDetails;
     final display = details ?? trip;
+    final display = details ?? trip;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -86,6 +87,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         Expanded(
                           child: AppText(
                             text: display.title,
+                            text: display.title,
                             overflow: TextOverflow.ellipsis,
                             style: textStyle32Bold.copyWith(
                               fontSize: 26.sp,
@@ -100,6 +102,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
+                          NetworkImageWithShimmer(
+                            imageUrl: display.imageUrl.replaceAll(
+                              "//uploads",
+                              "/uploads",
+                            ),
                           NetworkImageWithShimmer(
                             imageUrl: display.imageUrl.replaceAll(
                               "//uploads",
@@ -140,6 +147,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     Expanded(
                                       child: AppText(
                                         text: display.location,
+                                        text: display.location,
                                         style: textStyle14Regular.copyWith(
                                           color: Theme.of(
                                             context,
@@ -158,6 +166,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     14.w.horizontalSpace,
                                     AppText(
                                       text: display.date,
+                                      text: display.date,
                                       style: textStyle14Regular.copyWith(
                                         color: Theme.of(
                                           context,
@@ -171,6 +180,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 sectionTitle("About Us".tr()),
                                 2.h.verticalSpace,
                                 AppText(
+                                  text: display.description,
                                   text: display.description,
                                   style: textStyle14Regular.copyWith(
                                     color: Theme.of(
@@ -240,6 +250,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     isLoading: bookingProvider.isLoading,
                                     onTap: () async {
                                       final success = await bookingProvider
+                                          .proceedToRoomSelection();
+
+                                      if (!context.mounted) return;
                                           .proceedToRoomSelection();
 
                                       if (!context.mounted) return;
