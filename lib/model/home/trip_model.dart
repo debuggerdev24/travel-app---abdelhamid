@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 
 class TripModel {
   final String? id;
@@ -580,49 +579,6 @@ class TripDetailsLoadResult {
   }
 }
 
-/// Result of `GET /api/user/trips/details` (`data.isBooked` + nested `tripDetails`).
-class TripDetailsLoadResult {
-  final TripModel trip;
-  final bool isBooked;
-  final String? bookingId;
-
-  TripDetailsLoadResult({
-    required this.trip,
-    this.isBooked = false,
-    this.bookingId,
-  });
-
-  factory TripDetailsLoadResult.fromDetailsResponse(Map<String, dynamic> data) {
-    final map = Map<String, dynamic>.from(data);
-    final tripJson = map['tripDetails'] ?? map;
-    if (tripJson is! Map) {
-      throw Exception('Trip details not found');
-    }
-
-    String? bookingId = map['bookingId']?.toString();
-    if (bookingId == null || bookingId.isEmpty) {
-      final booking = map['booking'];
-      if (booking is Map) {
-        bookingId = booking['_id']?.toString();
-      }
-    }
-
-    return TripDetailsLoadResult(
-      trip: TripModel.fromJson(Map<String, dynamic>.from(tripJson)),
-      isBooked: _parseBool(map['isBooked']),
-      bookingId: (bookingId != null && bookingId.isNotEmpty) ? bookingId : null,
-    );
-  }
-
-  static bool _parseBool(dynamic value) {
-    if (value == true || value == 1) return true;
-    if (value is String) {
-      final v = value.toLowerCase();
-      return v == 'true' || v == '1';
-    }
-    return false;
-  }
-}
 
 /// Result of [TripsService.fetchEnrolledTripContext]: user's latest active/pending booking for the Trips tab.
 class EnrolledTripContext {

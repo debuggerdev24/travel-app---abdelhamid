@@ -254,7 +254,6 @@ class _DuaItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasAudio = dua.audioPath != null && dua.audioPath!.trim().isNotEmpty;
-    final hasAudio = dua.audioPath != null && dua.audioPath!.trim().isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

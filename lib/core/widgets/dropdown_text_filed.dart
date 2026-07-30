@@ -161,7 +161,6 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                       Expanded(
                         child: AppText(
                           text: _displaySelectedText(),
-                          text: _displaySelectedText(),
                           style: textStyle14Regular.copyWith(
                             color: widget.selectedItems.isEmpty
                                 ? Theme.of(context).colorScheme.onSurfaceVariant
@@ -223,7 +222,6 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                       // Items List
                       ...widget.items.map((item) {
                         final isSelected = _isItemSelected(item);
-                        final isSelected = _isItemSelected(item);
 
                         return InkWell(
                           onTap: () {
@@ -266,7 +264,6 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                                           context,
                                         ).colorScheme.primary,
                                         value: item,
-                                        groupValue: _radioGroupValue(),
                                         groupValue: _radioGroupValue(),
                                         onChanged: (val) {
                                           if (val != null) {

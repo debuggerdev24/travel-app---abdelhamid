@@ -406,8 +406,6 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
         // Some environments return `{ total:0, paid:0, pending:0 }` even without a booking.
         final allZero =
             payment != null &&
-        final allZero =
-            payment != null &&
             payment.totalAmount.abs() < 0.0001 &&
             payment.paidAmount.abs() < 0.0001 &&
             payment.pendingAmount.abs() < 0.0001;

@@ -126,20 +126,6 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
                   borderRadius: BorderRadius.circular(8.r),
                   child: _buildViewer(),
                 ),
-            Center(
-              child: Container(
-                height: 300.h,
-                width: 348.w,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: AppColors.primaryColor.setOpacity(0.2),
-                  ),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: _buildViewer(),
-                ),
               ),
             ),
             Spacer(),
@@ -195,47 +181,12 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
             alignment: Alignment.center,
           ),
         ),
-      return _imageFitContain(
-        Image.network(
-          net,
-          width: 348.w,
-          height: 300.h,
-          fit: BoxFit.contain,
-          alignment: Alignment.center,
-          errorBuilder: (_, __, ___) => Image.asset(
-            widget.assetImage,
-            width: 348.w,
-            height: 300.h,
-            fit: BoxFit.contain,
-            alignment: Alignment.center,
-          ),
-        ),
       );
     }
     if (widget.file != null) {
       final isPdf = widget.file!.path.toLowerCase().endsWith('.pdf');
       if (isPdf) {
         return SfPdfViewer.file(widget.file!);
-      }
-      return _imageFitContain(
-        Image.file(
-          widget.file!,
-          width: 348.w,
-          height: 300.h,
-          fit: BoxFit.contain,
-          alignment: Alignment.center,
-        ),
-      );
-    }
-    return _imageFitContain(
-      Image.asset(
-        widget.assetImage,
-        width: 348.w,
-        height: 300.h,
-        fit: BoxFit.contain,
-        alignment: Alignment.center,
-      ),
-    );
       }
       return _imageFitContain(
         Image.file(

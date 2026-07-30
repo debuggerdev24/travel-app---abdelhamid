@@ -75,9 +75,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
         debugPrint(
           '❌ [PackageSummaryScreen] tripId is null — cannot fetch package options',
         );
-        debugPrint(
-          '❌ [PackageSummaryScreen] tripId is null — cannot fetch package options',
-        );
       }
     });
   }
@@ -88,24 +85,6 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
     final trip = provider.tripDetails;
     final selectedPackage = provider.selectedPackage;
 
-    debugPrint(
-      '🔵 [PackageSummaryScreen] build — isLoading: ${provider.isLoading}',
-    );
-    debugPrint(
-      '🔵 [PackageSummaryScreen] selectedPackage: ${selectedPackage?.title}',
-    );
-    debugPrint(
-      '🔵 [PackageSummaryScreen] roomOptions: ${selectedPackage?.roomOptions}',
-    );
-    debugPrint(
-      '🔵 [PackageSummaryScreen] childPrices: ${selectedPackage?.childPrices}',
-    );
-    debugPrint(
-      '🔵 [PackageSummaryScreen] inclusions: ${selectedPackage?.inclusions}',
-    );
-    debugPrint(
-      '🔵 [PackageSummaryScreen] exclusions: ${selectedPackage?.exclusions}',
-    );
     debugPrint(
       '🔵 [PackageSummaryScreen] build — isLoading: ${provider.isLoading}',
     );

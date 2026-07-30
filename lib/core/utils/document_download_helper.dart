@@ -123,10 +123,6 @@ Future<_DownloadedFile> _downloadNetworkFile(String url, String label) async {
     url,
     options: Options(responseType: ResponseType.bytes, headers: headers),
   );
-  final response = await dio.get<List<int>>(
-    url,
-    options: Options(responseType: ResponseType.bytes, headers: headers),
-  );
 
   final data = response.data;
   if (data == null || data.isEmpty) {
@@ -135,31 +131,13 @@ Future<_DownloadedFile> _downloadNetworkFile(String url, String label) async {
       message: 'Empty file',
     );
   }
-  final data = response.data;
-  if (data == null || data.isEmpty) {
-    throw DioException(
-      requestOptions: response.requestOptions,
-      message: 'Empty file',
-    );
-  }
+
 
   final ext = _extensionFromUrl(url, response.headers.value('content-type'));
   final base = _sanitizeFileName(label);
   final fileName = '$base$ext';
-  final ext = _extensionFromUrl(url, response.headers.value('content-type'));
-  final base = _sanitizeFileName(label);
-  final fileName = '$base$ext';
 
-  return _DownloadedFile(bytes: Uint8List.fromList(data), fileName: fileName);
-}
 
-Future<void> _saveOrShare({
-  required ScaffoldMessengerState? messenger,
-  required Uint8List bytes,
-  required String fileName,
-  required String label,
-}) async {
-  if (!kIsWeb && Platform.isIOS) {
   return _DownloadedFile(bytes: Uint8List.fromList(data), fileName: fileName);
 }
 

@@ -74,19 +74,22 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
 
   Future<void> _checkPlatformPaySupport() async {
     if (AppConstants.stripePublishableKey.isEmpty) {
-      if (mounted)
+      if (mounted) {
         context.read<PaymentOptionState>().setPlatformPaySupported(false);
+      }
       return;
     }
     try {
       final ok = await Stripe.instance.isPlatformPaySupported(
         googlePay: IsGooglePaySupportedParams(testEnv: kDebugMode),
       );
-      if (mounted)
+      if (mounted) {
         context.read<PaymentOptionState>().setPlatformPaySupported(ok);
+      }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         context.read<PaymentOptionState>().setPlatformPaySupported(false);
+      }
     }
   }
 

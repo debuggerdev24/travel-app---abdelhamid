@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
@@ -494,8 +495,6 @@ class TripsService {
     return TripDocumentsBundle.fromJson(Map<String, dynamic>.from(data));
   }
 
-  /// `POST /documents/add-document?tripId=` — multipart field `photo` + body fields.
-  /// [documentType] must be `passport`, `visa`, or `medical certificate` (backend).
   Future<Map<String, dynamic>> addUserDocument({
     required String tripId,
     required String documentType,
@@ -517,10 +516,23 @@ class TripsService {
       queryParameters: {'tripId': tripId},
       showErrorToast: showErrorToast,
     );
+    
     if (response is Map) {
       return Map<String, dynamic>.from(response);
     }
-    throw Exception('Invalid add-document response');
+    
+    if (response is String && response.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(response);
+        if (decoded is Map) {
+          return Map<String, dynamic>.from(decoded);
+        }
+      } catch (_) {}
+    }
+
+    // Since HTTP status was 2xx (otherwise BaseApiService would have thrown),
+    // consider it a success even if the response body is not a valid JSON map.
+    return <String, dynamic>{'status': 1, 'message': 'Success'};
   }
 
   Future<UserItineraryResponseModel> getTodayItinerary(

@@ -76,7 +76,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                           AppText(
                             text: "Failed to load packing list".tr(),
                             style: textStyle14Regular.copyWith(
-                              color: AppColors.primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           12.h.verticalSpace,
@@ -99,7 +99,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                       child: AppText(
                         text: "No packing list available".tr(),
                         style: textStyle14Regular.copyWith(
-                          color: AppColors.primaryColor,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     );
@@ -146,7 +146,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
               AppText(
                 text: title,
                 style: textStyle16SemiBold.copyWith(
-                  color: AppColors.primaryColor.setOpacity(0.8),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                   fontSize: 18.sp,
                 ),
               ),
@@ -176,7 +176,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                       text: "•  ",
                       style: textStyle14Regular.copyWith(
                         fontSize: 16.sp,
-                        color: AppColors.primaryColor.setOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                       ),
                     ),
                     Expanded(
@@ -184,7 +184,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                         text: item,
                         style: textStyle14Regular.copyWith(
                           fontSize: 16.sp,
-                          color: AppColors.primaryColor.setOpacity(0.6),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),
                     ),

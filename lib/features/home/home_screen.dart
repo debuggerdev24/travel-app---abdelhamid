@@ -16,19 +16,6 @@ import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/widgets/custom_header.dart';
-import 'package:travel_app_abdelhamid/core/widgets/tab_button.dart';
-import 'package:travel_app_abdelhamid/core/widgets/trip_card.dart';
-import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
-import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
-import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
-import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class HomeTabState extends ChangeNotifier {
   int _selectedTab = 0;
@@ -66,7 +53,6 @@ class _HomeViewState extends State<_HomeView> {
       if (mounted) {
         context.read<TripProvider>().fetchTrips();
         context.read<PrayerTimesProvider>().fetchPrayerTimes();
-        context.read<ProfileProvider>().loadProfile();
         context.read<ProfileProvider>().loadProfile();
       }
     });

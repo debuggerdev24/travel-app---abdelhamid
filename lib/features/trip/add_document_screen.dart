@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -60,8 +59,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Consumer2<MyTripProvider, TripProvider>(
-        builder: (context, myTrip, trip, child) {
-          final resolvedTripId = widget.tripId ?? trip.selectedTrip?.id ?? '';
+        builder: (consumerContext, myTrip, trip, child) {
           final resolvedTripId = widget.tripId ?? trip.selectedTrip?.id ?? '';
 
           return SingleChildScrollView(
@@ -197,12 +195,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                                 documentName: docName,
                               );
 
-                              if (!context.mounted) return;
+                              if (!mounted) return;
 
                               if (err != null) {
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(SnackBar(content: Text(err)));
                                 ScaffoldMessenger.of(
                                   context,
                                 ).showSnackBar(SnackBar(content: Text(err)));

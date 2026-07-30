@@ -13,16 +13,6 @@ import 'package:travel_app_abdelhamid/core/utils/validators.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/person_details_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
-import 'package:travel_app_abdelhamid/core/utils/validators.dart';
-import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
-import 'package:travel_app_abdelhamid/provider/home/person_details_provider.dart';
-import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class FamilyMembersScreen extends StatefulWidget {
   const FamilyMembersScreen({super.key});

@@ -12,15 +12,6 @@ import 'package:travel_app_abdelhamid/model/chat/chat_model.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
-import 'package:travel_app_abdelhamid/model/chat/chat_model.dart';
-import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
-import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -338,12 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _avatar(ChatModel data) {
     return NetworkAvatar(
       imageUrl: data.avatarUrl,
-    return NetworkAvatar(
-      imageUrl: data.avatarUrl,
       radius: 24.r,
-      fallbackKind: data.isGroup
-          ? AvatarFallbackKind.group
-          : AvatarFallbackKind.user,
       fallbackKind: data.isGroup
           ? AvatarFallbackKind.group
           : AvatarFallbackKind.user,

@@ -445,7 +445,6 @@ class BaseApiService {
 
       // 400 / 404 + no toast: CMS "not found" or empty content; avoid ERROR-level noise
       if (!showErrorToast && (statusCode == 400 || statusCode == 404)) {
-      if (!showErrorToast && (statusCode == 400 || statusCode == 404)) {
         LogHelper.instance.debug(
           'API $method $endpoint → $statusCode $message',
         );

@@ -24,7 +24,6 @@ import 'package:travel_app_abdelhamid/services/essential_service.dart';
 class ChatDetailScreen extends StatefulWidget {
   final String chatId;
   final String? groupId;
-  final String? groupId;
   final String name;
   final String image;
   final String? avatarUrl;
@@ -34,7 +33,6 @@ class ChatDetailScreen extends StatefulWidget {
   const ChatDetailScreen({
     super.key,
     required this.chatId,
-    this.groupId,
     this.groupId,
     required this.name,
     required this.image,
@@ -190,13 +188,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     if (widget.isGroup) {
                       context.pushNamed(
                         UserAppRoutes.groupInfoScreen.name,
-                        extra: {
-                          'chatId': widget.chatId,
-                          'groupId': widget.groupId ?? widget.chatId,
-                          'name': widget.name,
-                          'image': widget.image,
-                          'avatarUrl': widget.avatarUrl,
-                        },
                         extra: {
                           'chatId': widget.chatId,
                           'groupId': widget.groupId ?? widget.chatId,
@@ -737,17 +728,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     if (isMe && (url == null || url.isEmpty)) {
       final profile = context.read<ProfileProvider>().profile;
       url = serverMediaUrl(profile?.profileImageRaw);
-  Widget _bubbleAvatar(Map<String, dynamic> message) {
-    final isMe = message['isMe'] == true;
-    var url = message['senderAvatarUrl']?.toString();
-    if (isMe && (url == null || url.isEmpty)) {
-      final profile = context.read<ProfileProvider>().profile;
-      url = serverMediaUrl(profile?.profileImageRaw);
     }
-    return NetworkAvatar(
-      imageUrl: url,
-      radius: 22.r,
-      fallbackKind: AvatarFallbackKind.user,
     return NetworkAvatar(
       imageUrl: url,
       radius: 22.r,

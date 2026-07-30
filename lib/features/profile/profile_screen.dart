@@ -14,14 +14,6 @@ import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
 import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
-import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
-import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
-import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
-import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -60,15 +52,9 @@ class ProfileScreen extends StatelessWidget {
                     final name = p?.fullName.isNotEmpty == true
                         ? p!.fullName
                         : '—';
-                    final name = p?.fullName.isNotEmpty == true
-                        ? p!.fullName
-                        : '—';
                     final email = p?.email.isNotEmpty == true ? p!.email : '—';
 
                     final raw = p?.profileImageRaw.trim();
-                    final avatarUrl = raw != null && raw.isNotEmpty
-                        ? serverMediaUrl(raw)
-                        : null;
                     final avatarUrl = raw != null && raw.isNotEmpty
                         ? serverMediaUrl(raw)
                         : null;

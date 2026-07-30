@@ -8,13 +8,6 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
-import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 
 class DocumentCard extends StatelessWidget {
   final DocumentModel doc;
@@ -42,10 +35,6 @@ class DocumentCard extends StatelessWidget {
         w,
         h,
         Image.file(doc.fileImage!, width: w, height: h, fit: BoxFit.contain),
-      return _thumbnailBox(
-        w,
-        h,
-        Image.file(doc.fileImage!, width: w, height: h, fit: BoxFit.contain),
       );
     }
     final url = doc.networkThumbnailUrl;
@@ -55,14 +44,8 @@ class DocumentCard extends StatelessWidget {
         h,
         NetworkImageWithShimmer(
           imageUrl: url,
-      return _thumbnailBox(
-        w,
-        h,
-        NetworkImageWithShimmer(
-          imageUrl: url,
           width: w,
           height: h,
-          fit: BoxFit.contain,
           fit: BoxFit.contain,
         ),
       );
@@ -76,21 +59,8 @@ class DocumentCard extends StatelessWidget {
 
   Widget _thumbnailBox(double w, double h, Widget child) {
     return SizedBox(
-    return _thumbnailBox(
-      w,
-      h,
-      Image.asset(doc.image, width: w, height: h, fit: BoxFit.contain),
-    );
-  }
-
-  Widget _thumbnailBox(double w, double h, Widget child) {
-    return SizedBox(
       width: w,
       height: h,
-      child: ColoredBox(
-        color: Colors.white,
-        child: Center(child: child),
-      ),
       child: ColoredBox(
         color: Colors.white,
         child: Center(child: child),

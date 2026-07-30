@@ -10,7 +10,6 @@ class CustomTabButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const CustomTabButton({
-  const CustomTabButton({
     super.key,
     required this.text,
     required this.index,

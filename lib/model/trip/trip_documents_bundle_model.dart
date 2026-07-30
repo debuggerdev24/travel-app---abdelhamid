@@ -1,5 +1,4 @@
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 
 /// Response from `GET /api/user/trip-documents?tripId=` (see backend [tripDocumentsController]).
 class TripDocumentsBundle {
@@ -22,16 +21,11 @@ class TripDocumentsBundle {
     final raw = json['memberDocuments'];
     final members = raw is List
         ? raw
-              .whereType<Map>()
-              .map(
-                (e) => MemberTripDocuments.fromJson(e.cast<String, dynamic>()),
-              )
-              .toList()
-              .whereType<Map>()
-              .map(
-                (e) => MemberTripDocuments.fromJson(e.cast<String, dynamic>()),
-              )
-              .toList()
+            .whereType<Map>()
+            .map(
+              (e) => MemberTripDocuments.fromJson(e.cast<String, dynamic>()),
+            )
+            .toList()
         : <MemberTripDocuments>[];
 
     final td = json['tripDocuments'];
@@ -250,7 +244,6 @@ class TripLevelDocuments {
   final BundleChecklistDoc? checklist;
 
   TripLevelDocuments({this.hotel, this.insurance, this.checklist});
-  TripLevelDocuments({this.hotel, this.insurance, this.checklist});
 
   factory TripLevelDocuments.empty() => TripLevelDocuments();
 
@@ -373,8 +366,6 @@ class BundleInsuranceDoc {
   }
 
   /// Prefer image for thumbnail; [document] is often PDF path.
-  String? get resolvedThumbnailUrl =>
-      serverMediaUrl(image) ?? serverMediaUrl(document);
   String? get resolvedThumbnailUrl =>
       serverMediaUrl(image) ?? serverMediaUrl(document);
 

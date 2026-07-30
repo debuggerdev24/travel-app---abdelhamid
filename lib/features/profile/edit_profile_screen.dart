@@ -15,18 +15,6 @@ import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/model/profile/user_profile_model.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
-import 'package:travel_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
-import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
-import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
-import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
-import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:travel_app_abdelhamid/model/profile/user_profile_model.dart';
-import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -63,7 +51,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _didPrefill = true;
     _fullName.text = p.fullName;
     _dob.text = p.dateOfBirth;
-    final derived = ageFromDateOfBirth(p.dateOfBirth);
     final derived = ageFromDateOfBirth(p.dateOfBirth);
     _age.text = derived?.toString() ?? (p.age?.toString() ?? '');
     _gender.text = p.gender;
@@ -106,22 +93,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   String? _profileAvatarUrl(ProfileProvider provider) {
-  String? _profileAvatarUrl(ProfileProvider provider) {
     final raw = provider.profile?.profileImageRaw.trim();
-    if (raw == null || raw.isEmpty) return null;
-    return serverMediaUrl(raw);
     if (raw == null || raw.isEmpty) return null;
     return serverMediaUrl(raw);
   }
 
   Future<void> _pickAndUploadImage(ProfileProvider provider) async {
     final picker = ImagePicker();
-    final x = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1280,
-      maxHeight: 1280,
-      imageQuality: 80,
-    );
     final x = await picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1280,
@@ -147,8 +125,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final current = provider.profile;
     final base =
         current ??
-    final base =
-        current ??
         const UserProfile(
           firstName: '',
           surName: '',
@@ -164,7 +140,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
 
     final split = _splitName(fullName);
-    final computedAge = ageFromDateOfBirth(_dob.text);
     final computedAge = ageFromDateOfBirth(_dob.text);
     final updated = base.copyWith(
       firstName: split.$1,
@@ -184,11 +159,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   (String, String) _splitName(String v) {
-    final parts = v
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((e) => e.isNotEmpty)
-        .toList();
     final parts = v
         .trim()
         .split(RegExp(r'\s+'))
@@ -259,8 +229,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     6.h.verticalSpace,
                     GestureDetector(
-                      onTap:
-                          provider.isUpdatingProfileImage || provider.isLoading
                       onTap:
                           provider.isUpdatingProfileImage || provider.isLoading
                           ? null
@@ -346,9 +314,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         AppButton(
                           title: "Save".tr(),
                           isLoading: provider.isLoading,
-                          onTap: provider.isLoading
-                              ? null
-                              : () => _save(provider),
                           onTap: provider.isLoading
                               ? null
                               : () => _save(provider),
