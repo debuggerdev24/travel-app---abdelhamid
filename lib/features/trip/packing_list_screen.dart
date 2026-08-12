@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/provider/trip/my_trip_provider.dart';
 
@@ -45,7 +44,11 @@ class _PackageListScreenState extends State<PackageListScreen> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.5.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   AppText(
@@ -146,7 +149,9 @@ class _PackageListScreenState extends State<PackageListScreen> {
               AppText(
                 text: title,
                 style: textStyle16SemiBold.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.8),
                   fontSize: 18.sp,
                 ),
               ),
@@ -176,7 +181,9 @@ class _PackageListScreenState extends State<PackageListScreen> {
                       text: "•  ",
                       style: textStyle14Regular.copyWith(
                         fontSize: 16.sp,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     Expanded(
@@ -184,7 +191,9 @@ class _PackageListScreenState extends State<PackageListScreen> {
                         text: item,
                         style: textStyle14Regular.copyWith(
                           fontSize: 16.sp,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                     ),

@@ -123,7 +123,9 @@ class _HealthSafetyScreenView extends StatelessWidget {
               text: "Couldn't load health tips",
               textAlign: TextAlign.center,
               style: textStyle14Medium.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.85),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.85),
               ),
             ),
             10.h.verticalSpace,
@@ -131,7 +133,9 @@ class _HealthSafetyScreenView extends StatelessWidget {
               text: state.error!,
               textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.65),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.65),
               ),
             ),
             16.h.verticalSpace,
@@ -161,7 +165,9 @@ class _HealthSafetyScreenView extends StatelessWidget {
                     text: "No health tips available".tr(),
                     textAlign: TextAlign.center,
                     style: textStyle14Regular.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ),
@@ -223,7 +229,9 @@ class _HealthSafetyScreenView extends StatelessWidget {
             ),
             Container(
               width: double.infinity,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.06),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.06),
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +240,9 @@ class _HealthSafetyScreenView extends StatelessWidget {
                     text: label,
                     style: textStyle16SemiBold.copyWith(
                       fontSize: 16.sp,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.9),
                     ),
                   ),
                   if (tip.description != null &&
@@ -243,7 +253,9 @@ class _HealthSafetyScreenView extends StatelessWidget {
                       style: textStyle14Regular.copyWith(
                         fontSize: 15.sp,
                         height: 1.4,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.75),
                       ),
                     ),
                   ],
@@ -258,12 +270,12 @@ class _HealthSafetyScreenView extends StatelessWidget {
 
   Widget _placeholderImage(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12),
       alignment: Alignment.center,
       child: Icon(
         Icons.health_and_safety_outlined,
         size: 56.sp,
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.35),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35),
       ),
     );
   }

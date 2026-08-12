@@ -558,7 +558,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (!isMe) ...[_bubbleAvatar(message), 10.w.horizontalSpace],
-              if (!isMe) ...[_bubbleAvatar(message), 10.w.horizontalSpace],
               Flexible(
                 child: Column(
                   crossAxisAlignment: isMe
@@ -571,14 +570,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     AppText(
                       text: message['time']?.toString() ?? '',
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.5),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontSize: 11.sp,
                       ),
                     ),
                   ],
                 ),
               ),
-              if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(message)],
               if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(message)],
             ],
           ),
@@ -603,7 +601,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (!isMe) ...[_bubbleAvatar(message), 10.w.horizontalSpace],
               if (!isMe) ...[_bubbleAvatar(message), 10.w.horizontalSpace],
               Flexible(
                 child: Column(
@@ -649,14 +646,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     AppText(
                       text: message['time']?.toString() ?? '',
                       style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.5),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontSize: 11.sp,
                       ),
                     ),
                   ],
                 ),
               ),
-              if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(message)],
               if (isMe) ...[10.w.horizontalSpace, _bubbleAvatar(message)],
             ],
           ),

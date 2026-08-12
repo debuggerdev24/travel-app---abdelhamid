@@ -11,17 +11,9 @@ import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
-import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class FullScreenDocumentViewer extends StatefulWidget {
   final File? file;
-
 
   /// Remote PDF or image URL (e.g. from [serverMediaUrl]).
   final String? networkFileUrl;
@@ -56,13 +48,10 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
     final hasNet =
         widget.networkFileUrl != null &&
         widget.networkFileUrl!.trim().isNotEmpty;
-        widget.networkFileUrl != null &&
-        widget.networkFileUrl!.trim().isNotEmpty;
+    widget.networkFileUrl != null && widget.networkFileUrl!.trim().isNotEmpty;
     if (!hasLocal && !hasNet) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No downloadable file for this document.'.tr()),
-        ),
+        SnackBar(content: Text('No downloadable file for this document.'.tr())),
       );
       return;
     }
@@ -97,7 +86,11 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 26.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 26.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   AppText(

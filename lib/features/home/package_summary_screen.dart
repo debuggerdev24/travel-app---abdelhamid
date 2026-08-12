@@ -243,9 +243,52 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
                       20.h.verticalSpace,
 
-                      _priceRow("2 Person (Adult)".tr(), "€7,000"),
-                      _priceRow("2 Child".tr(), "€2500"),
-                      _priceRow("1 Baby".tr(), "€500"),
+                      // Dynamically calculate values from provider
+                      Builder(
+                        builder: (context) {
+                          double roomPrice = 0;
+                          if (provider.selectedRoomTypeId != null && selectedPackage != null) {
+                            try {
+                              roomPrice = selectedPackage.roomDetails
+                                  .firstWhere((r) => r.id == provider.selectedRoomTypeId)
+                                  .roomPrice;
+                            } catch (_) {}
+                          }
+
+                          double childPrice = 0;
+                          if (provider.selectedChildDetailsId != null && selectedPackage != null) {
+                            try {
+                              childPrice = selectedPackage.childDetails
+                                  .firstWhere((c) => c.id == provider.selectedChildDetailsId)
+                                  .childPrice;
+                            } catch (_) {}
+                          }
+
+                          double adultTotal = roomPrice * provider.adultCount;
+                          double childTotal = childPrice * provider.selectedChildCount;
+                          double babyTotal = 500.0 * provider.babyCount;
+
+                          return Column(
+                            children: [
+                              if (provider.adultCount > 0)
+                                _priceRow(
+                                  "${provider.adultCount} ${'Person (Adult)'.tr()}",
+                                  "€${adultTotal.toStringAsFixed(0)}",
+                                ),
+                              if (provider.selectedChildCount > 0)
+                                _priceRow(
+                                  "${provider.selectedChildCount} ${'Child'.tr()}",
+                                  "€${childTotal.toStringAsFixed(0)}",
+                                ),
+                              if (provider.babyCount > 0)
+                                _priceRow(
+                                  "${provider.babyCount} ${'Baby'.tr()}",
+                                  "€${babyTotal.toStringAsFixed(0)}",
+                                ),
+                            ],
+                          );
+                        }
+                      ),
 
                       Divider(
                         height: 30.h,
@@ -254,7 +297,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                         ).colorScheme.onSurface.withValues(alpha: 0.2),
                         endIndent: 60,
                       ),
-                      _priceRow("TOTAL COST".tr(), "€10,000"),
+                      _priceRow("TOTAL COST".tr(), "€${provider.totalAmount.toStringAsFixed(0)}"),
                       52.h.verticalSpace,
                       AppButton(
                         onTap: () {

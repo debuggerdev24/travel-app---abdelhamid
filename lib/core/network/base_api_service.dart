@@ -201,6 +201,21 @@ class BaseApiService {
         } else if (map['error'] != null) {
           message = map['error'].toString();
         }
+        
+        if (map['errors'] != null) {
+          final errors = map['errors'];
+          if (errors is Map) {
+            final errorMessages = errors.values.expand((v) {
+              if (v is List) return v.map((e) => e.toString());
+              return [v.toString()];
+            }).join('\n');
+            if (errorMessages.isNotEmpty) {
+              message = '$message\n$errorMessages';
+            }
+          } else {
+            message = '$message\n$errors';
+          }
+        }
       } else if (data is String && data.isNotEmpty) {
         message = data;
       } else {
@@ -316,6 +331,21 @@ class BaseApiService {
         } else if (map['error'] != null) {
           message = map['error'].toString();
         }
+        
+        if (map['errors'] != null) {
+          final errors = map['errors'];
+          if (errors is Map) {
+            final errorMessages = errors.values.expand((v) {
+              if (v is List) return v.map((e) => e.toString());
+              return [v.toString()];
+            }).join('\n');
+            if (errorMessages.isNotEmpty) {
+              message = '$message\n$errorMessages';
+            }
+          } else {
+            message = '$message\n$errors';
+          }
+        }
       } else if (data is String && data.isNotEmpty) {
         message = data;
       } else {
@@ -417,6 +447,22 @@ class BaseApiService {
           message = map['message'].toString();
         } else if (map['error'] != null) {
           message = map['error'].toString();
+        }
+        
+        // Also check for specific field validation errors (e.g. {"errors": {"email": ["..."]}})
+        if (map['errors'] != null) {
+          final errors = map['errors'];
+          if (errors is Map) {
+            final errorMessages = errors.values.expand((v) {
+              if (v is List) return v.map((e) => e.toString());
+              return [v.toString()];
+            }).join('\n');
+            if (errorMessages.isNotEmpty) {
+              message = '$message\n$errorMessages';
+            }
+          } else {
+            message = '$message\n$errors';
+          }
         }
       } else if (data is String && data.isNotEmpty) {
         message = data;

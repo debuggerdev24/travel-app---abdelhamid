@@ -26,7 +26,9 @@ class TripDetailsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.blueColor.setOpacity(0.1),
@@ -42,22 +44,31 @@ class TripDetailsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppText(text: title.tr(), style: textStyle16SemiBold),
-              SvgIcon(AppAssets.download, size: 24.w),
+              AppText(
+                text: title.tr(),
+                style: textStyle16SemiBold.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              SvgIcon(
+                AppAssets.download,
+                size: 24.w,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ],
           ),
           SizedBox(height: 16.h),
 
           /// Show rows
           ...infoMap.entries.map((entry) {
-            return buildRow(entry.key, entry.value);
+            return buildRow(context, entry.key, entry.value);
           }),
         ],
       ),
     );
   }
 
-  Widget buildRow(String key, String value) {
+  Widget buildRow(BuildContext context, String key, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.h),
       child: Row(
@@ -69,7 +80,7 @@ class TripDetailsCard extends StatelessWidget {
               text: key.tr(),
               style: textStyle14Regular.copyWith(
                 fontSize: 15.sp,
-                color: AppColors.primaryColor.setOpacity(0.8),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -77,7 +88,7 @@ class TripDetailsCard extends StatelessWidget {
             text: ":",
             style: TextStyle(
               fontSize: 16.sp,
-              color: AppColors.primaryColor.setOpacity(0.8),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           15.w.horizontalSpace,
@@ -86,7 +97,7 @@ class TripDetailsCard extends StatelessWidget {
               text: value,
               style: textStyle14Regular.copyWith(
                 fontSize: 15.sp,
-                color: AppColors.primaryColor.setOpacity(0.8),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),

@@ -184,6 +184,7 @@ class KBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -191,7 +192,8 @@ class KBottomNavBar extends StatelessWidget {
           top: BorderSide(color: Colors.grey.setOpacity(0.3), width: 1),
         ),
       ),
-      height: 75.h,
+      padding: EdgeInsets.only(bottom: bottomPadding),
+      height: 75.h + bottomPadding,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
