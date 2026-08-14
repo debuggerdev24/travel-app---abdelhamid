@@ -111,7 +111,7 @@ class AppActionButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgIcon(icon, size: 24.w),
+          SvgIcon(icon, size: 24.w, color: Colors.white),
           8.w.horizontalSpace,
           AppText(
             text: label,

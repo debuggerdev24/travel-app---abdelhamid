@@ -17,9 +17,17 @@ import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 class RoomDetailsState extends ChangeNotifier {
   String? _roomTypeError;
   String? _bedTypeError;
+  String? _childTypeError;
+  String? _childCountError;
+  String? _babyTypeError;
+  String? _babyCountError;
 
   String? get roomTypeError => _roomTypeError;
   String? get bedTypeError => _bedTypeError;
+  String? get childTypeError => _childTypeError;
+  String? get childCountError => _childCountError;
+  String? get babyTypeError => _babyTypeError;
+  String? get babyCountError => _babyCountError;
 
   void setRoomTypeError(String? error) {
     _roomTypeError = error;
@@ -28,6 +36,26 @@ class RoomDetailsState extends ChangeNotifier {
 
   void setBedTypeError(String? error) {
     _bedTypeError = error;
+    notifyListeners();
+  }
+
+  void setChildTypeError(String? error) {
+    _childTypeError = error;
+    notifyListeners();
+  }
+
+  void setChildCountError(String? error) {
+    _childCountError = error;
+    notifyListeners();
+  }
+
+  void setBabyTypeError(String? error) {
+    _babyTypeError = error;
+    notifyListeners();
+  }
+
+  void setBabyCountError(String? error) {
+    _babyCountError = error;
     notifyListeners();
   }
 }
@@ -91,6 +119,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
 
   bool _validateDropdowns() {
     final bookingProvider = context.read<TripBookingProvider>();
+    final tripProvider = context.read<hp.TripProvider>();
     bool isValid = true;
 
     final state = context.read<RoomDetailsState>();
@@ -107,6 +136,38 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
       isValid = false;
     } else {
       state.setBedTypeError(null);
+    }
+
+    if (bookingProvider.selectedChildDetailsId != null &&
+        bookingProvider.selectedChildCount == 0) {
+      state.setChildCountError("Please select number of child".tr());
+      isValid = false;
+    } else {
+      state.setChildCountError(null);
+    }
+
+    if (bookingProvider.selectedChildCount > 0 &&
+        bookingProvider.selectedChildDetailsId == null) {
+      state.setChildTypeError("Please select child type".tr());
+      isValid = false;
+    } else {
+      state.setChildTypeError(null);
+    }
+
+    if (tripProvider.selectedBabyTypes.isNotEmpty &&
+        bookingProvider.babyCount == 0) {
+      state.setBabyCountError("Please select number of baby".tr());
+      isValid = false;
+    } else {
+      state.setBabyCountError(null);
+    }
+
+    if (bookingProvider.babyCount > 0 &&
+        tripProvider.selectedBabyTypes.isEmpty) {
+      state.setBabyTypeError("Please select baby type".tr());
+      isValid = false;
+    } else {
+      state.setBabyTypeError(null);
     }
 
     return isValid;
@@ -294,6 +355,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                             child: CustomMultiSelectDropdown(
                               labelText: "Child".tr(),
                               hintText: "Select Child".tr(),
+                              errorText: state.childTypeError,
                               items:
                                   selectedPackage?.childPrices ??
                                   tripProvider.childOptions,
@@ -337,7 +399,23 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                         .updateSelectedChildDetailsId(
                                           children.first.id,
                                         );
+                                    context
+                                        .read<RoomDetailsState>()
+                                        .setChildTypeError(null);
+                                    context
+                                        .read<RoomDetailsState>()
+                                        .setChildCountError(null);
                                   }
+                                } else {
+                                  bookingProvider.updateSelectedChildDetailsId(
+                                    null,
+                                  );
+                                  context
+                                      .read<RoomDetailsState>()
+                                      .setChildTypeError(null);
+                                  context
+                                      .read<RoomDetailsState>()
+                                      .setChildCountError(null);
                                 }
                               },
                               titleText: "Child".tr(),
@@ -350,6 +428,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                             child: CustomMultiSelectDropdown(
                               labelText: "No. of Child".tr(),
                               hintText: "Select Child Count".tr(),
+                              errorText: state.childCountError,
                               items: tripProvider.numberOfChildren,
                               selectedItems: [
                                 bookingProvider.selectedChildCount
@@ -364,6 +443,12 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                   bookingProvider.updateSelectedChildCount(
                                     int.tryParse(values.first) ?? 0,
                                   );
+                                  context
+                                      .read<RoomDetailsState>()
+                                      .setChildCountError(null);
+                                  context
+                                      .read<RoomDetailsState>()
+                                      .setChildTypeError(null);
                                 }
                               },
                               titleText: "Select Child Count".tr(),
@@ -392,6 +477,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                             child: CustomMultiSelectDropdown(
                               labelText: "Baby".tr(),
                               hintText: "Select Baby".tr(),
+                              errorText: state.babyTypeError,
                               items: tripProvider.babyOptions,
                               selectedItems: tripProvider.selectedBabyTypes,
                               onChanged: (values) {
@@ -399,6 +485,12 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                   return;
                                 }
                                 tripProvider.updateBabyTypes(values);
+                                context
+                                    .read<RoomDetailsState>()
+                                    .setBabyTypeError(null);
+                                context
+                                    .read<RoomDetailsState>()
+                                    .setBabyCountError(null);
                               },
                               titleText: "Baby".tr(),
                               showRadio: true,
@@ -410,6 +502,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                             child: CustomMultiSelectDropdown(
                               labelText: "No. of Baby".tr(),
                               hintText: "Select No. of Baby".tr(),
+                              errorText: state.babyCountError,
                               items: tripProvider.numberOfBaby,
                               selectedItems: [
                                 bookingProvider.babyCount.toString().padLeft(
@@ -425,6 +518,12 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                   bookingProvider.updateBabyCount(
                                     int.tryParse(values.first) ?? 0,
                                   );
+                                  context
+                                      .read<RoomDetailsState>()
+                                      .setBabyCountError(null);
+                                  context
+                                      .read<RoomDetailsState>()
+                                      .setBabyTypeError(null);
                                 }
                               },
                               titleText: "Select Baby Count".tr(),

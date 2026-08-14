@@ -9,6 +9,9 @@ import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_app_abdelhamid/services/firestore_location_service.dart';
+import 'package:travel_app_abdelhamid/core/utils/jwt_user_id.dart';
+import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 
 class TrackTravelersState extends ChangeNotifier {
   final Set<Marker> _markers = {};
@@ -67,100 +70,74 @@ class _TrackTravelersView extends StatefulWidget {
 
 class _TrackTravelersViewState extends State<_TrackTravelersView> {
   final Completer<GoogleMapController> _mapController = Completer();
-
-  // Sample traveler data with coordinates (Mecca area coordinates)
-  final List<Map<String, dynamic>> _travelers = [
-    {
-      'name': 'Ahmed Mohamed',
-      'location': 'Near Grand Mosque',
-      'status': 'Active',
-      'lastSeen': '2 min ago',
-      'isOnline': true,
-      'lat': 21.4225,
-      'lng': 39.8262,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Sarah Johnson',
-      'location': 'Hotel Lobby',
-      'status': 'Active',
-      'lastSeen': '5 min ago',
-      'isOnline': true,
-      'lat': 21.4250,
-      'lng': 39.8300,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Omar Hassan',
-      'location': 'Restaurant Area',
-      'status': 'Active',
-      'lastSeen': '10 min ago',
-      'isOnline': true,
-      'lat': 21.4180,
-      'lng': 39.8220,
-      'image': AppAssets.profilePhoto,
-    },
-    {
-      'name': 'Fatima Ali',
-      'location': 'Shopping District',
-      'status': 'Active',
-      'lastSeen': '15 min ago',
-      'isOnline': false,
-      'lat': 21.4280,
-      'lng': 39.8350,
-      'image': AppAssets.profilePhoto,
-    },
-  ];
+  StreamSubscription<List<Map<String, dynamic>>>? _locationSub;
+  final String _currentUserId = currentUserIdOrNull() ?? '';
 
   @override
   void initState() {
     super.initState();
-    _loadMarkers();
+    _startTracking();
+    _listenToTravelers();
   }
 
-  List<Map<String, dynamic>> get _displayTravelers {
-    if (widget.isGroup) {
-      return _travelers;
-    } else {
-      // For a direct chat, show only one traveler (the one we are chatting with)
-      return [
-        {
-          'name': widget.name,
-          'location': 'Near Grand Mosque',
-          'status': 'Active',
-          'lastSeen': 'Just now',
-          'isOnline': true,
-          'lat': 21.4225,
-          'lng': 39.8262,
-          'image': AppAssets.profilePhoto,
-        }
-      ];
+  Future<void> _startTracking() async {
+    if (_currentUserId.isEmpty) return;
+    await FirestoreLocationService.instance.startTracking(
+      chatId: widget.chatId,
+      userId: _currentUserId,
+      name: 'Me', // We could fetch actual current user name/image from profile, using placeholders for now
+      image: AppAssets.profilePhoto,
+    );
+  }
+
+  void _listenToTravelers() {
+    _locationSub = FirestoreLocationService.instance
+        .streamTravelers(widget.chatId)
+        .listen((travelers) {
+      _updateMarkers(travelers);
+    });
+  }
+
+  @override
+  void dispose() {
+    _locationSub?.cancel();
+    if (_currentUserId.isNotEmpty) {
+      FirestoreLocationService.instance.stopTracking(widget.chatId, _currentUserId);
     }
+    super.dispose();
   }
 
-  /// Load markers for all travelers
-  Future<void> _loadMarkers() async {
-    final travelersToDisplay = _displayTravelers;
-    for (int i = 0; i < travelersToDisplay.length; i++) {
-      final traveler = travelersToDisplay[i];
+  Future<void> _updateMarkers(List<Map<String, dynamic>> travelers) async {
+    final newMarkers = <Marker>{};
+
+    for (int i = 0; i < travelers.length; i++) {
+      final traveler = travelers[i];
+      // Skip showing current user's marker if myLocationEnabled takes care of it,
+      // but showing it as a custom marker is also fine.
       final markerIcon = await _createCustomMarker(
-        traveler['name'],
-        traveler['image'],
-        traveler['isOnline'] ? Colors.green : Colors.grey,
+        traveler['name'] ?? 'Unknown',
+        traveler['image'] ?? AppAssets.profilePhoto,
+        (traveler['isOnline'] == true) ? Colors.green : Colors.grey,
       );
 
       if (!mounted) return;
-      context.read<TrackTravelersState>().addMarker(
+      newMarkers.add(
         Marker(
-          markerId: MarkerId('traveler_$i'),
+          markerId: MarkerId(traveler['userId'] ?? 'traveler_$i'),
           position: LatLng(traveler['lat'], traveler['lng']),
           icon: markerIcon,
           infoWindow: InfoWindow(
-            title: traveler['name'],
-            snippet: traveler['location'],
+            title: traveler['name'] ?? 'Unknown',
           ),
         ),
       );
+    }
+    
+    if (!mounted) return;
+    final state = context.read<TrackTravelersState>();
+    state.markers.clear();
+    for (var m in newMarkers) {
+      state.addMarker(m);
     }
   }
 

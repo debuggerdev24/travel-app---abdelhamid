@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
@@ -170,12 +171,21 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 38.h.verticalSpace,
                                 sectionTitle("About Us".tr()),
                                 2.h.verticalSpace,
-                                AppText(
-                                  text: display.description,
+                                ReadMoreText(
+                                  display.description,
+                                  trimLines: 3,
+                                  colorClickableText: Theme.of(context).colorScheme.primary,
+                                  trimMode: TrimMode.Line,
+                                  trimCollapsedText: 'Read more'.tr(),
+                                  trimExpandedText: ' Read less'.tr(),
                                   style: textStyle14Regular.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                  moreStyle: textStyle14Medium.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  lessStyle: textStyle14Medium.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
                                 22.h.verticalSpace,

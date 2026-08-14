@@ -5,7 +5,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 
-class PackageDetailsCard extends StatelessWidget {
+class PackageDetailsCard extends StatefulWidget {
   final PackageDetails package;
   final bool isSelected;
   final VoidCallback onTap;
@@ -18,16 +18,23 @@ class PackageDetailsCard extends StatelessWidget {
   });
 
   @override
+  State<PackageDetailsCard> createState() => _PackageDetailsCardState();
+}
+
+class _PackageDetailsCardState extends State<PackageDetailsCard> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 14.h),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected
+            color: widget.isSelected
                 ? Theme.of(context).colorScheme.secondary
                 : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
@@ -50,7 +57,7 @@ class PackageDetailsCard extends StatelessWidget {
               Row(
                 children: [
                   AppText(
-                    text: package.title,
+                    text: widget.package.title,
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -58,34 +65,66 @@ class PackageDetailsCard extends StatelessWidget {
                 ],
               ),
 
-              if (package.roomOptions.isNotEmpty)
+              if (widget.package.roomOptions.isNotEmpty)
                 _buildSection(
                   context: context,
                   title: 'Room Options :'.tr(),
-                  items: package.roomOptions,
+                  items: widget.package.roomOptions,
                 ),
 
-              if (package.childPrices.isNotEmpty)
-                _buildSection(
-                  context: context,
-                  title: 'Child Prices :'.tr(),
-                  items: package.childPrices,
-                ),
+              if (_isExpanded) ...[
+                if (widget.package.childPrices.isNotEmpty)
+                  _buildSection(
+                    context: context,
+                    title: 'Child Prices :'.tr(),
+                    items: widget.package.childPrices,
+                  ),
 
-              if (package.inclusions.isNotEmpty)
-                _buildSection(
-                  context: context,
-                  title: 'Inclusions :'.tr(),
-                  items: package.inclusions,
-                ),
+                if (widget.package.inclusions.isNotEmpty)
+                  _buildSection(
+                    context: context,
+                    title: 'Inclusions :'.tr(),
+                    items: widget.package.inclusions,
+                  ),
 
-              if (package.exclusions.isNotEmpty)
-                _buildSection(
-                  context: context,
-                  title: 'Exclusions:'.tr(),
-                  items: package.exclusions,
-                  isLast: true,
+                if (widget.package.exclusions.isNotEmpty)
+                  _buildSection(
+                    context: context,
+                    title: 'Exclusions:'.tr(),
+                    items: widget.package.exclusions,
+                    isLast: true,
+                  ),
+              ],
+
+              10.h.verticalSpace,
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _isExpanded = !_isExpanded;
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4.h),
+                  child: Row(
+                    children: [
+                      AppText(
+                        text: _isExpanded ? 'Read less'.tr() : 'Read more'.tr(),
+                        style: textStyle14Medium.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      4.w.horizontalSpace,
+                      Icon(
+                        _isExpanded
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 20.w,
+                      ),
+                    ],
+                  ),
                 ),
+              ),
             ],
           ),
         ),

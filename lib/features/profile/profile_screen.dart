@@ -526,7 +526,11 @@ class ProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsetsGeometry.symmetric(horizontal: 20.w),
-            child: SvgIcon(AppAssets.arrow, size: 10.w),
+            child: SvgIcon(
+              AppAssets.arrow,
+              size: 10.w,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ],
       ),
@@ -574,7 +578,11 @@ class ProfileScreen extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: SvgIcon(AppAssets.arrow, size: 10.w),
+              child: SvgIcon(
+                AppAssets.arrow,
+                size: 10.w,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ],
         ),
