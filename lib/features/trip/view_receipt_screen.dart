@@ -163,7 +163,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                                 child: AppText(
                                   text: 'Company Pvt. Ltd.'.tr(),
                                   style: textStyle16SemiBold.copyWith(
-                                    color: AppColors.primaryColor,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                               ),
@@ -240,7 +240,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                                 child: AppText(
                                   text: '"Thank you for booking with us."',
                                   style: textStyle14Regular.copyWith(
-                                    color: AppColors.primaryColor.setOpacity(
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(
                                       .5,
                                     ),
                                   ),
@@ -251,7 +251,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                                 child: AppText(
                                   text: 'Support: +91 XXXXX XXXXX'.tr(),
                                   style: textStyle14Regular.copyWith(
-                                    color: AppColors.primaryColor.setOpacity(
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(
                                       .5,
                                     ),
                                   ),
@@ -275,14 +275,14 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
       children: [
         AppText(
           text: title,
-          style: textStyle16SemiBold.copyWith(color: AppColors.primaryColor),
+          style: textStyle16SemiBold.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           margin: EdgeInsets.only(top: 10.h),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.primaryColor.setOpacity(0.2)),
+            border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
           ),
           child: Column(
             children: List.generate(
@@ -292,7 +292,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                   rows[i],
                   if (i != rows.length - 1)
                     Divider(
-                      color: AppColors.primaryColor.setOpacity(0.1),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                       height: 10.h,
                     ),
                 ],
@@ -314,7 +314,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: AppColors.primaryColor.setOpacity(0.6),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
               ),
             ),
           ),
@@ -323,7 +323,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
             child: AppText(
               text: value,
               style: textStyle14Regular.copyWith(
-                color: color ?? AppColors.primaryColor,
+                color: color ?? Theme.of(context).colorScheme.onSurface,
               ),
               textAlign: TextAlign.end,
             ),
