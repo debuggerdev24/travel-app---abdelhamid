@@ -126,7 +126,7 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                 6.h.verticalSpace,
                 AppText(
                   textAlign: TextAlign.center,
-                  text: "Enter the 6-digit code we sent to your email".tr(),
+                  text: "Enter the 4-digit code we sent to your email".tr(),
                   style: textStyle14Italic,
                 ),
                 40.h.verticalSpace,
@@ -134,13 +134,13 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                   key: _formKey,
                   child: Pinput(
                     controller: _otpController,
-                    length: 6,
+                    length: 4,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter OTP";
                       }
-                      if (value.length != 6) {
-                        return "Please enter 6-digit OTP";
+                      if (value.length != 4) {
+                        return "Please enter 4-digit OTP";
                       }
                       return null;
                     },

@@ -11,7 +11,6 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/services/firestore_location_service.dart';
 import 'package:travel_app_abdelhamid/core/utils/jwt_user_id.dart';
-import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 
 class TrackTravelersState extends ChangeNotifier {
   final Set<Marker> _markers = {};

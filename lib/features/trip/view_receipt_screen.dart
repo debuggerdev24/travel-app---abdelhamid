@@ -240,8 +240,8 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                                 child: AppText(
                                   text: '"Thank you for booking with us."',
                                   style: textStyle14Regular.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(
-                                      .5,
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(
+                                      alpha: .5,
                                     ),
                                   ),
                                 ),
@@ -251,8 +251,8 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                                 child: AppText(
                                   text: 'Support: +91 XXXXX XXXXX'.tr(),
                                   style: textStyle14Regular.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(
-                                      .5,
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(
+                                      alpha: .5,
                                     ),
                                   ),
                                 ),
@@ -282,7 +282,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
           margin: EdgeInsets.only(top: 10.h),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+            border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2)),
           ),
           child: Column(
             children: List.generate(
@@ -292,7 +292,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                   rows[i],
                   if (i != rows.length - 1)
                     Divider(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                       height: 10.h,
                     ),
                 ],
@@ -314,7 +314,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),
