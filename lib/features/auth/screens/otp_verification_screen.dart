@@ -116,7 +116,7 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                         TextSpan(
                           text: " Your Account".tr(),
                           style: textStyle32Bold.copyWith(
-                            color: AppColors.primaryColor,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -148,11 +148,17 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                     defaultPinTheme: PinTheme(
                       height: 55.h,
                       width: 57.w,
-                      textStyle: textStyle14Regular,
+                      textStyle: textStyle14Regular.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(08.r),
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: AppColors.primaryColor.setOpacity(0.2),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -160,13 +166,14 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                       height: 56.h,
                       width: 57.w,
                       textStyle: textStyle14Regular.copyWith(
-                        color: AppColors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r), // Less Radius
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: AppColors.primaryColor.setOpacity(0.2),
-                          width: 1,
+                          color: AppColors.secondary,
+                          width: 1.5,
                         ),
                       ),
                     ),
@@ -174,12 +181,16 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                       height: 56.h,
                       width: 57.w,
                       textStyle: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: AppColors.primaryColor.setOpacity(0.2),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -193,7 +204,7 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                 Selector<AuthProvider, bool>(
                   selector: (context, provider) => provider.isLoading,
                   builder: (context, isLoading, child) {
-                    if (isLoading) const CircularProgressIndicator();
+                    if (isLoading) return const CircularProgressIndicator();
                     return AppButton(
                       title: "Verify".tr(),
                       onTap: () {
@@ -225,7 +236,10 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                     return RichText(
                       text: TextSpan(
                         text: "Didn't receive the code? ",
-                        style: textStyle14Regular.copyWith(letterSpacing: 0.4),
+                        style: textStyle14Regular.copyWith(
+                          letterSpacing: 0.4,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                         children: [
                           TextSpan(
                             recognizer: otpState.secondsRemaining == 0
@@ -250,7 +264,7 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                             style: textStyle18Bold.copyWith(
                               fontSize: 14.sp,
                               color: otpState.secondsRemaining == 0
-                                  ? AppColors.secondary
+                                   ? AppColors.secondary
                                   : AppColors.secondary.setOpacity(0.5),
                             ),
                           ),

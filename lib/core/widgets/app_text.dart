@@ -21,16 +21,18 @@ class AppText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveColor =
+        style?.color ?? Theme.of(context).colorScheme.onSurface;
     return Text(
       text,
       textAlign: textAlign,
       overflow: overflow,
       maxLines: maxLines,
-      style: style != null
-          ? style!.copyWith(decoration: textDecoration)
-          : textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+      style: (style ?? textStyle14Regular).copyWith(
+        color: effectiveColor,
+        decoration: textDecoration,
+      ),
     );
   }
 }
+
