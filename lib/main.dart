@@ -32,6 +32,7 @@ void main() async {
   if (AppConstants.stripePublishableKey.isNotEmpty) {
     Stripe.publishableKey = AppConstants.stripePublishableKey;
   }
+  
   if (!kIsWeb &&
       Platform.isIOS &&
       AppConstants.stripeApplePayMerchantId.isNotEmpty) {

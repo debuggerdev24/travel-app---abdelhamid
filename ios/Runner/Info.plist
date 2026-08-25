@@ -53,6 +53,10 @@
 	<string>This app may save images you share to your photo library.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs your location to share your current or live position in chat.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to your location to share your position and enable location-based features.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to your location to share your position even when the app is in the background.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
