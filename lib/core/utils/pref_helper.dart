@@ -59,9 +59,20 @@ class PrefHelper {
           jsonDecode(utf8.decode(base64Url.decode(normalized)))
               as Map<String, dynamic>;
       final exp = payload['exp'];
-      if (exp is int) {
-        final expDate = DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true);
-        return DateTime.now().toUtc().isAfter(expDate);
+      final expSeconds = exp is int
+          ? exp
+          : exp is num
+          ? exp.toInt()
+          : null;
+      if (expSeconds != null) {
+        final expDate = DateTime.fromMillisecondsSinceEpoch(
+          expSeconds * 1000,
+          isUtc: true,
+        );
+        // 30s clock-skew leeway so a freshly issued token is not treated as expired.
+        return DateTime.now().toUtc().isAfter(
+          expDate.add(const Duration(seconds: 30)),
+        );
       }
       return false;
     } catch (_) {

@@ -47,19 +47,23 @@ class AuthService {
         },
       );
 
-      // Save token if it's returned in the response
-      if (response['data'] != null &&
-          response['data']['accessToken'] != null &&
-          response['data']['refreshToken'] != null) {
-        await PrefHelper.saveAccessToken(response['data']['accessToken']);
-        await PrefHelper.saveRefreshToken(response['data']['refreshToken']);
+      if (response is! Map) {
+        throw Exception('Invalid login response');
       }
-
-      if (response['data'] != null) {
-        return LoginResponseModel.fromJson(response['data']);
-      } else {
-        throw Exception('Response data is null');
+      final payload = LoginResponseModel.fromApiResponse(
+        Map<String, dynamic>.from(response),
+      );
+      if (payload.accessToken.isEmpty) {
+        throw Exception('Login succeeded but no access token was returned');
       }
+      await PrefHelper.saveAccessToken(payload.accessToken);
+      if (payload.refreshToken.isNotEmpty) {
+        await PrefHelper.saveRefreshToken(payload.refreshToken);
+      }
+      if (payload.id.isNotEmpty) {
+        await PrefHelper.saveUserId(payload.id);
+      }
+      return payload;
     } catch (e) {
       rethrow;
     }

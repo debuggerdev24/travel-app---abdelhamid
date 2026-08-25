@@ -59,13 +59,18 @@ class _TabScreenView extends StatefulWidget {
 
 class _TabScreenViewState extends State<_TabScreenView> {
   DateTime? lastBackPressed;
+  final Set<int> _loadedTabs = {0};
 
   @override
   void initState() {
     super.initState();
+    _loadedTabs.add(context.read<TabState>().currentIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final index = context.read<TabState>().currentIndex;
+      if (!_loadedTabs.contains(index)) {
+        setState(() => _loadedTabs.add(index));
+      }
       if (index == 1) {
         context.read<TripProvider>().fetchUpcomingBookingsForTripsTab();
       } else if (index == 2) {
@@ -104,14 +109,20 @@ class _TabScreenViewState extends State<_TabScreenView> {
         body: IndexedStack(
           index: state.currentIndex,
           children: [
-            HomeScreen(),
-            TripScreen(
-              onShowTripDetails: (show) {
-                context.read<TabState>().setShowBottomNav(!show);
-              },
-            ),
-            ChatScreen(),
-            ProfileScreen(),
+            const HomeScreen(),
+            _loadedTabs.contains(1)
+                ? TripScreen(
+                    onShowTripDetails: (show) {
+                      context.read<TabState>().setShowBottomNav(!show);
+                    },
+                  )
+                : const SizedBox.shrink(),
+            _loadedTabs.contains(2)
+                ? const ChatScreen()
+                : const SizedBox.shrink(),
+            _loadedTabs.contains(3)
+                ? const ProfileScreen()
+                : const SizedBox.shrink(),
           ],
         ),
         bottomNavigationBar: state.showBottomNav
@@ -126,6 +137,7 @@ class _TabScreenViewState extends State<_TabScreenView> {
     return KBottomNavBar(
       currentIndex: state.currentIndex,
       onTap: (index) {
+        setState(() => _loadedTabs.add(index));
         context.read<TabState>().setIndex(index);
         if (index == 0) {
           WidgetsBinding.instance.addPostFrameCallback((_) {

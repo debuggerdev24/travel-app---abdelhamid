@@ -54,8 +54,15 @@ class AuthProvider extends ChangeNotifier {
         emailOrPhone: emailOrPhone,
         password: password,
       );
-      PrefHelper.saveAccessToken(response.accessToken);
-      PrefHelper.saveRefreshToken(response.refreshToken);
+      if (response.accessToken.isEmpty) {
+        omError('Login failed. Please try again.');
+        _setLoading(false);
+        return false;
+      }
+      await PrefHelper.saveAccessToken(response.accessToken);
+      if (response.refreshToken.isNotEmpty) {
+        await PrefHelper.saveRefreshToken(response.refreshToken);
+      }
       if (response.id.isNotEmpty) {
         await PrefHelper.saveUserId(response.id);
       }

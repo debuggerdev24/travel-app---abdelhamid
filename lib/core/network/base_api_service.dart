@@ -44,14 +44,18 @@ class BaseApiService {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           try {
-            final token = PrefHelper.getAccessToken();
+            // Never send a stale Bearer token on login/register — the server may
+            // reject the request with 401 before it even reads credentials.
+            if (!_isAuthPath(options.uri.path)) {
+              final token = PrefHelper.getAccessToken();
 
-            if (token != null && token.isNotEmpty) {
-              options.headers[HttpHeaders.authorizationHeader] =
-                  'Bearer $token';
-              LogHelper.instance.debug(
-                'API Request: ${options.method} ${options.uri} | Authorization Token: Bearer $token',
-              );
+              if (token != null && token.isNotEmpty) {
+                options.headers[HttpHeaders.authorizationHeader] =
+                    'Bearer $token';
+                LogHelper.instance.debug(
+                  'API Request: ${options.method} ${options.uri} | Authorization Token: Bearer $token',
+                );
+              }
             }
 
             handler.next(options);
@@ -63,7 +67,7 @@ class BaseApiService {
           final statusCode = error.response?.statusCode;
 
           if (statusCode == HttpStatus.unauthorized) {
-            await _handleUnauthorized();
+            await _handleUnauthorized(error.requestOptions);
           }
 
           handler.next(error);
@@ -534,12 +538,54 @@ class BaseApiService {
 
   bool _isHandlingUnauthorized = false;
 
-  Future<void> _handleUnauthorized() async {
+  static bool _isAuthPath(String path) {
+    return path.contains('/auth/');
+  }
+
+  /// Optional / secondary APIs must not wipe a valid session.
+  /// Chat, FCM, and CMS-style 401s were sending users back to login right
+  /// after a successful sign-in (IndexedStack loads Chat immediately).
+  static bool _shouldForceLogoutOn401(String path) {
+    if (_isAuthPath(path)) return false;
+    const nonCriticalFragments = [
+      'device-token',
+      '/chat/',
+      '/prayer/',
+      '/notifications/',
+    ];
+    return !nonCriticalFragments.any(path.contains);
+  }
+
+  Future<void> _handleUnauthorized(RequestOptions request) async {
+    final path = request.uri.path;
+    if (!_shouldForceLogoutOn401(path)) {
+      LogHelper.instance.debug(
+        'Skipping session logout for 401 on $path',
+      );
+      return;
+    }
+
+    final sentAuth = request.headers[HttpHeaders.authorizationHeader]?.toString();
+    if (sentAuth == null || sentAuth.isEmpty) {
+      return;
+    }
+
+    // User already signed in again with a different token — ignore stale 401.
+    final current = PrefHelper.getAccessToken();
+    if (current != null &&
+        current.isNotEmpty &&
+        sentAuth != 'Bearer $current') {
+      return;
+    }
+
     if (_isHandlingUnauthorized) return;
     _isHandlingUnauthorized = true;
     try {
       await PrefHelper.clearTokens();
-      UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
+      final location = UserAppRoute.goRouter.routeInformationProvider.value.uri.path;
+      if (location != UserAppRoutes.signInScreen.path) {
+        UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
+      }
     } catch (e) {
       LogHelper.instance.error('Error during handleUnauthorized', e);
     } finally {

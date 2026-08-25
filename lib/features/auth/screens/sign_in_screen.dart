@@ -172,9 +172,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
                                 if (success && context.mounted) {
                                   ToastService.showSuccess("Welcome back!");
-                                  context.pushReplacementNamed(
-                                    UserAppRoutes.tabScreen.name,
-                                  );
+                                  context.goNamed(UserAppRoutes.tabScreen.name);
                                 }
                               }
                             },
