@@ -67,6 +67,6 @@ TRV-2026-F8B8AF
 shwetapatel.dds@gmail.com
 Test@123
 
-git add . && git commit -m "23rd Sep" && git push origin dev
+* git add . && git commit -m "23rd Sep" && git push origin dev
 */
 

@@ -32,9 +32,9 @@ class BaseApiService {
           printResponseHeaders: false,
           printResponseMessage: true,
           // Expected 404s (e.g. empty CMS) still throw; LogHelper covers those.
-          printErrorData: false,
-          printErrorHeaders: false,
-          printErrorMessage: false,
+          printErrorData: true,
+          printErrorHeaders: true,
+          printErrorMessage: true,
           // hiddenHeaders: {'Authorization'},
         ),
       ),
