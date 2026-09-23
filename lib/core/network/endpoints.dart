@@ -74,15 +74,13 @@ class Endpoints {
   static const String reviewsNewReview = '/reviews/new-review';
 
   /// `GET` — Bearer auth; list of `{ name, time }` prayer rows.
-  static const String prayerDetails = '/prayer/prayer-details';
+  static const String prayerDetails = '/prayer/public-list';
 
   /// `GET` — Bearer auth; upcoming bookings list.
   static const String upcomingBookings = '/trips/upcoming-bookings';
 
   // --- Notifications ---
   static const String deviceToken = '/notifications/device-token';
-  static const String notificationList =
-      '/notifications/notifications-list';
-  static const String readNotification =
-      '/notifications/notifications/read';
+  static const String notificationList = '/notifications/notifications-list';
+  static const String readNotification = '/notifications/notifications/read';
 }
