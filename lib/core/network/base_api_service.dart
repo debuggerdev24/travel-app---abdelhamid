@@ -1,16 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:talker_dio_logger/talker_dio_logger.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
-import 'package:travel_app_abdelhamid/routes/go_routes.dart';
-import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class BaseApiService {
   BaseApiService._internal() {
@@ -28,15 +24,19 @@ class BaseApiService {
     );
 
     _dio.interceptors.add(
-      PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: false,
-        // Off: expected 404s (e.g. empty CMS) still throw; LogHelper logs them without this noise.
-        error: false,
-        compact: true,
-        maxWidth: 90,
+      TalkerDioLogger(
+        settings: const TalkerDioLoggerSettings(
+          printRequestHeaders: true,
+          printRequestData: true,
+          printResponseData: true,
+          printResponseHeaders: false,
+          printResponseMessage: true,
+          // Expected 404s (e.g. empty CMS) still throw; LogHelper covers those.
+          printErrorData: false,
+          printErrorHeaders: false,
+          printErrorMessage: false,
+          // hiddenHeaders: {'Authorization'},
+        ),
       ),
     );
 
@@ -52,9 +52,6 @@ class BaseApiService {
               if (token != null && token.isNotEmpty) {
                 options.headers[HttpHeaders.authorizationHeader] =
                     'Bearer $token';
-                LogHelper.instance.debug(
-                  'API Request: ${options.method} ${options.uri} | Authorization Token: Bearer $token',
-                );
               }
             }
 
@@ -62,15 +59,6 @@ class BaseApiService {
           } catch (e) {
             handler.next(options);
           }
-        },
-        onError: (DioException error, handler) async {
-          final statusCode = error.response?.statusCode;
-
-          if (statusCode == HttpStatus.unauthorized) {
-            await _handleUnauthorized(error.requestOptions);
-          }
-
-          handler.next(error);
         },
       ),
     );
@@ -205,14 +193,16 @@ class BaseApiService {
         } else if (map['error'] != null) {
           message = map['error'].toString();
         }
-        
+
         if (map['errors'] != null) {
           final errors = map['errors'];
           if (errors is Map) {
-            final errorMessages = errors.values.expand((v) {
-              if (v is List) return v.map((e) => e.toString());
-              return [v.toString()];
-            }).join('\n');
+            final errorMessages = errors.values
+                .expand((v) {
+                  if (v is List) return v.map((e) => e.toString());
+                  return [v.toString()];
+                })
+                .join('\n');
             if (errorMessages.isNotEmpty) {
               message = '$message\n$errorMessages';
             }
@@ -335,14 +325,16 @@ class BaseApiService {
         } else if (map['error'] != null) {
           message = map['error'].toString();
         }
-        
+
         if (map['errors'] != null) {
           final errors = map['errors'];
           if (errors is Map) {
-            final errorMessages = errors.values.expand((v) {
-              if (v is List) return v.map((e) => e.toString());
-              return [v.toString()];
-            }).join('\n');
+            final errorMessages = errors.values
+                .expand((v) {
+                  if (v is List) return v.map((e) => e.toString());
+                  return [v.toString()];
+                })
+                .join('\n');
             if (errorMessages.isNotEmpty) {
               message = '$message\n$errorMessages';
             }
@@ -452,15 +444,17 @@ class BaseApiService {
         } else if (map['error'] != null) {
           message = map['error'].toString();
         }
-        
+
         // Also check for specific field validation errors (e.g. {"errors": {"email": ["..."]}})
         if (map['errors'] != null) {
           final errors = map['errors'];
           if (errors is Map) {
-            final errorMessages = errors.values.expand((v) {
-              if (v is List) return v.map((e) => e.toString());
-              return [v.toString()];
-            }).join('\n');
+            final errorMessages = errors.values
+                .expand((v) {
+                  if (v is List) return v.map((e) => e.toString());
+                  return [v.toString()];
+                })
+                .join('\n');
             if (errorMessages.isNotEmpty) {
               message = '$message\n$errorMessages';
             }
@@ -536,60 +530,7 @@ class BaseApiService {
     }
   }
 
-  bool _isHandlingUnauthorized = false;
-
   static bool _isAuthPath(String path) {
     return path.contains('/auth/');
-  }
-
-  /// Optional / secondary APIs must not wipe a valid session.
-  /// Chat, FCM, and CMS-style 401s were sending users back to login right
-  /// after a successful sign-in (IndexedStack loads Chat immediately).
-  static bool _shouldForceLogoutOn401(String path) {
-    if (_isAuthPath(path)) return false;
-    const nonCriticalFragments = [
-      'device-token',
-      '/chat/',
-      '/prayer/',
-      '/notifications/',
-    ];
-    return !nonCriticalFragments.any(path.contains);
-  }
-
-  Future<void> _handleUnauthorized(RequestOptions request) async {
-    final path = request.uri.path;
-    if (!_shouldForceLogoutOn401(path)) {
-      LogHelper.instance.debug(
-        'Skipping session logout for 401 on $path',
-      );
-      return;
-    }
-
-    final sentAuth = request.headers[HttpHeaders.authorizationHeader]?.toString();
-    if (sentAuth == null || sentAuth.isEmpty) {
-      return;
-    }
-
-    // User already signed in again with a different token — ignore stale 401.
-    final current = PrefHelper.getAccessToken();
-    if (current != null &&
-        current.isNotEmpty &&
-        sentAuth != 'Bearer $current') {
-      return;
-    }
-
-    if (_isHandlingUnauthorized) return;
-    _isHandlingUnauthorized = true;
-    try {
-      await PrefHelper.clearTokens();
-      final location = UserAppRoute.goRouter.routeInformationProvider.value.uri.path;
-      if (location != UserAppRoutes.signInScreen.path) {
-        UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
-      }
-    } catch (e) {
-      LogHelper.instance.error('Error during handleUnauthorized', e);
-    } finally {
-      _isHandlingUnauthorized = false;
-    }
   }
 }
