@@ -71,5 +71,5 @@ class Endpoints {
   static const String reviewsNewReview = '/reviews/new-review';
 
   /// `GET` — Bearer auth; list of `{ name, time }` prayer rows.
-  static const String prayerDetails = '/prayer/prayer-details';
+  static const String prayerDetails = '/prayer/public-list';
 }
