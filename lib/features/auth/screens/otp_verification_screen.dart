@@ -87,7 +87,7 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 30.h, horizontal: 27.w),
+            padding: EdgeInsets.symmetric(vertical: 30.h, horizontal: 13.5.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

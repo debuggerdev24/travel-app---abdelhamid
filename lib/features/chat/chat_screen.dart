@@ -72,14 +72,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         children: [
                           SizedBox(height: 120.h),
                           Center(
-                            child: AppText(
-                              textAlign: TextAlign.center,
-                              text: 'No conversations yet.'.tr(),
-                              style: textStyle14Regular.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 1),
-                              ),
+                            child: _EmptyState(
+                              icon: Icons.chat_bubble_outline,
+                              title: 'No conversations yet.'.tr(),
+                              subtitle: 'Your trip chats will appear here.'.tr(),
                             ),
                           ),
                         ],
@@ -112,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 27.w),
+      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -135,7 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Consumer<ChatProvider>(
       builder: (context, provider, _) {
         return Container(
-          margin: EdgeInsets.symmetric(horizontal: 27.w),
+          margin: EdgeInsets.symmetric(horizontal: 13.5.w),
           padding: EdgeInsets.all(5.w),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(130.r),
@@ -333,6 +329,48 @@ class _ChatScreenState extends State<ChatScreen> {
       fallbackKind: data.isGroup
           ? AvatarFallbackKind.group
           : AvatarFallbackKind.user,
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

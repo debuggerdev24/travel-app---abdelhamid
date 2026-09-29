@@ -32,7 +32,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 27.w),
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -70,11 +70,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
                     if (provider.notifications.isEmpty) {
                       return Center(
-                        child: AppText(
-                          text: "No notifications yet".tr(),
-                          style: textStyle16Regular.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                          ),
+                        child: _EmptyState(
+                          icon: Icons.notifications_none,
+                          title: 'No notifications yet'.tr(),
+                          subtitle: 'Updates about your trip will show here.'.tr(),
                         ),
                       );
                     }
@@ -266,6 +265,48 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                 ],
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

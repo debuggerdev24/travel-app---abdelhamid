@@ -70,7 +70,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                 children: [
                   Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 27.w,
+                      horizontal: 13.5.w,
                       vertical: 15.h,
                     ),
                     child: Row(
@@ -111,7 +111,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                             fit: BoxFit.cover,
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 27.w),
+                            padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

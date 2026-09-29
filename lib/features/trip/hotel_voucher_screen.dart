@@ -31,7 +31,7 @@ class HotelVoucherScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 27.w),
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -162,7 +162,7 @@ class HotelVoucherScreen extends StatelessWidget {
       ),
 
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 30.h),
+        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 30.h),
         child: SizedBox(
           height: 50.h,
           width: double.infinity,

@@ -45,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 27.w),
+                padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                 child: Consumer<ProfileProvider>(
                   builder: (context, provider, _) {
                     final p = provider.profile;

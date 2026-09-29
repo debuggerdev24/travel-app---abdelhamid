@@ -145,7 +145,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   children: [
                     40.h.verticalSpace,
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 31.w),
+                      padding: EdgeInsets.symmetric(horizontal: 15.5.w),
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
@@ -174,7 +174,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       child: Form(
                         key: _formKey,
                         child: SingleChildScrollView(
-                          padding: EdgeInsets.symmetric(horizontal: 31.w),
+                          padding: EdgeInsets.symmetric(horizontal: 15.5.w),
                           child: Column(
                             spacing: 22.h,
                             children: [

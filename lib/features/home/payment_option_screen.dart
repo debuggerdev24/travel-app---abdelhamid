@@ -351,7 +351,7 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
                 40.h.verticalSpace,
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 27.w,
+                    horizontal: 13.5.w,
                     vertical: 30.h,
                   ),
                   child: Stack(
@@ -380,7 +380,7 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 27.w),
+                  padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                   child: Column(
                     children: [
                       // PaymentOption(

@@ -99,7 +99,7 @@ class _FeedbackViewState extends State<_FeedbackView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 15.h),
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 15.h),
           child: Column(
             children: [
               // Scrollable content

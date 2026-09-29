@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
@@ -124,7 +125,7 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -198,11 +199,10 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
               else if (state.items.isEmpty)
                 Expanded(
                   child: Center(
-                    child: AppText(
-                      text: "No social links available yet.".tr(),
-                      style: textStyle14Regular.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    child: _EmptyState(
+                      icon: Icons.share_outlined,
+                      title: 'No social links available yet.'.tr(),
+                      subtitle: 'Social profiles will appear here.'.tr(),
                     ),
                   ),
                 )
@@ -286,6 +286,48 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

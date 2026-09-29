@@ -159,7 +159,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
                   ),
                 ),
                 Positioned(
-                  right: 27.w,
+                  right: 13.5.w,
                   child: GestureDetector(
                     onTap: () {
                       context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
@@ -224,7 +224,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
                 ),
               ),
               Positioned(
-                right: 27.w,
+                right: 13.5.w,
                 child: GestureDetector(
                   onTap: () {
                     context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
@@ -242,7 +242,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
         20.h.verticalSpace,
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 27.w),
+            padding: EdgeInsets.symmetric(horizontal: 13.5.w),
             itemCount: enrolledTrips.length,
             itemBuilder: (context, index) {
               final trip = enrolledTrips[index];
@@ -429,7 +429,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 15.h),
+              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 15.h),
               child: Row(
                 children: [
                   GestureDetector(
@@ -512,7 +512,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
             // Trip title and location
             12.h.verticalSpace,
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 27.w),
+              padding: EdgeInsets.symmetric(horizontal: 13.5.w),
               child: AppText(
                 text: trip?.title ?? "-",
                 style: textStyle16SemiBold.copyWith(
@@ -522,7 +522,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
             ),
             14.h.verticalSpace,
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 2.h),
+              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 2.h),
               child: Row(
                 children: [
                   SvgIcon(
@@ -698,20 +698,17 @@ class _TripScreenViewState extends State<_TripScreenView> {
           debugPrint('❌ [TripScreen] No flights found');
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 40.h),
-            child: Center(
-              child: AppText(
-                text: "No flight details available".tr(),
-                style: textStyle14Regular.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
+            child: _EmptyState(
+              icon: Icons.flight_outlined,
+              title: 'No flight details available'.tr(),
+              subtitle: 'Flight information will appear here.'.tr(),
             ),
           );
         }
 
         return SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 10.h),
+            padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 10.h),
             child: Column(
               children: flights.asMap().entries.map((entry) {
                 final index = entry.key;
@@ -770,7 +767,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 10.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -804,14 +801,10 @@ class _TripScreenViewState extends State<_TripScreenView> {
                 ),
               )
             else if (vouchers.isEmpty)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 24.h),
-                child: AppText(
-                  text: "No hotel details available".tr(),
-                  style: textStyle14Regular.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
+              _EmptyState(
+                icon: Icons.hotel_outlined,
+                title: 'No hotel details available'.tr(),
+                subtitle: 'Hotel vouchers will appear here.'.tr(),
               )
             else
               ...vouchers.asMap().entries.map((entry) {
@@ -891,7 +884,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
       ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
       child: isLoading
           ? Padding(
               padding: EdgeInsets.symmetric(vertical: 40.h),
@@ -920,11 +913,10 @@ class _TripScreenViewState extends State<_TripScreenView> {
               ],
             )
           : activities.isEmpty
-          ? AppText(
-              text: "No itinerary available".tr(),
-              style: textStyle14Regular.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+          ? _EmptyState(
+              icon: Icons.event_note_outlined,
+              title: 'No itinerary available'.tr(),
+              subtitle: 'Today’s plan will appear here.'.tr(),
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1828,5 +1820,47 @@ class _TripScreenViewState extends State<_TripScreenView> {
       return Icons.error_outline;
     }
     return Icons.info_outline;
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

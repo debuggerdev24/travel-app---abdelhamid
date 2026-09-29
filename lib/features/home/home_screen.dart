@@ -9,7 +9,6 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_header.dart';
 import 'package:travel_app_abdelhamid/core/widgets/tab_button.dart';
-import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 import 'package:travel_app_abdelhamid/core/widgets/trip_card.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
@@ -109,7 +108,7 @@ class _HomeViewState extends State<_HomeView> {
                   },
                   child: Container(
                     height: 52.h,
-                    margin: EdgeInsets.symmetric(horizontal: 27.w),
+                    margin: EdgeInsets.symmetric(horizontal: 13.5.w),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Theme.of(
@@ -183,7 +182,7 @@ class _HomeViewState extends State<_HomeView> {
 
                 /// Tabs
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 27.w),
+                  padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
@@ -252,19 +251,16 @@ class _HomeViewState extends State<_HomeView> {
                             child: SizedBox(
                               height: MediaQuery.sizeOf(context).height * 0.5,
                               child: Center(
-                                child: AppText(
-                                  text:
-                                      context
-                                              .watch<HomeTabState>()
-                                              .selectedTab ==
+                                child: _EmptyState(
+                                  icon: Icons.luggage_outlined,
+                                  title:
+                                      context.watch<HomeTabState>().selectedTab ==
                                           0
-                                      ? "No Current Trips"
-                                      : "No Past Trips",
-                                  style: textStyle16SemiBold.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
-                                  ),
+                                      ? "No Current Trips".tr()
+                                      : "No Past Trips".tr(),
+                                  subtitle:
+                                      "Trips will show up here once they are available."
+                                          .tr(),
                                 ),
                               ),
                             ),
@@ -284,7 +280,7 @@ class _HomeViewState extends State<_HomeView> {
                         child: ListView.builder(
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: EdgeInsets.symmetric(
-                            horizontal: 27.w,
+                            horizontal: 13.5.w,
                             vertical: 24.h,
                           ),
                           itemCount: trips.length,
@@ -313,6 +309,48 @@ class _HomeViewState extends State<_HomeView> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

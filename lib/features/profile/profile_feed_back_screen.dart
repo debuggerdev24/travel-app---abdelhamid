@@ -102,7 +102,7 @@ class _ProfileFeedbackViewState extends State<_ProfileFeedbackView> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 15.h),
+            padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 15.h),
             child: Column(
               children: [
                 Expanded(

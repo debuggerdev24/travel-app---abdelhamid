@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
@@ -33,7 +34,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 27.w),
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -92,14 +93,12 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                     }
                     if (prayer.items.isEmpty) {
                       return Center(
-                        child: AppText(
-                          textAlign: TextAlign.center,
-                          text:
-                              'No prayer times have been set yet. They can be added from the admin panel.'
+                        child: _EmptyState(
+                          icon: Icons.mosque_outlined,
+                          title: 'No prayer times yet'.tr(),
+                          subtitle:
+                              'Prayer times will appear here once they are added.'
                                   .tr(),
-                          style: textStyle14Regular.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
                         ),
                       );
                     }
@@ -222,6 +221,48 @@ class _PrayerTileState extends State<PrayerTile> {
                 },
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

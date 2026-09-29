@@ -67,7 +67,7 @@ class _HealthSafetyScreenView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
+              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -112,7 +112,7 @@ class _HealthSafetyScreenView extends StatelessWidget {
     }
     if (state.error != null) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 27.w),
+        padding: EdgeInsets.symmetric(horizontal: 13.5.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -158,14 +158,10 @@ class _HealthSafetyScreenView extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
-                  child: AppText(
-                    text: "No health tips available".tr(),
-                    textAlign: TextAlign.center,
-                    style: textStyle14Regular.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
+                  child: _EmptyState(
+                    icon: Icons.health_and_safety_outlined,
+                    title: 'No health tips available'.tr(),
+                    subtitle: 'Health tips will appear here once they are added.'.tr(),
                   ),
                 ),
               ),
@@ -179,7 +175,7 @@ class _HealthSafetyScreenView extends StatelessWidget {
       onRefresh: () => context.read<HealthSafetyState>().load(),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 8.h),
         itemCount: state.tips.length,
         separatorBuilder: (_, __) => SizedBox(height: 14.h),
         itemBuilder: (context, index) {
@@ -273,6 +269,48 @@ class _HealthSafetyScreenView extends StatelessWidget {
         Icons.health_and_safety_outlined,
         size: 56.sp,
         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35),
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

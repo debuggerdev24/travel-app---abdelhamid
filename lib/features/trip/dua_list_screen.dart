@@ -110,7 +110,7 @@ class _DuaListScreenView extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -202,12 +202,10 @@ class _DuaListScreenView extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
-                  child: AppText(
-                    text: 'No duas available yet'.tr(),
-                    textAlign: TextAlign.center,
-                    style: textStyle14Regular.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                  child: _EmptyState(
+                    icon: Icons.menu_book_outlined,
+                    title: 'No duas available yet'.tr(),
+                    subtitle: 'Duas will appear here once they are added.'.tr(),
                   ),
                 ),
               ),
@@ -336,6 +334,48 @@ class _DuaItemTile extends StatelessWidget {
       textAlign: TextAlign.start,
       style: textStyle14Regular.copyWith(
         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

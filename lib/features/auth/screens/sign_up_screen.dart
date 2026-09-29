@@ -42,7 +42,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 50.h, horizontal: 27.w),
+            padding: EdgeInsets.symmetric(vertical: 50.h, horizontal: 13.5.w),
             child: Consumer<AuthProvider>(
               builder: (context, authProvider, child) {
                 return Column(

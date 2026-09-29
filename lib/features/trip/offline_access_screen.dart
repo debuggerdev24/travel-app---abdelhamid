@@ -115,11 +115,10 @@ class _OfflineAccessScreenViewState extends State<_OfflineAccessScreenView> {
           ? const Center(child: CircularProgressIndicator())
           : state.savedTrips.isEmpty
           ? Center(
-              child: AppText(
-                text: "No trips saved for offline access.".tr(),
-                style: textStyle16SemiBold.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              child: _EmptyState(
+                icon: Icons.cloud_off_outlined,
+                title: 'No trips saved for offline access.'.tr(),
+                subtitle: 'Download a trip to view it without internet.'.tr(),
               ),
             )
           : ListView.builder(
@@ -231,9 +230,10 @@ class _TripOfflineCardView extends StatelessWidget {
         ),
         10.h.verticalSpace,
         if (activities.isEmpty)
-          AppText(
-            text: "No activities found.".tr(),
-            style: textStyle14Regular.copyWith(color: Colors.grey),
+          _EmptyState(
+            icon: Icons.event_note_outlined,
+            title: 'No activities found.'.tr(),
+            subtitle: 'This day has no itinerary items yet.'.tr(),
           )
         else
           ...activities.map((a) {
@@ -286,9 +286,10 @@ class _TripOfflineCardView extends StatelessWidget {
         ),
         10.h.verticalSpace,
         if (availableDocs.isEmpty)
-          AppText(
-            text: "No specific documents found.".tr(),
-            style: textStyle14Regular.copyWith(color: Colors.grey),
+          _EmptyState(
+            icon: Icons.folder_open_outlined,
+            title: 'No specific documents found.'.tr(),
+            subtitle: 'Saved documents will appear here.'.tr(),
           )
         else
           ...availableDocs.map(
@@ -311,6 +312,48 @@ class _TripOfflineCardView extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

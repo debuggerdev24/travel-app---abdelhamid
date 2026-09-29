@@ -179,7 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           return SingleChildScrollView(
             child: SafeArea(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 27.w),
+                padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                 child: Column(
                   children: [
                     SizedBox(

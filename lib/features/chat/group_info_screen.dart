@@ -613,11 +613,10 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
         ),
         19.h.verticalSpace,
         if (media.isEmpty)
-          AppText(
-            text: 'No shared media yet.'.tr(),
-            style: textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.setOpacity(0.45),
-            ),
+          _EmptyState(
+            icon: Icons.photo_library_outlined,
+            title: 'No shared media yet.'.tr(),
+            subtitle: 'Photos shared in this group will show here.'.tr(),
           )
         else
           SizedBox(
@@ -673,11 +672,10 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (visibleMembers.isEmpty)
-            AppText(
-              text: 'No members found.'.tr(),
-              style: textStyle14Regular.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.setOpacity(0.5),
-              ),
+            _EmptyState(
+              icon: Icons.group_outlined,
+              title: 'No members found.'.tr(),
+              subtitle: 'Group members will appear here.'.tr(),
             )
           else
             ...visibleMembers.map(
@@ -888,6 +886,48 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

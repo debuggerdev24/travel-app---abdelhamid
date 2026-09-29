@@ -95,7 +95,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                   children: [
                     40.h.verticalSpace,
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 27.w),
+                      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                       child: Stack(
                         alignment: Alignment.center,
                         children: [

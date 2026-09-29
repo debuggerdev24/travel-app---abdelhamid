@@ -65,7 +65,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
           return SingleChildScrollView(
             child: SafeArea(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 20.h),
+                padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

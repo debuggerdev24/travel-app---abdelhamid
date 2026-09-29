@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/past_payment_item.dart';
 import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
@@ -60,7 +59,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         children: [
           60.h.verticalSpace,
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 12.h),
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -95,11 +94,10 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                 final items = provider.paymentHistoryItems;
                 if (items.isEmpty) {
                   return Center(
-                    child: AppText(
-                      text: 'No payments yet.'.tr(),
-                      style: textStyle14Regular.copyWith(
-                        color: AppColors.primaryColor.setOpacity(0.6),
-                      ),
+                    child: _EmptyState(
+                      icon: Icons.receipt_long_outlined,
+                      title: 'No payments yet.'.tr(),
+                      subtitle: 'Your payment history will appear here.'.tr(),
                     ),
                   );
                 }
@@ -127,6 +125,48 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                   },
                 );
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

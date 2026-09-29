@@ -178,7 +178,7 @@ class _TermsConditionViewState extends State<_TermsConditionView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 27.w),
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

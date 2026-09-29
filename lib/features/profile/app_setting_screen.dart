@@ -44,7 +44,7 @@ class _AppSettingsViewState extends State<_AppSettingsView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 27.w), // NOT CHANGED
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w), // NOT CHANGED
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

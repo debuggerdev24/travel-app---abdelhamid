@@ -176,7 +176,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 27.w),
+      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -201,7 +201,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
 
   Widget _buildTabs() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 27.w),
+      margin: EdgeInsets.symmetric(horizontal: 13.5.w),
       padding: EdgeInsets.all(5.w),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(130.r),

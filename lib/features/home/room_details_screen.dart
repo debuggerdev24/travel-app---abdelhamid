@@ -189,7 +189,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 31.w,
+                    horizontal: 15.5.w,
                     vertical: 30.h,
                   ),
                   child: Stack(
@@ -220,7 +220,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                   child: Form(
                     key: _formKey,
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: 31.w),
+                      padding: EdgeInsets.symmetric(horizontal: 15.5.w),
                       child: Column(
                         children: [
                           AppTextField(

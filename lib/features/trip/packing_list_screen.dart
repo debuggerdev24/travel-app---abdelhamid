@@ -36,7 +36,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 31.w, vertical: 27.h),
+              padding: EdgeInsets.symmetric(horizontal: 15.5.w, vertical: 27.h),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -72,7 +72,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
 
                   if (provider.packingError != null) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 27.w),
+                      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -99,17 +99,16 @@ class _PackageListScreenState extends State<PackageListScreen> {
 
                   if (provider.packingCategories.isEmpty) {
                     return Center(
-                      child: AppText(
-                        text: "No packing list available".tr(),
-                        style: textStyle14Regular.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                      child: _EmptyState(
+                        icon: Icons.checklist_outlined,
+                        title: 'No packing list available'.tr(),
+                        subtitle: 'Your packing items will show up here.'.tr(),
                       ),
                     );
                   }
 
                   return ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 27.w),
+                    padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                     children: provider.packingCategories.map((cat) {
                       final items = cat.items.map((i) => i.name).toList();
                       final key = cat.title;
@@ -201,6 +200,48 @@ class _PackageListScreenState extends State<PackageListScreen> {
                 ),
               );
             }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40.sp, color: AppColors.secondary),
+          10.h.verticalSpace,
+          AppText(
+            text: title,
+            textAlign: TextAlign.center,
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            text: subtitle,
+            textAlign: TextAlign.center,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
