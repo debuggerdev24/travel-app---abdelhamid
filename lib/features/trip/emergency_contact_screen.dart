@@ -49,10 +49,7 @@ class EmergencyContactsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => EmergencyContactsState(),
-      child: const _EmergencyContactsScreenView(),
-    );
+    return const _EmergencyContactsScreenView();
   }
 }
 

@@ -50,10 +50,7 @@ class OtpVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => OtpState(),
-      child: _OtpVerificationView(email: email),
-    );
+    return _OtpVerificationView(email: email);
   }
 }
 

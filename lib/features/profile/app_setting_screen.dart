@@ -26,10 +26,7 @@ class AppSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppSettingsState(),
-      child: const _AppSettingsView(),
-    );
+    return const _AppSettingsView();
   }
 }
 

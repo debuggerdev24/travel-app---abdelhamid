@@ -45,10 +45,7 @@ class PaymentOptionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => PaymentOptionState(),
-      child: const _PaymentOptionView(),
-    );
+    return const _PaymentOptionView();
   }
 }
 

@@ -65,10 +65,7 @@ class RoomDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => RoomDetailsState(),
-      child: const _RoomDetailsView(),
-    );
+    return const _RoomDetailsView();
   }
 }
 

@@ -70,15 +70,27 @@ class OfflineAccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => OfflineAccessState(),
-      child: const _OfflineAccessScreenView(),
-    );
+    return const _OfflineAccessScreenView();
   }
 }
 
-class _OfflineAccessScreenView extends StatelessWidget {
+class _OfflineAccessScreenView extends StatefulWidget {
   const _OfflineAccessScreenView();
+
+  @override
+  State<_OfflineAccessScreenView> createState() =>
+      _OfflineAccessScreenViewState();
+}
+
+class _OfflineAccessScreenViewState extends State<_OfflineAccessScreenView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<OfflineAccessState>().loadSavedTrips();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

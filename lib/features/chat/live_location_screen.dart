@@ -28,10 +28,7 @@ class LiveLocationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => LiveLocationState(),
-      child: const _LiveLocationView(),
-    );
+    return const _LiveLocationView();
   }
 }
 

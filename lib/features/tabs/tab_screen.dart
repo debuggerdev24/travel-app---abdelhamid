@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
@@ -43,15 +43,13 @@ class TabScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TabState(initialIndex: initialIndex),
-      child: const _TabScreenView(),
-    );
+    return _TabScreenView(initialIndex: initialIndex);
   }
 }
 
 class _TabScreenView extends StatefulWidget {
-  const _TabScreenView();
+  final int initialIndex;
+  const _TabScreenView({this.initialIndex = 0});
 
   @override
   State<StatefulWidget> createState() => _TabScreenViewState();
@@ -64,7 +62,11 @@ class _TabScreenViewState extends State<_TabScreenView> {
   @override
   void initState() {
     super.initState();
-    _loadedTabs.add(context.read<TabState>().currentIndex);
+    final tabState = context.read<TabState>();
+    if (tabState.currentIndex != widget.initialIndex) {
+      tabState.setIndex(widget.initialIndex);
+    }
+    _loadedTabs.add(tabState.currentIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final index = context.read<TabState>().currentIndex;
@@ -92,14 +94,7 @@ class _TabScreenViewState extends State<_TabScreenView> {
         if (lastBackPressed == null ||
             now.difference(lastBackPressed!) > const Duration(seconds: 2)) {
           lastBackPressed = now;
-          Fluttertoast.showToast(
-            msg: 'Press back again to exit',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.black87,
-            textColor: Theme.of(context).colorScheme.onSurface,
-            fontSize: 16,
-          );
+          ToastService.showInfo('Press back again to exit');
         } else {
           // Allow the pop to happen
           Navigator.of(context).pop();

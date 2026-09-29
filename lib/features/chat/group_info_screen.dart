@@ -92,16 +92,13 @@ class GroupInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => GroupInfoState(),
-      child: _GroupInfoView(
-        chatId: chatId,
-        groupId: groupId,
-        name: name,
-        image: image,
-        avatarUrl: avatarUrl,
-        isLocalChat: isLocalChat,
-      ),
+    return _GroupInfoView(
+      chatId: chatId,
+      groupId: groupId,
+      name: name,
+      image: image,
+      avatarUrl: avatarUrl,
+      isLocalChat: isLocalChat,
     );
   }
 }

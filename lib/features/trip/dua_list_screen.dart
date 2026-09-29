@@ -97,10 +97,7 @@ class DuaListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => DuaListState(),
-      child: const _DuaListScreenView(),
-    );
+    return const _DuaListScreenView();
   }
 }
 

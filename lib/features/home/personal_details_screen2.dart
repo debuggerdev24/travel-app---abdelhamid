@@ -22,8 +22,10 @@ class FamilyMembersScreen extends StatefulWidget {
 }
 
 class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
-  late final PersonDetailsProvider _personDetailsProvider;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  PersonDetailsProvider get _personDetailsProvider =>
+      context.read<PersonDetailsProvider>();
 
   /// Show confirmation dialog when user tries to go back with unsaved data
   Future<bool> _onWillPop() async {
@@ -62,27 +64,13 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
   @override
   void initState() {
     super.initState();
-    _personDetailsProvider = PersonDetailsProvider();
-    debugPrint('✅ [FamilyMembersScreen] Provider initialized');
-
-    // Fetch and populate family member data if booking exists
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final bookingId = context.read<TripBookingProvider>().bookingId;
       if (bookingId != null && bookingId.isNotEmpty) {
-        debugPrint(
-          '🔵 [FamilyMembersScreen] Fetching family details for bookingId: $bookingId',
-        );
         await _personDetailsProvider.fetchAndPopulateFamilyDetails(bookingId);
-        debugPrint('✅ [FamilyMembersScreen] Family details populated');
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _personDetailsProvider.dispose();
-    super.dispose();
   }
 
   @override
@@ -98,9 +86,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         resizeToAvoidBottomInset: true,
-        body: ChangeNotifierProvider.value(
-          value: _personDetailsProvider,
-          child: Consumer<PersonDetailsProvider>(
+        body: Consumer<PersonDetailsProvider>(
             builder: (context, personProvider, child) {
               final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
               return SafeArea(
@@ -302,7 +288,6 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
               );
             },
           ),
-        ),
       ),
     );
   }

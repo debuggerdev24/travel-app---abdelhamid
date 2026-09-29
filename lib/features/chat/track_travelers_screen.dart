@@ -38,14 +38,11 @@ class TrackTravelersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TrackTravelersState(),
-      child: _TrackTravelersView(
-        chatId: chatId,
-        groupId: groupId,
-        name: name,
-        isGroup: isGroup,
-      ),
+    return _TrackTravelersView(
+      chatId: chatId,
+      groupId: groupId,
+      name: name,
+      isGroup: isGroup,
     );
   }
 }

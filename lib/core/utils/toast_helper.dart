@@ -1,51 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 
 class ToastHelper {
   ToastHelper._internal();
 
-  static void showSuccess(String message) {
-    _showToast(
-      message: message,
-      backgroundColor: AppColors.secondary,
-      textColor: Colors.white,
-    );
-  }
+  static void showSuccess(String message) => ToastService.showSuccess(message);
 
-  static void showError(String message) {
-    _showToast(
-      message: message,
-      backgroundColor: Colors.redAccent,
-      textColor: Colors.white,
-    );
-  }
+  static void showError(String message) => ToastService.showError(message);
 
-  static void showInfo(String message) {
-    _showToast(
-      message: message,
-      backgroundColor: AppColors.primaryColor,
-      textColor: Colors.white,
-    );
-  }
+  static void showInfo(String message) => ToastService.showInfo(message);
 
-  static void _showToast({
-    required String message,
-    required Color backgroundColor,
-    required Color textColor,
-  }) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: backgroundColor,
-      textColor: textColor,
-      fontSize: 16.0,
-    );
-  }
-
-  static void dismiss() {
-    Fluttertoast.cancel();
-  }
+  static void dismiss() => ToastService.dismiss();
 }

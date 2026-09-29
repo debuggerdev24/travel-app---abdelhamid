@@ -52,10 +52,7 @@ class HealthSafetyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => HealthSafetyState(),
-      child: const _HealthSafetyScreenView(),
-    );
+    return const _HealthSafetyScreenView();
   }
 }
 

@@ -9,6 +9,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_header.dart';
 import 'package:travel_app_abdelhamid/core/widgets/tab_button.dart';
+import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 import 'package:travel_app_abdelhamid/core/widgets/trip_card.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
@@ -31,10 +32,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => HomeTabState(),
-      child: const _HomeView(),
-    );
+    return const _HomeView();
   }
 }
 
@@ -78,6 +76,8 @@ class _HomeViewState extends State<_HomeView> {
                     return CustomHeaders(
                       profileImageUrl: url,
                       onNotificationTap: () {
+                        // ToastService.showSuccess("Welcome back!");
+
                         context.pushNamed(
                           UserAppRoutes.notificationScreen.name,
                         );

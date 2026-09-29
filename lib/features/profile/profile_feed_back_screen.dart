@@ -29,10 +29,7 @@ class ProfileFeedbackScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProfileFeedbackState(),
-      child: const _ProfileFeedbackView(),
-    );
+    return const _ProfileFeedbackView();
   }
 }
 

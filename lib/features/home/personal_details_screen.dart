@@ -23,9 +23,10 @@ class PersonalDetailsScreen extends StatefulWidget {
 }
 
 class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
-  late final PersonDetailsProvider _provider;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _didPrefillFromProfile = false;
+
+  PersonDetailsProvider get _provider => context.read<PersonDetailsProvider>();
 
   /// Show confirmation dialog when user tries to go back with unsaved data
   Future<bool> _onWillPop() async {
@@ -102,8 +103,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _provider = PersonDetailsProvider();
-    debugPrint('✅ [PersonalDetailsScreen] Provider initialized');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final profile = context.read<ProfileProvider>().profile;
@@ -112,12 +111,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         _didPrefillFromProfile = true;
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _provider.dispose();
-    super.dispose();
   }
 
   @override
@@ -132,9 +125,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: ChangeNotifierProvider.value(
-          value: _provider,
-          child: Consumer<PersonDetailsProvider>(
+        body: Consumer<PersonDetailsProvider>(
             builder: (context, provider, child) {
               // If profile arrives after this screen, prefill once.
               if (!_didPrefillFromProfile) {
@@ -360,7 +351,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               );
             },
           ),
-        ),
       ),
     );
   }

@@ -47,7 +47,7 @@ dependencies:
   image_picker: ^1.2.1
   dio: ^5.9.1
   talker_dio_logger: ^5.1.20
-  fluttertoast: ^8.2.10
+  toastification: ^3.0.3
   syncfusion_flutter_pdfviewer:
   photo_view:
   google_maps_flutter: ^2.5.0

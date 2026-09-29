@@ -31,7 +31,7 @@ import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 
 class TripScreenState extends ChangeNotifier {
   String _selectedMethod = "Credit/Debit Card";
@@ -71,10 +71,7 @@ class TripScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TripScreenState(),
-      child: _TripScreenView(onShowTripDetails: onShowTripDetails),
-    );
+    return _TripScreenView(onShowTripDetails: onShowTripDetails);
   }
 }
 
@@ -138,6 +135,10 @@ class _TripScreenViewState extends State<_TripScreenView> {
     TripScreenState state,
   ) {
     final bookings = tripProvider.enrolledBookingsList;
+
+    if (tripProvider.isEnrolledTripsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     if (enrolledTrips.isEmpty) {
       return Column(
@@ -476,10 +477,8 @@ class _TripScreenViewState extends State<_TripScreenView> {
                           );
                         }
 
-                        Fluttertoast.showToast(
-                          msg: "Trip saved for offline access",
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
+                        ToastService.showSuccess(
+                          "Trip saved for offline access",
                         );
                       },
                       child: Icon(

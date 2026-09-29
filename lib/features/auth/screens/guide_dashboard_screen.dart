@@ -21,10 +21,7 @@ class GuideDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => GuideDashboardState(),
-      child: const _GuideDashboardView(),
-    );
+    return const _GuideDashboardView();
   }
 }
 

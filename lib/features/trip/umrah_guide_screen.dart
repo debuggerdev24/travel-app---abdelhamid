@@ -51,10 +51,7 @@ class UmrahGuideScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UmrahGuideState(),
-      child: const _UmrahGuideScreenView(),
-    );
+    return const _UmrahGuideScreenView();
   }
 }
 

@@ -49,10 +49,7 @@ class LocalInformationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => LocalInformationState(),
-      child: const _LocalInformationScreenView(),
-    );
+    return const _LocalInformationScreenView();
   }
 }
 

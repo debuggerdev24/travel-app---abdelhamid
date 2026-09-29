@@ -29,10 +29,7 @@ class FeedbackScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => FeedbackState(),
-      child: const _FeedbackView(),
-    );
+    return const _FeedbackView();
   }
 }
 
