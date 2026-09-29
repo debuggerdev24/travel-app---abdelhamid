@@ -44,10 +44,7 @@ class TermsConditionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TermsConditionState(),
-      child: const _TermsConditionView(),
-    );
+    return const _TermsConditionView();
   }
 }
 
@@ -62,7 +59,9 @@ class _TermsConditionViewState extends State<_TermsConditionView> {
   @override
   void initState() {
     super.initState();
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+    });
   }
 
   Future<void> _load() async {

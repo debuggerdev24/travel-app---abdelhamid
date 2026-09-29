@@ -13,7 +13,7 @@ import 'package:travel_app_abdelhamid/services/cms_content_service.dart';
 
 import 'package:provider/provider.dart';
 
-class FaqState extends ChangeNotifier {
+class FaqProvider extends ChangeNotifier {
   bool _loading = true;
   String? _error;
   List<FaqItem> _faqs = [];
@@ -56,10 +56,7 @@ class FaqScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => FaqState(),
-      child: const _FaqView(),
-    );
+    return const _FaqView();
   }
 }
 
@@ -74,11 +71,13 @@ class _FaqViewState extends State<_FaqView> {
   @override
   void initState() {
     super.initState();
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+    });
   }
 
   Future<void> _load() async {
-    final state = context.read<FaqState>();
+    final state = context.read<FaqProvider>();
     state.loadStart();
     try {
       final list = await CmsContentService.instance.getFaqs(
@@ -94,7 +93,7 @@ class _FaqViewState extends State<_FaqView> {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<FaqState>();
+    final state = context.watch<FaqProvider>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -244,7 +243,7 @@ class _FaqViewState extends State<_FaqView> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            context.read<FaqState>().toggleExpanded(index);
+                            context.read<FaqProvider>().toggleExpanded(index);
                           },
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 12.h),

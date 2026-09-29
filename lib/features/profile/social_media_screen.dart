@@ -45,10 +45,7 @@ class SocialMediaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SocialMediaState(),
-      child: const _SocialMediaView(),
-    );
+    return const _SocialMediaView();
   }
 }
 
@@ -63,7 +60,9 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
   @override
   void initState() {
     super.initState();
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+    });
   }
 
   Future<void> _load() async {

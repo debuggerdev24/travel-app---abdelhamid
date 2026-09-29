@@ -44,10 +44,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => PrivacyPolicyState(),
-      child: const _PrivacyPolicyView(),
-    );
+    return const _PrivacyPolicyView();
   }
 }
 
@@ -62,7 +59,9 @@ class _PrivacyPolicyViewState extends State<_PrivacyPolicyView> {
   @override
   void initState() {
     super.initState();
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+    });
   }
 
   Future<void> _load() async {

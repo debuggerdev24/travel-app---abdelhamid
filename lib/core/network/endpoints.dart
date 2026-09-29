@@ -46,29 +46,37 @@ class Endpoints {
   /// `GET ?paymentId=` — receipt detail. Base: [AppConstants.apiPublicRoot].
   static const String userPaymentReceiptPath = '/user-payment/receipt';
 
-  static const String essentialPackingList = '/api/essential/get-packing-list';
+  static const String essentialPackingList = '/api/user/essential/packing-list';
+  //*old api : /api/essential/get-packing-list
   static const String essentialCurrencyInfo =
-      '/api/essential/get-currency-info';
+      '/api/user/essential/currency-info';
+  //*old api : /api/essential/get-currency-info
   static const String essentialEmergencyContacts =
-      '/api/essential/get-emergency-contacts';
-  static const String essentialLocalInfo = '/api/essential/get-local-info';
-  static const String essentialHealthTips = '/api/essential/get-health-tips';
-
-  static const String duaFetchDetails = '/api/dua/fetch-dua-details';
-
-  static const String tourGuideFetchDetails =
-      '/api/tour-guide/fetch-guide-details';
+      '/api/user/essential/emergency-contacts';
+  //*old api : /api/essential/get-emergency-contacts
+  static const String essentialLocalInfo = '/api/user/essential/local-info';
+  //*old api : /api/essential/get-local-info
+  static const String essentialHealthTips = '/api/user/essential/health-tips';
+  //*old api : /api/essential/get-health-tips
+  static const String duaFetchDetails = '/api/user/essential/duas';
+  //*old api : /api/dua/fetch-dua-details
+  static const String tourGuideFetchDetails = "/api/user/essential/tour-guide";
+  //*old api : /api/tour-guide/fetch-guide-details
 
   // --- CMS (`/api/...`, use with [AppConstants.apiPublicRoot]) ---
-  static const String faqList = '/faq/get-faqs';
-  static const String socialList = '/social/get-socials';
-  static const String rulesGet = '/rules/get-rules';
+  static const String faqList =
+      '/user/faq/get-faqs'; //* old API: '/faq/get-faqs'
+  static const String socialList =
+      '/user/social/get-socials'; // * old API: /social/get-socials
+  static const String rulesGet =
+      '/user/rules/get-rules'; // * old API: /rules/get-rules
 
-  /// `GET` — Bearer auth; response `data` is map of country → list of locations.
-  static const String locationGetList = '/location/get-locations';
+  // `GET` — Bearer auth; response `data` is map of country → list of locations.
+  static const String locationGetList =
+      '/user/location/get-locations'; // * old API: /location/get-locations
 
-  /// `GET` — Bearer auth; list of team members with photos.
-  static const String teamGetMembers = '/team/get-members';
+  // `GET` — Bearer auth; list of team members with photos.
+  static const String teamGetMembers = '/user/team/get-members'; // * old API: /team/get-members
 
   /// `POST` — body: `purpose`, `rating`, `review`; optional query `tripId` for trip reviews.
   static const String reviewsNewReview = '/reviews/new-review';

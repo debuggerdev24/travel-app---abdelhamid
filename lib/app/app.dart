@@ -3,6 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/theme/app_theme.dart';
 import 'package:travel_app_abdelhamid/features/auth/provider/auth_provider.dart';
+import 'package:travel_app_abdelhamid/features/profile/faq_screen.dart';
+import 'package:travel_app_abdelhamid/features/profile/meet_our_team_screen.dart';
+import 'package:travel_app_abdelhamid/features/profile/our_location_screen.dart';
+import 'package:travel_app_abdelhamid/features/profile/privacy_policy_screen.dart';
+import 'package:travel_app_abdelhamid/features/profile/social_media_screen.dart';
+import 'package:travel_app_abdelhamid/features/profile/terms_condition_screen.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart' as hp;
 import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
@@ -39,6 +45,12 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CurrencyConverterProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()..fetchNotifications()),
+        ChangeNotifierProvider(create: (_) => FaqProvider()),
+        ChangeNotifierProvider(create: (_) => SocialMediaState()),
+        ChangeNotifierProvider(create: (_) => TermsConditionState()),
+        ChangeNotifierProvider(create: (_) => PrivacyPolicyState()),
+        ChangeNotifierProvider(create: (_) => OurLocationsState()),
+        ChangeNotifierProvider(create: (_) => MeetOurTeamState()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(402, 874),

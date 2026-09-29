@@ -44,10 +44,7 @@ class OurLocationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => OurLocationsState(),
-      child: const _OurLocationsView(),
-    );
+    return const _OurLocationsView();
   }
 }
 
@@ -62,7 +59,9 @@ class _OurLocationsViewState extends State<_OurLocationsView> {
   @override
   void initState() {
     super.initState();
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+    });
   }
 
   Future<void> _load() async {

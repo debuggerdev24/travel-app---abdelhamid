@@ -45,10 +45,7 @@ class MeetOurTeamScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => MeetOurTeamState(),
-      child: const _MeetOurTeamView(),
-    );
+    return const _MeetOurTeamView();
   }
 }
 
@@ -63,7 +60,9 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
   @override
   void initState() {
     super.initState();
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _load();
+    });
   }
 
   Future<void> _load() async {
