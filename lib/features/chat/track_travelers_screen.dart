@@ -241,7 +241,7 @@ class _TrackTravelersViewState extends State<_TrackTravelersView> {
     final image = await picture.toImage(markerSize.toInt(), markerSize.toInt());
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
-    return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+    return BitmapDescriptor.bytes(byteData!.buffer.asUint8List());
   }
 
   @override

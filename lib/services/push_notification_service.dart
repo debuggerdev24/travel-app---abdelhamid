@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -37,14 +38,14 @@ class PushNotificationService {
       if (Platform.isIOS) {
         // Wait for APNS token on iOS before getting FCM token
         String? apnsToken = await _messaging.getAPNSToken();
-        print('🔥 APNS TOKEN: $apnsToken');
+        log('APNS TOKEN: $apnsToken');
       }
       
       // Cache the current token then keep it updated.
       String? token = await _messaging.getToken();
       await _persistToken(token);
     } catch (e) {
-      print('🔥 Error getting FCM token: $e');
+      log('Error getting FCM token: $e');
     }
 
     _messaging.onTokenRefresh.listen(_persistToken);
@@ -93,7 +94,7 @@ class PushNotificationService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    print('🔥 MESSAGE FOREGROUND: ${message.data}');
+    log('MESSAGE FOREGROUND: ${message.data}');
     final notification = message.notification;
     final android = notification?.android;
 
@@ -128,14 +129,12 @@ class PushNotificationService {
   void _handleMessageOpenedApp(RemoteMessage message) {
     // Hook to navigate users to specific screens when they tap a notification.
     // Example: use message.data to deep-link inside the app.
-    print('🔥 MESSAGE OPENED APP: ${message.data}');
+    log('MESSAGE OPENED APP: ${message.data}');
   }
 
   Future<void> _persistToken(String? token) async {
     if (token == null || token.isEmpty) return;
-    print('====================================');
-    print('🔥 FCM TOKEN: $token');
-    print('====================================');
+    log('FCM TOKEN: $token');
     await _prefs?.setString(_tokenKey, token);
     
     // Only send to backend if user is logged in
@@ -154,7 +153,7 @@ class PushNotificationService {
           await _prefs?.setString(_tokenKey, token);
         }
       } catch (e) {
-        print('🔥 Error retrieving FCM token for backend: $e');
+        log('Error retrieving FCM token for backend: $e');
       }
     }
     if (token == null || token.isEmpty || !PrefHelper.isLoggedIn()) return;
@@ -178,7 +177,7 @@ class PushNotificationService {
 
   Future<String?> getCachedToken() async {
     _prefs ??= await SharedPreferences.getInstance();
-    print('🔥 CACHED FCM TOKEN: ${_prefs?.getString(_tokenKey)}');
+    log('CACHED FCM TOKEN: ${_prefs?.getString(_tokenKey)}');
     return _prefs?.getString(_tokenKey);
   }
 }

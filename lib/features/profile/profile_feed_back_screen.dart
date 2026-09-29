@@ -169,7 +169,10 @@ class _ProfileFeedbackViewState extends State<_ProfileFeedbackView> {
                                       ? AppAssets.starFill
                                       : AppAssets.star,
                                   width: 49.w,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  colorFilter: ColorFilter.mode(
+                                    Theme.of(context).colorScheme.primary,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
                             ),

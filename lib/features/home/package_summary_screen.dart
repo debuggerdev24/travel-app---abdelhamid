@@ -108,8 +108,14 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
       return Scaffold(body: Center(child: Text("No Trip Selected".tr())));
     }
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (!mounted || !shouldPop) return;
+        context.pop();
+      },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(

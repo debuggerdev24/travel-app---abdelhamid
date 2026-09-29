@@ -110,7 +110,7 @@ class _LiveLocationViewState extends State<_LiveLocationView> {
       format: ui.ImageByteFormat.png,
     );
 
-    return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
+    return BitmapDescriptor.bytes(pngBytes!.buffer.asUint8List());
   }
 
   /// 🔥 Load custom circular markers

@@ -56,21 +56,23 @@ class PaymentOption extends StatelessWidget {
               ),
             ),
             Spacer(),
-            Radio<PaymentMethodEnum>(
-              side: BorderSide(
-                width: 1,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.3),
-              ),
-              activeColor: Theme.of(context).colorScheme.primary,
-              value: value,
+            RadioGroup<PaymentMethodEnum>(
               groupValue: selectedValue,
               onChanged: (val) {
                 if (val != null) {
                   onSelect(val);
                 }
               },
+              child: Radio<PaymentMethodEnum>(
+                side: BorderSide(
+                  width: 1,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.3),
+                ),
+                activeColor: Theme.of(context).colorScheme.primary,
+                value: value,
+              ),
             ),
           ],
         ),

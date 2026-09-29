@@ -87,8 +87,6 @@ class _TripScreenView extends StatefulWidget {
 }
 
 class _TripScreenViewState extends State<_TripScreenView> {
-
-
   @override
   void initState() {
     super.initState();
@@ -409,16 +407,21 @@ class _TripScreenViewState extends State<_TripScreenView> {
     );
   }
 
-  Widget _buildTripDetails(TripProvider tripProvider, MyTripProvider provider, TripScreenState state) {
+  Widget _buildTripDetails(
+    TripProvider tripProvider,
+    MyTripProvider provider,
+    TripScreenState state,
+  ) {
     final trip = tripProvider.tripForTripsTab;
 
     _scheduleRefreshIfTripChanged(trip?.id, state);
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         state.setShowTripList(true);
         widget.onShowTripDetails?.call(false);
-        return false;
       },
       child: SingleChildScrollView(
         child: Column(
@@ -433,7 +436,11 @@ class _TripScreenViewState extends State<_TripScreenView> {
                       state.setShowTripList(true);
                       widget.onShowTripDetails?.call(false);
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                    child: SvgIcon(
+                      AppAssets.backIcon,
+                      size: 28.5.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   Expanded(
                     child: AppText(
@@ -450,17 +457,23 @@ class _TripScreenViewState extends State<_TripScreenView> {
                       onTap: () async {
                         // Save trip to offline
                         await OfflineStorageHelper.saveTripForOffline(trip);
-                        
+
                         // Try to get itinerary
                         final today = tripProvider.todayItinerary;
                         if (today != null) {
-                          await OfflineStorageHelper.saveOfflineItinerary(trip.id!, today);
+                          await OfflineStorageHelper.saveOfflineItinerary(
+                            trip.id!,
+                            today,
+                          );
                         }
-                        
+
                         // Try to get documents
                         final docs = provider.tripDocumentsBundle;
                         if (docs != null) {
-                          await OfflineStorageHelper.saveOfflineDocuments(trip.id!, docs);
+                          await OfflineStorageHelper.saveOfflineDocuments(
+                            trip.id!,
+                            docs,
+                          );
                         }
 
                         Fluttertoast.showToast(
@@ -476,7 +489,9 @@ class _TripScreenViewState extends State<_TripScreenView> {
                       ),
                     )
                   else
-                    SizedBox(width: 30.w), // Balance the back button for centering
+                    SizedBox(
+                      width: 30.w,
+                    ), // Balance the back button for centering
                 ],
               ),
             ),
@@ -569,7 +584,12 @@ class _TripScreenViewState extends State<_TripScreenView> {
     );
   }
 
-  Widget _buildTab(String title, String icon, int index, TripScreenState state) {
+  Widget _buildTab(
+    String title,
+    String icon,
+    int index,
+    TripScreenState state,
+  ) {
     return AppChip(
       isSelected: state.selectedIndex == index,
       title: title,
@@ -809,14 +829,20 @@ class _TripScreenViewState extends State<_TripScreenView> {
                   "Phone".tr(): hotel.hotelContact.isEmpty
                       ? "-"
                       : hotel.hotelContact,
-                  "Check-in".tr(): formatDateTimeForDisplay(hotel.stayInfo.checkIn),
+                  "Check-in".tr(): formatDateTimeForDisplay(
+                    hotel.stayInfo.checkIn,
+                  ),
                   "Check-out".tr(): formatDateTimeForDisplay(
                     hotel.stayInfo.checkOut,
                   ),
                   if (room != null)
-                    "Room Type".tr(): room.roomType.isEmpty ? "-" : room.roomType,
+                    "Room Type".tr(): room.roomType.isEmpty
+                        ? "-"
+                        : room.roomType,
                   if (room != null)
-                    "Room No".tr(): room.roomNumber.isEmpty ? "-" : room.roomNumber,
+                    "Room No".tr(): room.roomNumber.isEmpty
+                        ? "-"
+                        : room.roomNumber,
                   if (room != null && room.guests.isNotEmpty)
                     "Guests".tr(): room.guests.join(', '),
                   if (facilities.isNotEmpty) "Facilities".tr(): facilities,
@@ -1090,7 +1116,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
       'File Type': doc.fileType ?? '—',
       if (doc.uploadedDate != null && doc.uploadedDate!.isNotEmpty)
         'Uploaded': formatDateForDisplay(doc.uploadedDate),
-        'Uploaded': formatDateForDisplay(doc.uploadedDate),
+      'Uploaded': formatDateForDisplay(doc.uploadedDate),
     };
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
@@ -1192,8 +1218,8 @@ class _TripScreenViewState extends State<_TripScreenView> {
           info: {
             'Check-in': formatDateTimeForDisplay(h.checkIn),
             'Check-out': formatDateTimeForDisplay(h.checkOut),
-            'Check-in': formatDateTimeForDisplay(h.checkIn),
-            'Check-out': formatDateTimeForDisplay(h.checkOut),
+            // 'Check-in': formatDateTimeForDisplay(h.checkIn),
+            // 'Check-out': formatDateTimeForDisplay(h.checkOut),
             'File Type': h.fileType ?? 'Image',
           },
           button1: 'View',

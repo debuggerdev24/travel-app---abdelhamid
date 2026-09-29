@@ -161,7 +161,10 @@ class _FeedbackViewState extends State<_FeedbackView> {
                                     ? AppAssets.starFill
                                     : AppAssets.star,
                                 width: 49.w,
-                                color: AppColors.lightYellowColor,
+                                colorFilter: ColorFilter.mode(
+                                  AppColors.lightYellowColor,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                             ),
                           ),

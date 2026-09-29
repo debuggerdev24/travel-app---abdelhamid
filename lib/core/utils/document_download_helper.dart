@@ -161,7 +161,7 @@ Future<void> _saveOrShare({
       SnackBar(content: Text('File saved successfully.'.tr())),
     );
     return;
-    return;
+
   }
 
   final dir = await getTemporaryDirectory();

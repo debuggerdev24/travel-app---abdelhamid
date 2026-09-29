@@ -197,7 +197,14 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                     border: Border.all(color: Colors.transparent),
                     color: Theme.of(context).colorScheme.surface,
                   ),
-                  child: Column(
+                  child: RadioGroup<String>(
+                    groupValue: _radioGroupValue(),
+                    onChanged: (val) {
+                      if (!widget.showRadio || val == null) return;
+                      state.setExpanded(false);
+                      widget.onChanged([val]);
+                    },
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Title
@@ -264,13 +271,6 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                                           context,
                                         ).colorScheme.primary,
                                         value: item,
-                                        groupValue: _radioGroupValue(),
-                                        onChanged: (val) {
-                                          if (val != null) {
-                                            state.setExpanded(false);
-                                            widget.onChanged([val]);
-                                          }
-                                        },
                                       )
                                     : SvgIcon(
                                         isSelected
@@ -285,6 +285,7 @@ class _CustomMultiSelectDropdownState extends State<CustomMultiSelectDropdown> {
                       }),
                       SizedBox(height: 5.h),
                     ],
+                    ),
                   ),
                 ),
             ],

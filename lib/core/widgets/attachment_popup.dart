@@ -46,8 +46,7 @@ class AttachmentPopup extends StatelessWidget {
               ],
             ),
           ),
-
-          /// Arrow Pointer
+          // Arrow Pointer
           Positioned(
             bottom: -10,
             left: 60.w,
