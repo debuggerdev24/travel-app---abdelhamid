@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 
 /// Tiny shimmer without dependencies (used for loading placeholders).
 class ShimmerBox extends StatefulWidget {
@@ -34,8 +35,8 @@ class _ShimmerBoxState extends State<ShimmerBox>
 
   @override
   Widget build(BuildContext context) {
-    final base = Theme.of(context).colorScheme.surfaceContainerHighest;
-    final highlight = Theme.of(context).colorScheme.surfaceContainerLow;
+    const base = AppColors.shimmerBaseColor;
+    const highlight = AppColors.shimmerHighlightColor;
 
     return AnimatedBuilder(
       animation: _c,

@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +19,7 @@ import 'package:travel_app_abdelhamid/core/utils/trip_detail_refresh.dart';
 import 'package:travel_app_abdelhamid/features/trip/widgets/trip_payment_section.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/trip_list_shimmer.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
 import 'package:travel_app_abdelhamid/model/trip/trip_documents_bundle_model.dart';
@@ -137,7 +137,38 @@ class _TripScreenViewState extends State<_TripScreenView> {
     final bookings = tripProvider.enrolledBookingsList;
 
     if (tripProvider.isEnrolledTripsLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 60.h,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: AppText(
+                    text: "My Trips".tr(),
+                    style: textStyle32Bold.copyWith(
+                      fontSize: 26.sp,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 13.5.w,
+                  child: Icon(
+                    Icons.cloud_off,
+                    size: 28.w,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          20.h.verticalSpace,
+          const Expanded(child: TripListShimmer(itemCount: 5)),
+        ],
+      );
     }
 
     if (enrolledTrips.isEmpty) {
@@ -1822,7 +1853,6 @@ class _TripScreenViewState extends State<_TripScreenView> {
     return Icons.info_outline;
   }
 }
-
 
 class _EmptyState extends StatelessWidget {
   final IconData icon;

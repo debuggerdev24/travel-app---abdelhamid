@@ -11,6 +11,7 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/feed_back_card.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/core/widgets/packge_details_card.dart';
+import 'package:travel_app_abdelhamid/features/home/widget/trip_details_shimmer.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
@@ -59,46 +60,44 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: bookingProvider.isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 13.5.w,
+                vertical: 15.h,
+              ),
+              child: Row(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 13.5.w,
-                      vertical: 15.h,
-                    ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => context.pop(),
-                          child: SvgIcon(
-                            AppAssets.backIcon,
-                            size: 28.5.w,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                        30.w.horizontalSpace,
-                        Expanded(
-                          child: AppText(
-                            text: display.title,
-                            overflow: TextOverflow.ellipsis,
-                            style: textStyle32Bold.copyWith(
-                              fontSize: 26.sp,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ),
-                      ],
+                  GestureDetector(
+                    onTap: () => context.pop(),
+                    child: SvgIcon(
+                      AppAssets.backIcon,
+                      size: 28.5.w,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
+                  30.w.horizontalSpace,
                   Expanded(
-                    child: SingleChildScrollView(
+                    child: AppText(
+                      text: bookingProvider.isLoading
+                          ? trip.title
+                          : display.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: textStyle32Bold.copyWith(
+                        fontSize: 26.sp,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: bookingProvider.isLoading
+                  ? TripDetailsShimmer(showPackages: isUpcoming)
+                  : SingleChildScrollView(
                       child: Column(
                         children: [
                           NetworkImageWithShimmer(

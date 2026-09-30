@@ -6,6 +6,7 @@ import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/model/cms/cms_models.dart';
@@ -103,16 +104,12 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
   Widget _leadingIcon(SocialLinkItem item) {
     final url = serverMediaUrl(item.iconRaw);
     if (url != null && url.isNotEmpty) {
-      return ClipRRect(
+      return NetworkImageWithShimmer(
+        imageUrl: url,
+        size: 40.w,
+        fit: BoxFit.cover,
         borderRadius: BorderRadius.circular(8.r),
-        child: Image.network(
-          url,
-          width: 40.w,
-          height: 40.w,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) =>
-              SvgIcon(_fallbackAssetForName(item.name), size: 40.w),
-        ),
+        errorWidget: SvgIcon(_fallbackAssetForName(item.name), size: 40.w),
       );
     }
     return SvgIcon(_fallbackAssetForName(item.name), size: 40.w);

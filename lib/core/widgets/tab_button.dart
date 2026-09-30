@@ -23,7 +23,9 @@ class CustomTabButton extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
           height: 42.h,
           alignment: Alignment.center,
           decoration: BoxDecoration(

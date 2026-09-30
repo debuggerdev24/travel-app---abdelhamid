@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +14,7 @@ import 'package:travel_app_abdelhamid/core/constants/live_location_constants.dar
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
@@ -618,22 +620,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                               alignment: Alignment.center,
                               child: const Icon(Icons.broken_image),
                             )
-                          : Image.network(
-                              url,
+                          : NetworkImageWithShimmer(
+                              imageUrl: url,
                               width: 220.w,
                               height: 200.h,
                               fit: BoxFit.cover,
-                              loadingBuilder: (c, w, ev) {
-                                if (ev == null) return w;
-                                return SizedBox(
-                                  width: 220.w,
-                                  height: 200.h,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (_, __, ___) => Container(
+                              errorWidget: Container(
                                 width: 220.w,
                                 height: 120.h,
                                 color: Colors.grey.shade300,
@@ -1164,18 +1156,18 @@ class _ChatFullScreenImagePage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           PhotoView(
-            imageProvider: NetworkImage(imageUrl),
+            imageProvider: CachedNetworkImageProvider(imageUrl),
             backgroundDecoration: const BoxDecoration(color: Colors.black),
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.covered * 4,
             loadingBuilder: (context, event) {
-              if (event == null) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final total = event.expectedTotalBytes;
-              final loaded = event.cumulativeBytesLoaded;
-              final value = total != null && total > 0 ? loaded / total : null;
-              return Center(child: CircularProgressIndicator(value: value));
+              return const Center(
+                child: SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+              );
             },
             errorBuilder: (context, error, stackTrace) => Center(
               child: Icon(

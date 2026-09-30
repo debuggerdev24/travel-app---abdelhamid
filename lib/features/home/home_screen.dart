@@ -9,6 +9,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_header.dart';
 import 'package:travel_app_abdelhamid/core/widgets/tab_button.dart';
+import 'package:travel_app_abdelhamid/features/home/widget/home_trip_shimmer.dart';
 import 'package:travel_app_abdelhamid/core/widgets/trip_card.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
@@ -46,12 +47,14 @@ class _HomeViewState extends State<_HomeView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      if (mounted) {
-        context.read<TripProvider>().fetchTrips();
-        context.read<PrayerTimesProvider>().fetchPrayerTimes();
-        context.read<ProfileProvider>().loadProfile();
-      }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.microtask(() {
+        if (mounted) {
+          context.read<TripProvider>().fetchTrips();
+          context.read<PrayerTimesProvider>().fetchPrayerTimes();
+          context.read<ProfileProvider>().loadProfile();
+        }
+      });
     });
   }
 
@@ -133,14 +136,7 @@ class _HomeViewState extends State<_HomeView> {
                           ),
                         ),
                         if (prayer.showHomePrayerLoading)
-                          SizedBox(
-                            width: 18.w,
-                            height: 18.w,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          )
+                          const HomePrayerLineShimmer()
                         else ...[
                           Expanded(
                             child: AppText(
@@ -180,7 +176,7 @@ class _HomeViewState extends State<_HomeView> {
 
                 20.h.verticalSpace,
 
-                /// Tabs
+                //* Tabs
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 13.5.w),
                   child: Container(
@@ -225,11 +221,7 @@ class _HomeViewState extends State<_HomeView> {
                   child: Builder(
                     builder: (context) {
                       if (provider.isLoading) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        );
+                        return const HomeTripShimmer();
                       }
                       final trips =
                           context.watch<HomeTabState>().selectedTab == 0
@@ -254,7 +246,9 @@ class _HomeViewState extends State<_HomeView> {
                                 child: _EmptyState(
                                   icon: Icons.luggage_outlined,
                                   title:
-                                      context.watch<HomeTabState>().selectedTab ==
+                                      context
+                                              .watch<HomeTabState>()
+                                              .selectedTab ==
                                           0
                                       ? "No Current Trips".tr()
                                       : "No Past Trips".tr(),
@@ -313,7 +307,6 @@ class _HomeViewState extends State<_HomeView> {
     );
   }
 }
-
 
 class _EmptyState extends StatelessWidget {
   final IconData icon;

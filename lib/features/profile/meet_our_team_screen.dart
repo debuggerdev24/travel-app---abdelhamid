@@ -7,6 +7,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/model/profile/team_member_model.dart';
 import 'package:travel_app_abdelhamid/services/profile_content_service.dart';
 
@@ -231,16 +232,11 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipOval(
-            child: imageUrl != null
-                ? Image.network(
-                    imageUrl,
-                    width: 80.w,
-                    height: 80.w,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _avatarPlaceholder(),
-                  )
-                : _avatarPlaceholder(),
+          NetworkImageWithShimmer(
+            imageUrl: imageUrl ?? '',
+            size: 80.w,
+            shape: BoxShape.circle,
+            errorWidget: _avatarPlaceholder(),
           ),
           16.w.horizontalSpace,
           Expanded(

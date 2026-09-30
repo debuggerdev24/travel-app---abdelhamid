@@ -7,6 +7,9 @@ import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
+import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
+import 'package:travel_app_abdelhamid/routes/go_routes.dart';
+import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class BaseApiService {
   BaseApiService._internal() {
@@ -59,6 +62,10 @@ class BaseApiService {
           } catch (e) {
             handler.next(options);
           }
+        },
+        onError: (error, handler) async {
+          await _openLoginIfTokenExpired(error);
+          handler.next(error);
         },
       ),
     );
@@ -530,7 +537,33 @@ class BaseApiService {
     }
   }
 
+  static bool _isSendingToLogin = false;
+
   static bool _isAuthPath(String path) {
     return path.contains('/auth/');
+  }
+
+  /// 401 with "Invalid or Expired Token" means the session is over.
+  /// Login is opened here so each API call does not handle it itself.
+  static Future<void> _openLoginIfTokenExpired(DioException error) async {
+    if (error.response?.statusCode != 401) return;
+    if (_isAuthPath(error.requestOptions.uri.path)) return;
+
+    final data = error.response?.data;
+    if (data is! Map) return;
+
+    final message = data['message']?.toString().trim();
+    if (message != 'Invalid or Expired Token') return;
+    if (_isSendingToLogin) return;
+
+    _isSendingToLogin = true;
+    try {
+      await PrefHelper.clearTokens();
+      UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
+    } catch (e) {
+      LogHelper.instance.error('Could not open login after expired token', e);
+    } finally {
+      _isSendingToLogin = false;
+    }
   }
 }

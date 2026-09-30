@@ -14,6 +14,7 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/model/chat/group_info_model.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/services/chat_api_service.dart';
@@ -628,12 +629,11 @@ class _GroupInfoViewState extends State<_GroupInfoView> {
               itemBuilder: (_, index) {
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  child: Image.network(
-                    media[index].url,
-                    width: 100.w,
-                    height: 100.h,
+                  child: NetworkImageWithShimmer(
+                    imageUrl: media[index].url,
+                    size: 100.w,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorWidget: Container(
                       width: 100.w,
                       height: 100.h,
                       color: Colors.grey.shade200,

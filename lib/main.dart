@@ -67,8 +67,49 @@ TRV-2026-F8B8AF
 shwetapatel.dds@gmail.com
 Test@123
 
-* git add . && git commit -m "29rd Sep" && git push origin dev
-*/                                                                                                                                 
-                                                                                                                                                                                                        
-                                                                                                                                                                                                        
+* git add . && git commit -m "30th Sep" && git push origin dev
 
+
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+│ [http-error] [GET] https://api.temheed.com/api/user/trips/upcoming-bookings
+│ Status: 401
+│ Message: This exception was thrown because the response has a status code of 401 and RequestOptions.validateStatus was configured to throw for this status code.
+│ The status code of 401 has the following meaning: "Client error - the request contains bad syntax or cannot be fulfilled"
+│ Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+│ In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
+│ 
+│ Data: {
+│   "status": 0,
+│   "message": "Invalid or Expired Token"
+│ }
+│ Headers: {
+│   "connection": [
+│     "keep-alive"
+│   ],
+│   "x-powered-by": [
+│     "Express"
+│   ],
+│   "date": [
+│     "Wed, 30 Sep 2026 11:02:26 GMT"
+│   ],
+│   "access-control-allow-origin": [
+│     "*"
+│   ],
+│   "content-length": [
+│     "49"
+│   ],
+│   "etag": [
+│     "W/\"31-wUQ/UJ0FFlneTUR+4TPDF/Ie2eQ\""
+│   ],
+│   "content-type": [
+│     "application/json; charset=utf-8"
+│   ],
+│   "server": [
+│     "nginx/1.24.0 (Ubuntu)"
+│   ]
+│ }
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❌ [ERROR]: API Error: GET /trips/upcoming-bookings
+   Details: [401] Invalid or Expired Token
+
+*/

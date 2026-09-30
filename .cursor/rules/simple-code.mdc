@@ -1,0 +1,28 @@
+---
+description: Write simple code that a fresher can read on the first pass
+alwaysApply: true
+---
+
+# Simple code
+
+Write code a new Flutter developer can understand without extra explanation.
+
+- Use clear names. `loadConversations` is clearer than `init`.
+- One function should do one job. If it does two things, split it.
+- Prefer a straight `if` over nested ternaries, extra generics, or extra layers.
+- Do not add a helper, provider, or file unless the screen already needs it.
+- Match the style already used in the file you are editing.
+- Add a short comment only when the reason is not obvious from the code.
+
+```dart
+// Hard to follow
+final label = items.isEmpty ? (tab == 0 ? 'None' : 'Empty') : items.first.name;
+
+// Easy to follow
+String label = 'Empty';
+if (items.isNotEmpty) {
+  label = items.first.name;
+} else if (tab == 0) {
+  label = 'None';
+}
+```

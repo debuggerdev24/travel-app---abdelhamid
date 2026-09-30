@@ -7,6 +7,7 @@ import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/features/chat/widget/chat_list_shimmer.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
 import 'package:travel_app_abdelhamid/model/chat/chat_model.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
@@ -46,7 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 builder: (context, provider, child) {
                   if (provider.loadingConversations &&
                       provider.chatList.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const ChatListShimmer();
                   }
                   if (provider.conversationsError != null &&
                       provider.chatList.isEmpty) {
@@ -67,18 +68,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       provider.chatList.isEmpty) {
                     return RefreshIndicator(
                       onRefresh: () => provider.loadConversations(),
-                      child: ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          SizedBox(height: 120.h),
-                          Center(
-                            child: _EmptyState(
-                              icon: Icons.chat_bubble_outline,
-                              title: 'No conversations yet.'.tr(),
-                              subtitle: 'Your trip chats will appear here.'.tr(),
-                            ),
-                          ),
-                        ],
+                      child: Center(
+                        child: _EmptyState(
+                          icon: Icons.chat_bubble_outline,
+                          title: 'No conversations yet.'.tr(),
+                          subtitle: 'Your trip chats will appear here.'.tr(),
+                        ),
                       ),
                     );
                   }
@@ -170,33 +165,33 @@ class _ChatScreenState extends State<ChatScreen> {
         onTap: () => provider.changeTab(index),
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10.h),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(25.r),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.black.setOpacity(0.01),
-                    blurRadius: 3,
-                    offset: Offset(0, 3),
-                  ),
-                ]
-              : null,
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: textStyle14Medium.copyWith(
-              fontSize: 14.sp,
-              color: isSelected && isDarkMode
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(25.r),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.setOpacity(0.01),
+                      blurRadius: 3,
+                      offset: Offset(0, 3),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: textStyle14Medium.copyWith(
+                fontSize: 14.sp,
+                color: isSelected && isDarkMode
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
@@ -241,8 +236,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           text: data.name.startsWith('Trip: ')
                               ? '${"Trip".tr()}: ${data.name.substring(6)}'
                               : (data.name.startsWith('Trip:')
-                                  ? '${"Trip".tr()}:${data.name.substring(5)}'
-                                  : data.name),
+                                    ? '${"Trip".tr()}:${data.name.substring(5)}'
+                                    : data.name),
                           overflow: TextOverflow.ellipsis,
                           style: textStyle18Bold.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
@@ -333,7 +328,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
-
 class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -348,25 +342,37 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 32.w),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 40.sp, color: AppColors.secondary),
-          10.h.verticalSpace,
+          Container(
+            height: 88.w,
+            width: 88.w,
+            decoration: BoxDecoration(
+              color: AppColors.secondary.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 36.sp, color: AppColors.secondary),
+          ),
+          20.h.verticalSpace,
           AppText(
             text: title,
             textAlign: TextAlign.center,
             style: textStyle16SemiBold.copyWith(
+              fontSize: 18.sp,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          6.h.verticalSpace,
+          8.h.verticalSpace,
           AppText(
             text: subtitle,
             textAlign: TextAlign.center,
             style: textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              height: 1.4,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.55),
             ),
           ),
         ],

@@ -22,4 +22,7 @@ class AppColors {
 
   static const Color whiteColor = Colors.white;
   static const Color black = Colors.black;
+
+  static const Color shimmerBaseColor = Color.fromARGB(255, 207, 209, 213);
+  static const Color shimmerHighlightColor = Color(0xFFFBFCFF);
 }

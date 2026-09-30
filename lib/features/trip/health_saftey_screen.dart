@@ -9,6 +9,7 @@ import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/model/essential/health_tip_model.dart';
 import 'package:travel_app_abdelhamid/services/essential_service.dart';
@@ -213,10 +214,12 @@ class _HealthSafetyScreenView extends StatelessWidget {
               height: 180.h,
               width: double.infinity,
               child: imageUrl != null
-                  ? Image.network(
-                      imageUrl,
+                  ? NetworkImageWithShimmer(
+                      imageUrl: imageUrl,
+                      height: 180.h,
+                      width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (ctx, __, ___) => _placeholderImage(ctx),
+                      errorWidget: _placeholderImage(context),
                     )
                   : _placeholderImage(context),
             ),

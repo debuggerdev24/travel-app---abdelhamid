@@ -8,6 +8,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 
 class HotelVoucherScreen extends StatelessWidget {
   final String? imageFile;
@@ -65,13 +66,15 @@ class HotelVoucherScreen extends StatelessWidget {
                 child:
                     (networkImageUrl != null &&
                         networkImageUrl!.trim().isNotEmpty)
-                    ? Image.network(
-                        networkImageUrl!.trim(),
+                    ? NetworkImageWithShimmer(
+                        imageUrl: networkImageUrl!.trim(),
                         width: double.infinity,
+                        height: 220.h,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Image.asset(
+                        errorWidget: Image.asset(
                           imageFile ?? AppAssets.hotelVoucher,
                           width: double.infinity,
+                          height: 220.h,
                           fit: BoxFit.cover,
                         ),
                       )

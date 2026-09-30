@@ -179,12 +179,6 @@ class TripProvider extends ChangeNotifier {
 
   /// Fetches all upcoming bookings from API and populates enrolledBookingsList.
   Future<void> fetchUpcomingBookingsForTripsTab() async {
-    if (!PrefHelper.isLoggedIn()) {
-      _enrolledBookingsList = [];
-      _isEnrolledTripsLoading = false;
-      notifyListeners();
-      return;
-    }
     _isEnrolledTripsLoading = true;
     notifyListeners();
     try {

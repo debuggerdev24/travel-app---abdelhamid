@@ -1,78 +1,95 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 
-/// Network image with a [ShimmerBox] placeholder until the first frame loads.
+/// Cached network image with a shimmer placeholder.
+/// Pass [size] to use the same value for width and height, or set them separately.
 class NetworkImageWithShimmer extends StatelessWidget {
   const NetworkImageWithShimmer({
     super.key,
     required this.imageUrl,
     this.width,
     this.height,
+    this.size,
     this.fit = BoxFit.cover,
     this.borderRadius,
+    this.shape = BoxShape.rectangle,
+    this.errorWidget,
     this.errorIcon = Icons.broken_image,
   });
 
   final String imageUrl;
   final double? width;
   final double? height;
+
+  /// Sets both width and height when they should match.
+  final double? size;
   final BoxFit fit;
   final BorderRadius? borderRadius;
+  final BoxShape shape;
+  final Widget? errorWidget;
   final IconData errorIcon;
+
+  double? get _width => size ?? width;
+  double? get _height => size ?? height;
 
   @override
   Widget build(BuildContext context) {
     final url = imageUrl.trim();
-    if (url.isEmpty) {
-      return _errorPlaceholder(context);
+    final w = _width;
+    final h = _height;
+
+    final Widget image = url.isEmpty
+        ? (errorWidget ?? _errorBox(context, w, h))
+        : CachedNetworkImage(
+            imageUrl: url,
+            width: w,
+            height: h,
+            fit: fit,
+            placeholder: (_, __) => _shimmer(w, h),
+            errorWidget: (_, __, ___) =>
+                errorWidget ?? _errorBox(context, w, h),
+          );
+
+    if (shape == BoxShape.circle) {
+      return ClipOval(
+        child: SizedBox(width: w, height: h, child: image),
+      );
     }
-
-    Widget image = Image.network(
-      url,
-      width: width,
-      height: height,
-      fit: fit,
-      loadingBuilder: (context, child, progress) {
-        if (progress == null) return child;
-        return _shimmerPlaceholder();
-      },
-      errorBuilder: (_, __, ___) => _errorPlaceholder(context),
-    );
-
     if (borderRadius != null) {
-      image = ClipRRect(borderRadius: borderRadius!, child: image);
+      return ClipRRect(borderRadius: borderRadius!, child: image);
     }
     return image;
   }
 
-  Widget _shimmerPlaceholder() {
-    final h = height ?? 120;
-    if (width != null && width!.isFinite) {
-      return ShimmerBox(width: width!, height: h, borderRadius: borderRadius);
-    }
-    return SizedBox(
-      height: h,
-      width: width,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final w = constraints.maxWidth.isFinite && constraints.maxWidth > 0
-              ? constraints.maxWidth
-              : 300.0;
-          return ShimmerBox(width: w, height: h, borderRadius: borderRadius);
-        },
+  Widget _shimmer(double? w, double? h) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.shimmerBaseColor,
+      highlightColor: AppColors.shimmerHighlightColor,
+      child: Container(
+        width: w,
+        height: h ?? 120,
+        decoration: BoxDecoration(
+          color: AppColors.shimmerBaseColor,
+          shape: shape,
+          borderRadius: shape == BoxShape.circle
+              ? null
+              : (borderRadius ?? BorderRadius.circular(8)),
+        ),
       ),
     );
   }
 
-  Widget _errorPlaceholder(BuildContext context) {
+  Widget _errorBox(BuildContext context, double? w, double? h) {
     return Container(
-      width: width,
-      height: height ?? 120,
-      color: Theme.of(context).colorScheme.errorContainer,
+      width: w,
+      height: h ?? 120,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       alignment: Alignment.center,
       child: Icon(
         errorIcon,
-        color: Theme.of(context).colorScheme.onErrorContainer,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }

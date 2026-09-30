@@ -10,6 +10,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
+import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
 class FullScreenDocumentViewer extends StatefulWidget {
@@ -160,13 +161,12 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
         return SfPdfViewer.network(net);
       }
       return _imageFitContain(
-        Image.network(
-          net,
+        NetworkImageWithShimmer(
+          imageUrl: net,
           width: 348.w,
           height: 300.h,
           fit: BoxFit.contain,
-          alignment: Alignment.center,
-          errorBuilder: (_, __, ___) => Image.asset(
+          errorWidget: Image.asset(
             widget.assetImage,
             width: 348.w,
             height: 300.h,

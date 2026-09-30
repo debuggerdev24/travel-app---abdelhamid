@@ -64,13 +64,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      final bookingId = context.read<TripBookingProvider>().bookingId;
-      if (bookingId != null && bookingId.isNotEmpty) {
-        await _personDetailsProvider.fetchAndPopulateFamilyDetails(bookingId);
-      }
-    });
+    _personDetailsProvider.clearFamilyControllers();
   }
 
   @override
@@ -210,71 +204,26 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                                           return;
                                         }
 
-                                        debugPrint(
-                                          '🔵 [FamilyMembersScreen] Button tapped',
-                                        );
-                                        debugPrint(
-                                          '🔵 firstName: ${personProvider.familyFirstNameController.text}',
-                                        );
-                                        debugPrint(
-                                          '🔵 surname: ${personProvider.familySurnameController.text}',
-                                        );
-                                        debugPrint(
-                                          '🔵 phoneNumber: ${personProvider.familyPhoneNumberController.text}',
-                                        );
-                                        debugPrint(
-                                          '🔵 relationship: ${personProvider.familyRelationshipController.text}',
-                                        );
-
-                                        // Check if data has changed
-                                        final hasChanged = personProvider
-                                            .hasFamilyDataChanged();
-
-                                        if (hasChanged) {
-                                          // Data changed or new - save locally
-                                          debugPrint(
-                                            '🔵 [FamilyMembersScreen] Data changed - saving locally',
-                                          );
-                                          final success = await personProvider
-                                              .saveFamilyDetails('');
-
-                                          debugPrint(
-                                            success
-                                                ? '✅ [FamilyMembersScreen] Family details saved locally'
-                                                : '❌ [FamilyMembersScreen] Failed to save family details',
-                                          );
-
-                                          if (success && context.mounted) {
-                                            // Store family details in TripBookingProvider for later submission
-                                            if (personProvider
-                                                    .localFamilyDetailsData !=
-                                                null) {
-                                              context
-                                                  .read<TripBookingProvider>()
-                                                  .setLocalFamilyDetails(
-                                                    personProvider
-                                                        .localFamilyDetailsData!,
-                                                  );
-                                            }
-                                            context.pushNamed(
-                                              UserAppRoutes
-                                                  .packageSummaryScreen
-                                                  .name,
-                                            );
-                                          }
-                                        } else {
-                                          // Data unchanged - skip API call and go to next screen
-                                          debugPrint(
-                                            '🔵 [FamilyMembersScreen] Data unchanged - skipping API call',
-                                          );
-                                          if (context.mounted) {
-                                            context.pushNamed(
-                                              UserAppRoutes
-                                                  .packageSummaryScreen
-                                                  .name,
-                                            );
-                                          }
+                                        final success = await personProvider
+                                            .saveFamilyDetails('');
+                                        if (!success || !context.mounted) {
+                                          return;
                                         }
+
+                                        if (personProvider
+                                                .localFamilyDetailsData !=
+                                            null) {
+                                          context
+                                              .read<TripBookingProvider>()
+                                              .setLocalFamilyDetails(
+                                                personProvider
+                                                    .localFamilyDetailsData!,
+                                              );
+                                        }
+                                        context.pushNamed(
+                                          UserAppRoutes.packageSummaryScreen
+                                              .name,
+                                        );
                                       },
                               ),
                               10.h.verticalSpace,

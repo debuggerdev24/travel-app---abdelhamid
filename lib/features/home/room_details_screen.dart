@@ -614,7 +614,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                   }
                                 } else {
                                   ToastHelper.showError(
-                                    "Please fix the errors in the form".tr(),
+                                    "Please fill the required details".tr(),
                                   );
                                 }
                               },
