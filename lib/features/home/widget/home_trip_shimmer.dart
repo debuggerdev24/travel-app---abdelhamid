@@ -47,12 +47,25 @@ class HomePrayerLineShimmer extends StatelessWidget {
 
 /// Placeholder that matches the home [TripCard] while trips are loading.
 class HomeTripShimmer extends StatelessWidget {
-  const HomeTripShimmer({super.key, this.itemCount = 2});
+  const HomeTripShimmer({super.key, this.itemCount = 2, this.shrinkWrap = false});
 
   final int itemCount;
+  final bool shrinkWrap;
 
   @override
   Widget build(BuildContext context) {
+    if (shrinkWrap) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 24.h),
+        child: Column(
+          children: List.generate(
+            itemCount,
+            (_) => const _HomeTripCardShimmer(),
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 24.h),

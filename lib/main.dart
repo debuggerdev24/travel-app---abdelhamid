@@ -69,7 +69,6 @@ Test@123
 
 * git add . && git commit -m "30th Sep" && git push origin dev
 
-
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 │ [http-error] [GET] https://api.temheed.com/api/user/trips/upcoming-bookings
 │ Status: 401

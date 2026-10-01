@@ -6,10 +6,8 @@ import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/utils/log_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
+import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
 import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
-import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
-import 'package:travel_app_abdelhamid/routes/go_routes.dart';
-import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class BaseApiService {
   BaseApiService._internal() {
@@ -18,28 +16,11 @@ class BaseApiService {
         baseUrl: AppConstants.baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
-        headers: <String, dynamic>{
-          HttpHeaders.acceptHeader: 'application/json',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        },
+        // headers: <String, dynamic>{
+        //   HttpHeaders.acceptHeader: 'application/json',
+        //   HttpHeaders.contentTypeHeader: 'application/json',
+        // },
         responseType: ResponseType.json,
-      ),
-    );
-
-    _dio.interceptors.add(
-      TalkerDioLogger(
-        settings: const TalkerDioLoggerSettings(
-          printRequestHeaders: true,
-          printRequestData: true,
-          printResponseData: true,
-          printResponseHeaders: false,
-          printResponseMessage: true,
-          // Expected 404s (e.g. empty CMS) still throw; LogHelper covers those.
-          printErrorData: true,
-          printErrorHeaders: true,
-          printErrorMessage: true,
-          // hiddenHeaders: {'Authorization'},
-        ),
       ),
     );
 
@@ -57,16 +38,35 @@ class BaseApiService {
                     'Bearer $token';
               }
             }
-
             handler.next(options);
           } catch (e) {
             handler.next(options);
           }
         },
         onError: (error, handler) async {
-          await _openLoginIfTokenExpired(error);
+          final response = await _retryAfterRefresh(error);
+          if (response != null) {
+            return handler.resolve(response);
+          }
           handler.next(error);
         },
+      ),
+    );
+
+    _dio.interceptors.add(
+      TalkerDioLogger(
+        settings: const TalkerDioLoggerSettings(
+          printRequestHeaders: true,
+          printRequestData: true,
+          printResponseData: true,
+          printResponseHeaders: false,
+          printResponseMessage: true,
+          //* Expected 404s (e.g. empty CMS) still throw; LogHelper covers those.
+          printErrorData: true,
+          printErrorHeaders: true,
+          printErrorMessage: true,
+          // hiddenHeaders: {'Authorization'},
+        ),
       ),
     );
   }
@@ -537,33 +537,80 @@ class BaseApiService {
     }
   }
 
-  static bool _isSendingToLogin = false;
+  /// One refresh at a time, so many failed calls do not all refresh together.
+  Future<String?>? _refreshCall;
 
   static bool _isAuthPath(String path) {
     return path.contains('/auth/');
   }
 
-  /// 401 with "Invalid or Expired Token" means the session is over.
-  /// Login is opened here so each API call does not handle it itself.
-  static Future<void> _openLoginIfTokenExpired(DioException error) async {
-    if (error.response?.statusCode != 401) return;
-    if (_isAuthPath(error.requestOptions.uri.path)) return;
-
+  bool _isInvalidToken(DioException error) {
+    if (error.response?.statusCode != 401) return false;
     final data = error.response?.data;
-    if (data is! Map) return;
+    if (data is! Map) return false;
+    return data['message']?.toString().trim() == 'Invalid or Expired Token';
+  }
 
-    final message = data['message']?.toString().trim();
-    if (message != 'Invalid or Expired Token') return;
-    if (_isSendingToLogin) return;
+  /// Gets a new access token, then sends the failed request one more time.
+  Future<Response<dynamic>?> _retryAfterRefresh(DioException error) async {
+    if (!_isInvalidToken(error)) return null;
+    if (error.requestOptions.extra['retried'] == true) return null;
+    if (error.requestOptions.path.contains('refresh-token')) return null;
 
-    _isSendingToLogin = true;
     try {
-      await PrefHelper.clearTokens();
-      UserAppRoute.goRouter.go(UserAppRoutes.signInScreen.path);
+      final accessToken = await _refreshAccessToken();
+      if (accessToken == null || accessToken.isEmpty) return null;
+
+      final options = error.requestOptions;
+      options.extra['retried'] = true;
+      options.headers[HttpHeaders.authorizationHeader] = 'Bearer $accessToken';
+      return await _dio.fetch<dynamic>(options);
     } catch (e) {
-      LogHelper.instance.error('Could not open login after expired token', e);
+      LogHelper.instance.error('Retry after refresh token failed', e);
+      return null;
+    }
+  }
+
+  Future<String?> _refreshAccessToken() async {
+    if (_refreshCall != null) {
+      return _refreshCall;
+    }
+
+    _refreshCall = _requestNewAccessToken();
+    try {
+      return await _refreshCall;
     } finally {
-      _isSendingToLogin = false;
+      _refreshCall = null;
+    }
+  }
+
+  Future<String?> _requestNewAccessToken() async {
+    final refreshToken = PrefHelper.getRefreshToken();
+    if (refreshToken == null || refreshToken.isEmpty) return null;
+
+    try {
+      final response = await _dio.post<dynamic>(
+        '${AppConstants.apiPublicRoot}${Endpoints.refreshToken}',
+        data: {'token': refreshToken},
+      );
+      final body = response.data;
+      if (body is! Map || body['status'] != 1) return null;
+
+      final data = body['data'];
+      if (data is! Map) return null;
+
+      final accessToken = data['accessToken']?.toString() ?? '';
+      final newRefreshToken = data['refreshToken']?.toString() ?? '';
+      if (accessToken.isEmpty) return null;
+
+      await PrefHelper.saveAccessToken(accessToken);
+      if (newRefreshToken.isNotEmpty) {
+        await PrefHelper.saveRefreshToken(newRefreshToken);
+      }
+      return accessToken;
+    } catch (e) {
+      LogHelper.instance.error('Refresh token API failed', e);
+      return null;
     }
   }
 }

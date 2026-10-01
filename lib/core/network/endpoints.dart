@@ -7,6 +7,7 @@ class Endpoints {
   static const String verifyOtp = '/auth/verify-otp';
   static const String resendOtp = '/auth/resend-otp';
   static const String resetPassword = '/auth/reset-password';
+  static const String refreshToken = '/auth/refresh-token';
 
   static const String getTrips = '/trips/list';
   static const String getTripDetails = '/trips/details';
@@ -76,7 +77,8 @@ class Endpoints {
       '/user/location/get-locations'; // * old API: /location/get-locations
 
   // `GET` — Bearer auth; list of team members with photos.
-  static const String teamGetMembers = '/user/team/get-members'; // * old API: /team/get-members
+  static const String teamGetMembers =
+      '/user/team/get-members'; // * old API: /team/get-members
 
   /// `POST` — body: `purpose`, `rating`, `review`; optional query `tripId` for trip reviews.
   static const String reviewsNewReview = '/reviews/new-review';

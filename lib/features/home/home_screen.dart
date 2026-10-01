@@ -58,6 +58,12 @@ class _HomeViewState extends State<_HomeView> {
     });
   }
 
+  Future<void> _refreshHome(BuildContext context, TripProvider provider) async {
+    await provider.fetchTrips(showGlobalLoading: false);
+    if (!context.mounted) return;
+    await context.read<PrayerTimesProvider>().fetchPrayerTimes();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +74,7 @@ class _HomeViewState extends State<_HomeView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                27.h.verticalSpace,
+                4.h.verticalSpace,
                 Consumer<ProfileProvider>(
                   builder: (context, profileProvider, _) {
                     final raw = profileProvider.profile?.profileImageRaw.trim();
@@ -78,8 +84,6 @@ class _HomeViewState extends State<_HomeView> {
                     return CustomHeaders(
                       profileImageUrl: url,
                       onNotificationTap: () {
-                        // ToastService.showSuccess("Welcome back!");
-
                         context.pushNamed(
                           UserAppRoutes.notificationScreen.name,
                         );
@@ -88,221 +92,192 @@ class _HomeViewState extends State<_HomeView> {
                   },
                 ),
 
-                16.h.verticalSpace,
-                Center(
-                  child: AppText(
-                    text: "My Trip".tr(),
-                    style: textStyle12semiBold.copyWith(
-                      fontSize: 28.sp,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-                16.h.verticalSpace,
-                GestureDetector(
-                  onTap: () async {
-                    await context.pushNamed(
-                      UserAppRoutes.prayerTimesScreen.name,
-                    );
-                    if (!context.mounted) return;
-                    await context
-                        .read<PrayerTimesProvider>()
-                        .fetchPrayerTimes();
-                  },
-                  child: Container(
-                    height: 52.h,
-                    margin: EdgeInsets.symmetric(horizontal: 13.5.w),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.2),
-                      ),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Row(
-                      children: [
-                        16.w.horizontalSpace,
-                        AppText(
-                          text: "Next Prayer".tr(),
-                          style: textStyle14Regular.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                        AppText(
-                          text: "  :  ",
-                          style: textStyle14Regular.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                        if (prayer.showHomePrayerLoading)
-                          const HomePrayerLineShimmer()
-                        else ...[
-                          Expanded(
-                            child: AppText(
-                              text: prayer.homePrayerLine,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textStyle14Regular.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                          VerticalDivider(
-                            indent: 12.w,
-                            endIndent: 12.w,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.2),
-                          ),
-                          AppText(
-                            text: prayer.homeCountdownLine,
-                            style: textStyle14Regular.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
-                        8.w.horizontalSpace,
-                        SvgIcon(
-                          AppAssets.travel,
-                          size: 24.w,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        8.w.horizontalSpace,
-                      ],
-                    ),
-                  ),
-                ),
-
-                20.h.verticalSpace,
-
-                //* Tabs
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 13.5.w),
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(130.r),
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.tabColor
-                          : AppColors.lightblueColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.setOpacity(0.2),
-                          blurRadius: 5,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        CustomTabButton(
-                          text: "Current".tr(),
-                          index: 0,
-                          selectedTab: context
-                              .watch<HomeTabState>()
-                              .selectedTab,
-                          onTap: () => context.read<HomeTabState>().setTab(0),
-                        ),
-                        CustomTabButton(
-                          text: "Past".tr(),
-                          index: 1,
-                          selectedTab: context
-                              .watch<HomeTabState>()
-                              .selectedTab,
-                          onTap: () => context.read<HomeTabState>().setTab(1),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
                 Expanded(
-                  child: Builder(
-                    builder: (context) {
-                      if (provider.isLoading) {
-                        return const HomeTripShimmer();
-                      }
-                      final trips =
-                          context.watch<HomeTabState>().selectedTab == 0
-                          ? provider.upcomingTripList
-                          : provider.tripList;
-                      if (trips.isEmpty) {
-                        return RefreshIndicator(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          onRefresh: () async {
-                            await provider.fetchTrips(showGlobalLoading: false);
-                            if (context.mounted) {
-                              await context
-                                  .read<PrayerTimesProvider>()
-                                  .fetchPrayerTimes();
-                            }
-                          },
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: SizedBox(
-                              height: MediaQuery.sizeOf(context).height * 0.5,
-                              child: Center(
-                                child: _EmptyState(
-                                  icon: Icons.luggage_outlined,
-                                  title:
-                                      context
-                                              .watch<HomeTabState>()
-                                              .selectedTab ==
-                                          0
-                                      ? "No Current Trips".tr()
-                                      : "No Past Trips".tr(),
-                                  subtitle:
-                                      "Trips will show up here once they are available."
-                                          .tr(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                      return RefreshIndicator(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        onRefresh: () async {
-                          await provider.fetchTrips(showGlobalLoading: false);
-                          if (context.mounted) {
-                            await context
-                                .read<PrayerTimesProvider>()
-                                .fetchPrayerTimes();
-                          }
-                        },
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 13.5.w,
-                            vertical: 24.h,
-                          ),
-                          itemCount: trips.length,
-                          itemBuilder: (context, index) {
-                            final item = trips[index];
-                            return TripCard(
-                              image: item.image,
-                              title: item.title,
-                              location: item.location,
-                              date: item.date,
-                              status: item.status,
-                              onTap: () {
-                                provider.selectTrip(item);
-                                context.pushNamed(
-                                  UserAppRoutes.tripDetailsScreen.name,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    },
+                  child: RefreshIndicator(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    onRefresh: () => _refreshHome(context, provider),
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(child: _homeIntro(context, prayer)),
+                        _tripSliver(context, provider),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _homeIntro(BuildContext context, PrayerTimesProvider prayer) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        0.h.verticalSpace,
+        Center(
+          child: AppText(
+            text: "My Trip".tr(),
+            style: textStyle12semiBold.copyWith(
+              fontSize: 28.sp,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+        16.h.verticalSpace,
+        GestureDetector(
+          onTap: () async {
+            await context.pushNamed(UserAppRoutes.prayerTimesScreen.name);
+            if (!context.mounted) return;
+            await context.read<PrayerTimesProvider>().fetchPrayerTimes();
+          },
+          child: Container(
+            height: 52.h,
+            margin: EdgeInsets.symmetric(horizontal: 13.5.w),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.2),
+              ),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Row(
+              children: [
+                16.w.horizontalSpace,
+                AppText(
+                  text: "Next Prayer".tr(),
+                  style: textStyle14Regular.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                AppText(
+                  text: "  :  ",
+                  style: textStyle14Regular.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                if (prayer.showHomePrayerLoading)
+                  const HomePrayerLineShimmer()
+                else ...[
+                  Expanded(
+                    child: AppText(
+                      text: prayer.homePrayerLine,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textStyle14Regular.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  VerticalDivider(
+                    indent: 12.w,
+                    endIndent: 12.w,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.2),
+                  ),
+                  AppText(
+                    text: prayer.homeCountdownLine,
+                    style: textStyle14Regular.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+                8.w.horizontalSpace,
+                SvgIcon(
+                  AppAssets.travel,
+                  size: 24.w,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                8.w.horizontalSpace,
+              ],
+            ),
+          ),
+        ),
+        20.h.verticalSpace,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(130.r),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.tabColor
+                  : AppColors.lightblueColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.setOpacity(0.2),
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                CustomTabButton(
+                  text: "Current".tr(),
+                  index: 0,
+                  selectedTab: context.watch<HomeTabState>().selectedTab,
+                  onTap: () => context.read<HomeTabState>().setTab(0),
+                ),
+                CustomTabButton(
+                  text: "Past".tr(),
+                  index: 1,
+                  selectedTab: context.watch<HomeTabState>().selectedTab,
+                  onTap: () => context.read<HomeTabState>().setTab(1),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _tripSliver(BuildContext context, TripProvider provider) {
+    if (provider.isLoading) {
+      return const SliverToBoxAdapter(child: HomeTripShimmer(shrinkWrap: true));
+    }
+
+    final trips = context.watch<HomeTabState>().selectedTab == 0
+        ? provider.upcomingTripList
+        : provider.tripList;
+
+    if (trips.isEmpty) {
+      final isCurrent = context.watch<HomeTabState>().selectedTab == 0;
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.only(top: 40.h),
+          child: _EmptyState(
+            icon: Icons.luggage_outlined,
+            title: isCurrent ? "No Current Trips".tr() : "No Past Trips".tr(),
+            subtitle: "Trips will show up here once they are available.".tr(),
+          ),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 24.h),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final item = trips[index];
+          return TripCard(
+            image: item.image,
+            title: item.title,
+            location: item.location,
+            date: item.date,
+            status: item.status,
+            onTap: () {
+              provider.selectTrip(item);
+              context.pushNamed(UserAppRoutes.tripDetailsScreen.name);
+            },
+          );
+        }, childCount: trips.length),
       ),
     );
   }

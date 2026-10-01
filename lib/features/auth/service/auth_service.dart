@@ -1,3 +1,4 @@
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/core/network/base_api_service.dart';
 import 'package:travel_app_abdelhamid/core/network/endpoints.dart';
@@ -66,6 +67,34 @@ class AuthService {
       return payload;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> refreshToken() async {
+    final savedToken = PrefHelper.getRefreshToken();
+    if (savedToken == null || savedToken.isEmpty) {
+      throw Exception('Refresh token is missing');
+    }
+
+    final response = await _apiService.post(
+      '${AppConstants.apiPublicRoot}${Endpoints.refreshToken}',
+      body: {'token': savedToken},
+      showErrorToast: false,
+    );
+    final data = response['data'];
+    if (data is! Map) {
+      throw Exception('Invalid refresh token response');
+    }
+
+    final accessToken = data['accessToken']?.toString() ?? '';
+    final newRefreshToken = data['refreshToken']?.toString() ?? '';
+    if (accessToken.isEmpty) {
+      throw Exception('Refresh token response has no access token');
+    }
+
+    await PrefHelper.saveAccessToken(accessToken);
+    if (newRefreshToken.isNotEmpty) {
+      await PrefHelper.saveRefreshToken(newRefreshToken);
     }
   }
 
