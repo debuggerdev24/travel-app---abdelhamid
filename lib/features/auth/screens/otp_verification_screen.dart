@@ -98,7 +98,11 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                     onTap: () {
                       context.pop();
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                    child: SvgIcon(
+                      AppAssets.backIcon,
+                      size: 28.5.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
                 11.h.verticalSpace,
@@ -146,16 +150,17 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                       height: 55.h,
                       width: 57.w,
                       textStyle: textStyle14Regular.copyWith(
+                        fontSize: 18.sp,
+
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.2),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -163,6 +168,8 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                       height: 56.h,
                       width: 57.w,
                       textStyle: textStyle14Regular.copyWith(
+                        fontSize: 18.sp,
+
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       decoration: BoxDecoration(
@@ -178,16 +185,16 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                       height: 56.h,
                       width: 57.w,
                       textStyle: textStyle14Regular.copyWith(
+                        fontSize: 18.sp,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.2),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -201,9 +208,9 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                 Selector<AuthProvider, bool>(
                   selector: (context, provider) => provider.isLoading,
                   builder: (context, isLoading, child) {
-                    if (isLoading) return const CircularProgressIndicator();
                     return AppButton(
                       title: "Verify".tr(),
+                      isLoading: isLoading,
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
                           context.read<AuthProvider>().verifyOtp(
@@ -261,8 +268,8 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                             style: textStyle18Bold.copyWith(
                               fontSize: 14.sp,
                               color: otpState.secondsRemaining == 0
-                                   ? AppColors.secondary
-                                  : AppColors.secondary.setOpacity(0.5),
+                                  ? AppColors.secondary
+                                  : AppColors.secondary,
                             ),
                           ),
                         ],

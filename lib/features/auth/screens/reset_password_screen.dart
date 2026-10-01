@@ -53,7 +53,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     onTap: () {
                       context.pop();
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                    child: SvgIcon(
+                      AppAssets.backIcon,
+                      size: 28.5.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
                 11.h.verticalSpace,
@@ -109,14 +113,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                     ],
                   ),
-                ),
+                ), //TRV-2026-02EA28
+
                 60.h.verticalSpace,
                 Selector<AuthProvider, bool>(
                   selector: (context, provider) => provider.isLoading,
                   builder: (context, isLoading, child) {
-                    if (isLoading) return const CircularProgressIndicator();
                     return AppButton(
                       title: "Change Password".tr(),
+                      isLoading: isLoading,
                       onTap: () async {
                         if (_formKey.currentState!.validate()) {
                           await context.read<AuthProvider>().resetPassword(

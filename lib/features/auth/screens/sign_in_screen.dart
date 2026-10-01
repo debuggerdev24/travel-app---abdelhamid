@@ -10,6 +10,7 @@ import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 import 'package:travel_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/sign_up_screen.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -31,6 +32,14 @@ class _SignInScreenState extends State<SignInScreen> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  initState() {
+    super.initState();
+
+    emailController.text = signUpEmailController.text;
+    passwordController.text = signUpPasswordController.text;
   }
 
   @override
@@ -68,7 +77,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     AppText(
                       textAlign: TextAlign.center,
                       text:
-                          "“Access your trips, bookings, and adventures in one place.”".tr(),
+                          "“Access your trips, bookings, and adventures in one place.”"
+                              .tr(),
                       style: textStyle14Italic,
                     ),
                     36.h.verticalSpace,
@@ -124,64 +134,67 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: AppText(
                           text: "Forgot Password ?".tr(),
                           style: textStyle14Regular.copyWith(
+                            fontWeight: FontWeight.w600,
                             color: AppColors.secondary,
                           ),
                         ),
                       ),
                     ),
                     60.h.verticalSpace,
-                    authProvider.isLoading
-                        ? const CircularProgressIndicator()
-                        : AppButton(
-                            title: "Sign In".tr(),
-                            onTap: () async {
-                              if (_formKey.currentState!.validate()) {
-                                // Check for static guide credentials
-                                final personalCode = personalCodeController.text
-                                    .trim();
-                                final email = emailController.text.trim();
-                                final password = passwordController.text.trim();
+                    AppButton(
+                      title: "Sign In".tr(),
+                      isLoading: authProvider.isLoading,
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          // Check for static guide credentials
+                          final personalCode = personalCodeController.text
+                              .trim();
+                          final email = emailController.text.trim();
+                          final password = passwordController.text.trim();
 
-                                if (personalCode == '12345678' &&
-                                    email == 'guide@gmail.com' &&
-                                    password == '12345678') {
-                                  // Static guide login - no API call
-                                  await PrefHelper.saveAccessToken(
-                                    'static_guide_token',
-                                  );
-                                  await PrefHelper.saveUserId('guide_user');
+                          if (personalCode == '12345678' &&
+                              email == 'guide@gmail.com' &&
+                              password == '12345678') {
+                            // Static guide login - no API call
+                            await PrefHelper.saveAccessToken(
+                              'static_guide_token',
+                            );
+                            await PrefHelper.saveUserId('guide_user');
 
-                                  if (context.mounted) {
-                                    ToastService.showSuccess("Welcome Guide!");
-                                    context.pushReplacementNamed(
-                                      UserAppRoutes.guideDashboard.name,
-                                    );
-                                  }
-                                  return;
-                                }
+                            if (context.mounted) {
+                              ToastService.showSuccess("Welcome Guide!");
+                              context.pushReplacementNamed(
+                                UserAppRoutes.guideDashboard.name,
+                              );
+                            }
+                            return;
+                          }
 
-                                // Normal user login flow
-                                final success = await authProvider.login(
-                                  travellerCode: personalCode,
-                                  emailOrPhone: email,
-                                  password: password,
-                                  omError: (error) {
-                                    ToastService.showError(error);
-                                  },
-                                );
-
-                                if (success && context.mounted) {
-                                  ToastService.showSuccess("Welcome back!");
-                                  context.goNamed(UserAppRoutes.tabScreen.name);
-                                }
-                              }
+                          // Normal user login flow
+                          final success = await authProvider.login(
+                            travellerCode: personalCode,
+                            emailOrPhone: email,
+                            password: password,
+                            omError: (error) {
+                              ToastService.showError(error);
                             },
-                          ),
+                          );
+
+                          if (success && context.mounted) {
+                            ToastService.showSuccess("Welcome back!");
+                            context.goNamed(UserAppRoutes.tabScreen.name);
+                          }
+                        }
+                      },
+                    ),
                     10.h.verticalSpace,
                     RichText(
                       text: TextSpan(
                         text: "Don’t have an account? ".tr(),
-                        style: textStyle14Regular.copyWith(letterSpacing: 0.4),
+                        style: textStyle14Regular.copyWith(
+                          letterSpacing: 0.4,
+                          color: Colors.black.withValues(alpha: 0.7),
+                        ),
                         children: [
                           TextSpan(
                             recognizer: TapGestureRecognizer()

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/sign_in_screen.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
@@ -14,6 +15,10 @@ import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:travel_app_abdelhamid/features/auth/provider/auth_provider.dart';
 
+final TextEditingController signUpEmailController = TextEditingController();
+final TextEditingController signUpPhoneController = TextEditingController();
+final TextEditingController signUpPasswordController = TextEditingController();
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -23,15 +28,12 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
 
   @override
   void dispose() {
-    emailController.dispose();
-    phoneController.dispose();
-    passwordController.dispose();
+    signUpEmailController.dispose();
+    signUpPhoneController.dispose();
+    signUpPasswordController.dispose();
     super.dispose();
   }
 
@@ -70,7 +72,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     AppText(
                       textAlign: TextAlign.center,
                       text:
-                          "“Start your journey with us – create your account today!”".tr(),
+                          "“Start your journey with us – create your account today!”"
+                              .tr(),
                       style: textStyle14Italic,
                     ),
                     36.h.verticalSpace,
@@ -80,7 +83,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         spacing: 22.h,
                         children: [
                           AppTextField(
-                            controller: emailController,
+                            controller: signUpEmailController,
                             hintText: "Email Address".tr(),
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
@@ -96,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             },
                           ),
                           AppTextField(
-                            controller: phoneController,
+                            controller: signUpPhoneController,
                             hintText: "Phone Number".tr(),
                             keyboardType: TextInputType.phone,
                             validator: (value) {
@@ -110,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             },
                           ),
                           AppTextField(
-                            controller: passwordController,
+                            controller: signUpPasswordController,
                             hintText: "Password".tr(),
                             obSecureText: true,
                             validator: (value) {
@@ -127,38 +130,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     66.h.verticalSpace,
-                    authProvider.isLoading
-                        ? const CircularProgressIndicator()
-                        : AppButton(
-                            title: "Sign Up".tr(),
-                            onTap: () async {
-                              if (_formKey.currentState!.validate()) {
-                                final success = await authProvider.register(
-                                  email: emailController.text.trim(),
-                                  phoneNumber: phoneController.text.trim(),
-                                  password: passwordController.text.trim(),
-                                  omError: (error) {
-                                    ToastService.showError(error);
-                                  },
-                                );
-
-                                if (success && context.mounted) {
-                                  ToastService.showSuccess(
-                                    "Registerd succesfull, we have sent you an email with the traveller code",
-                                  );
-                                  context.pushNamed(
-                                    UserAppRoutes.signInScreen.name,
-                                  );
-                                }
-                              }
+                    AppButton(
+                      title: "Sign Up".tr(),
+                      isLoading: authProvider.isLoading,
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final success = await authProvider.register(
+                            email: signUpEmailController.text.trim(),
+                            phoneNumber: signUpPhoneController.text.trim(),
+                            password: signUpPasswordController.text.trim(),
+                            onError: (error) {
+                              ToastService.showError(error);
                             },
-                          ),
+                          );
+
+                          if (success && context.mounted) {
+                            ToastService.showSuccess(
+                              "We have sent you an email with the traveller code",
+                            );
+                            context.pushNamed(UserAppRoutes.signInScreen.name);
+                          }
+                        }
+                      },
+                    ),
                     10.h.verticalSpace,
                     RichText(
                       text: TextSpan(
-                        text: "Already have an account? ".tr(),
-                        style: textStyle14Regular.copyWith(letterSpacing: 0.4),
                         children: [
+                          TextSpan(
+                            text: "Already have an account? ".tr(),
+                            style: textStyle14Regular.copyWith(
+                              letterSpacing: 0.4,
+                              color: Colors.black.withValues(alpha: 0.7),
+                            ),
+                          ),
                           TextSpan(
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {

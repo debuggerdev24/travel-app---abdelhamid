@@ -76,12 +76,8 @@ class AppTextField extends StatelessWidget {
           borderSide: BorderSide.none,
           borderRadius: BorderRadius.circular(8.r),
         );
-    final InputBorder invalidBorder =
-        errorBorder ??
-        OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.r),
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
-        );
+    final Color errorLineColor =
+        errorBorder?.borderSide.color ?? Theme.of(context).colorScheme.error;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -113,72 +109,106 @@ class AppTextField extends StatelessWidget {
           )
         else
           const SizedBox.shrink(),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8.r),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(
-                  context,
-                ).colorScheme.shadow.withValues(alpha: 0.1),
-                blurRadius: 1,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextFormField(
-            enabled: enabled ?? true,
-            expands: false,
-            readOnly: readOnly,
-            maxLength: maxLength,
-            validator: validator,
-            keyboardType: keyboardType,
-            inputFormatters: inputFormatters,
-            controller: controller,
-            obscureText: obSecureText ?? false,
-            cursorColor: Theme.of(context).colorScheme.primary,
-            showCursor: !readOnly,
-            style: textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
-              decoration: TextDecoration.none,
-            ),
-            onTap: onTap,
-            onTapOutside: (event) {
-              FocusScope.of(context).unfocus();
-            },
-            decoration: InputDecoration(
-              filled: false,
-              prefixIcon: prefixIcon,
-              prefixText: prefixText,
-              prefixStyle: style,
-              suffixIcon: suffixIcon,
-              suffix: suffix,
-              prefix: prefix,
-              hintText: hintText,
-              hintStyle:
-                  hintStyle ??
-                  textStyle14Regular.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+        FormField<String>(
+          initialValue: controller?.text,
+          validator: (value) {
+            if (validator == null) {
+              return null;
+            }
+            return validator!(controller?.text ?? value);
+          },
+          autovalidateMode: autoValidateMode,
+          builder: (field) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(
+                      color: field.hasError
+                          ? errorLineColor
+                          : Colors.transparent,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.shadow.withValues(alpha: 0.1),
+                        blurRadius: 1,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-              errorStyle: textStyle14Regular.copyWith(
-                color: Theme.of(context).colorScheme.error,
-                fontSize: 12.sp,
-              ),
-              contentPadding:
-                  contentPadding ??
-                  EdgeInsets.symmetric(horizontal: 22.w, vertical: 17.h),
-              border: InputBorder.none,
-              enabledBorder: normalBorder,
-              focusedErrorBorder: invalidBorder,
-              focusedBorder: normalBorder,
-              disabledBorder: normalBorder,
-              errorBorder: invalidBorder,
-            ),
-            onChanged: onChanged,
-            maxLines: maxLines ?? 1,
-            autovalidateMode: autoValidateMode,
-          ),
+                  child: TextField(
+                    enabled: enabled ?? true,
+                    readOnly: readOnly,
+                    maxLength: maxLength,
+                    keyboardType: keyboardType,
+                    inputFormatters: inputFormatters,
+                    controller: controller,
+                    obscureText: obSecureText ?? false,
+                    cursorColor: Theme.of(context).colorScheme.primary,
+                    showCursor: !readOnly,
+                    style: textStyle14Regular.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      decoration: TextDecoration.none,
+                    ),
+                    onTap: onTap,
+                    onTapOutside: (event) {
+                      FocusScope.of(context).unfocus();
+                    },
+                    decoration: InputDecoration(
+                      filled: false,
+                      prefixIcon: prefixIcon,
+                      prefixText: prefixText,
+                      prefixStyle: style,
+                      suffixIcon: suffixIcon,
+                      suffix: suffix,
+                      prefix: prefix,
+                      hintText: hintText,
+                      hintStyle:
+                          hintStyle ??
+                          textStyle14Regular.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                      contentPadding:
+                          contentPadding ??
+                          EdgeInsets.symmetric(
+                            horizontal: 22.w,
+                            vertical: 17.h,
+                          ),
+                      border: InputBorder.none,
+                      enabledBorder: normalBorder,
+                      focusedBorder: normalBorder,
+                      disabledBorder: normalBorder,
+                    ),
+                    onChanged: (value) {
+                      if (onChanged != null) {
+                        onChanged!(value);
+                      }
+                      field.didChange(controller?.text ?? value);
+                    },
+                    maxLines: maxLines ?? 1,
+                  ),
+                ),
+                if (field.errorText != null) ...[
+                  SizedBox(height: 6.h),
+                  Text(
+                    field.errorText!,
+                    style: textStyle14Regular.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12.sp,
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
         ),
         if (bottomText != null) ...[
           SizedBox(height: 4.h),

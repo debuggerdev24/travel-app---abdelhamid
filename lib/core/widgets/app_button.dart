@@ -43,7 +43,7 @@ class AppButton extends StatelessWidget {
           horizontal: horizontalPadding == null ? 0 : horizontalPadding!.w,
         ),
         decoration: BoxDecoration(
-          color: (isLoading || onTap == null)
+          color: onTap == null
               ? (buttonColor ?? Theme.of(context).colorScheme.primary)
                     .withValues(alpha: 0.6)
               : buttonColor ?? Theme.of(context).colorScheme.primary,
@@ -61,10 +61,11 @@ class AppButton extends StatelessWidget {
         ),
         child: isLoading
             ? SizedBox(
-                height: 20.h,
-                width: 20.h,
+                height: 28.h,
+                width: 28.w,
                 child: const CircularProgressIndicator(
                   strokeWidth: 2,
+                  strokeCap: StrokeCap.round,
                   color: Colors.white,
                 ),
               )

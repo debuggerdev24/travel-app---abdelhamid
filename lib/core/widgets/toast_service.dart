@@ -24,11 +24,11 @@ class ToastService {
       overlayState: _rootOverlay,
       type: type,
       backgroundColor: backgroundColor,
-      autoCloseDuration: duration ?? const Duration(seconds: 3),
+      autoCloseDuration: duration ?? const Duration(seconds: 4),
       alignment: Alignment.topRight,
       margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
       icon: icon,
-      
+
       title: Text(
         message,
         maxLines: 6,

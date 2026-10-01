@@ -12,6 +12,7 @@ import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
 import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
+import 'package:travel_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
@@ -28,19 +29,40 @@ class ProfileScreen extends StatelessWidget {
           children: [
             SizedBox(
               height: 60.h,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Center(
-                    child: AppText(
-                      text: "profile.title".tr(),
-                      style: textStyle32Bold.copyWith(
-                        fontSize: 26.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+                child: Row(
+                  children: [
+                    SizedBox(width: 88.w),
+                    Expanded(
+                      child: AppText(
+                        text: "profile.title".tr(),
+                        textAlign: TextAlign.center,
+                        style: textStyle32Bold.copyWith(
+                          fontSize: 26.sp,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    GestureDetector(
+                      onTap: () {
+                        context.pushNamed(UserAppRoutes.editProfileScreen.name);
+                      },
+                      child: SizedBox(
+                        width: 88.w,
+                        child: AppText(
+                          text: "profile.edit_profile".tr(),
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textStyle14Medium.copyWith(
+                            color: AppColors.secondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -333,7 +355,7 @@ class ProfileScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
-                            text: "Copyright Notice - Tawheed App".tr(),
+                            text: "Copyright Notice - Temheed App".tr(),
                             style: textStyle16SemiBold.copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -402,64 +424,50 @@ class ProfileScreen extends StatelessWidget {
                         22.h.verticalSpace,
                         22.h.verticalSpace,
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AppActionButton(
-                                label: "profile.edit_profile".tr(),
-                                icon: AppAssets.exit,
-                                color: AppColors.blueColor,
-                                onTap: () {
-                                  context.pushNamed(
-                                    UserAppRoutes.editProfileScreen.name,
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 15.w),
-                            Expanded(
-                              child: AppActionButton(
-                                label: "profile.logout".tr(),
-                                icon: AppAssets.exit,
-                                color: AppColors.redColor,
-                                onTap: () async {
-                                  final confirmed = await showDialog<bool>(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Logout'.tr()),
-                                      content: Text(
-                                        'Are you sure you want to logout?'.tr(),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, false),
-                                          child: Text('Cancel'.tr()),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, true),
-                                          child: Text('Yes'.tr()),
-                                        ),
-                                      ],
+                        Selector<AuthProvider, bool>(
+                          selector: (_, auth) => auth.isLoading,
+                          builder: (context, isLoggingOut, _) {
+                            return AppButton(
+                              title: "profile.logout".tr(),
+                              buttonColor: AppColors.redColor,
+                              titleColor: Colors.white,
+                              isLoading: isLoggingOut,
+                              onTap: () async {
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text('Logout'.tr()),
+                                    content: Text(
+                                      'Are you sure you want to logout?'.tr(),
                                     ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: Text('Cancel'.tr()),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: Text('Yes'.tr()),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirmed != true || !context.mounted) {
+                                  return;
+                                }
+                                await context.read<AuthProvider>().logout();
+                                if (context.mounted) {
+                                  context.goNamed(
+                                    UserAppRoutes.signInScreen.name,
                                   );
-                                  if (confirmed == true) {
-                                    await PrefHelper.clearTokens();
-                                    if (context.mounted) {
-                                      context.pushReplacementNamed(
-                                        UserAppRoutes.signInScreen.name,
-                                      );
-                                    }
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
+                                }
+                              },
+                            );
+                          },
                         ),
-
-                        SizedBox(height: 40.h),
-                        SizedBox(height: 40.h),
+                        SizedBox(height: 20.h),
                       ],
                     );
                   },

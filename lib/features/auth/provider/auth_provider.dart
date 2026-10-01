@@ -18,7 +18,7 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String phoneNumber,
     required String password,
-    required Function(String error) omError,
+    required Function(String error) onError,
   }) async {
     _setLoading(true);
     try {
@@ -31,9 +31,9 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       if (e is ApiException) {
-        omError(e.message);
+        onError(e.message);
       } else {
-        omError(e.toString());
+        onError(e.toString());
       }
       _setLoading(false);
       return false;
@@ -166,8 +166,12 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await _authService.logout();
-    notifyListeners();
+    _setLoading(true);
+    try {
+      await _authService.logout();
+    } finally {
+      _setLoading(false);
+    }
   }
 
   void _setLoading(bool value) {

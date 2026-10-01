@@ -50,7 +50,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     onTap: () {
                       context.pop();
                     },
-                    child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                    child: SvgIcon(
+                      AppAssets.backIcon,
+                      size: 28.5.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
                 11.h.verticalSpace,
@@ -92,9 +96,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Selector<AuthProvider, bool>(
                   selector: (context, provider) => provider.isLoading,
                   builder: (context, isLoading, child) {
-                    if (isLoading) return const CircularProgressIndicator();
                     return AppButton(
                       title: "Get OTP".tr(),
+                      isLoading: isLoading,
                       onTap: () async {
                         if (_formKey.currentState!.validate()) {
                           bool result = await context
@@ -105,16 +109,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   ToastService.showError(error);
                                 },
                               );
-                          if (result) {
+                          if (result && context.mounted) {
+                            final email = emailController.text.trim();
+                            // _formKey.currentState?.reset();
                             ToastService.showSuccess(
                               "OTP sent successfully to your email",
                             );
-                            context.pushNamed(
+
+                            await context.pushNamed(
                               UserAppRoutes.verifyOtpScreen.name,
-                              queryParameters: {
-                                'email': emailController.text.trim(),
-                              },
+                              queryParameters: {'email': email},
                             );
+                            if (!context.mounted) return;
+                            emailController.clear();
+                            _formKey.currentState?.reset();
                           }
                         }
                       },

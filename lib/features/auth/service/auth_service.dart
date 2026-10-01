@@ -21,6 +21,7 @@ class AuthService {
           'phoneNumber': phoneNumber,
           'password': password,
         },
+        showErrorToast: false,
       );
 
       if (response['data'] != null) {
@@ -46,6 +47,8 @@ class AuthService {
           'identifier': emailOrPhone,
           'password': password,
         },
+
+        showErrorToast: false,
       );
 
       if (response is! Map) {
@@ -103,6 +106,7 @@ class AuthService {
       final response = await _apiService.post(
         Endpoints.forgetPassword,
         body: {'email': email},
+        showErrorToast: false,
       );
 
       // Save token if it's returned in the response
@@ -124,6 +128,7 @@ class AuthService {
       final response = await _apiService.post(
         Endpoints.verifyOtp,
         body: {'email': email, 'otp': otp},
+        showErrorToast: false,
       );
 
       // Save token if it's returned in the response
@@ -148,6 +153,7 @@ class AuthService {
       final response = await _apiService.post(
         Endpoints.resetPassword,
         body: {'email': email, 'password': password},
+        showErrorToast: false,
       );
 
       // Save token if it's returned in the response
@@ -166,6 +172,7 @@ class AuthService {
       final response = await _apiService.post(
         Endpoints.resendOtp,
         body: {'email': email},
+        showErrorToast: false,
       );
 
       if (response['status'] != null && response['status'].toString() == '1') {
