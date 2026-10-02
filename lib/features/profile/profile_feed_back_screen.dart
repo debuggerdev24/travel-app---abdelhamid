@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -167,7 +168,9 @@ class _ProfileFeedbackViewState extends State<_ProfileFeedbackView> {
                                       : AppAssets.star,
                                   width: 49.w,
                                   colorFilter: ColorFilter.mode(
-                                    Theme.of(context).colorScheme.primary,
+                                    index < ratingProvider.rating
+                                        ? AppColors.secondary
+                                        : Theme.of(context).colorScheme.primary,
                                     BlendMode.srcIn,
                                   ),
                                 ),

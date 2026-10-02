@@ -98,7 +98,7 @@ class ProfileProvider extends ChangeNotifier {
       selectedLanguages = normalizeSelectedLanguages(
         _profile?.languages ?? selectedLanguages,
       );
-      ToastHelper.showSuccess('Profile updated'.tr());
+      ToastHelper.showSuccess('Profile updated successfully'.tr());
       return true;
     } catch (e) {
       _error = e.toString();

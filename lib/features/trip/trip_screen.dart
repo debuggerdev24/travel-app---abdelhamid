@@ -16,6 +16,10 @@ import 'package:travel_app_abdelhamid/core/widgets/itinerarystep_card.dart';
 import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/trip_detail_refresh.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/document_list_shimmer.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/flight_list_shimmer.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/hotel_list_shimmer.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/itinerary_list_shimmer.dart';
 import 'package:travel_app_abdelhamid/features/trip/widgets/trip_payment_section.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
@@ -717,26 +721,24 @@ class _TripScreenViewState extends State<_TripScreenView> {
         );
 
         if (provider.isLoading) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 40.h),
-            child: const Center(child: CircularProgressIndicator()),
-          );
+          return const FlightListShimmer();
         }
 
         final flights = provider.flightDetails?.flights ?? [];
 
         if (flights.isEmpty) {
           debugPrint('❌ [TripScreen] No flights found');
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 40.h),
-            child: _EmptyState(
-              icon: Icons.flight_outlined,
-              title: 'No flight details available'.tr(),
-              subtitle: 'Flight information will appear here.'.tr(),
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 40.h),
+              child: _EmptyState(
+                icon: Icons.flight_outlined,
+                title: 'No flight details available'.tr(),
+                subtitle: 'Flight information will appear here.'.tr(),
+              ),
             ),
           );
         }
-
         return SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 10.h),
@@ -804,10 +806,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
           children: [
             escortCard,
             if (isLoading)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 40.h),
-                child: const Center(child: CircularProgressIndicator()),
-              )
+              const HotelListShimmer()
             else if (error != null)
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 24.h),
@@ -917,10 +916,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
       child: isLoading
-          ? Padding(
-              padding: EdgeInsets.symmetric(vertical: 40.h),
-              child: const Center(child: CircularProgressIndicator()),
-            )
+          ? const ItineraryListShimmer()
           : error != null
           ? Column(
               mainAxisSize: MainAxisSize.min,
@@ -944,10 +940,12 @@ class _TripScreenViewState extends State<_TripScreenView> {
               ],
             )
           : activities.isEmpty
-          ? _EmptyState(
-              icon: Icons.event_note_outlined,
-              title: 'No itinerary available'.tr(),
-              subtitle: 'Today’s plan will appear here.'.tr(),
+          ? Center(
+              child: _EmptyState(
+                icon: Icons.event_note_outlined,
+                title: 'No itinerary listed for today'.tr(),
+                subtitle: 'There is nothing planned for today yet.'.tr(),
+              ),
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1433,10 +1431,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
         final hasTravelAdmin = insurance != null || checklist != null;
 
         if (loading) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 48.h),
-            child: const Center(child: CircularProgressIndicator()),
-          );
+          return const DocumentListShimmer();
         }
 
         if (err != null) {

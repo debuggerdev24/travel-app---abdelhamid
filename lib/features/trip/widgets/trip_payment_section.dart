@@ -545,7 +545,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: AppText(
-                    text: "Payment Method",
+                    text: "Payment Method".tr(),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 16.sp,

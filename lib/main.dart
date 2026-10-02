@@ -32,7 +32,7 @@ void main() async {
   if (AppConstants.stripePublishableKey.isNotEmpty) {
     Stripe.publishableKey = AppConstants.stripePublishableKey;
   }
-  
+
   if (!kIsWeb &&
       Platform.isIOS &&
       AppConstants.stripeApplePayMerchantId.isNotEmpty) {
@@ -65,7 +65,11 @@ TRV-2026-F8B8AF
 shwetapatel.dds@gmail.com
 Test@123
 
-* git add . && git commit -m "30th Sep" && git push origin dev
+TRV-2026-004650
+pro7@mailinator.com
+Test123@
+
+* git add . && git commit -m "2nd Oct" && git push origin dev
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 │ [http-error] [GET] https://api.temheed.com/api/user/trips/upcoming-bookings
@@ -73,7 +77,8 @@ Test@123
 │ Message: This exception was thrown because the response has a status code of 401 and RequestOptions.validateStatus was configured to throw for this status code.
 │ The status code of 401 has the following meaning: "Client error - the request contains bad syntax or cannot be fulfilled"
 │ Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-│ In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
+│ In order to                                                                                                                                                                                                                                                                                                             
+| resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.
 │ 
 │ Data: {
 │   "status": 0,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
@@ -34,13 +35,13 @@ class AttachmentPopup extends StatelessWidget {
               children: [
                 _item(
                   icon: Icons.image_outlined,
-                  label: "Image/Video",
+                  label: "Image/Video".tr(),
                   onTap: onImageTap,
                 ),
                 Divider(),
                 _item(
                   icon: Icons.camera_alt_outlined,
-                  label: "Camera",
+                  label: "Camera".tr(),
                   onTap: onCameraTap,
                 ),
               ],

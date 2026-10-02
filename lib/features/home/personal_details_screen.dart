@@ -24,6 +24,8 @@ class PersonalDetailsScreen extends StatefulWidget {
 
 class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormFieldState<String>> _dateOfBirthFieldKey =
+      GlobalKey<FormFieldState<String>>();
   bool _didPrefillFromProfile = false;
 
   PersonDetailsProvider get _provider => context.read<PersonDetailsProvider>();
@@ -87,17 +89,20 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       initialDate: initial,
       firstDate: DateTime(1900, 1, 1),
       lastDate: DateTime.now(),
-      helpText: 'Select date of birth',
+      helpText: 'Select date of birth'.tr(),
     );
     if (picked == null) return;
     final y = picked.year.toString().padLeft(4, '0');
     final m = picked.month.toString().padLeft(2, '0');
     final d = picked.day.toString().padLeft(2, '0');
-    provider.dateOfBirthController.text = '$y-$m-$d';
+    final dateText = '$y-$m-$d';
+    provider.dateOfBirthController.text = dateText;
     // Keep cursor stable
     provider.dateOfBirthController.selection = TextSelection.fromPosition(
-      TextPosition(offset: provider.dateOfBirthController.text.length),
+      TextPosition(offset: dateText.length),
     );
+    _dateOfBirthFieldKey.currentState?.didChange(dateText);
+    _dateOfBirthFieldKey.currentState?.validate();
   }
 
   @override
@@ -210,6 +215,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                                 labelText: "Date of Birth".tr(),
                                 hintText: "Select Date of Birth".tr(),
                                 controller: provider.dateOfBirthController,
+                                fieldKey: _dateOfBirthFieldKey,
                                 validator: Validator.validateIsoDateOfBirth,
                                 readOnly: true,
                                 onTap: () => _pickDob(provider),

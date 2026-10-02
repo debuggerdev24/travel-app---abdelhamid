@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
@@ -27,7 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _fullName = TextEditingController();
   final _dob = TextEditingController();
   final _age = TextEditingController();
-  final _gender = TextEditingController();
+  final _gender = TextEditingController(text: 'male');
   final _nationality = TextEditingController();
   final _passport = TextEditingController();
 
@@ -53,7 +55,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _dob.text = p.dateOfBirth;
     final derived = ageFromDateOfBirth(p.dateOfBirth);
     _age.text = derived?.toString() ?? (p.age?.toString() ?? '');
-    _gender.text = p.gender;
+    final savedGender = p.gender.trim().toLowerCase();
+    _gender.text = savedGender.isEmpty ? 'male' : savedGender;
     _nationality.text = p.nationality;
     _passport.text = p.passportNumber;
   }
@@ -158,6 +161,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  List<String> _genderOptions() {
+    const options = ['male', 'female', 'other'];
+    final current = _gender.text.trim();
+    if (current.isEmpty) return options;
+
+    final alreadyListed = options.any(
+      (item) => item.toLowerCase() == current.toLowerCase(),
+    );
+    if (alreadyListed) return options;
+    return [current, ...options];
+  }
+
   (String, String) _splitName(String v) {
     final parts = v
         .trim()
@@ -200,7 +215,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     Stack(
-                      alignment: Alignment.center,
+                      clipBehavior: Clip.none,
                       children: [
                         NetworkAvatar(
                           imageUrl: _profileAvatarUrl(provider),
@@ -225,6 +240,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             ),
                           ),
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: GestureDetector(
+                            onTap:
+                                provider.isUpdatingProfileImage ||
+                                    provider.isLoading
+                                ? null
+                                : () => _pickAndUploadImage(provider),
+                            child: Container(
+                              height: 32.w,
+                              width: 32.w,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Theme.of(context).colorScheme.surface,
+                                border: Border.all(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.outline.withValues(alpha: 0.2),
+                                ),
+                              ),
+                              child: Center(
+                                child: SvgIcon(AppAssets.camera, size: 18.w),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     6.h.verticalSpace,
@@ -236,7 +278,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: AppText(
                         text: provider.isUpdatingProfileImage
                             ? 'Updating picture...'.tr()
-                            : 'Change Picture'.tr(),
+                            : 'Change Photo'.tr(),
                         style: textStyle14Medium.copyWith(
                           fontSize: 16.sp,
                           color: provider.isUpdatingProfileImage
@@ -272,6 +314,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               controller: _dob,
                               readOnly: true,
                               onTap: _pickDob,
+                              suffixIcon: GestureDetector(
+                                onTap: _pickDob,
+                                child: Padding(
+                                  padding: EdgeInsets.all(13),
+                                  child: SvgIcon(
+                                    AppAssets.calendar,
+                                    size: 24.w,
+                                  ),
+                                ),
+                              ),
                             ),
                             18.h.verticalSpace,
 
@@ -281,10 +333,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               readOnly: true,
                             ),
                             18.h.verticalSpace,
-
-                            AppTextField(
-                              hintText: "Gender".tr(),
-                              controller: _gender,
+                            CustomMultiSelectDropdown(
+                              hintText: "gender",
+                              titleText: "gender",
+                              items: _genderOptions(),
+                              selectedItems: _gender.text.trim().isEmpty
+                                  ? []
+                                  : [_gender.text.trim()],
+                              showRadio: true,
+                              onChanged: (values) {
+                                setState(() {
+                                  _gender.text = values.isEmpty
+                                      ? ''
+                                      : values.first;
+                                });
+                              },
                             ),
                             18.h.verticalSpace,
 
@@ -297,6 +360,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             AppTextField(
                               hintText: "Passport Number".tr(),
                               controller: _passport,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(7),
+                              ],
                             ),
                             18.h.verticalSpace,
 
@@ -310,7 +377,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ],
                         ),
-                        42.h.verticalSpace,
+                        22.h.verticalSpace,
                         AppButton(
                           title: "Save".tr(),
                           isLoading: provider.isLoading,
@@ -318,6 +385,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ? null
                               : () => _save(provider),
                         ),
+                        22.h.verticalSpace,
                       ],
                     ),
                   ],

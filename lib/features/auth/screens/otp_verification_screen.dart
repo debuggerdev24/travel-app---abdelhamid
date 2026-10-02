@@ -14,7 +14,6 @@ import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 import 'package:travel_app_abdelhamid/features/auth/provider/auth_provider.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 
 class OtpState extends ChangeNotifier {

@@ -516,11 +516,11 @@ class TripsService {
       queryParameters: {'tripId': tripId},
       showErrorToast: showErrorToast,
     );
-    
+
     if (response is Map) {
       return Map<String, dynamic>.from(response);
     }
-    
+
     if (response is String && response.isNotEmpty) {
       try {
         final decoded = jsonDecode(response);
@@ -553,6 +553,10 @@ class TripsService {
         );
       }
 
+      // Success with an empty list means nothing is planned for today.
+      if (data is List && data.isEmpty) {
+        return UserItineraryResponseModel.empty();
+      }
       throw Exception('Itinerary not found');
     } on ApiException catch (e) {
       // Backend uses 404 when there is no itinerary for the day.

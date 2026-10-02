@@ -99,7 +99,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                       items: myTrip.documentTypes,
                       selectedItems: myTrip.selectedDocumentType,
                       onChanged: myTrip.selectDocumentType,
-                      titleText: "Select Document Type",
+                      titleText: "Select Document Type".tr(),
                       showRadio: true,
                     ),
                     22.h.verticalSpace,

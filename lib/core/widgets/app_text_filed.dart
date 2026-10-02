@@ -35,6 +35,7 @@ class AppTextField extends StatelessWidget {
     this.bottomText,
     this.bottomTextStyle,
     this.readOnly = false,
+    this.fieldKey,
   });
 
   final String? labelText;
@@ -66,6 +67,7 @@ class AppTextField extends StatelessWidget {
   final String? bottomText;
   final TextStyle? bottomTextStyle;
   final bool readOnly;
+  final GlobalKey<FormFieldState<String>>? fieldKey;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +112,7 @@ class AppTextField extends StatelessWidget {
         else
           const SizedBox.shrink(),
         FormField<String>(
+          key: fieldKey,
           initialValue: controller?.text,
           validator: (value) {
             if (validator == null) {

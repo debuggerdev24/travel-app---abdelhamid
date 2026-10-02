@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_app_abdelhamid/core/widgets/toast_service.dart';
 import 'package:travel_app_abdelhamid/provider/chat/chat_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/prayer_times_provider.dart';
@@ -56,7 +56,6 @@ class _TabScreenView extends StatefulWidget {
 }
 
 class _TabScreenViewState extends State<_TabScreenView> {
-  DateTime? lastBackPressed;
   final Set<int> _loadedTabs = {0};
 
   @override
@@ -90,15 +89,16 @@ class _TabScreenViewState extends State<_TabScreenView> {
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
 
-        final now = DateTime.now();
-        if (lastBackPressed == null ||
-            now.difference(lastBackPressed!) > const Duration(seconds: 2)) {
-          lastBackPressed = now;
-          ToastService.showInfo('Press back again to exit');
-        } else {
-          // Allow the pop to happen
-          Navigator.of(context).pop();
+        final tabState = context.read<TabState>();
+        // Trip details has its own back action. Leave that screen first.
+        if (!tabState.showBottomNav) return;
+
+        if (tabState.currentIndex != 0) {
+          tabState.setIndex(0);
+          return;
         }
+
+        SystemNavigator.pop();
       },
       child: Scaffold(
         body: IndexedStack(
