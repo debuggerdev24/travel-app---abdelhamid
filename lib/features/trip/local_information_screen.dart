@@ -65,8 +65,9 @@ class _LocalInformationScreenView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.5.w, vertical: 27.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 14.h),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
@@ -79,7 +80,7 @@ class _LocalInformationScreenView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  14.w.horizontalSpace,
+
                   AppText(
                     text: "Local Information".tr(),
                     style: textStyle32Bold.copyWith(
@@ -87,6 +88,7 @@ class _LocalInformationScreenView extends StatelessWidget {
                       color: AppColors.secondary,
                     ),
                   ),
+                  SizedBox(width: 10),
                 ],
               ),
             ),
@@ -105,7 +107,7 @@ class _LocalInformationScreenView extends StatelessWidget {
     }
     if (state.error != null) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+        padding: EdgeInsets.symmetric(horizontal: 11.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -152,7 +154,8 @@ class _LocalInformationScreenView extends StatelessWidget {
                   child: _EmptyState(
                     icon: Icons.info_outline,
                     title: 'No local information available'.tr(),
-                    subtitle: 'Local tips will appear here once they are added.'.tr(),
+                    subtitle: 'Local tips will appear here once they are added.'
+                        .tr(),
                   ),
                 ),
               ),
@@ -166,7 +169,7 @@ class _LocalInformationScreenView extends StatelessWidget {
       onRefresh: () => context.read<LocalInformationState>().load(),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 8.h),
         itemCount: state.items.length,
         separatorBuilder: (_, __) => SizedBox(height: 20.h),
         itemBuilder: (context, index) {
@@ -240,7 +243,6 @@ class _LocalInformationScreenView extends StatelessWidget {
   }
 }
 
-
 class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -255,7 +257,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

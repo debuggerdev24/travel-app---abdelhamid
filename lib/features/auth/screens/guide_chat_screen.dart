@@ -176,7 +176,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+      padding: EdgeInsets.symmetric(horizontal: 11.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -201,7 +201,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
 
   Widget _buildTabs() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 13.5.w),
+      margin: EdgeInsets.symmetric(horizontal: 11.w),
       padding: EdgeInsets.all(5.w),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(130.r),
@@ -260,7 +260,7 @@ class _GuideChatScreenState extends State<GuideChatScreen> {
     }).toList();
 
     return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      padding: EdgeInsets.symmetric(horizontal: 11.w),
       itemCount: displayedChats.length,
       separatorBuilder: (context, index) => 20.h.verticalSpace,
       itemBuilder: (context, index) {

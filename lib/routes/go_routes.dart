@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
-import 'package:travel_app_abdelhamid/core/utils/pref_helper.dart';
 import 'package:travel_app_abdelhamid/routes/route_pages/auth_routes.dart';
 import 'package:travel_app_abdelhamid/routes/route_pages/booking_routes.dart';
 import 'package:travel_app_abdelhamid/routes/route_pages/chat_routes.dart';
@@ -16,11 +15,7 @@ class UserAppRoute {
 
   static final GoRouter goRouter = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: PrefHelper.isLoggedIn()
-        ? (PrefHelper.getAccessToken() == 'static_guide_token'
-              ? UserAppRoutes.guideDashboard.path
-              : UserAppRoutes.tabScreen.path)
-        : UserAppRoutes.signInScreen.path,
+    initialLocation: UserAppRoutes.splashScreen.path,
     routes: [
       ...authRoutes,
       ...bookingRoutes,

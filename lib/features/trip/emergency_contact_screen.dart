@@ -74,7 +74,9 @@ class _EmergencyContactsScreenView extends StatelessWidget {
         rows.add(["Ambulance", medical.ambulanceCode!]);
       }
       if (rows.isNotEmpty) {
-        cards.add(_contactCard(context: null, title: "Medical".tr(), rows: rows));
+        cards.add(
+          _contactCard(context: null, title: "Medical".tr(), rows: rows),
+        );
       }
     }
 
@@ -135,17 +137,21 @@ class _EmergencyContactsScreenView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.5.w, vertical: 27.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 14.h),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () => context.pop(),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.5.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
-                  13.w.horizontalSpace,
                   AppText(
                     text: "Emergency Contacts".tr(),
                     style: textStyle32Bold.copyWith(
@@ -153,6 +159,7 @@ class _EmergencyContactsScreenView extends StatelessWidget {
                       color: AppColors.secondary,
                     ),
                   ),
+                  const SizedBox(width: 10),
                 ],
               ),
             ),
@@ -171,7 +178,7 @@ class _EmergencyContactsScreenView extends StatelessWidget {
     }
     if (state.error != null) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+        padding: EdgeInsets.symmetric(horizontal: 11.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -229,7 +236,9 @@ class _EmergencyContactsScreenView extends StatelessWidget {
       );
     }
 
-    final cards = _buildCards(data).map((w) => _injectContext(w, context)).toList();
+    final cards = _buildCards(
+      data,
+    ).map((w) => _injectContext(w, context)).toList();
     if (cards.isEmpty) {
       return RefreshIndicator(
         onRefresh: () => context.read<EmergencyContactsState>().load(),
@@ -257,7 +266,7 @@ class _EmergencyContactsScreenView extends StatelessWidget {
       onRefresh: () => context.read<EmergencyContactsState>().load(),
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+        padding: EdgeInsets.symmetric(horizontal: 11.w),
         children: cards,
       ),
     );
@@ -265,11 +274,7 @@ class _EmergencyContactsScreenView extends StatelessWidget {
 
   Widget _injectContext(Widget w, BuildContext context) {
     if (w is _ContactCardWidget) {
-      return _ContactCardWidget(
-        title: w.title,
-        rows: w.rows,
-        context: context,
-      );
+      return _ContactCardWidget(title: w.title, rows: w.rows, context: context);
     }
     return w;
   }
@@ -279,11 +284,7 @@ class _EmergencyContactsScreenView extends StatelessWidget {
     required List<List<String>> rows,
     BuildContext? context,
   }) {
-    return _ContactCardWidget(
-      title: title,
-      rows: rows,
-      context: context,
-    );
+    return _ContactCardWidget(title: title, rows: rows, context: context);
   }
 }
 
@@ -376,7 +377,6 @@ class _ContactCardWidget extends StatelessWidget {
   }
 }
 
-
 class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -391,7 +391,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

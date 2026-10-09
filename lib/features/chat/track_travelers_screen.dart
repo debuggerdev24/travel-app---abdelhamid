@@ -249,7 +249,7 @@ class _TrackTravelersViewState extends State<_TrackTravelersView> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 24.w),
+              padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 11.w),
               child: Stack(
                 alignment: Alignment.center,
                 children: [

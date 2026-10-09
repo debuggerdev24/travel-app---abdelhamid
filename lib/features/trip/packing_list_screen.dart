@@ -36,7 +36,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.5.w, vertical: 27.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 27.h),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -72,7 +72,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
 
                   if (provider.packingError != null) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+                      padding: EdgeInsets.symmetric(horizontal: 11.w),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -108,7 +108,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
                   }
 
                   return ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+                    padding: EdgeInsets.symmetric(horizontal: 11.w),
                     children: provider.packingCategories.map((cat) {
                       final items = cat.items.map((i) => i.name).toList();
                       final key = cat.title;
@@ -222,7 +222,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

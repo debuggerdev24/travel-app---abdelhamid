@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -37,9 +36,9 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            20.h.verticalSpace,
+            15.h.verticalSpace,
             _buildHeader(),
-            20.h.verticalSpace,
+            12.h.verticalSpace,
             _buildTabs(context),
             20.h.verticalSpace,
             Expanded(
@@ -53,7 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       provider.chatList.isEmpty) {
                     return Center(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        padding: EdgeInsets.symmetric(horizontal: 11.w),
                         child: AppText(
                           textAlign: TextAlign.center,
                           text: provider.conversationsError!,
@@ -81,9 +80,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     onRefresh: () => provider.loadConversations(),
                     child: ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      padding: EdgeInsets.symmetric(horizontal: 11.w),
                       itemCount: provider.chatList.length,
-                      separatorBuilder: (context, index) => 20.h.verticalSpace,
+                      separatorBuilder: (context, index) => Divider(
+                        height: 24.h,
+                        thickness: 1,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.12),
+                      ),
                       itemBuilder: (context, index) {
                         return _buildChatItem(
                           context,
@@ -103,11 +108,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+      padding: EdgeInsets.symmetric(horizontal: 11.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          24.w.horizontalSpace,
+          11.w.horizontalSpace,
           AppText(
             textAlign: TextAlign.center,
             text: "Chat".tr(),
@@ -116,7 +121,8 @@ class _ChatScreenState extends State<ChatScreen> {
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          SvgIcon(AppAssets.search, size: 24.w, color: AppColors.primaryColor),
+          // SvgIcon(AppAssets.search, size: 24.w, color: AppColors.primaryColor),
+          SizedBox(width: 24.w),
         ],
       ),
     );
@@ -126,7 +132,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Consumer<ChatProvider>(
       builder: (context, provider, _) {
         return Container(
-          margin: EdgeInsets.symmetric(horizontal: 13.5.w),
+          margin: EdgeInsets.symmetric(horizontal: 11.w),
           padding: EdgeInsets.all(5.w),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(130.r),
@@ -215,21 +221,24 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildChatItem(BuildContext context, ChatModel data) {
     final hasUnread = data.unread > 0;
+    final hasMessage = data.message.trim().isNotEmpty;
+    final hasTime = data.time.trim().isNotEmpty;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () => _openChat(context, data),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _avatar(data),
             15.w.horizontalSpace,
             Expanded(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: AppText(
@@ -248,66 +257,67 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                         ),
                       ),
-                      AppText(
-                        text: data.time,
-                        style: textStyle14Regular.copyWith(
-                          color: hasUnread
-                              ? AppColors.blueColor
-                              : Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.4),
-                          fontWeight: hasUnread
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                  2.h.verticalSpace,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: AppText(
-                          text: data.message,
+                      if (hasTime)
+                        AppText(
+                          text: data.time,
                           style: textStyle14Regular.copyWith(
                             color: hasUnread
-                                ? Theme.of(context).colorScheme.onSurface
-                                      .withValues(alpha: 0.75)
+                                ? AppColors.blueColor
                                 : Theme.of(context).colorScheme.onSurface
                                       .withValues(alpha: 0.4),
                             fontWeight: hasUnread
-                                ? FontWeight.w500
+                                ? FontWeight.w600
                                 : FontWeight.normal,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (hasUnread)
-                        Container(
-                          constraints: BoxConstraints(
-                            minWidth: 22.w,
-                            minHeight: 22.w,
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: data.unread > 9 ? 7.w : 6.w,
-                            vertical: 4.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.blueColor,
-                            borderRadius: BorderRadius.circular(11.r),
-                          ),
-                          alignment: Alignment.center,
-                          child: AppText(
-                            text: data.unread > 99 ? '99+' : '${data.unread}',
-                            style: textStyle18Bold.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 11.sp,
-                            ),
                           ),
                         ),
                     ],
                   ),
+                  if (hasMessage || hasUnread) ...[
+                    2.h.verticalSpace,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: AppText(
+                            text: data.message,
+                            style: textStyle14Regular.copyWith(
+                              color: hasUnread
+                                  ? Theme.of(context).colorScheme.onSurface
+                                        .withValues(alpha: 0.75)
+                                  : Theme.of(context).colorScheme.onSurface
+                                        .withValues(alpha: 0.4),
+                              fontWeight: hasUnread
+                                  ? FontWeight.w500
+                                  : FontWeight.normal,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (hasUnread)
+                          Container(
+                            constraints: BoxConstraints(
+                              minWidth: 22.w,
+                              minHeight: 22.w,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: data.unread > 9 ? 7.w : 6.w,
+                              vertical: 4.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.blueColor,
+                              borderRadius: BorderRadius.circular(11.r),
+                            ),
+                            alignment: Alignment.center,
+                            child: AppText(
+                              text: data.unread > 99 ? '99+' : '${data.unread}',
+                              style: textStyle18Bold.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 11.sp,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -342,7 +352,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32.w),
+      padding: EdgeInsets.symmetric(horizontal: 11.w),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

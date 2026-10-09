@@ -122,9 +122,9 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
           child: Column(
             children: [
               /// ---------------- HEADER ----------------
-              40.h.verticalSpace,
+              18.h.verticalSpace,
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                padding: EdgeInsets.symmetric(horizontal: 11.w),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -152,7 +152,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
               /// Travel details
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 32.h),
+                padding: EdgeInsets.fromLTRB(11.w, 16.h, 11.w, 10.h),
                 child: Row(
                   children: [
                     SvgIcon(
@@ -188,7 +188,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
               /// ------------- MAIN CONTENT LIST ---------------
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  padding: EdgeInsets.symmetric(horizontal: 11.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -253,25 +253,33 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                       Builder(
                         builder: (context) {
                           double roomPrice = 0;
-                          if (provider.selectedRoomTypeId != null && selectedPackage != null) {
+                          if (provider.selectedRoomTypeId != null &&
+                              selectedPackage != null) {
                             try {
                               roomPrice = selectedPackage.roomDetails
-                                  .firstWhere((r) => r.id == provider.selectedRoomTypeId)
+                                  .firstWhere(
+                                    (r) => r.id == provider.selectedRoomTypeId,
+                                  )
                                   .roomPrice;
                             } catch (_) {}
                           }
 
                           double childPrice = 0;
-                          if (provider.selectedChildDetailsId != null && selectedPackage != null) {
+                          if (provider.selectedChildDetailsId != null &&
+                              selectedPackage != null) {
                             try {
                               childPrice = selectedPackage.childDetails
-                                  .firstWhere((c) => c.id == provider.selectedChildDetailsId)
+                                  .firstWhere(
+                                    (c) =>
+                                        c.id == provider.selectedChildDetailsId,
+                                  )
                                   .childPrice;
                             } catch (_) {}
                           }
 
                           double adultTotal = roomPrice * provider.adultCount;
-                          double childTotal = childPrice * provider.selectedChildCount;
+                          double childTotal =
+                              childPrice * provider.selectedChildCount;
                           double babyTotal = 500.0 * provider.babyCount;
 
                           return Column(
@@ -293,17 +301,19 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                 ),
                             ],
                           );
-                        }
+                        },
                       ),
 
                       Divider(
-                        height: 30.h,
+                        height: 28.h,
                         color: Theme.of(
                           context,
                         ).colorScheme.onSurface.withValues(alpha: 0.2),
-                        endIndent: 60,
                       ),
-                      _priceRow("TOTAL COST".tr(), "€${provider.totalAmount.toStringAsFixed(0)}"),
+                      _priceRow(
+                        "TOTAL COST".tr(),
+                        "€${provider.totalAmount.toStringAsFixed(0)}",
+                      ),
                       52.h.verticalSpace,
                       AppButton(
                         onTap: () {
@@ -330,6 +340,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
 
   /// Build Section (Room Options / Inclusions etc.)
   Widget _buildSection({required String title, required List<String> items}) {
+    if (items.isEmpty) return const SizedBox.shrink();
+
     return Padding(
       padding: EdgeInsets.only(top: 14.h),
       child: Column(
@@ -343,51 +355,78 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
             ),
           ),
           8.h.verticalSpace,
-          ...items.map(
-            (e) => Padding(
-              padding: EdgeInsets.only(bottom: 6.h),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 6),
-                    width: 4.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  12.w.horizontalSpace,
-                  Expanded(
-                    child: AppText(
-                      text: e,
-                      style: textStyle14Regular.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          ...items.map(_sectionItem),
         ],
       ),
     );
   }
 
+  Widget _sectionItem(String text) {
+    final parts = text.split(' - ');
+    final price = parts.length > 1 ? parts.last.trim() : '';
+    final hasPrice = price.startsWith('€');
+    final label = hasPrice
+        ? parts.sublist(0, parts.length - 1).join(' - ')
+        : text;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: 6.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 6),
+            width: 4.w,
+            height: 4.h,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onSurface,
+              shape: BoxShape.circle,
+            ),
+          ),
+          12.w.horizontalSpace,
+          Expanded(
+            child: AppText(
+              text: label,
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+          if (hasPrice) ...[
+            8.w.horizontalSpace,
+            AppText(
+              text: _wholeEuro(price),
+              style: textStyle14Medium.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _wholeEuro(String price) {
+    final number = double.tryParse(price.replaceFirst('€', '').trim());
+    if (number == null) return price;
+    if (number == number.roundToDouble()) {
+      return '€${number.toInt()}';
+    }
+    return '€${number.toStringAsFixed(1)}';
+  }
+
   /// Price row
   Widget _priceRow(String title, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
         children: [
-          SizedBox(
-            width: 140.w,
+          Expanded(
             child: AppText(
-              text: title,
+              text: '$title:',
+              maxLines: 2,
               style: textStyle14Medium.copyWith(
                 color: Theme.of(
                   context,
@@ -397,17 +436,7 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
               ),
             ),
           ),
-          AppText(
-            text: ":",
-            style: textStyle14Medium.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.7),
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          30.w.horizontalSpace,
+          12.w.horizontalSpace,
           AppText(
             text: value,
             style: textStyle14Medium.copyWith(

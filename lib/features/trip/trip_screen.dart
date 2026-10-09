@@ -10,14 +10,15 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_chip.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/widgets/details_card.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/hotel_stay_card.dart';
 import 'package:travel_app_abdelhamid/core/widgets/document_card.dart';
-import 'package:travel_app_abdelhamid/core/widgets/itinerarystep_card.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/itinerary_plan_card.dart';
 import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/document_download_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/trip_detail_refresh.dart';
 import 'package:travel_app_abdelhamid/features/trip/widgets/document_list_shimmer.dart';
 import 'package:travel_app_abdelhamid/features/trip/widgets/flight_list_shimmer.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/flight_ticket_card.dart';
 import 'package:travel_app_abdelhamid/features/trip/widgets/hotel_list_shimmer.dart';
 import 'package:travel_app_abdelhamid/features/trip/widgets/itinerary_list_shimmer.dart';
 import 'package:travel_app_abdelhamid/features/trip/widgets/trip_payment_section.dart';
@@ -87,7 +88,150 @@ class _TripScreenView extends StatefulWidget {
   State<_TripScreenView> createState() => _TripScreenViewState();
 }
 
-class _TripScreenViewState extends State<_TripScreenView> {
+class _TripScreenViewState extends State<_TripScreenView>
+    with TickerProviderStateMixin {
+  final Map<String, GlobalKey> _listImageKeys = {};
+  final GlobalKey _detailsImageKey = GlobalKey();
+  AnimationController? _heroController;
+  OverlayEntry? _heroOverlay;
+  int _heroToken = 0;
+  bool _hideDetailsImage = false;
+
+  @override
+  void dispose() {
+    _heroToken++;
+    _heroOverlay?.remove();
+    _heroOverlay = null;
+    final controller = _heroController;
+    _heroController = null;
+    controller?.dispose();
+    super.dispose();
+  }
+
+  GlobalKey _listKeyFor(String id) {
+    return _listImageKeys.putIfAbsent(id, GlobalKey.new);
+  }
+
+  Rect? _globalRect(GlobalKey key) {
+    final box = key.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize || !box.attached) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  void _flyBannerToDetails(TripModel trip, Rect? start) {
+    if (start == null || !mounted) return;
+    final token = ++_heroToken;
+    _heroOverlay?.remove();
+    _heroOverlay = null;
+    final oldController = _heroController;
+    _heroController = null;
+    oldController?.dispose();
+
+    final endRect = <Rect>[start];
+    final controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
+    _heroController = controller;
+    final topRadius = 12.r;
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (context) {
+        final t = Curves.easeInOutCubic.transform(controller.value);
+        final rect = Rect.lerp(start, endRect.first, t)!;
+        final radius = BorderRadius.lerp(
+          BorderRadius.vertical(top: Radius.circular(topRadius)),
+          BorderRadius.zero,
+          t,
+        )!;
+        return Positioned.fromRect(
+          rect: rect,
+          child: IgnorePointer(
+            child: ClipRRect(
+              borderRadius: radius,
+              child: _bannerFill(trip, rect.size),
+            ),
+          ),
+        );
+      },
+    );
+    _heroOverlay = entry;
+    Overlay.of(context).insert(entry);
+    controller.addListener(entry.markNeedsBuild);
+    setState(() => _hideDetailsImage = true);
+
+    _moveBannerAfterLayout(
+      tripToken: token,
+      entry: entry,
+      controller: controller,
+      endRect: endRect,
+      attempt: 0,
+    );
+  }
+
+  void _moveBannerAfterLayout({
+    required int tripToken,
+    required OverlayEntry entry,
+    required AnimationController controller,
+    required List<Rect> endRect,
+    required int attempt,
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || tripToken != _heroToken) return;
+      final measured = _globalRect(_detailsImageKey);
+      if (measured == null && attempt < 2) {
+        _moveBannerAfterLayout(
+          tripToken: tripToken,
+          entry: entry,
+          controller: controller,
+          endRect: endRect,
+          attempt: attempt + 1,
+        );
+        return;
+      }
+      if (measured == null) {
+        _finishBannerFlight(tripToken, entry, controller);
+        return;
+      }
+      endRect[0] = measured;
+      controller.forward().whenComplete(() {
+        _finishBannerFlight(tripToken, entry, controller);
+      });
+    });
+  }
+
+  void _finishBannerFlight(
+    int token,
+    OverlayEntry entry,
+    AnimationController controller,
+  ) {
+    if (token != _heroToken) return;
+    controller.removeListener(entry.markNeedsBuild);
+    entry.remove();
+    if (_heroOverlay == entry) _heroOverlay = null;
+    if (_heroController == controller) _heroController = null;
+    controller.dispose();
+    if (!mounted) return;
+    setState(() => _hideDetailsImage = false);
+  }
+
+  Widget _bannerFill(TripModel trip, Size size) {
+    if (trip.image.startsWith('assets')) {
+      return Image.asset(
+        trip.image,
+        width: size.width,
+        height: size.height,
+        fit: BoxFit.cover,
+      );
+    }
+    return NetworkImageWithShimmer(
+      imageUrl: trip.imageUrl,
+      width: size.width,
+      height: size.height,
+      fit: BoxFit.cover,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -144,32 +288,30 @@ class _TripScreenViewState extends State<_TripScreenView> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 60.h,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Center(
-                  child: AppText(
-                    text: "My Trips".tr(),
-                    style: textStyle32Bold.copyWith(
-                      fontSize: 26.sp,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Center(
+                child: AppText(
+                  text: "My Trips".tr(),
+                  style: textStyle32Bold.copyWith(
+                    fontSize: 26.sp,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                Positioned(
-                  right: 13.5.w,
-                  child: Icon(
-                    Icons.cloud_off,
-                    size: 28.w,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ],
-            ),
+              ),
+
+              // Positioned(
+              //   right: 11.w,
+              //   child: Icon(
+              //     Icons.cloud_off,
+              //     size: 28.w,
+              //     color: AppColors.primaryColor,
+              //   ),
+              // ),
+            ],
           ),
-          20.h.verticalSpace,
+          10.h.verticalSpace,
           const Expanded(child: TripListShimmer(itemCount: 5)),
         ],
       );
@@ -193,19 +335,19 @@ class _TripScreenViewState extends State<_TripScreenView> {
                     ),
                   ),
                 ),
-                Positioned(
-                  right: 13.5.w,
-                  child: GestureDetector(
-                    onTap: () {
-                      context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
-                    },
-                    child: Icon(
-                      Icons.cloud_off,
-                      size: 28.w,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   right: 11.w,
+                //   child: GestureDetector(
+                //     onTap: () {
+                //       context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
+                //     },
+                //     child: Icon(
+                //       Icons.cloud_off,
+                //       size: 28.w,
+                //       color: AppColors.primaryColor,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -258,26 +400,26 @@ class _TripScreenViewState extends State<_TripScreenView> {
                   ),
                 ),
               ),
-              Positioned(
-                right: 13.5.w,
-                child: GestureDetector(
-                  onTap: () {
-                    context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
-                  },
-                  child: Icon(
-                    Icons.cloud_off,
-                    size: 28.w,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   right: 11.w,
+              //   child: GestureDetector(
+              //     onTap: () {
+              //       context.pushNamed(UserAppRoutes.offlineAccessScreen.name);
+              //     },
+              //     child: Icon(
+              //       Icons.cloud_off,
+              //       size: 28.w,
+              //       color: AppColors.primaryColor,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
         20.h.verticalSpace,
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+            padding: EdgeInsets.symmetric(horizontal: 11.w),
             itemCount: enrolledTrips.length,
             itemBuilder: (context, index) {
               final trip = enrolledTrips[index];
@@ -286,6 +428,9 @@ class _TripScreenViewState extends State<_TripScreenView> {
                   : null;
               return GestureDetector(
                 onTap: () async {
+                  final imageKey = _listKeyFor(trip.id ?? 'trip-$index');
+                  final start = _globalRect(imageKey);
+                  _flyBannerToDetails(trip, start);
                   state.setShowTripList(false);
                   tripProvider.selectTrip(trip);
                   widget.onShowTripDetails?.call(true);
@@ -316,6 +461,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
+                        key: _listKeyFor(trip.id ?? 'trip-$index'),
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(12.r),
                         ),
@@ -464,7 +610,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 15.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 15.h),
               child: Row(
                 children: [
                   GestureDetector(
@@ -530,80 +676,103 @@ class _TripScreenViewState extends State<_TripScreenView> {
               ),
             ),
             if (trip != null)
-              trip.image.startsWith('assets')
-                  ? Image.asset(
-                      trip.image,
-                      height: 250.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    )
-                  : NetworkImageWithShimmer(
-                      imageUrl: trip.imageUrl,
-                      height: 250.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-
-            // Trip title and location
-            12.h.verticalSpace,
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w),
-              child: AppText(
-                text: trip?.title ?? "-",
-                style: textStyle16SemiBold.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
+              Opacity(
+                opacity: _hideDetailsImage ? 0 : 1,
+                child: KeyedSubtree(
+                  key: _detailsImageKey,
+                  child: trip.image.startsWith('assets')
+                      ? Image.asset(
+                          trip.image,
+                          height: 250.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : NetworkImageWithShimmer(
+                          imageUrl: trip.imageUrl,
+                          height: 250.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
-            ),
+
             14.h.verticalSpace,
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 2.h),
-              child: Row(
+              padding: EdgeInsets.symmetric(horizontal: 11.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SvgIcon(
-                    AppAssets.pin,
-                    size: 22.w,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  14.w.horizontalSpace,
-                  Expanded(
-                    child: AppText(
-                      text: trip?.location ?? "-",
-                      style: textStyle14Regular.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  12.w.horizontalSpace,
-                  SvgIcon(
-                    AppAssets.calendar,
-                    size: 22.w,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  14.w.horizontalSpace,
                   AppText(
-                    text: trip?.date ?? "-",
-                    style: textStyle14Regular.copyWith(
+                    text: trip?.title ?? "-",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 18.sp,
                     ),
+                  ),
+                  8.h.verticalSpace,
+                  Row(
+                    children: [
+                      SvgIcon(
+                        AppAssets.pin,
+                        size: 16.w,
+                        color: AppColors.blueColor,
+                      ),
+                      6.w.horizontalSpace,
+                      Flexible(
+                        child: AppText(
+                          text: trip?.location ?? "-",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textStyle14Regular.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 13.sp,
+                          ),
+                        ),
+                      ),
+                      14.w.horizontalSpace,
+                      SvgIcon(
+                        AppAssets.calendar,
+                        size: 16.w,
+                        color: AppColors.blueColor,
+                      ),
+                      6.w.horizontalSpace,
+                      Flexible(
+                        child: AppText(
+                          text: trip?.date ?? "-",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textStyle14Regular.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 13.sp,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            10.h.verticalSpace,
+            12.h.verticalSpace,
 
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 19.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 11.w),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildTab("Payment".tr(), AppAssets.payment, 0, state),
+                    8.w.horizontalSpace,
                     _buildTab("Flights".tr(), AppAssets.flight, 1, state),
+                    8.w.horizontalSpace,
                     _buildTab("Hotels".tr(), AppAssets.hotel, 2, state),
+                    8.w.horizontalSpace,
                     _buildTab("Itinerary".tr(), AppAssets.itinerary, 3, state),
+                    8.w.horizontalSpace,
                     _buildTab("Essentials".tr(), AppAssets.essential, 4, state),
+                    8.w.horizontalSpace,
                     _buildTab("Documents".tr(), AppAssets.document, 5, state),
                   ],
                 ),
@@ -730,7 +899,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
           debugPrint('❌ [TripScreen] No flights found');
           return Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 40.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 40.h),
               child: _EmptyState(
                 icon: Icons.flight_outlined,
                 title: 'No flight details available'.tr(),
@@ -741,7 +910,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
         }
         return SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 10.h),
+            padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 10.h),
             child: Column(
               children: flights.asMap().entries.map((entry) {
                 final index = entry.key;
@@ -749,16 +918,11 @@ class _TripScreenViewState extends State<_TripScreenView> {
                 debugPrint(
                   '🔵 [TripScreen] Flight[$index]: ${flight.flightName} — ${flight.flightType}',
                 );
-                return Column(
-                  children: [
-                    TripDetailsCard(
-                      title: flight.flightType == 'outbound'
-                          ? 'Outbound Flight'.tr()
-                          : 'Return Flight'.tr(),
-                      infoMap: flight.infoMap,
-                    ),
-                    if (index < flights.length - 1) SizedBox(height: 20.h),
-                  ],
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: index < flights.length - 1 ? 20.h : 0,
+                  ),
+                  child: FlightTicketCard(flight: flight),
                 );
               }).toList(),
             ),
@@ -776,14 +940,6 @@ class _TripScreenViewState extends State<_TripScreenView> {
     final vouchers = tripProvider.hotelVouchers;
     final hasFetched = tripProvider.hasFetchedHotelVouchers;
 
-    // Static escort details for now (as requested).
-    final escortCard = Column(
-      children: [
-        EscortContactCard(name: "Ahmed Khan", phone: "+966 55 123 4567"),
-        SizedBox(height: 16.h),
-      ],
-    );
-
     if (tripId != null &&
         tripId.isNotEmpty &&
         vouchers.isEmpty &&
@@ -798,93 +954,69 @@ class _TripScreenViewState extends State<_TripScreenView> {
       });
     }
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 10.h),
+    if (isLoading) {
+      return const HotelListShimmer();
+    }
+
+    if (error != null) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 24.h),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            escortCard,
-            if (isLoading)
-              const HotelListShimmer()
-            else if (error != null)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 24.h),
-                child: Column(
-                  children: [
-                    AppText(
-                      text: "Failed to load hotel details".tr(),
-                      style: textStyle14Regular.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    12.h.verticalSpace,
-                    AppButton(
-                      title: "Retry".tr(),
-                      onTap: tripId == null || tripId.isEmpty
-                          ? null
-                          : () => context
-                                .read<TripProvider>()
-                                .fetchHotelVoucherDetails(tripId, force: true),
-                    ),
-                  ],
-                ),
-              )
-            else if (vouchers.isEmpty)
-              _EmptyState(
-                icon: Icons.hotel_outlined,
-                title: 'No hotel details available'.tr(),
-                subtitle: 'Hotel vouchers will appear here.'.tr(),
-              )
-            else
-              ...vouchers.asMap().entries.map((entry) {
-                final idx = entry.key;
-                final hotel = entry.value;
-                final room = hotel.rooms.isNotEmpty ? hotel.rooms.first : null;
-                final facilities = hotel.facilitiesDisplayText;
-
-                final info = <String, String>{
-                  "Name".tr(): hotel.hotelName.isEmpty ? "-" : hotel.hotelName,
-                  "Address".tr(): hotel.hotelAddress.isEmpty
-                      ? "-"
-                      : hotel.hotelAddress,
-                  "Phone".tr(): hotel.hotelContact.isEmpty
-                      ? "-"
-                      : hotel.hotelContact,
-                  "Check-in".tr(): formatDateTimeForDisplay(
-                    hotel.stayInfo.checkIn,
-                  ),
-                  "Check-out".tr(): formatDateTimeForDisplay(
-                    hotel.stayInfo.checkOut,
-                  ),
-                  if (room != null)
-                    "Room Type".tr(): room.roomType.isEmpty
-                        ? "-"
-                        : room.roomType,
-                  if (room != null)
-                    "Room No".tr(): room.roomNumber.isEmpty
-                        ? "-"
-                        : room.roomNumber,
-                  if (room != null && room.guests.isNotEmpty)
-                    "Guests".tr(): room.guests.join(', '),
-                  if (facilities.isNotEmpty) "Facilities".tr(): facilities,
-                };
-
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: idx == vouchers.length - 1 ? 0 : 20.h,
-                  ),
-                  child: TripDetailsCard(
-                    labelWidth: 90.w,
-                    title: hotel.hotelName.isEmpty
-                        ? "Hotel ${idx + 1}"
-                        : hotel.hotelName,
-                    infoMap: info,
-                  ),
-                );
-              }),
+            AppText(
+              text: "Failed to load hotel details".tr(),
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            12.h.verticalSpace,
+            AppButton(
+              title: "Retry".tr(),
+              onTap: tripId == null || tripId.isEmpty
+                  ? null
+                  : () => context
+                        .read<TripProvider>()
+                        .fetchHotelVoucherDetails(tripId, force: true),
+            ),
           ],
         ),
+      );
+    }
+
+    if (vouchers.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 40.h),
+          child: _EmptyState(
+            icon: Icons.hotel_outlined,
+            title: 'No hotel details available'.tr(),
+            subtitle: 'Hotel vouchers will appear here.'.tr(),
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 10.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          EscortStayCard(name: "Ahmed Khan", phone: "+966 55 123 4567"),
+          SizedBox(height: 16.h),
+          ...vouchers.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final hotel = entry.value;
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: idx == vouchers.length - 1 ? 0 : 20.h,
+              ),
+              child: HotelStayCard(
+                hotel: hotel,
+                fallbackTitle: 'Hotel ${idx + 1}',
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
@@ -914,7 +1046,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
       ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: isLoading
           ? const ItineraryListShimmer()
           : error != null
@@ -947,46 +1079,20 @@ class _TripScreenViewState extends State<_TripScreenView> {
                 subtitle: 'There is nothing planned for today yet.'.tr(),
               ),
             )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if ((today?.itinerary.dayTitle ?? '').isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 12.h),
-                    child: AppText(
-                      text: today!.itinerary.dayTitle,
-                      style: textStyle16SemiBold.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                if ((today?.itinerary.notes ?? '').trim().isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 16.h),
-                    child: AppText(
-                      text: today!.itinerary.notes!.trim(),
-                      style: textStyle14Regular.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                ...activities.asMap().entries.map((entry) {
-                  final idx = entry.key;
-                  final a = entry.value;
-                  final isLast = idx == activities.length - 1;
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: isLast ? 0 : 18.h),
-                    child: ItineraryStep(
-                      icon: _iconForItinerary(a.icon),
+          : ItineraryPlanCard(
+              title: today?.itinerary.dayTitle ?? '',
+              notes: today?.itinerary.notes,
+              date: today?.itinerary.date,
+              status: today?.itinerary.status ?? '',
+              steps: activities
+                  .map(
+                    (a) => ItineraryPlanStep(
+                      iconAsset: _iconForItinerary(a.icon),
                       title: a.activityTitle,
                       time: a.times,
-                      isCompleted:
-                          (today?.itinerary.status ?? '') == 'completed',
-                      isLast: isLast,
                     ),
-                  );
-                }),
-              ],
+                  )
+                  .toList(),
             ),
     );
   }
@@ -1020,77 +1126,125 @@ class _TripScreenViewState extends State<_TripScreenView> {
       "Dua List".tr(),
     ];
 
-    return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 23.h),
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: essentialsItems.length,
-      separatorBuilder: (_, __) => SizedBox(height: 23.h),
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            if (index == 0) {
-              context.pushNamed(
-                UserAppRoutes.packageListScreen.name,
-                extra: freshRouteNonce(),
-              );
-            }
-            if (index == 1) {
-              context.pushNamed(
-                UserAppRoutes.currencyMoneyScreen.name,
-                extra: freshRouteNonce(),
-              );
-            }
-            if (index == 2) {
-              context.pushNamed(
-                UserAppRoutes.emergencyContactScreen.name,
-                extra: freshRouteNonce(),
-              );
-            }
-            if (index == 3) {
-              context.pushNamed(
-                UserAppRoutes.localInformationScreen.name,
-                extra: freshRouteNonce(),
-              );
-            }
-            if (index == 4) {
-              context.pushNamed(
-                UserAppRoutes.healthSafteyScreen.name,
-                extra: freshRouteNonce(),
-              );
-            }
-            if (index == 5) {
-              context.pushNamed(
-                UserAppRoutes.umrahGuideScreen.name,
-                extra: freshRouteNonce(),
-              );
-            }
-            if (index == 6) {
-              context.pushNamed(
-                UserAppRoutes.duaListScreen.name,
-                extra: freshRouteNonce(),
-              );
-            }
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AppText(
-                text: essentialsItems[index],
-                style: textStyle14Regular.copyWith(
-                  fontSize: 18.sp,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              SvgIcon(
-                AppAssets.arrow,
-                size: 16.sp,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ],
+    final icons = [
+      AppAssets.document,
+      AppAssets.cash,
+      AppAssets.call,
+      AppAssets.map,
+      AppAssets.info,
+      AppAssets.landmark,
+      AppAssets.schedule,
+    ];
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(11.w, 16.h, 11.w, 8.h),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
-        );
-      },
+        ),
+        child: Column(
+          children: List.generate(essentialsItems.length, (index) {
+            final isLast = index == essentialsItems.length - 1;
+            return Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    if (index == 0) {
+                      context.pushNamed(
+                        UserAppRoutes.packageListScreen.name,
+                        extra: freshRouteNonce(),
+                      );
+                    }
+                    if (index == 1) {
+                      context.pushNamed(
+                        UserAppRoutes.currencyMoneyScreen.name,
+                        extra: freshRouteNonce(),
+                      );
+                    }
+                    if (index == 2) {
+                      context.pushNamed(
+                        UserAppRoutes.emergencyContactScreen.name,
+                        extra: freshRouteNonce(),
+                      );
+                    }
+                    if (index == 3) {
+                      context.pushNamed(
+                        UserAppRoutes.localInformationScreen.name,
+                        extra: freshRouteNonce(),
+                      );
+                    }
+                    if (index == 4) {
+                      context.pushNamed(
+                        UserAppRoutes.healthSafteyScreen.name,
+                        extra: freshRouteNonce(),
+                      );
+                    }
+                    if (index == 5) {
+                      context.pushNamed(
+                        UserAppRoutes.umrahGuideScreen.name,
+                        extra: freshRouteNonce(),
+                      );
+                    }
+                    if (index == 6) {
+                      context.pushNamed(
+                        UserAppRoutes.duaListScreen.name,
+                        extra: freshRouteNonce(),
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 14.w,
+                      vertical: 14.h,
+                    ),
+                    child: Row(
+                      children: [
+                        SvgIcon(
+                          icons[index],
+                          size: 20.w,
+                          color: AppColors.blueColor,
+                        ),
+                        12.w.horizontalSpace,
+                        Expanded(
+                          child: AppText(
+                            text: essentialsItems[index],
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: textStyle14Medium.copyWith(
+                              fontSize: 15.sp,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                        SvgIcon(
+                          AppAssets.arrow,
+                          size: 14.w,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.55),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (!isLast)
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    indent: 46.w,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.08),
+                  ),
+              ],
+            );
+          }),
+        ),
+      ),
     );
   }
 
@@ -1436,7 +1590,7 @@ class _TripScreenViewState extends State<_TripScreenView> {
 
         if (err != null) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 24.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1466,6 +1620,25 @@ class _TripScreenViewState extends State<_TripScreenView> {
 
         final showEmpty =
             !hasLocal && !hasRemote && !hasHotelRows && !hasTravelAdmin;
+        final showPassVisa =
+            docs.any((d) => d["type"] == "Passport" || d["type"] == "Visa") ||
+            hasPassVisaApi;
+        final showRoundTrip =
+            docs.any((d) => d["type"] == "Flight Ticket") || hasFlightApi;
+        final showMedical =
+            docs.any((d) => d["type"] == "Medical Certificate") || hasMedApi;
+        String addMoreSection = '';
+        if (showRoundTrip) {
+          addMoreSection = 'round';
+        } else if (showPassVisa) {
+          addMoreSection = 'pass';
+        } else if (showMedical) {
+          addMoreSection = 'med';
+        } else if (hasHotelRows) {
+          addMoreSection = 'hotel';
+        } else if (hasTravelAdmin) {
+          addMoreSection = 'travel';
+        }
 
         final apiPassVisaWidgets = <Widget>[];
         final apiFlightWidgets = <Widget>[];
@@ -1520,70 +1693,18 @@ class _TripScreenViewState extends State<_TripScreenView> {
         }
 
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 16.h),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (showEmpty) _emptyDocumentCard(tripId),
-                if (!showEmpty) ...[
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () => context.pushNamed(
-                        UserAppRoutes.addDocumentScreen.name,
-                        extra: tripId == null || tripId.isEmpty
-                            ? null
-                            : {'tripId': tripId},
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 10.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          borderRadius: BorderRadius.circular(30.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.secondary.setOpacity(0.3),
-                              blurRadius: 8,
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SvgIcon(
-                              AppAssets.addMore,
-                              size: 18.w,
-                              color: Theme.of(context).colorScheme.surface,
-                            ),
-                            SizedBox(width: 8.w),
-                            AppText(
-                              text: "Add More".tr(),
-                              style: textPoppinsMedium.copyWith(
-                                color: Theme.of(context).colorScheme.surface,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                ],
 
-                if (docs.any(
-                      (d) => d["type"] == "Passport" || d["type"] == "Visa",
-                    ) ||
-                    hasPassVisaApi) ...[
-                  AppText(
-                    text: "Passport & Visa".tr(),
-                    style: textStyle16SemiBold.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                if (showPassVisa) ...[
+                  _documentSectionTitle(
+                    "Passport & Visa".tr(),
+                    tripId,
+                    addMoreSection == 'pass',
                   ),
                   12.h.verticalSpace,
                   ...docs
@@ -1628,13 +1749,11 @@ class _TripScreenViewState extends State<_TripScreenView> {
                   20.h.verticalSpace,
                 ],
 
-                if (docs.any((d) => d["type"] == "Flight Ticket") ||
-                    hasFlightApi) ...[
-                  AppText(
-                    text: "Round Trip Tickets".tr(),
-                    style: textStyle16SemiBold.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                if (showRoundTrip) ...[
+                  _documentSectionTitle(
+                    "Round Trip Tickets".tr(),
+                    tripId,
+                    addMoreSection == 'round',
                   ),
                   SizedBox(height: 12.h),
                   ...docs
@@ -1679,13 +1798,11 @@ class _TripScreenViewState extends State<_TripScreenView> {
                   20.h.verticalSpace,
                 ],
 
-                if (docs.any((d) => d["type"] == "Medical Certificate") ||
-                    hasMedApi) ...[
-                  AppText(
-                    text: "Medical Certificate".tr(),
-                    style: textStyle16SemiBold.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                if (showMedical) ...[
+                  _documentSectionTitle(
+                    "Medical Certificate".tr(),
+                    tripId,
+                    addMoreSection == 'med',
                   ),
                   SizedBox(height: 12.h),
                   ...docs
@@ -1726,11 +1843,10 @@ class _TripScreenViewState extends State<_TripScreenView> {
                 ],
 
                 if (hasHotelRows) ...[
-                  AppText(
-                    text: "Hotel Vouchers".tr(),
-                    style: textStyle16SemiBold.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                  _documentSectionTitle(
+                    "Hotel Vouchers".tr(),
+                    tripId,
+                    addMoreSection == 'hotel',
                   ),
                   SizedBox(height: 12.h),
                   if (bundleHotel != null)
@@ -1742,11 +1858,10 @@ class _TripScreenViewState extends State<_TripScreenView> {
                 ],
 
                 if (hasTravelAdmin) ...[
-                  AppText(
-                    text: "Travel Document".tr(),
-                    style: textStyle16SemiBold.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                  _documentSectionTitle(
+                    "Travel Document".tr(),
+                    tripId,
+                    addMoreSection == 'travel',
                   ),
                   SizedBox(height: 12.h),
                   if (insurance != null)
@@ -1759,6 +1874,56 @@ class _TripScreenViewState extends State<_TripScreenView> {
           ),
         );
       },
+    );
+  }
+
+  Widget _documentSectionTitle(String title, String? tripId, bool showAddMore) {
+    final label = AppText(
+      text: title,
+      style: textStyle16SemiBold.copyWith(
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    );
+    if (!showAddMore) return label;
+    return Row(
+      children: [
+        Expanded(child: label),
+        _addMoreButton(tripId),
+      ],
+    );
+  }
+
+  Widget _addMoreButton(String? tripId) {
+    return GestureDetector(
+      onTap: () => context.pushNamed(
+        UserAppRoutes.addDocumentScreen.name,
+        extra: tripId == null || tripId.isEmpty ? null : {'tripId': tripId},
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: AppColors.secondary,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgIcon(
+              AppAssets.addMore,
+              size: 16.w,
+              color: Theme.of(context).colorScheme.surface,
+            ),
+            SizedBox(width: 6.w),
+            AppText(
+              text: "Add More".tr(),
+              style: textPoppinsMedium.copyWith(
+                color: Theme.of(context).colorScheme.surface,
+                fontSize: 13.sp,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1863,7 +2028,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

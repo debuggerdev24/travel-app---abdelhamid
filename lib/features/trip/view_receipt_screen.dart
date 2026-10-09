@@ -82,7 +82,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
               ? SafeArea(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
+                      horizontal: 11.w,
                       vertical: 12.h,
                     ),
                     child: GestureDetector(
@@ -124,7 +124,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                     children: [
                       SizedBox(height: 20.h),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        padding: EdgeInsets.symmetric(horizontal: 11.w),
                         child: Row(
                           children: [
                             GestureDetector(
@@ -154,7 +154,7 @@ class _ViewReceiptScreenState extends State<ViewReceiptScreen> {
                       Expanded(
                         child: SingleChildScrollView(
                           padding: EdgeInsets.symmetric(
-                            horizontal: 24.w,
+                            horizontal: 11.w,
                             vertical: 16.h,
                           ),
                           child: Column(

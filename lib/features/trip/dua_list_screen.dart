@@ -7,9 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
-import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/dua/dua_item_model.dart';
 import 'package:travel_app_abdelhamid/services/dua_service.dart';
@@ -66,8 +66,11 @@ class DuaListState extends ChangeNotifier {
   }
 
   Future<void> togglePlay(DuaItemModel dua, BuildContext context) async {
-    final url = serverMediaUrl(dua.audioPath);
-    if (url == null || url.isEmpty) return;
+    final url = _duaAudioUrl("${AppConstants.imageBaseUrl}${dua.audioPath}");
+    if (url == null || url.isEmpty) {
+      _showAudioError(context, 'Audio file is missing');
+      return;
+    }
 
     try {
       if (_playingId == dua.id) {
@@ -77,19 +80,54 @@ class DuaListState extends ChangeNotifier {
         return;
       }
       await _player.stop();
+      await _player.setPlayerMode(PlayerMode.mediaPlayer);
       _playingId = dua.id;
       notifyListeners();
-      await _player.play(UrlSource(url));
-    } catch (_) {
+      await _player.play(
+        UrlSource(url, mimeType: _audioMimeType(url)),
+        mode: PlayerMode.mediaPlayer,
+      );
+    } catch (e) {
       _playingId = null;
       notifyListeners();
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not play audio'.tr())));
-      }
+      debugPrint('Dua audio failed for $url: $e');
+      _showAudioError(context, 'Could not play audio');
     }
   }
+
+  void _showAudioError(BuildContext context, String message) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message.tr())));
+  }
+}
+
+/// Keeps the full upload path. The shared media helper drops folders and
+/// does not treat audio extensions as files, so MediaPlayer gets a bad URL.
+String? _duaAudioUrl(String? raw) {
+  if (raw == null || raw.trim().isEmpty) return null;
+  var value = raw.trim().replaceAll('\\', '/');
+  if (value.startsWith('http://')) {
+    value = value.replaceFirst('http://', 'https://');
+  }
+  if (value.startsWith('https://')) return value;
+  if (value.startsWith('/')) {
+    return '${AppConstants.imageBaseUrl}$value';
+  }
+  if (value.startsWith('uploads/')) {
+    return '${AppConstants.imageBaseUrl}/$value';
+  }
+  return '${AppConstants.imageBaseUrl}/uploads/$value';
+}
+
+String _audioMimeType(String url) {
+  final path = Uri.tryParse(url)?.path.toLowerCase() ?? url.toLowerCase();
+  if (path.endsWith('.m4a') || path.endsWith('.mp4')) return 'audio/mp4';
+  if (path.endsWith('.wav')) return 'audio/wav';
+  if (path.endsWith('.aac')) return 'audio/aac';
+  if (path.endsWith('.ogg')) return 'audio/ogg';
+  return 'audio/mpeg';
 }
 
 class DuaListScreen extends StatelessWidget {
@@ -110,7 +148,7 @@ class _DuaListScreenView extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -169,7 +207,7 @@ class _DuaListScreenView extends StatelessWidget {
           ),
           10.h.verticalSpace,
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            padding: EdgeInsets.zero,
             child: AppText(
               text: state.error!,
               textAlign: TextAlign.center,
@@ -339,7 +377,6 @@ class _DuaItemTile extends StatelessWidget {
   }
 }
 
-
 class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -354,7 +391,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -24,18 +24,18 @@ class AppChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8.w),
-        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+        margin: EdgeInsets.zero,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.secondary.withValues(alpha: 0.1)
+              ? AppColors.secondary
               : Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(80.w),
+          borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            width: 0.5,
+            width: 1,
             color: isSelected
-                ? AppColors.secondary.withValues(alpha: 0.5)
-                : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                ? AppColors.secondary
+                : Theme.of(context).colorScheme.outline.withValues(alpha: 0.35),
           ),
         ),
         child: Row(
@@ -43,19 +43,19 @@ class AppChip extends StatelessWidget {
             SvgIcon(
               icon,
               color: isSelected
-                  ? AppColors.secondary
+                  ? AppColors.whiteColor
                   : Theme.of(context).colorScheme.onSurface,
-              size: 24.w,
+              size: 16.w,
             ),
-            10.w.horizontalSpace,
+            6.w.horizontalSpace,
             AppText(
               text: title,
               style: textPoppinsMedium.copyWith(
                 color: isSelected
-                    ? AppColors.secondary
+                    ? AppColors.whiteColor
                     : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
-                fontSize: 14.sp,
+                fontSize: 13.sp,
               ),
             ),
           ],

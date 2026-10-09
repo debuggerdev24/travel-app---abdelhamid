@@ -6,12 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/custom_switch_button.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
-import 'package:travel_app_abdelhamid/core/widgets/shimmer_box.dart';
 import 'package:travel_app_abdelhamid/features/auth/provider/auth_provider.dart';
 import 'package:travel_app_abdelhamid/provider/profile/profile_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
@@ -30,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(
               height: 60.h,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+                padding: EdgeInsets.symmetric(horizontal: 11.w),
                 child: Row(
                   children: [
                     SizedBox(width: 88.w),
@@ -66,31 +64,31 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 13.5.w),
-                child: Consumer<ProfileProvider>(
-                  builder: (context, provider, _) {
-                    final p = provider.profile;
-                    final name = p?.fullName.isNotEmpty == true
-                        ? p!.fullName
-                        : '—';
-                    final email = p?.email.isNotEmpty == true ? p!.email : '—';
+              child: Consumer<ProfileProvider>(
+                builder: (context, provider, _) {
+                  if (provider.isLoading && provider.profile == null) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    );
+                  }
+                  final p = provider.profile;
+                  final name = p?.fullName.isNotEmpty == true
+                      ? p!.fullName
+                      : '—';
+                  final email = p?.email.isNotEmpty == true ? p!.email : '—';
 
-                    final raw = p?.profileImageRaw.trim();
-                    final avatarUrl = raw != null && raw.isNotEmpty
-                        ? serverMediaUrl(raw)
-                        : null;
+                  final raw = p?.profileImageRaw.trim();
+                  final avatarUrl = raw != null && raw.isNotEmpty
+                      ? serverMediaUrl(raw)
+                      : null;
 
-                    return Column(
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 11.w),
+                    child: Column(
                       children: [
-                        if (provider.isLoading && p == null)
-                          ShimmerBox(
-                            width: (50.r * 2),
-                            height: (50.r * 2),
-                            shape: BoxShape.circle,
-                          )
-                        else
-                          NetworkAvatar(imageUrl: avatarUrl, radius: 50.r),
+                        NetworkAvatar(imageUrl: avatarUrl, radius: 50.r),
                         10.h.verticalSpace,
                         AppText(
                           text: name,
@@ -202,7 +200,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ]),
 
-                        20.h.verticalSpace,
+                        10.h.verticalSpace,
                         GestureDetector(
                           onTap: () {
                             context.pushNamed(
@@ -215,7 +213,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
 
-                        22.h.verticalSpace,
+                        // 22.h.verticalSpace,
                         GestureDetector(
                           onTap: () {
                             context.pushNamed(
@@ -229,7 +227,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
 
-                        22.h.verticalSpace,
+                        // 22.h.verticalSpace,
                         GestureDetector(
                           onTap: () {
                             _showLanguageBottomSheet(context, provider);
@@ -237,10 +235,9 @@ class ProfileScreen extends StatelessWidget {
                           child: _menuTile(context, "profile.language".tr()),
                         ),
 
-                        22.h.verticalSpace,
-                        22.h.verticalSpace,
+                        10.h.verticalSpace,
 
-                        /// ---------------- HELP & SUPPORT ----------------
+                        //* ---------------- HELP & SUPPORT ----------------
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
@@ -346,12 +343,18 @@ class ProfileScreen extends StatelessWidget {
                               UserAppRoutes.appSettignScreen.name,
                             );
                           }),
+                          Divider(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
+                          ),
+                          _logoutMenuItem(context),
                         ]),
 
-                        20.h.verticalSpace,
+                        10.h.verticalSpace,
                         _buildNotificationSwitch(context),
 
-                        22.h.verticalSpace,
+                        15.h.verticalSpace,
                         Align(
                           alignment: Alignment.centerLeft,
                           child: AppText(
@@ -361,9 +364,9 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        16.h.verticalSpace,
+                        10.h.verticalSpace,
 
-                        /// ---------------- COPYRIGHT BLOCK ----------------
+                        //* ---------------- COPYRIGHT BLOCK ----------------
                         Container(
                           width: double.infinity,
                           padding: EdgeInsets.symmetric(
@@ -395,7 +398,7 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        22.h.verticalSpace,
+                        10.h.verticalSpace,
                         AppText(
                           text:
                               "The Temheed App and all related content, including (but not limited to) its design, structure, text, functionalities, images, logos, icons, documents, and database structure, are protected by copyright and are the property of Temheed."
@@ -410,7 +413,7 @@ class ProfileScreen extends StatelessWidget {
                         10.h.verticalSpace,
                         AppText(
                           text:
-                              "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;• Reuse, publish, or distribute any content from the app;• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages."
+                              "It is strictly prohibited, without prior written permission from Temheed Reizen, to:\n• Copy or reproduce the app, in whole or in part;\n• Reuse, publish, or distribute any content from the app;\n• Commercially exploit or imitate any functionalities, concepts, or designs.\nAny infringement of this copyright or unauthorized use of any part of the app may result in legal action and/or claims for damages."
                                   .tr(),
                           style: textStyle14Regular.copyWith(
                             fontSize: 14.sp,
@@ -419,59 +422,11 @@ class ProfileScreen extends StatelessWidget {
                             ).colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
-                        10.h.verticalSpace,
-
-                        22.h.verticalSpace,
-                        22.h.verticalSpace,
-
-                        Selector<AuthProvider, bool>(
-                          selector: (_, auth) => auth.isLoading,
-                          builder: (context, isLoggingOut, _) {
-                            return AppButton(
-                              title: "profile.logout".tr(),
-                              buttonColor: AppColors.redColor,
-                              titleColor: Colors.white,
-                              isLoading: isLoggingOut,
-                              onTap: () async {
-                                final confirmed = await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text('Logout'.tr()),
-                                    content: Text(
-                                      'Are you sure you want to logout?'.tr(),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, false),
-                                        child: Text('Cancel'.tr()),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, true),
-                                        child: Text('Yes'.tr()),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                                if (confirmed != true || !context.mounted) {
-                                  return;
-                                }
-                                await context.read<AuthProvider>().logout();
-                                if (context.mounted) {
-                                  context.goNamed(
-                                    UserAppRoutes.signInScreen.name,
-                                  );
-                                }
-                              },
-                            );
-                          },
-                        ),
                         SizedBox(height: 20.h),
                       ],
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -500,9 +455,7 @@ class ProfileScreen extends StatelessWidget {
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.5),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -527,8 +480,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           AppText(
             text: title,
-            style: textStyle16SemiBold.copyWith(
-              fontSize: 16.sp,
+            style: textStyle14Medium.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
@@ -546,27 +498,106 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildNotificationSwitch(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 17.h),
-      decoration: _boxDecoration(context),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          AppText(
-            text: "profile.notification".tr(),
-            style: textStyle16SemiBold.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+        decoration: _boxDecoration(context),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppText(
+              text: "profile.notification".tr(),
+              style: textStyle14Medium.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            12.w.horizontalSpace,
+            CustomSwitchButton(
+              value: true,
+              onChanged: (value) {
+                log("Notification status: $value");
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _logoutMenuItem(BuildContext context) {
+    return Selector<AuthProvider, bool>(
+      selector: (_, auth) => auth.isLoading,
+      builder: (context, isLoggingOut, _) {
+        return InkWell(
+          onTap: isLoggingOut ? null : () => _confirmLogout(context),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 4.h),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AppText(
+                    text: "profile.logout".tr(),
+                    style: textStyle14Medium.copyWith(
+                      color: AppColors.redColor,
+                    ),
+                  ),
+                ),
+                if (isLoggingOut)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: SizedBox(
+                      width: 16.w,
+                      height: 16.w,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.redColor,
+                      ),
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: SvgIcon(
+                      AppAssets.arrow,
+                      size: 10.w,
+                      color: AppColors.redColor,
+                    ),
+                  ),
+              ],
             ),
           ),
-          CustomSwitchButton(
-            value: true,
-            onChanged: (value) {
-              log("Notification status: $value");
-            },
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmLogout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Logout'.tr()),
+        content: Text('Are you sure you want to logout?'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Yes'.tr()),
           ),
         ],
       ),
     );
+    if (confirmed != true || !context.mounted) return;
+    await context.read<ProfileProvider>().clearProfileContact();
+    if (!context.mounted) return;
+    context.read<ProfileProvider>().clearProfile();
+    await context.read<AuthProvider>().logout();
+    if (context.mounted) {
+      context.goNamed(UserAppRoutes.signInScreen.name);
+    }
   }
 
   Widget _menuitems(BuildContext context, String title, VoidCallback onTap) {
@@ -657,7 +688,7 @@ class ProfileScreen extends StatelessWidget {
                         final updated = provider.profile!.copyWith(
                           languages: [lang],
                         );
-                        await provider.saveProfile(updated);
+                        await provider.saveProfile(updated, showSuccess: false);
                       }
                     },
                   );

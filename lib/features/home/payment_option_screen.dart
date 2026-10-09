@@ -57,24 +57,28 @@ class _PaymentOptionView extends StatefulWidget {
 }
 
 class _PaymentOptionViewState extends State<_PaymentOptionView> {
+  Future<bool>? _walletSupport;
+  bool _openingWallet = false;
+
   @override
   void initState() {
     super.initState();
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-      _checkPlatformPaySupport();
+      _walletSupport = _checkPlatformPaySupport();
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         context.read<PaymentOptionState>().setPlatformPaySupported(false);
       });
     }
   }
 
-  Future<void> _checkPlatformPaySupport() async {
+  Future<bool> _checkPlatformPaySupport() async {
     if (AppConstants.stripePublishableKey.isEmpty) {
       if (mounted) {
         context.read<PaymentOptionState>().setPlatformPaySupported(false);
       }
-      return;
+      return false;
     }
     try {
       final ok = await Stripe.instance.isPlatformPaySupported(
@@ -83,10 +87,36 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
       if (mounted) {
         context.read<PaymentOptionState>().setPlatformPaySupported(ok);
       }
+      return ok;
     } catch (_) {
       if (mounted) {
         context.read<PaymentOptionState>().setPlatformPaySupported(false);
       }
+      return false;
+    }
+  }
+
+  Future<void> _onWalletPressed() async {
+    if (_openingWallet) return;
+    final state = context.read<PaymentOptionState>();
+    if (state.paying) return;
+
+    _openingWallet = true;
+    try {
+      final supported = await (_walletSupport ?? Future.value(false));
+      if (!mounted || state.paying) return;
+      if (!supported) {
+        ToastHelper.showError(
+          Platform.isAndroid
+              ? 'Google Pay is not available on this device'.tr()
+              : 'Apple Pay is not available on this device'.tr(),
+        );
+        return;
+      }
+
+      await _payWithPlatformPay();
+    } finally {
+      _openingWallet = false;
     }
   }
 
@@ -225,7 +255,6 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
     if (!mounted) return;
 
     tripProvider.notifyPaymentHistoryRefresh();
-    ToastHelper.showSuccess('Payment successful'.tr());
     await context.pushNamed(
       UserAppRoutes.paymentSuccessfullScreen.name,
       extra: PaymentSuccessRouteExtra(amountEur: amount),
@@ -338,136 +367,147 @@ class _PaymentOptionViewState extends State<_PaymentOptionView> {
     }
   }
 
+  bool _showWalletButton(PaymentOptionState state) {
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return false;
+    return state.platformPaySupported != false;
+  }
+
+  Widget _walletButton({required VoidCallback onPressed}) {
+    return PlatformPayButton(
+      type: Platform.isAndroid
+          ? PlatformButtonType.googlePayMark
+          : PlatformButtonType.book,
+      appearance: PlatformButtonStyle.automatic,
+      borderRadius: 8,
+      onPressed: onPressed,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<PaymentOptionState>();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Consumer<TripProvider>(
-        builder: (context, provider, child) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                40.h.verticalSpace,
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 13.5.w,
-                    vertical: 30.h,
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: GestureDetector(
-                          onTap: () => context.pop(),
-                          child: SvgIcon(
-                            AppAssets.backIcon,
-                            size: 26.w,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-
-                      AppText(
-                        text: "Payment Options".tr(),
-                        style: textStyle32Bold.copyWith(
-                          fontSize: 26.sp,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 13.5.w),
-                  child: Column(
-                    children: [
-                      // PaymentOption(
-                      //   onSelect: (value) {
-                      //     provider.changeSelectedMethod(value);
-                      //   },
-                      //   value: PaymentMethodEnum.googlePay,
-                      //   selectedValue: provider.selectedMethod,
-                      // ),
-                      // PaymentOption(
-                      //   onSelect: (value) {
-                      //     provider.changeSelectedMethod(value);
-                      //   },
-                      //   value: PaymentMethodEnum.applepay,
-                      //   selectedValue: provider.selectedMethod,
-                      // ),
-                      PaymentOption(
-                        onSelect: (value) {
-                          provider.changeSelectedMethod(value);
-                        },
-                        value: PaymentMethodEnum.idealpay,
-                        selectedValue: provider.selectedMethod,
-                      ),
-                      PaymentOption(
-                        onSelect: (value) {
-                          provider.changeSelectedMethod(value);
-                        },
-                        value: PaymentMethodEnum.cash,
-                        selectedValue: provider.selectedMethod,
-                      ),
-                      PaymentOption(
-                        onSelect: (value) {
-                          provider.changeSelectedMethod(value);
-                        },
-                        value: PaymentMethodEnum.creditCard,
-                        selectedValue: provider.selectedMethod,
-                      ),
-                      PaymentOption(
-                        onSelect: (value) {
-                          provider.changeSelectedMethod(value);
-                        },
-                        value: PaymentMethodEnum.paypal,
-                        selectedValue: provider.selectedMethod,
-                      ),
-                      24.h.verticalSpace,
-                      AppButton(
-                        title: 'Confirm & Pay Now'.tr(),
-                        isLoading: state.paying,
-                        onTap: state.paying ? null : _payNow,
-                      ),
-                      if (state.platformPaySupported != null &&
-                          state.platformPaySupported!) ...[
-                        12.h.verticalSpace,
-                        Opacity(
-                          opacity: state.paying ? 0.55 : 1,
-                          child: AbsorbPointer(
-                            absorbing: state.paying,
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 50.h,
-                              child: PlatformPayButton(
-                                type: Platform.isAndroid
-                                    ? PlatformButtonType.googlePayMark
-                                    : PlatformButtonType.book,
-                                appearance: PlatformButtonStyle.automatic,
-                                borderRadius: 8,
-                                onPressed: () {
-                                  provider.changeSelectedMethod(
-                                    Platform.isAndroid
-                                        ? PaymentMethodEnum.googlePay
-                                        : PaymentMethodEnum.applepay,
-                                  );
-                                  if (state.paying) return;
-                                  _payWithPlatformPay();
-                                },
-                              ),
+      body: SafeArea(
+        child: Consumer<TripProvider>(
+          builder: (context, provider, child) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // 20.h.verticalSpace,
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 11.w,
+                      vertical: 20.h,
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: () => context.pop(),
+                            child: SvgIcon(
+                              AppAssets.backIcon,
+                              size: 26.w,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
+
+                        AppText(
+                          text: "Payment Options".tr(),
+                          style: textStyle32Bold.copyWith(
+                            fontSize: 26.sp,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 11.w),
+                    child: Column(
+                      children: [
+                        // PaymentOption(
+                        //   onSelect: (value) {
+                        //     provider.changeSelectedMethod(value);
+                        //   },
+                        //   value: PaymentMethodEnum.googlePay,
+                        //   selectedValue: provider.selectedMethod,
+                        // ),
+                        // PaymentOption(
+                        //   onSelect: (value) {
+                        //     provider.changeSelectedMethod(value);
+                        //   },
+                        //   value: PaymentMethodEnum.applepay,
+                        //   selectedValue: provider.selectedMethod,
+                        // ),
+                        PaymentOption(
+                          onSelect: (value) {
+                            provider.changeSelectedMethod(value);
+                          },
+                          value: PaymentMethodEnum.idealpay,
+                          selectedValue: provider.selectedMethod,
+                        ),
+                        PaymentOption(
+                          onSelect: (value) {
+                            provider.changeSelectedMethod(value);
+                          },
+                          value: PaymentMethodEnum.cash,
+                          selectedValue: provider.selectedMethod,
+                        ),
+                        PaymentOption(
+                          onSelect: (value) {
+                            provider.changeSelectedMethod(value);
+                          },
+                          value: PaymentMethodEnum.creditCard,
+                          selectedValue: provider.selectedMethod,
+                        ),
+                        PaymentOption(
+                          onSelect: (value) {
+                            provider.changeSelectedMethod(value);
+                          },
+                          value: PaymentMethodEnum.paypal,
+                          selectedValue: provider.selectedMethod,
+                        ),
+                        24.h.verticalSpace,
+                        AppButton(
+                          title: 'Confirm & Pay Now'.tr(),
+                          isLoading: state.paying,
+                          onTap: state.paying ? null : _payNow,
+                        ),
+                        if (_showWalletButton(state)) ...[
+                          12.h.verticalSpace,
+                          Opacity(
+                            opacity: state.paying ? 0.55 : 1,
+                            child: AbsorbPointer(
+                              absorbing: state.paying,
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50.h,
+                                child: _walletButton(
+                                  onPressed: () {
+                                    provider.changeSelectedMethod(
+                                      Platform.isAndroid
+                                          ? PaymentMethodEnum.googlePay
+                                          : PaymentMethodEnum.applepay,
+                                    );
+                                    _onWalletPressed();
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -10,7 +10,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
-import 'package:travel_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
+import 'package:travel_app_abdelhamid/core/widgets/nationality_dropdown.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_avatar.dart';
 import 'package:travel_app_abdelhamid/core/utils/date_format_helper.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
@@ -161,6 +161,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _changeLanguage(ProfileProvider provider, String lang) async {
+    if (lang == 'Dutch') {
+      context.setLocale(const Locale('nl'));
+    } else if (lang == 'English') {
+      context.setLocale(const Locale('en'));
+    } else if (lang == 'French') {
+      context.setLocale(const Locale('fr'));
+    } else if (lang == 'Arabic') {
+      context.setLocale(const Locale('ar'));
+    }
+
+    provider.updateSelectedLanguages([lang]);
+
+    if (provider.profile != null) {
+      final updated = provider.profile!.copyWith(languages: [lang]);
+      await provider.saveProfile(updated, showSuccess: false);
+    }
+  }
+
   List<String> _genderOptions() {
     const options = ['male', 'female', 'other'];
     final current = _gender.text.trim();
@@ -194,7 +213,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           return SingleChildScrollView(
             child: SafeArea(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+                padding: EdgeInsets.symmetric(horizontal: 11.w),
                 child: Column(
                   children: [
                     SizedBox(
@@ -333,26 +352,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               readOnly: true,
                             ),
                             18.h.verticalSpace,
-                            CustomMultiSelectDropdown(
-                              hintText: "gender",
-                              titleText: "gender",
-                              items: _genderOptions(),
-                              selectedItems: _gender.text.trim().isEmpty
-                                  ? []
-                                  : [_gender.text.trim()],
-                              showRadio: true,
-                              onChanged: (values) {
+                            _LanguagePicker(
+                              hint: 'gender',
+                              options: _genderOptions(),
+                              selected: _gender.text.trim().isEmpty
+                                  ? null
+                                  : _gender.text.trim(),
+                              onSelected: (value) {
                                 setState(() {
-                                  _gender.text = values.isEmpty
-                                      ? ''
-                                      : values.first;
+                                  _gender.text = value;
                                 });
                               },
                             ),
                             18.h.verticalSpace,
 
-                            AppTextField(
-                              hintText: "Nationality".tr(),
+                            NationalityDropdown(
+                              hintText: 'Select nationality'.tr(),
                               controller: _nationality,
                             ),
                             18.h.verticalSpace,
@@ -367,13 +382,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             18.h.verticalSpace,
 
-                            CustomMultiSelectDropdown(
-                              hintText: "Language".tr(),
-                              items: provider.languageOptions,
-                              selectedItems: provider.selectedLanguages,
-                              onChanged: provider.updateSelectedLanguages,
-                              titleText: "Language".tr(),
-                              showRadio: true,
+                            _LanguagePicker(
+                              hint: 'Language'.tr(),
+                              options: provider.languageOptions,
+                              selected: provider.selectedLanguages.isEmpty
+                                  ? null
+                                  : provider.selectedLanguages.first,
+                              onSelected: (value) {
+                                _changeLanguage(provider, value);
+                              },
                             ),
                           ],
                         ),
@@ -394,6 +411,161 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _LanguagePicker extends StatefulWidget {
+  final String hint;
+  final List<String> options;
+  final String? selected;
+  final ValueChanged<String> onSelected;
+
+  const _LanguagePicker({
+    required this.hint,
+    required this.options,
+    required this.selected,
+    required this.onSelected,
+  });
+  @override
+  State<_LanguagePicker> createState() => _LanguagePickerState();
+}
+
+class _LanguagePickerState extends State<_LanguagePicker> {
+  bool _isOpen = false;
+
+  void _select(String value) {
+    widget.onSelected(value);
+    setState(() {
+      _isOpen = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = widget.selected;
+    final hasSelection = selected != null && selected.isNotEmpty;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
+            blurRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isOpen = !_isOpen;
+              });
+            },
+            borderRadius: BorderRadius.circular(8.r),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AppText(
+                      text: hasSelection ? selected : widget.hint,
+                      style: textStyle14Regular.copyWith(
+                        color: hasSelection
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: _isOpen ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            child: _isOpen
+                ? Column(
+                    children: [
+                      Divider(
+                        height: 1,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.2),
+                      ),
+                      for (var i = 0; i < widget.options.length; i++)
+                        _languageRow(
+                          widget.options[i],
+                          widget.options[i].toLowerCase() ==
+                              (selected ?? '').toLowerCase(),
+                          i < widget.options.length - 1,
+                        ),
+                    ],
+                  )
+                : const SizedBox(width: double.infinity),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _languageRow(String title, bool isSelected, bool showDivider) {
+    return InkWell(
+      onTap: () => _select(title),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              children: [
+                Icon(
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  size: 22.w,
+                  color: isSelected
+                      ? AppColors.secondary
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.45),
+                ),
+                12.w.horizontalSpace,
+                Expanded(
+                  child: AppText(
+                    text: title,
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showDivider)
+            Divider(
+              height: 1,
+              indent: 16.w,
+              endIndent: 16.w,
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.15),
+            ),
+        ],
       ),
     );
   }

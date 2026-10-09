@@ -1,4 +1,5 @@
 enum UserAppRoutes {
+  splashScreen,
   signUpScreen,
   signInScreen,
   guideDashboard,

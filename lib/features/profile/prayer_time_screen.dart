@@ -34,7 +34,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -243,7 +243,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

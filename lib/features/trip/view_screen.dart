@@ -79,7 +79,7 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
           children: [
             /// ---------- HEADER ----------
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -124,7 +124,7 @@ class _FullScreenDocumentViewerState extends State<FullScreenDocumentViewer> {
             ),
             Spacer(),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 40.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 40.h),
 
               child: ValueListenableBuilder<bool>(
                 valueListenable: _downloading,

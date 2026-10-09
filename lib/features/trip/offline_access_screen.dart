@@ -115,14 +115,17 @@ class _OfflineAccessScreenViewState extends State<_OfflineAccessScreenView> {
           ? const Center(child: CircularProgressIndicator())
           : state.savedTrips.isEmpty
           ? Center(
-              child: _EmptyState(
-                icon: Icons.cloud_off_outlined,
-                title: 'No trips saved for offline access.'.tr(),
-                subtitle: 'Download a trip to view it without internet.'.tr(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 11.w),
+                child: _EmptyState(
+                  icon: Icons.cloud_off_outlined,
+                  title: 'No trips saved for offline access.'.tr(),
+                  subtitle: 'Download a trip to view it without internet.'.tr(),
+                ),
               ),
             )
           : ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 10.h),
               itemCount: state.savedTrips.length,
               itemBuilder: (context, index) {
                 final trip = state.savedTrips[index];
@@ -331,7 +334,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

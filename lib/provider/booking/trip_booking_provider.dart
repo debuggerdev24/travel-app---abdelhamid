@@ -136,7 +136,7 @@ class TripBookingProvider extends ChangeNotifier {
         (booking) => booking.trip.id == tripId,
         orElse: () => throw Exception('Booking not found'),
       );
-      
+
       if (_bookingId == null || _bookingId!.isEmpty) {
         _bookingId = tripBooking.id;
       }
@@ -360,8 +360,12 @@ class TripBookingProvider extends ChangeNotifier {
           await _resolveExistingBookingId();
           // Try fetching from upcoming bookings if still null
           if (_bookingId == null || _bookingId!.isEmpty) {
-            final bookings = await TripsService.instance.getUpcomingBookings(showErrorToast: false);
-            final match = bookings.where((b) => b.trip.id == _tripDetails!.id).firstOrNull;
+            final bookings = await TripsService.instance.getUpcomingBookings(
+              showErrorToast: false,
+            );
+            final match = bookings
+                .where((b) => b.trip.id == _tripDetails!.id)
+                .firstOrNull;
             if (match != null) {
               _bookingId = match.id;
             }
@@ -371,7 +375,7 @@ class TripBookingProvider extends ChangeNotifier {
           notifyListeners();
         }
       }
-      
+
       if (_bookingId != null && _bookingId!.isNotEmpty) {
         return true;
       }
@@ -607,7 +611,7 @@ class TripBookingProvider extends ChangeNotifier {
         _localFamilyDetailsData != null;
   }
 
-  /// Clear all locally stored booking data
+  // Clear all locally stored booking data
   void clearLocalData() {
     _localPackageData = null;
     _localRoomPreferenceData = null;

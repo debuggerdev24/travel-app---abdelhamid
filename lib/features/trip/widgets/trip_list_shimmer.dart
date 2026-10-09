@@ -12,7 +12,7 @@ class TripListShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+      padding: EdgeInsets.symmetric(horizontal: 11.w),
       itemCount: itemCount,
       itemBuilder: (_, __) => const _TripCardShimmer(),
     );

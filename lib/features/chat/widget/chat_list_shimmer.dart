@@ -13,7 +13,7 @@ class ChatListShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      padding: EdgeInsets.symmetric(horizontal: 11.w),
       itemCount: itemCount,
       separatorBuilder: (_, __) => 20.h.verticalSpace,
       itemBuilder: (_, __) => const _ChatRowShimmer(),

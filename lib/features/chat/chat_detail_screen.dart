@@ -114,7 +114,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ChatProvider>(context);
 
@@ -123,12 +123,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 18.h, right: 10.w),
-                  child: GestureDetector(
+            Padding(
+              padding: EdgeInsets.fromLTRB(11.w, 14.h, 11.w, 8.h),
+              child: Row(
+                children: [
+                  GestureDetector(
                     onTap: () => context.pop(),
                     child: SvgIcon(
                       AppAssets.backIcon,
@@ -136,102 +135,106 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                ),
-                Expanded(
-                  child: AppText(
-                    textAlign: TextAlign.center,
-                    text: widget.name.startsWith('Trip: ')
-                        ? '${"Trip".tr()}: ${widget.name.substring(6)}'
-                        : (widget.name.startsWith('Trip:')
-                            ? '${"Trip".tr()}:${widget.name.substring(5)}'
-                            : widget.name),
-                    overflow: TextOverflow.ellipsis,
-                    style: textStyle32Bold.copyWith(
-                      fontSize: 26.sp,
-                      color: Theme.of(context).colorScheme.onSurface,
+                  10.w.horizontalSpace,
+                  Expanded(
+                    child: AppText(
+                      text: widget.name.startsWith('Trip: ')
+                          ? '${"Trip".tr()}: ${widget.name.substring(6)}'
+                          : (widget.name.startsWith('Trip:')
+                                ? '${"Trip".tr()}:${widget.name.substring(5)}'
+                                : widget.name),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textStyle16SemiBold.copyWith(
+                        fontSize: 18.sp,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
-                ),
-                if (!widget.isGroup) 35.w.horizontalSpace,
-
-                SizedBox(width: 10.w),
-                if (widget.isGroup) ...[
+                  if (widget.isGroup) ...[
+                    12.w.horizontalSpace,
+                    GestureDetector(
+                      onTap: _showEmergencyMessageDialog,
+                      child: Icon(
+                        Icons.emergency,
+                        size: 22.w,
+                        color: AppColors.redColor,
+                      ),
+                    ),
+                  ],
+                  12.w.horizontalSpace,
                   GestureDetector(
-                    onTap: _showEmergencyMessageDialog,
-                    child: Icon(
-                      Icons.emergency,
-                      size: 24.w,
-                      color: AppColors.redColor,
-                    ),
-                  ),
-                  SizedBox(width: 15.w),
-                ],
-                GestureDetector(
-                  onTap: () {
-                    context.pushNamed(
-                      UserAppRoutes.trackTravelersScreen.name,
-                      extra: {
-                        'chatId': widget.chatId,
-                        'groupId': widget.groupId ?? widget.chatId,
-                        'name': widget.name,
-                        'isGroup': widget.isGroup,
-                      },
-                    );
-                  },
-                  child: Icon(
-                    Icons.map_outlined,
-                    size: 24.w,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                SizedBox(width: 15.w),
-                GestureDetector(
-                  onTap: () async {
-                    if (widget.isGroup) {
+                    onTap: () {
                       context.pushNamed(
-                        UserAppRoutes.groupInfoScreen.name,
+                        UserAppRoutes.trackTravelersScreen.name,
                         extra: {
                           'chatId': widget.chatId,
                           'groupId': widget.groupId ?? widget.chatId,
                           'name': widget.name,
-                          'image': widget.image,
-                          'avatarUrl': widget.avatarUrl,
+                          'isGroup': widget.isGroup,
                         },
                       );
-                    } else {
-                      try {
-                        final data = await EssentialService.instance
-                            .getEmergencyContacts(showErrorToast: false);
-                        final number = data?.groupLeader?.leaderNumber;
-                        if (number != null && number.isNotEmpty) {
-                          final uri = Uri.parse('tel:$number');
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri);
+                    },
+                    child: Icon(
+                      Icons.map_outlined,
+                      size: 22.w,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  12.w.horizontalSpace,
+                  GestureDetector(
+                    onTap: () async {
+                      if (widget.isGroup) {
+                        context.pushNamed(
+                          UserAppRoutes.groupInfoScreen.name,
+                          extra: {
+                            'chatId': widget.chatId,
+                            'groupId': widget.groupId ?? widget.chatId,
+                            'name': widget.name,
+                            'image': widget.image,
+                            'avatarUrl': widget.avatarUrl,
+                          },
+                        );
+                      } else {
+                        try {
+                          final data = await EssentialService.instance
+                              .getEmergencyContacts(showErrorToast: false);
+                          final number = data?.groupLeader?.leaderNumber;
+                          if (number != null && number.isNotEmpty) {
+                            final uri = Uri.parse('tel:$number');
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri);
+                            } else {
+                              ToastHelper.showError(
+                                'Could not launch phone dialer'.tr(),
+                              );
+                            }
                           } else {
-                            ToastHelper.showError('Could not launch phone dialer'.tr());
+                            ToastHelper.showError(
+                              'Guide phone number not available'.tr(),
+                            );
                           }
-                        } else {
-                          ToastHelper.showError('Guide phone number not available'.tr());
+                        } catch (e) {
+                          ToastHelper.showError(
+                            'Could not fetch guide phone number'.tr(),
+                          );
                         }
-                      } catch (e) {
-                        ToastHelper.showError('Could not fetch guide phone number'.tr());
                       }
-                    }
-                  },
-                  child: widget.isGroup
-                      ? SvgIcon(
-                          AppAssets.info,
-                          size: 24.w,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        )
-                      : SvgIcon(
-                          AppAssets.call,
-                          size: 24.w,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                ),
-                SizedBox(width: widget.isGroup ? 18.h : 10.w),
-              ],
+                    },
+                    child: widget.isGroup
+                        ? SvgIcon(
+                            AppAssets.info,
+                            size: 22.w,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          )
+                        : SvgIcon(
+                            AppAssets.call,
+                            size: 22.w,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                  ),
+                ],
+              ),
             ),
 
             Expanded(
@@ -257,7 +260,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       reverse: true,
                       padding: EdgeInsets.symmetric(
                         vertical: 18.h,
-                        horizontal: 16.w,
+                        horizontal: 11.w,
                       ),
                       itemCount: provider.messages.length,
                       itemBuilder: (context, index) {
@@ -404,7 +407,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               Navigator.pop(ctx);
               await provider.deleteOwnMessage(messageId);
             },
-            child: Text('Delete'.tr(), style: TextStyle(color: AppColors.redColor)),
+            child: Text(
+              'Delete'.tr(),
+              style: TextStyle(color: AppColors.redColor),
+            ),
           ),
         ],
       ),
@@ -572,7 +578,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     AppText(
                       text: message['time']?.toString() ?? '',
                       style: textStyle14Regular.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontSize: 11.sp,
                       ),
                     ),
@@ -638,7 +646,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     AppText(
                       text: message['time']?.toString() ?? '',
                       style: textStyle14Regular.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontSize: 11.sp,
                       ),
                     ),
@@ -952,7 +962,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   Widget _buildBottomInput(ChatProvider provider) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 12.h),
+      padding: EdgeInsets.fromLTRB(11.w, 8.h, 11.w, 12.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -1073,7 +1083,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppText(
-                text: "This message will be sent to all members in this group immediately.".tr(),
+                text:
+                    "This message will be sent to all members in this group immediately."
+                        .tr(),
                 style: textStyle14Regular.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

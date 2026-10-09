@@ -64,7 +64,7 @@ class _UmrahGuideScreenView extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -75,7 +75,11 @@ class _UmrahGuideScreenView extends StatelessWidget {
                     onTap: () => context.pop(),
                     child: Padding(
                       padding: EdgeInsets.only(top: 2.h),
-                      child: SvgIcon(AppAssets.backIcon, size: 28.5.w, color: Theme.of(context).colorScheme.onSurface),
+                      child: SvgIcon(
+                        AppAssets.backIcon,
+                        size: 28.5.w,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -125,7 +129,7 @@ class _UmrahGuideScreenView extends StatelessWidget {
           ),
           10.h.verticalSpace,
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            padding: EdgeInsets.zero,
             child: AppText(
               text: state.error!,
               textAlign: TextAlign.center,
@@ -159,7 +163,9 @@ class _UmrahGuideScreenView extends StatelessWidget {
                   child: _EmptyState(
                     icon: Icons.mosque_outlined,
                     title: 'No Umrah guide steps available yet'.tr(),
-                    subtitle: 'Guide steps will appear here once they are added.'.tr(),
+                    subtitle:
+                        'Guide steps will appear here once they are added.'
+                            .tr(),
                   ),
                 ),
               ),
@@ -243,7 +249,7 @@ class _UmrahGuideScreenView extends StatelessWidget {
                   AppText(
                     text: " View Dua List".tr(),
                     style: textStyle14Medium.copyWith(
-                      color: Theme.of(con).colorScheme.onSurface,
+                      color: AppColors.whiteColor,
                     ),
                   ),
                 ],
@@ -309,7 +315,6 @@ class _UmrahStepTile extends StatelessWidget {
   }
 }
 
-
 class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -324,7 +329,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

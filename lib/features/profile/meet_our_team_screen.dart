@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/utils/server_media_url.dart';
@@ -88,35 +89,42 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              22.h.verticalSpace,
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => context.pop(),
-                      child: SvgIcon(
-                        AppAssets.backIcon,
-                        size: 28.w,
-                        color: Theme.of(context).colorScheme.onSurface,
+              Padding(
+                padding: EdgeInsets.only(top: 10.h, bottom: 12.h),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => context.pop(),
+                        child: SvgIcon(
+                          AppAssets.backIcon,
+                          size: 28.5.w,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
-                  AppText(
-                    text: "Meet Our Team".tr(),
-                    style: textStyle32Bold.copyWith(
-                      fontSize: 26.sp,
-                      color: Theme.of(context).colorScheme.onSurface,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40.w),
+                      child: AppText(
+                        text: "Meet Our Team".tr(),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: textStyle32Bold.copyWith(
+                          fontSize: 26.sp,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              22.h.verticalSpace,
               Expanded(child: _buildBody(state)),
             ],
           ),
@@ -134,13 +142,13 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
       );
     }
     if (state.error != null) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: 24.h),
+      return Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             AppText(
               text: state.error!,
+              textAlign: TextAlign.center,
               style: textStyle14Regular.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -159,7 +167,7 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
       );
     }
     if (state.members.isEmpty) {
-      return SingleChildScrollView(child: _emptyState());
+      return Center(child: _emptyState());
     }
     return ListView.separated(
       itemCount: state.members.length,
@@ -173,41 +181,34 @@ class _MeetOurTeamViewState extends State<_MeetOurTeamView> {
 
   Widget _emptyState() {
     return Padding(
-      padding: EdgeInsets.only(top: 48.h, bottom: 32.h),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 320.w),
-          child: Column(
-            children: [
-              Icon(
-                Icons.groups_outlined,
-                size: 56.sp,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              20.h.verticalSpace,
-              AppText(
-                textAlign: TextAlign.center,
-                text: 'No team members yet'.tr(),
-                style: textStyle16SemiBold.copyWith(
-                  fontSize: 17.sp,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              14.h.verticalSpace,
-              AppText(
-                textAlign: TextAlign.center,
-                text:
-                    'Team profiles will show here once they are added in the admin panel.'
-                        .tr(),
-                style: textStyle14Regular.copyWith(
-                  height: 1.5,
-                  fontSize: 14.sp,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.groups_outlined,
+            size: 40.sp,
+            color: AppColors.secondary,
           ),
-        ),
+          10.h.verticalSpace,
+          AppText(
+            textAlign: TextAlign.center,
+            text: 'No team members yet'.tr(),
+            style: textStyle16SemiBold.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          6.h.verticalSpace,
+          AppText(
+            textAlign: TextAlign.center,
+            text:
+                'Team profiles will show here once they are added in the admin panel.'
+                    .tr(),
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

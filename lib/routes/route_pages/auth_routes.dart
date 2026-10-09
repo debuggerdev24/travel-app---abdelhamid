@@ -7,9 +7,15 @@ import 'package:travel_app_abdelhamid/features/auth/screens/otp_verification_scr
 import 'package:travel_app_abdelhamid/features/auth/screens/reset_password_screen.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/sign_in_screen.dart';
 import 'package:travel_app_abdelhamid/features/auth/screens/sign_up_screen.dart';
+import 'package:travel_app_abdelhamid/features/auth/screens/splash_screen.dart';
 import 'package:travel_app_abdelhamid/features/tabs/tab_screen.dart';
 
 List<RouteBase> get authRoutes => [
+  GoRoute(
+    path: UserAppRoutes.splashScreen.path,
+    name: UserAppRoutes.splashScreen.name,
+    builder: (context, state) => const SplashScreen(),
+  ),
   GoRoute(
     path: UserAppRoutes.signUpScreen.path,
     name: UserAppRoutes.signUpScreen.name,

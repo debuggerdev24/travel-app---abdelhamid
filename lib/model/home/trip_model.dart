@@ -579,7 +579,6 @@ class TripDetailsLoadResult {
   }
 }
 
-
 /// Result of [TripsService.fetchEnrolledTripContext]: user's latest active/pending booking for the Trips tab.
 class EnrolledTripContext {
   final TripModel trip;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
+import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 
 /// Application theme configuration.
 /// Centralizes colors and typography for consistency.
@@ -21,7 +22,7 @@ class AppTheme {
         onError: AppColors.whiteColor,
       ),
       scaffoldBackgroundColor: AppColors.whiteColor,
-      fontFamily: 'Poppins',
+      fontFamily: AppFonts.poppins,
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.whiteColor,
         foregroundColor: AppColors.primaryColor,
@@ -44,7 +45,7 @@ class AppTheme {
         onError: AppColors.whiteColor,
       ),
       scaffoldBackgroundColor: const Color(0xFF121212),
-      fontFamily: 'Poppins',
+      fontFamily: AppFonts.poppins,
       appBarTheme: AppBarTheme(
         backgroundColor: const Color(0xFF1E1E1E),
         foregroundColor: AppColors.whiteColor,

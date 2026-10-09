@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 
-/// Placeholder that matches the itinerary steps while today's plan is loading.
+/// Placeholder that matches the itinerary day card while today's plan loads.
 class ItineraryListShimmer extends StatelessWidget {
   const ItineraryListShimmer({super.key, this.itemCount = 4});
 
@@ -11,17 +11,46 @@ class ItineraryListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: AppColors.shimmerBaseColor,
-      highlightColor: AppColors.shimmerHighlightColor,
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(
+          color: AppColors.blueColor.withValues(alpha: 0.15),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _bar(width: 160.w, height: 16.h),
-          16.h.verticalSpace,
-          ...List.generate(itemCount, (index) {
-            return _ItineraryStepShimmer(isLast: index == itemCount - 1);
-          }),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            color: AppColors.shimmerBaseColor.withValues(alpha: 0.45),
+            child: Shimmer.fromColors(
+              baseColor: AppColors.shimmerBaseColor,
+              highlightColor: AppColors.shimmerHighlightColor,
+              child: Row(
+                children: [
+                  _bar(width: 22.w, height: 22.w, radius: 11.r),
+                  10.w.horizontalSpace,
+                  _bar(width: 140.w, height: 16.h),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
+            child: Shimmer.fromColors(
+              baseColor: AppColors.shimmerBaseColor,
+              highlightColor: AppColors.shimmerHighlightColor,
+              child: Column(
+                children: List.generate(itemCount, (index) {
+                  return _ItineraryStepShimmer(isLast: index == itemCount - 1);
+                }),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -36,33 +65,14 @@ class _ItineraryStepShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: isLast ? 0 : 18.h),
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 14.h),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              _bar(width: 32.w, height: 32.w, radius: 16.r),
-              if (!isLast)
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.h),
-                  height: 30.h,
-                  width: 1.5,
-                  color: AppColors.shimmerBaseColor,
-                ),
-            ],
-          ),
-          22.w.horizontalSpace,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _bar(width: 180.w, height: 16.h),
-                8.h.verticalSpace,
-                _bar(width: 90.w, height: 14.h),
-              ],
-            ),
-          ),
+          _bar(width: 48.w, height: 14.h),
+          10.w.horizontalSpace,
+          _bar(width: 32.w, height: 32.w, radius: 16.r),
+          12.w.horizontalSpace,
+          _bar(width: 140.w, height: 14.h),
         ],
       ),
     );

@@ -13,7 +13,7 @@ class DocumentListShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 16.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,7 +59,7 @@ class _DocumentCardShimmer extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _bar(width: 140.w, height: 126.h, radius: 12.r),
+                _bar(width: 88.w, height: 88.w, radius: 8.r),
                 14.w.horizontalSpace,
                 Expanded(
                   child: Column(
@@ -79,11 +79,11 @@ class _DocumentCardShimmer extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _bar(width: double.infinity, height: 46.h, radius: 25.r),
+                  child: _bar(width: double.infinity, height: 40.h, radius: 8.r),
                 ),
                 20.w.horizontalSpace,
                 Expanded(
-                  child: _bar(width: double.infinity, height: 46.h, radius: 25.r),
+                  child: _bar(width: double.infinity, height: 40.h, radius: 8.r),
                 ),
               ],
             ),

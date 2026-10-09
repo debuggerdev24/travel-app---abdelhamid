@@ -29,7 +29,7 @@ class _PackageDetailsCardState extends State<PackageDetailsCard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 14.h),
+        margin: EdgeInsets.symmetric(vertical: 7.h),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),

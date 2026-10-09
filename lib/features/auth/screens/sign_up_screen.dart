@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,7 +44,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 50.h, horizontal: 13.5.w),
+            padding: EdgeInsets.symmetric(vertical: 50.h, horizontal: 11.w),
             child: Consumer<AuthProvider>(
               builder: (context, authProvider, child) {
                 return Column(
@@ -73,7 +74,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       text:
                           "“Start your journey with us – create your account today!”"
                               .tr(),
-                      style: textStyle14Italic,
+                      style: textStyle14Italic.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                     36.h.verticalSpace,
                     Form(
@@ -101,6 +104,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: signUpPhoneController,
                             hintText: "Phone Number".tr(),
                             keyboardType: TextInputType.phone,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return "Phone number is required";
@@ -160,7 +166,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             text: "Already have an account? ".tr(),
                             style: textStyle14Regular.copyWith(
                               letterSpacing: 0.4,
-                              color: Colors.black.withValues(alpha: 0.7),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ),
                           TextSpan(

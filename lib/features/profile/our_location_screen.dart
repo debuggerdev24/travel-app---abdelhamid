@@ -7,6 +7,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/model/profile/office_location_model.dart';
+import 'package:travel_app_abdelhamid/features/profile/widget/location_list_shimmer.dart';
 import 'package:travel_app_abdelhamid/services/profile_content_service.dart';
 
 import 'package:provider/provider.dart';
@@ -86,7 +87,7 @@ class _OurLocationsViewState extends State<_OurLocationsView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -117,14 +118,7 @@ class _OurLocationsViewState extends State<_OurLocationsView> {
                 ),
               ),
               if (state.loading)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 48.h),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                )
+                const LocationListShimmer()
               else if (state.error != null)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 24.h),

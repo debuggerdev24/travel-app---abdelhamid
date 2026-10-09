@@ -27,7 +27,7 @@ class TravelInsuranceScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 26.w),
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -164,7 +164,7 @@ class TravelInsuranceScreen extends StatelessWidget {
 
       /// ---------- Bottom Download Button ----------
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 22.h),
+        padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 22.h),
         child: SizedBox(
           height: 50.h,
           width: double.infinity,

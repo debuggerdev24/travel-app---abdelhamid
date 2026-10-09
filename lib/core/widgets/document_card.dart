@@ -5,17 +5,14 @@ import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
-import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 import 'package:travel_app_abdelhamid/core/widgets/network_image_with_shimmer.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 
 class DocumentCard extends StatelessWidget {
   final DocumentModel doc;
 
-
   /// Primary action (View).
   final VoidCallback onTap;
-
 
   /// Secondary action (Map / Helpline / Download). Defaults to [onTap].
   final VoidCallback? onSecondaryTap;
@@ -28,8 +25,8 @@ class DocumentCard extends StatelessWidget {
   });
 
   Widget _buildThumbnail() {
-    final w = 140.w;
-    final h = 126.h;
+    final w = 88.w;
+    final h = 88.w;
     if (doc.fileImage != null) {
       return _thumbnailBox(
         w,
@@ -69,38 +66,27 @@ class DocumentCard extends StatelessWidget {
   }
 
   Widget _buildInfoRow(BuildContext context, String label, String value) {
+    final muted = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.55);
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 2.h),
+      padding: EdgeInsets.only(top: 4.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 70.w,
-            child: AppText(
-              text: label,
-              style: textStyle14Regular.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.7),
-                fontSize: 13.sp,
-              ),
-            ),
-          ),
           AppText(
-            text: " :  ",
-            style: textStyle14Regular.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+            text: '$label:',
+            style: textStyle14Regular.copyWith(color: muted, fontSize: 12.sp),
           ),
+          8.w.horizontalSpace,
           Expanded(
             child: AppText(
               text: value,
-              style: textStyle14Regular.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.7),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: textStyle14Medium.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 13.sp,
               ),
             ),
           ),
@@ -116,13 +102,13 @@ class DocumentCard extends StatelessWidget {
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.primaryColor.setOpacity(0.1)),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: AppColors.blueColor.withValues(alpha: 0.15)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.setOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: AppColors.blueColor.withValues(alpha: 0.06),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -132,7 +118,7 @@ class DocumentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(8.r),
                 child: _buildThumbnail(),
               ),
 
@@ -182,17 +168,10 @@ class DocumentCard extends StatelessWidget {
                 child: GestureDetector(
                   onTap: onTap,
                   child: Container(
-                    height: 46.h,
+                    height: 40.h,
                     decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.blueColor.setOpacity(0.4),
-                          blurRadius: 6,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
                       color: AppColors.blueColor,
-                      borderRadius: BorderRadius.circular(25.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Center(
                       child: Row(
@@ -224,21 +203,11 @@ class DocumentCard extends StatelessWidget {
                 child: GestureDetector(
                   onTap: onSecondaryTap ?? onTap,
                   child: Container(
-                    height: 46.h,
+                    height: 40.h,
                     decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.blueColor.setOpacity(0.4),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
                       color: Theme.of(context).colorScheme.surface,
-                      border: Border.all(
-                        color: AppColors.blueColor,
-                        width: 0.8,
-                      ),
-                      borderRadius: BorderRadius.circular(25.r),
+                      border: Border.all(color: AppColors.blueColor, width: 1),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Center(
                       child: Row(

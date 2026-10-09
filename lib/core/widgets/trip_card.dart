@@ -116,66 +116,85 @@ class TripCard extends StatelessWidget {
                     ],
                   ),
                   12.h.verticalSpace,
-
-                  /// Location with icon
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SvgIcon(
-                        AppAssets.location,
-                        size: 16.w,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      8.w.horizontalSpace,
-                      AppText(
-                        text: location,
-                        style: textStyle14Regular.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                SvgIcon(
+                                  AppAssets.location,
+                                  size: 16.w,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                                8.w.horizontalSpace,
+                                Expanded(
+                                  child: AppText(
+                                    text: location,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textStyle14Regular.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            12.h.verticalSpace,
+                            Row(
+                              children: [
+                                SvgIcon(
+                                  AppAssets.calendar,
+                                  size: 16.w,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                                8.w.horizontalSpace,
+                                Expanded(
+                                  child: AppText(
+                                    text: date,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textStyle14Regular.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-
-                  12.h.verticalSpace,
-
-                  /// Date with calendar icon
-                  Row(
-                    children: [
-                      SvgIcon(
-                        AppAssets.calendar,
-                        size: 16.w,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      8.w.horizontalSpace,
-                      AppText(
-                        text: date,
-                        style: textStyle14Regular.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  /// Status (Only show if not empty)
-                  if (status.isNotEmpty) ...[
-                    12.h.verticalSpace,
-                    Row(
-                      children: [
-                        AppText(
-                          text: "Status : ".tr(),
-                          style: textStyle14Regular.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                        AppText(
-                          text: status,
-                          style: textStyle14Medium.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                      if (status.isNotEmpty) ...[
+                        12.w.horizontalSpace,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            AppText(
+                              text: 'Status'.tr(),
+                              style: textStyle12Regular.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            4.h.verticalSpace,
+                            AppText(
+                              text: status,
+                              style: textStyle14Medium.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                  ],
+                    ],
+                  ),
 
                   /// Payment Status (Only show if not empty)
                   if (paymentStatus != null && paymentStatus!.isNotEmpty) ...[

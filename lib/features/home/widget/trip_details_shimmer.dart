@@ -25,7 +25,7 @@ class TripDetailsShimmer extends StatelessWidget {
               color: AppColors.shimmerBaseColor,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+              padding: EdgeInsets.symmetric(horizontal: 11.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

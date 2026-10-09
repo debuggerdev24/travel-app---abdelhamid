@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_constants.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/enums/payment_option_enum.dart';
@@ -18,6 +19,7 @@ import 'package:travel_app_abdelhamid/core/widgets/payment_option_card.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
 import 'package:travel_app_abdelhamid/features/home/payment_successfull_screen.dart';
+import 'package:travel_app_abdelhamid/features/trip/widgets/payment_section_shimmer.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
@@ -94,8 +96,6 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
         tripProvider.enrolledBookingId ??
         context.read<TripBookingProvider>().bookingId;
 
-    // Show success screen immediately after payment succeeds
-    ToastHelper.showSuccess('Payment successful'.tr());
     await context.pushNamed(
       UserAppRoutes.paymentSuccessfullScreen.name,
       extra: PaymentSuccessRouteExtra(amountEur: paidAmountEur),
@@ -257,7 +257,8 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     final tripProvider = context.read<TripProvider>();
     final method = tripProvider.selectedMethod;
 
-    if (method == PaymentMethodEnum.googlePay || method == PaymentMethodEnum.applepay) {
+    if (method == PaymentMethodEnum.googlePay ||
+        method == PaymentMethodEnum.applepay) {
       return _payWithPlatformPay();
     }
 
@@ -329,7 +330,8 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
             paymentIntentClientSecret: result.clientSecret,
             merchantDisplayName: 'Travel',
             style: ThemeMode.light,
-            googlePay: Platform.isAndroid && method == PaymentMethodEnum.googlePay
+            googlePay:
+                Platform.isAndroid && method == PaymentMethodEnum.googlePay
                 ? PaymentSheetGooglePay(
                     merchantCountryCode: AppConstants.stripeMerchantCountryCode,
                     testEnv: kDebugMode,
@@ -411,139 +413,150 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
             payment.pendingAmount.abs() < 0.0001;
         if (!loading &&
             ((bid == null || bid.isEmpty) && (payment == null || allZero))) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 11.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 14.h),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.shadow.withValues(alpha: 0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AppText(
+                  text: 'No active booking yet'.tr(),
+                  style: textStyle16SemiBold.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 18.sp,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                8.h.verticalSpace,
+                AppText(
+                  text:
+                      'Choose a package to start booking. You can pay after selecting your package.'
+                          .tr(),
+                  style: textStyle14Regular.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 14.sp,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                16.h.verticalSpace,
+                AppButton(
+                  title: 'Book now'.tr(),
+                  onTap: () async {
+                    await tripProvider.ensureSelectedTripFromUpcoming();
+                    // Use the same kind of trip object as Home upcoming list tap
+                    // (must have a real `id` so TripDetailsScreen can load packages).
+                    TripModel? t = tripProvider.selectedTrip;
+                    if (t?.id == null || (t!.id?.isEmpty ?? true)) {
+                      final upcomingWithId = tripProvider.upcomingTripList
+                          .where((e) => (e.id ?? '').isNotEmpty)
+                          .toList();
+                      if (upcomingWithId.isNotEmpty) {
+                        t = upcomingWithId.first;
+                      }
+                    }
+                    if (t != null) tripProvider.selectTrip(t);
+                    if (!context.mounted) return;
+                    context.pushNamed(UserAppRoutes.tripDetailsScreen.name);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (loading) {
+          return const PaymentSectionShimmer();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.fromLTRB(11.w, 10.h, 11.w, 12.h),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(
                       context,
-                    ).colorScheme.shadow.withValues(alpha: 0.1),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
+                    ).colorScheme.shadow.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
                 ],
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
                   color: Theme.of(
                     context,
-                  ).colorScheme.outline.withValues(alpha: 0.2),
+                  ).colorScheme.outline.withValues(alpha: 0.15),
                 ),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    text: 'No active booking yet'.tr(),
+                    text: _packageLabel(payment),
                     style: textStyle16SemiBold.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 18.sp,
+                      fontSize: 16.sp,
                     ),
-                    textAlign: TextAlign.center,
+                  ),
+                  12.h.verticalSpace,
+                  Divider(
+                    height: 1,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.12),
                   ),
                   8.h.verticalSpace,
-                  AppText(
-                    text:
-                        'Choose a package to start booking. You can pay after selecting your package.'
-                            .tr(),
-                    style: textStyle14Regular.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 14.sp,
-                    ),
-                    textAlign: TextAlign.center,
+                  _priceRow(
+                    'Total',
+                    '€${payment?.totalAmount.toStringAsFixed(0) ?? '-'}',
                   ),
-                  16.h.verticalSpace,
-                  AppButton(
-                    title: 'Book now'.tr(),
-                    onTap: () async {
-                      await tripProvider.ensureSelectedTripFromUpcoming();
-                      // Use the same kind of trip object as Home upcoming list tap
-                      // (must have a real `id` so TripDetailsScreen can load packages).
-                      TripModel? t = tripProvider.selectedTrip;
-                      if (t?.id == null || (t!.id?.isEmpty ?? true)) {
-                        final upcomingWithId = tripProvider.upcomingTripList
-                            .where((e) => (e.id ?? '').isNotEmpty)
-                            .toList();
-                        if (upcomingWithId.isNotEmpty) {
-                          t = upcomingWithId.first;
-                        }
-                      }
-                      if (t != null) tripProvider.selectTrip(t);
-                      if (!context.mounted) return;
-                      context.pushNamed(UserAppRoutes.tripDetailsScreen.name);
-                    },
+                  _priceRow(
+                    'Paid',
+                    '€${payment?.paidAmount.toStringAsFixed(0) ?? '-'}',
                   ),
+                  _priceRow(
+                    'Pending',
+                    '€${payment?.pendingAmount.toStringAsFixed(0) ?? '-'}',
+                    valueColor: (payment?.pendingAmount ?? 0) > 0
+                        ? AppColors.redColor
+                        : null,
+                  ),
+                  if (payment != null && payment.pendingAmount <= 0) ...[
+                    12.h.verticalSpace,
+                    _paidInFullNote(context),
+                  ],
                 ],
               ),
             ),
-          );
-        }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.15),
-                  ),
-                ),
-                child: loading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AppText(
-                            text: 'Premium Package'.tr(),
-                            style: textStyle14Regular.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                              fontSize: 13.sp,
-                            ),
-                          ),
-                          12.h.verticalSpace,
-                          _priceRow(
-                            'Total',
-                            '€${payment?.totalAmount.toStringAsFixed(0) ?? '-'}',
-                          ),
-                          6.h.verticalSpace,
-                          _priceRow(
-                            'Paid',
-                            '€${payment?.paidAmount.toStringAsFixed(0) ?? '-'}',
-                          ),
-                          6.h.verticalSpace,
-                          _priceRow(
-                            'Pending',
-                            '€${payment?.pendingAmount.toStringAsFixed(0) ?? '-'}',
-                          ),
-                        ],
-                      ),
-              ),
-            ),
-            if (!loading && bid != null && bid.isNotEmpty)
+            if (bid != null && bid.isNotEmpty)
               _pastPaymentsBlock(context, bid, tripProvider),
-            if (!loading) ...[
+            ...[
               if (payment != null && payment.pendingAmount > 0) ...[
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  padding: EdgeInsets.symmetric(horizontal: 11.w),
                   child: AppText(
                     text: "Payment Method".tr(),
                     style: textStyle16SemiBold.copyWith(
@@ -554,16 +567,18 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 ),
                 16.h.verticalSpace,
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  padding: EdgeInsets.symmetric(horizontal: 11.w),
                   child: Column(
                     children: [
-                      if (Platform.isAndroid && tripProvider.platformPaySupported == true)
+                      if (Platform.isAndroid &&
+                          tripProvider.platformPaySupported == true)
                         PaymentOption(
                           onSelect: tripProvider.changeSelectedMethod,
                           value: PaymentMethodEnum.googlePay,
                           selectedValue: tripProvider.selectedMethod,
                         ),
-                      if (Platform.isIOS && tripProvider.platformPaySupported == true)
+                      if (Platform.isIOS &&
+                          tripProvider.platformPaySupported == true)
                         PaymentOption(
                           onSelect: tripProvider.changeSelectedMethod,
                           value: PaymentMethodEnum.applepay,
@@ -584,16 +599,30 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                         value: PaymentMethodEnum.creditCard,
                         selectedValue: tripProvider.selectedMethod,
                       ),
-                      if (tripProvider.selectedMethod == PaymentMethodEnum.creditCard)
+                      if (tripProvider.selectedMethod ==
+                          PaymentMethodEnum.creditCard)
                         Padding(
-                          padding: EdgeInsets.only(bottom: 20.h, left: 4.w, right: 4.w),
+                          padding: EdgeInsets.only(
+                            bottom: 20.h,
+                            left: 4.w,
+                            right: 4.w,
+                          ),
                           child: CardFormField(
                             style: CardFormStyle(
-                              borderColor: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
-                              textColor: Theme.of(context).colorScheme.onSurface,
-                              placeholderColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              borderColor: Theme.of(context)
+                                  .colorScheme
+                                  .outlineVariant
+                                  .withValues(alpha: 0.5),
+                              textColor: Theme.of(
+                                context,
+                              ).colorScheme.onSurface,
+                              placeholderColor: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                               fontSize: 14,
-                              textErrorColor: Theme.of(context).colorScheme.error,
+                              textErrorColor: Theme.of(
+                                context,
+                              ).colorScheme.error,
                               borderWidth: 1,
                               borderRadius: 8,
                             ),
@@ -609,7 +638,12 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 32.h), // Extra padding at bottom
+                  padding: EdgeInsets.fromLTRB(
+                    11.w,
+                    16.h,
+                    11.w,
+                    32.h,
+                  ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                   ),
@@ -619,19 +653,6 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                     onTap: tripProvider.isPaying ? null : _onPayNow,
                   ),
                 ),
-              ] else if (payment != null && payment.pendingAmount <= 0) ...[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: AppText(
-                    text: 'No payment due. Your balance is fully paid — thank you!'.tr(),
-                    style: textStyle14Regular.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 15.sp,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                24.h.verticalSpace,
               ],
               24.h.verticalSpace,
             ],
@@ -647,7 +668,7 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     TripProvider tripProvider,
   ) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(24.w, 4.h, 24.w, 8.h),
+      padding: EdgeInsets.fromLTRB(11.w, 0, 11.w, 8.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -669,31 +690,22 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
                     extra: <String, dynamic>{'bookingId': bookingId},
                   );
                 },
-                child: AppText(
-                  text: 'View All'.tr(),
-                  style: textStyle14Medium.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Theme.of(context).colorScheme.primary,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+                  child: AppText(
+                    text: 'View All'.tr(),
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
           if (tripProvider.isPastPaymentsLoading)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.h),
-              child: Center(
-                child: SizedBox(
-                  width: 24.w,
-                  height: 24.w,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
-            )
+            const PastPaymentRowShimmer()
           else if (tripProvider.pastPayments.isEmpty)
             Padding(
               padding: EdgeInsets.only(top: 8.h, bottom: 4.h),
@@ -726,45 +738,69 @@ class _TripPaymentSectionState extends State<TripPaymentSection> {
     );
   }
 
-  Widget _priceRow(String title, String value) {
-    Color textColor;
-    if (title == 'Paid' || title == 'Pending') {
-      textColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7);
-    } else {
-      textColor = Theme.of(context).colorScheme.onSurface;
-    }
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h),
+  String _packageLabel(TripPaymentDetails? payment) {
+    final name = payment?.packageName.trim() ?? '';
+    if (name.isNotEmpty) return name;
+    return 'Premium Package'.tr();
+  }
+
+  Widget _paidInFullNote(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 80.w,
+          Icon(
+            Icons.check_circle,
+            size: 18.sp,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          8.w.horizontalSpace,
+          Expanded(
+            child: AppText(
+              text: 'No payment due. Your balance is fully paid — thank you!'
+                  .tr(),
+              style: textStyle14Regular.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 13.sp,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _priceRow(String title, String value, {Color? valueColor}) {
+    final labelColor = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.7);
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.h),
+      child: Row(
+        children: [
+          Expanded(
             child: AppText(
               text: title,
               style: textStyle14Medium.copyWith(
-                color: textColor,
+                color: labelColor,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
           AppText(
-            text: ':',
+            text: value,
             style: textStyle14Medium.copyWith(
-              color: textColor,
-              fontSize: 14.sp,
-            ),
-          ),
-          24.w.horizontalSpace,
-          Expanded(
-            child: AppText(
-              text: value,
-              style: textStyle14Medium.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w700,
-              ),
+              color: valueColor ?? Theme.of(context).colorScheme.onSurface,
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

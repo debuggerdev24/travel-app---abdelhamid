@@ -6,7 +6,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
 
-/// One row: badge, `#id - amount`, date line, [View Receipt].
+/// One row: badge, payment id, amount, date, and [View Receipt].
 /// When [isConfirmed] is false (e.g. API status still `pending`), shows a neutral badge and “Pending” copy.
 class PastPaymentItem extends StatelessWidget {
   final String id;
@@ -53,16 +53,29 @@ class PastPaymentItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText(
-                  text: '$id - $amount',
+                  text: id,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: textStyle14Medium.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                     fontSize: 13.sp,
                   ),
                 ),
-                4.h.verticalSpace,
+                2.h.verticalSpace,
+                AppText(
+                  text: amount,
+                  style: textStyle14Medium.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15.sp,
+                  ),
+                ),
+                2.h.verticalSpace,
                 AppText(
                   text: isConfirmed ? 'Paid $date' : 'Pending · $date',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: textStyle14Regular.copyWith(
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     fontSize: 12.sp,
@@ -71,10 +84,11 @@ class PastPaymentItem extends StatelessWidget {
               ],
             ),
           ),
+          8.w.horizontalSpace,
           GestureDetector(
             onTap: onViewReceiptTap,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
               decoration: BoxDecoration(
                 border: Border.all(color: AppColors.secondary, width: 1),
                 borderRadius: BorderRadius.circular(20.r),

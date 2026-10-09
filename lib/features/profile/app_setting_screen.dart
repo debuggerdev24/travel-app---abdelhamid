@@ -44,7 +44,7 @@ class _AppSettingsViewState extends State<_AppSettingsView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w), // NOT CHANGED
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -65,11 +65,17 @@ class _AppSettingsViewState extends State<_AppSettingsView> {
                       ),
                     ),
                   ),
-                  AppText(
-                    text: "App Settings".tr(),
-                    style: textStyle32Bold.copyWith(
-                      fontSize: 26.sp,
-                      color: Theme.of(context).colorScheme.onSurface,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 40.w),
+                    child: AppText(
+                      text: "App Settings".tr(),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textStyle32Bold.copyWith(
+                        fontSize: 26.sp,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 ],

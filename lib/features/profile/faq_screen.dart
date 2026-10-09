@@ -97,13 +97,13 @@ class _FaqViewState extends State<_FaqView> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 25.h),
+                padding: EdgeInsets.only(bottom: 15.w, top: 10.w),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -185,9 +185,8 @@ class _FaqViewState extends State<_FaqView> {
               20.h.verticalSpace,
 
               if (state.loading)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 48.h),
-                  child: const Center(
+                const Expanded(
+                  child: Center(
                     child: CircularProgressIndicator(
                       color: AppColors.primaryColor,
                     ),
@@ -218,84 +217,89 @@ class _FaqViewState extends State<_FaqView> {
                   ),
                 )
               else if (state.faqs.isEmpty)
-                _EmptyState(
-                  icon: Icons.help_outline,
-                  title: 'No FAQs available yet.'.tr(),
-                  subtitle: 'Questions and answers will appear here.'.tr(),
+                Expanded(
+                  child: Center(
+                    child: _EmptyState(
+                      icon: Icons.help_outline,
+                      title: 'No FAQs available yet.'.tr(),
+                      subtitle: 'Questions and answers will appear here.'.tr(),
+                    ),
+                  ),
                 )
               else
-                ListView.builder(
-                  itemCount: state.faqs.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    final faq = state.faqs[index];
-                    final isExpanded = index < state.expanded.length
-                        ? state.expanded[index]
-                        : false;
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.faqs.length,
+                    itemBuilder: (context, index) {
+                      final faq = state.faqs[index];
+                      final isExpanded = index < state.expanded.length
+                          ? state.expanded[index]
+                          : false;
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            context.read<FaqProvider>().toggleExpanded(index);
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12.h),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: AppText(
-                                    text: faq.question,
-                                    style: textStyle16SemiBold.copyWith(
-                                      fontSize: 16.sp,
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              context.read<FaqProvider>().toggleExpanded(index);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: AppText(
+                                      text: faq.question,
+                                      style: textStyle16SemiBold.copyWith(
+                                        fontSize: 16.sp,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 32.w,
+                                    height: 32.w,
+                                    decoration: BoxDecoration(
                                       color: Theme.of(
                                         context,
-                                      ).colorScheme.onSurface,
+                                      ).colorScheme.surface,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.blueColor,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        isExpanded ? Icons.remove : Icons.add,
+                                        size: 18.w,
+                                        color: AppColors.blueColor,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  width: 32.w,
-                                  height: 32.w,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.surface,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.blueColor,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      isExpanded ? Icons.remove : Icons.add,
-                                      size: 18.w,
-                                      color: AppColors.blueColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        if (isExpanded)
-                          AppText(
-                            text: faq.answer,
-                            style: textStyle14Regular.copyWith(
-                              fontSize: 14.sp,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
+                          if (isExpanded)
+                            AppText(
+                              text: faq.answer,
+                              style: textStyle14Regular.copyWith(
+                                fontSize: 14.sp,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                        const Divider(color: Colors.black12, thickness: 1),
-                      ],
-                    );
-                  },
+                          const Divider(color: Colors.black12, thickness: 1),
+                        ],
+                      );
+                    },
+                  ),
                 ),
             ],
           ),
@@ -304,7 +308,6 @@ class _FaqViewState extends State<_FaqView> {
     );
   }
 }
-
 
 class _EmptyState extends StatelessWidget {
   final IconData icon;
@@ -319,30 +322,28 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 40.sp, color: AppColors.secondary),
-          10.h.verticalSpace,
-          AppText(
-            text: title,
-            textAlign: TextAlign.center,
-            style: textStyle16SemiBold.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, size: 40.sp, color: AppColors.secondary),
+        10.h.verticalSpace,
+        AppText(
+          text: title,
+          textAlign: TextAlign.center,
+          style: textStyle16SemiBold.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
           ),
-          6.h.verticalSpace,
-          AppText(
-            text: subtitle,
-            textAlign: TextAlign.center,
-            style: textStyle14Regular.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+        ),
+        6.h.verticalSpace,
+        AppText(
+          text: subtitle,
+          textAlign: TextAlign.center,
+          style: textStyle14Regular.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

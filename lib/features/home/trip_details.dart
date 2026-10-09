@@ -14,7 +14,6 @@ import 'package:travel_app_abdelhamid/core/widgets/packge_details_card.dart';
 import 'package:travel_app_abdelhamid/features/home/widget/trip_details_shimmer.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart';
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
-import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 
 class TripDetailsScreen extends StatefulWidget {
@@ -64,10 +63,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 13.5.w,
-                vertical: 15.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 15.h),
               child: Row(
                 children: [
                   GestureDetector(
@@ -110,7 +106,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                             fit: BoxFit.cover,
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+                            padding: EdgeInsets.symmetric(horizontal: 11.w),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -167,27 +163,35 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   ],
                                 ),
 
-                                38.h.verticalSpace,
+                                18.h.verticalSpace,
                                 sectionTitle("About Us".tr()),
-                                2.h.verticalSpace,
+                                // 2.h.verticalSpace,
                                 ReadMoreText(
                                   display.description,
                                   trimLines: 3,
-                                  colorClickableText: Theme.of(context).colorScheme.primary,
+                                  colorClickableText: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
                                   trimMode: TrimMode.Line,
                                   trimCollapsedText: 'Read more'.tr(),
                                   trimExpandedText: ' Read less'.tr(),
                                   style: textStyle14Regular.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                   moreStyle: textStyle14Medium.copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                   lessStyle: textStyle14Medium.copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
-                                22.h.verticalSpace,
+                                18.h.verticalSpace,
                                 if (isUpcoming) ...[
                                   AppText(
                                     text: "Package Details".tr(),
@@ -215,7 +219,8 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   else if (details != null)
                                     AppText(
                                       text:
-                                          'No packages available for this trip.'.tr(),
+                                          'No packages available for this trip.'
+                                              .tr(),
                                       style: textStyle14Regular.copyWith(
                                         color: Theme.of(
                                           context,
@@ -234,7 +239,8 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   8.h.verticalSpace,
                                   AppText(
                                     text:
-                                        "Prices may vary depending on airline & hotel:".tr(),
+                                        "Prices may vary depending on airline & hotel:"
+                                            .tr(),
                                     style: textStyle14Regular.copyWith(
                                       color: Theme.of(
                                         context,
@@ -254,11 +260,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                       if (!context.mounted) return;
 
                                       if (success) {
-                                        if (!bookingProvider.isBooked) {
-                                          ToastHelper.showSuccess(
-                                            'Package selected successfully'.tr(),
-                                          );
-                                        }
                                         context.pushNamed(
                                           UserAppRoutes.roomDetailScren.name,
                                         );
@@ -335,9 +336,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
+            ),
+          ],
+        ),
       ),
     );
   }

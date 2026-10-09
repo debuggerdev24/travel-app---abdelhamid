@@ -26,12 +26,21 @@ class TabState extends ChangeNotifier {
   bool get showBottomNav => _showBottomNav;
 
   void setIndex(int index) {
+    if (_currentIndex == index && _showBottomNav) return;
     _currentIndex = index;
     _showBottomNav = true;
     notifyListeners();
   }
 
+  /// Updates the tab before the first frame. Does not notify, because
+  /// [TabScreen] is still building when this runs.
+  void applyInitialIndex(int index) {
+    _currentIndex = index;
+    _showBottomNav = true;
+  }
+
   void setShowBottomNav(bool show) {
+    if (_showBottomNav == show) return;
     _showBottomNav = show;
     notifyListeners();
   }
@@ -63,7 +72,7 @@ class _TabScreenViewState extends State<_TabScreenView> {
     super.initState();
     final tabState = context.read<TabState>();
     if (tabState.currentIndex != widget.initialIndex) {
-      tabState.setIndex(widget.initialIndex);
+      tabState.applyInitialIndex(widget.initialIndex);
     }
     _loadedTabs.add(tabState.currentIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {

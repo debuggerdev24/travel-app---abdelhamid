@@ -103,6 +103,7 @@ class AppAssets {
   static const profile1 = "$_imagePath/profile1.png";
   static const profile2 = "$_imagePath/profile2.png";
   static const profile3 = "$_imagePath/profile3.png";
+  static const splashLogo = "$_imagePath/splash_logo.png";
 
   // static const _imagePath = "assets/images";
 }

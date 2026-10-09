@@ -59,7 +59,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         children: [
           60.h.verticalSpace,
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 12.h),
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -108,7 +108,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                   itemBuilder: (context, index) {
                     final e = items[index];
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      padding: EdgeInsets.symmetric(horizontal: 11.w),
                       child: PastPaymentItem(
                         id: _displayId(e),
                         amount: _fmtAmount(e),
@@ -148,7 +148,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

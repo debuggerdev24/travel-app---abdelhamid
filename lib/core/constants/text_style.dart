@@ -1,63 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+class AppFonts {
+  AppFonts._();
+
+  static const String poppins = 'Poppins';
+}
+
 final textStyle32Bold = TextStyle(
-  fontFamily: 'Poppins',
+  fontFamily: AppFonts.poppins,
   fontSize: 32.sp,
   fontWeight: FontWeight.w700,
 );
 final textStyle12semiBold = TextStyle(
   fontSize: 12.sp,
-  fontFamily: 'Poppins',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w600,
 );
 final textPoppinsMedium = TextStyle(
   fontSize: 12.sp,
-  fontFamily: 'Poppins',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w500,
 );
 
 final textStyle18Bold = TextStyle(
   fontSize: 18.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w700,
 );
 
 final textStyle14Regular = TextStyle(
   fontSize: 14.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w400,
 );
 final textStyle14Italic = TextStyle(
   fontSize: 14.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontStyle: FontStyle.italic,
 );
 final textStyle16SemiBold = TextStyle(
   fontSize: 16.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w600,
 );
 final textStyle16Regular = TextStyle(
   fontSize: 16.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w400,
 );
 final textStyle14Medium = TextStyle(
   fontSize: 14.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w600,
 );
 
 final textStyle10Regular = TextStyle(
   fontSize: 10.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w400,
 );
 
 final textStyle12Regular = TextStyle(
   fontSize: 12.sp,
-  fontFamily: 'Roboto',
+  fontFamily: AppFonts.poppins,
   fontWeight: FontWeight.w400,
 );
 
@@ -109,6 +115,7 @@ final textStyle12Regular = TextStyle(
 //     color: AppColors.primaryColor);
 
 final textStyleSubtitleBold = TextStyle(
+  fontFamily: AppFonts.poppins,
   fontSize: 22.sp,
   fontWeight: FontWeight.w400,
 );
@@ -116,7 +123,7 @@ final primaryTextButtonTheme = TextButton.styleFrom(
   foregroundColor: Colors.white,
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
   textStyle: TextStyle(
-    fontFamily: 'Jaldi',
+    fontFamily: AppFonts.poppins,
     fontSize: 14.sp,
     fontWeight: FontWeight.w600,
   ),
@@ -128,7 +135,7 @@ final primaryElevatedButtonTheme = ElevatedButton.styleFrom(
   fixedSize: Size(ScreenUtil().screenWidth, 48.h),
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
   textStyle: TextStyle(
-    fontFamily: 'Roboto',
+    fontFamily: AppFonts.poppins,
     fontSize: 18.sp,
     fontWeight: FontWeight.w700,
   ),

@@ -52,7 +52,7 @@ class _HomeViewState extends State<_HomeView> {
         if (mounted) {
           context.read<TripProvider>().fetchTrips();
           context.read<PrayerTimesProvider>().fetchPrayerTimes();
-          context.read<ProfileProvider>().loadProfile();
+          context.read<ProfileProvider>().loadProfile(force: true);
         }
       });
     });
@@ -136,7 +136,7 @@ class _HomeViewState extends State<_HomeView> {
           },
           child: Container(
             height: 52.h,
-            margin: EdgeInsets.symmetric(horizontal: 13.5.w),
+            margin: EdgeInsets.symmetric(horizontal: 11.w),
             decoration: BoxDecoration(
               border: Border.all(
                 color: Theme.of(
@@ -200,7 +200,7 @@ class _HomeViewState extends State<_HomeView> {
         ),
         20.h.verticalSpace,
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
@@ -249,9 +249,9 @@ class _HomeViewState extends State<_HomeView> {
 
     if (trips.isEmpty) {
       final isCurrent = context.watch<HomeTabState>().selectedTab == 0;
-      return SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.only(top: 40.h),
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
           child: _EmptyState(
             icon: Icons.luggage_outlined,
             title: isCurrent ? "No Current Trips".tr() : "No Past Trips".tr(),
@@ -262,7 +262,7 @@ class _HomeViewState extends State<_HomeView> {
     }
 
     return SliverPadding(
-      padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 24.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 24.h),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
           final item = trips[index];
@@ -297,7 +297,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

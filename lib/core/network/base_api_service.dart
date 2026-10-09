@@ -548,7 +548,8 @@ class BaseApiService {
     if (error.response?.statusCode != 401) return false;
     final data = error.response?.data;
     if (data is! Map) return false;
-    return data['message']?.toString().trim() == 'Invalid or Expired Token';
+    return data['message']?.toString().trim() == 'Invalid or Expired Token' ||
+        error.response?.statusCode == 401;
   }
 
   /// Gets a new access token, then sends the failed request one more time.

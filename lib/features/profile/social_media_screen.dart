@@ -122,35 +122,42 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 35.h),
-                    child: GestureDetector(
-                      onTap: () => context.pop(),
-                      child: SvgIcon(
-                        AppAssets.backIcon,
-                        size: 28.5.w,
-                        color: Theme.of(context).colorScheme.onSurface,
+              Padding(
+                padding: EdgeInsets.only(top: 10.h, bottom: 12.h),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => context.pop(),
+                        child: SvgIcon(
+                          AppAssets.backIcon,
+                          size: 28.5.w,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
-                  50.w.horizontalSpace,
-                  AppText(
-                    textAlign: TextAlign.center,
-                    text: "Social Media \nLinks".tr(),
-                    style: textStyle32Bold.copyWith(
-                      fontSize: 26.sp,
-                      color: Theme.of(context).colorScheme.onSurface,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40.w),
+                      child: AppText(
+                        text: "Social Media Links".tr(),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: textStyle32Bold.copyWith(
+                          fontSize: 26.sp,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              12.h.verticalSpace,
               AppText(
                 text:
                     "Stay connected with us! Follow our latest updates, photos, and travel stories on social media."
@@ -161,7 +168,7 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              22.h.verticalSpace,
+              16.h.verticalSpace,
               if (state.loading)
                 Expanded(
                   child: Center(
@@ -245,8 +252,9 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
                                       text: item.name.isNotEmpty
                                           ? item.name
                                           : 'Link',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       style: textStyle16SemiBold.copyWith(
-                                        fontSize: 18.sp,
                                         color: Theme.of(
                                           context,
                                         ).colorScheme.onSurface,
@@ -255,8 +263,9 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
                                     if (item.description.isNotEmpty)
                                       AppText(
                                         text: item.description,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                         style: textStyle14Regular.copyWith(
-                                          fontSize: 14.sp,
                                           color: Theme.of(
                                             context,
                                           ).colorScheme.onSurfaceVariant,
@@ -265,13 +274,11 @@ class _SocialMediaViewState extends State<_SocialMediaView> {
                                   ],
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 24.h),
-                                child: Icon(
-                                  Icons.open_in_new,
-                                  size: 24.w,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+                              8.w.horizontalSpace,
+                              Icon(
+                                Icons.open_in_new,
+                                size: 20.w,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ],
                           ),
@@ -303,7 +310,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

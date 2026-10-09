@@ -56,7 +56,7 @@ class HomeTripShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     if (shrinkWrap) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 24.h),
+        padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 24.h),
         child: Column(
           children: List.generate(
             itemCount,
@@ -68,7 +68,7 @@ class HomeTripShimmer extends StatelessWidget {
 
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 24.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 24.h),
       itemCount: itemCount,
       itemBuilder: (_, __) => const _HomeTripCardShimmer(),
     );

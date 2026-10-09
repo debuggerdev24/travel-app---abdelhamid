@@ -4,12 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
 import 'package:travel_app_abdelhamid/core/utils/toast_helper.dart';
-import 'package:travel_app_abdelhamid/core/widgets/dropdown_text_filed.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
 import 'package:travel_app_abdelhamid/provider/home/home_provider.dart' as hp;
 import 'package:travel_app_abdelhamid/routes/user_routes.dart';
@@ -170,6 +171,26 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
     return isValid;
   }
 
+  String _childPriceText(TripBookingProvider booking, PackageDetails? package) {
+    if (booking.selectedChildDetailsId == null || package == null) {
+      return 'Auto Filled'.tr();
+    }
+
+    double unitPrice = 0;
+    for (final child in package.childDetails) {
+      if (child.id == booking.selectedChildDetailsId) {
+        unitPrice = child.childPrice;
+        break;
+      }
+    }
+
+    final total = unitPrice * booking.selectedChildCount;
+    if (total == total.roundToDouble()) {
+      return '€${total.toInt()}';
+    }
+    return '€${total.toStringAsFixed(1)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<RoomDetailsState>();
@@ -189,7 +210,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 15.5.w,
+                    horizontal: 11.w,
                     vertical: 30.h,
                   ),
                   child: Stack(
@@ -220,7 +241,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                   child: Form(
                     key: _formKey,
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: 15.5.w),
+                      padding: EdgeInsets.symmetric(horizontal: 11.w),
                       child: Column(
                         children: [
                           AppTextField(
@@ -249,61 +270,18 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                             readOnly: bookingProvider.isRoomPreferenceSaved,
                           ),
                           SizedBox(height: 22.h),
-                          IgnorePointer(
-                            ignoring: bookingProvider.isRoomPreferenceSaved,
-                            child: CustomMultiSelectDropdown(
-                              labelText: "Room Type".tr(),
-                              hintText: "Select Room Type".tr(),
-                              errorText: state.roomTypeError,
-                              items:
-                                  selectedPackage?.roomOptions ??
-                                  tripProvider.roomTypes,
-                              selectedItems:
-                                  (bookingProvider.selectedRoomTypeId != null &&
-                                      selectedPackage != null)
-                                  ? [
-                                      selectedPackage.roomOptions.firstWhere((
-                                        opt,
-                                      ) {
-                                        final rooms = selectedPackage
-                                            .roomDetails
-                                            .where(
-                                              (r) =>
-                                                  r.id ==
-                                                  bookingProvider
-                                                      .selectedRoomTypeId,
-                                            );
-                                        if (rooms.isEmpty) return false;
-                                        return opt.contains(
-                                          rooms.first.roomType,
-                                        );
-                                      }, orElse: () => ''),
-                                    ]
-                                  : [],
-                              onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved) {
-                                  return;
-                                }
-                                if (values.isNotEmpty &&
-                                    selectedPackage != null) {
-                                  final selectedOpt = values.first;
-                                  final rooms = selectedPackage.roomDetails
-                                      .where(
-                                        (r) => selectedOpt.contains(r.roomType),
-                                      );
-                                  if (rooms.isNotEmpty) {
-                                    bookingProvider.updateSelectedRoomTypeId(
-                                      rooms.first.id,
-                                    );
-                                    context
-                                        .read<RoomDetailsState>()
-                                        .setRoomTypeError(null);
-                                  }
-                                }
-                              },
-                              titleText: "Room Type".tr(),
-                              showRadio: true,
-                            ),
+                          _RoomTypePicker(
+                            rooms: selectedPackage?.roomDetails ?? const [],
+                            selectedRoomId: bookingProvider.selectedRoomTypeId,
+                            errorText: state.roomTypeError,
+                            readOnly: bookingProvider.isRoomPreferenceSaved,
+                            onSelected: (roomId) {
+                              if (bookingProvider.isRoomPreferenceSaved) return;
+                              bookingProvider.updateSelectedRoomTypeId(roomId);
+                              context.read<RoomDetailsState>().setRoomTypeError(
+                                null,
+                              );
+                            },
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
@@ -318,214 +296,119 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                             readOnly: true,
                           ),
                           SizedBox(height: 22.h),
-                          IgnorePointer(
-                            ignoring: bookingProvider.isRoomPreferenceSaved,
-                            child: CustomMultiSelectDropdown(
-                              labelText: "Bed Type".tr(),
-                              hintText: "Select Bed Type".tr(),
-                              errorText: state.bedTypeError,
-                              items: tripProvider.bedTypes,
-                              selectedItems:
-                                  bookingProvider.selectedBedType != null
-                                  ? [bookingProvider.selectedBedType!]
-                                  : [],
-                              onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved) {
-                                  return;
-                                }
-                                if (values.isNotEmpty) {
-                                  bookingProvider.updateSelectedBedType(
-                                    values.first,
-                                  );
-                                  context
-                                      .read<RoomDetailsState>()
-                                      .setBedTypeError(null);
-                                }
-                              },
-                              titleText: "Bed Type".tr(),
-                              showRadio: true,
+                          _ChoicePicker(
+                            label: 'Bed Type'.tr(),
+                            hint: 'Select Bed Type'.tr(),
+                            emptyText: 'No bed types available'.tr(),
+                            options: tripProvider.bedTypes,
+                            selected: bookingProvider.selectedBedType,
+                            errorText: state.bedTypeError,
+                            readOnly: bookingProvider.isRoomPreferenceSaved,
+                            onSelected: (value) {
+                              if (bookingProvider.isRoomPreferenceSaved) return;
+                              bookingProvider.updateSelectedBedType(value);
+                              context.read<RoomDetailsState>().setBedTypeError(
+                                null,
+                              );
+                            },
+                          ),
+                          SizedBox(height: 22.h),
+                          _ChildPicker(
+                            children: selectedPackage?.childDetails ?? const [],
+                            selectedChildId:
+                                bookingProvider.selectedChildDetailsId,
+                            errorText: state.childTypeError,
+                            readOnly: bookingProvider.isRoomPreferenceSaved,
+                            onSelected: (childId) {
+                              if (bookingProvider.isRoomPreferenceSaved) return;
+                              bookingProvider.updateSelectedChildDetailsId(
+                                childId,
+                              );
+                              context
+                                  .read<RoomDetailsState>()
+                                  .setChildTypeError(null);
+                              context
+                                  .read<RoomDetailsState>()
+                                  .setChildCountError(null);
+                            },
+                          ),
+                          SizedBox(height: 22.h),
+                          _ChoicePicker(
+                            label: 'No. of Child'.tr(),
+                            hint: 'Select Child Count'.tr(),
+                            emptyText: 'No child counts available'.tr(),
+                            options: tripProvider.numberOfChildren,
+                            selected: bookingProvider.selectedChildCount
+                                .toString()
+                                .padLeft(2, '0'),
+                            errorText: state.childCountError,
+                            readOnly: bookingProvider.isRoomPreferenceSaved,
+                            onSelected: (value) {
+                              if (bookingProvider.isRoomPreferenceSaved) return;
+                              bookingProvider.updateSelectedChildCount(
+                                int.tryParse(value) ?? 0,
+                              );
+                              context
+                                  .read<RoomDetailsState>()
+                                  .setChildCountError(null);
+                              context
+                                  .read<RoomDetailsState>()
+                                  .setChildTypeError(null);
+                            },
+                          ),
+                          SizedBox(height: 22.h),
+                          _ReadOnlyValue(
+                            label: 'Child Price'.tr(),
+                            value: _childPriceText(
+                              bookingProvider,
+                              selectedPackage,
                             ),
                           ),
                           SizedBox(height: 22.h),
-                          IgnorePointer(
-                            ignoring: bookingProvider.isRoomPreferenceSaved,
-                            child: CustomMultiSelectDropdown(
-                              labelText: "Child".tr(),
-                              hintText: "Select Child".tr(),
-                              errorText: state.childTypeError,
-                              items:
-                                  selectedPackage?.childPrices ??
-                                  tripProvider.childOptions,
-                              selectedItems:
-                                  (bookingProvider.selectedChildDetailsId !=
-                                          null &&
-                                      selectedPackage != null)
-                                  ? [
-                                      selectedPackage.childPrices.firstWhere((
-                                        opt,
-                                      ) {
-                                        final children = selectedPackage
-                                            .childDetails
-                                            .where(
-                                              (c) =>
-                                                  c.id ==
-                                                  bookingProvider
-                                                      .selectedChildDetailsId,
-                                            );
-                                        if (children.isEmpty) return false;
-                                        return opt.contains(
-                                          children.first.childName,
-                                        );
-                                      }, orElse: () => ''),
-                                    ]
-                                  : [],
-                              onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved) {
-                                  return;
-                                }
-                                if (values.isNotEmpty &&
-                                    selectedPackage != null) {
-                                  final selectedOpt = values.first;
-                                  final children = selectedPackage.childDetails
-                                      .where(
-                                        (c) =>
-                                            selectedOpt.contains(c.childName),
-                                      );
-                                  if (children.isNotEmpty) {
-                                    bookingProvider
-                                        .updateSelectedChildDetailsId(
-                                          children.first.id,
-                                        );
-                                    context
-                                        .read<RoomDetailsState>()
-                                        .setChildTypeError(null);
-                                    context
-                                        .read<RoomDetailsState>()
-                                        .setChildCountError(null);
-                                  }
-                                } else {
-                                  bookingProvider.updateSelectedChildDetailsId(
-                                    null,
-                                  );
-                                  context
-                                      .read<RoomDetailsState>()
-                                      .setChildTypeError(null);
-                                  context
-                                      .read<RoomDetailsState>()
-                                      .setChildCountError(null);
-                                }
-                              },
-                              titleText: "Child".tr(),
-                              showRadio: true,
-                            ),
+                          _ChoicePicker(
+                            label: 'Baby'.tr(),
+                            hint: 'Select Baby'.tr(),
+                            emptyText: 'No baby options available'.tr(),
+                            options: tripProvider.babyOptions,
+                            selected: tripProvider.selectedBabyTypes.isEmpty
+                                ? null
+                                : tripProvider.selectedBabyTypes.first,
+                            errorText: state.babyTypeError,
+                            readOnly: bookingProvider.isRoomPreferenceSaved,
+                            onSelected: (value) {
+                              if (bookingProvider.isRoomPreferenceSaved) return;
+                              tripProvider.updateBabyTypes([value]);
+                              context.read<RoomDetailsState>().setBabyTypeError(
+                                null,
+                              );
+                              context
+                                  .read<RoomDetailsState>()
+                                  .setBabyCountError(null);
+                            },
                           ),
                           SizedBox(height: 22.h),
-                          IgnorePointer(
-                            ignoring: bookingProvider.isRoomPreferenceSaved,
-                            child: CustomMultiSelectDropdown(
-                              labelText: "No. of Child".tr(),
-                              hintText: "Select Child Count".tr(),
-                              errorText: state.childCountError,
-                              items: tripProvider.numberOfChildren,
-                              selectedItems: [
-                                bookingProvider.selectedChildCount
-                                    .toString()
-                                    .padLeft(2, '0'),
-                              ],
-                              onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved) {
-                                  return;
-                                }
-                                if (values.isNotEmpty) {
-                                  bookingProvider.updateSelectedChildCount(
-                                    int.tryParse(values.first) ?? 0,
-                                  );
-                                  context
-                                      .read<RoomDetailsState>()
-                                      .setChildCountError(null);
-                                  context
-                                      .read<RoomDetailsState>()
-                                      .setChildTypeError(null);
-                                }
-                              },
-                              titleText: "Select Child Count".tr(),
-                              showRadio: true,
-                            ),
-                          ),
-                          SizedBox(height: 22.h),
-                          AppTextField(
-                            labelText: "Child Price".tr(),
-                            hintText:
-                                bookingProvider.selectedChildDetailsId !=
-                                        null &&
-                                    selectedPackage != null
-                                ? "€${(selectedPackage.childDetails.where((c) => c.id == bookingProvider.selectedChildDetailsId).isNotEmpty ? selectedPackage.childDetails.firstWhere((c) => c.id == bookingProvider.selectedChildDetailsId).childPrice : 0) * bookingProvider.selectedChildCount}"
-                                : "Auto Filled",
-                            hintStyle: textStyle14Regular.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                            keyboardType: TextInputType.number,
-                            readOnly: true,
-                          ),
-                          SizedBox(height: 22.h),
-                          // Baby
-                          IgnorePointer(
-                            ignoring: bookingProvider.isRoomPreferenceSaved,
-                            child: CustomMultiSelectDropdown(
-                              labelText: "Baby".tr(),
-                              hintText: "Select Baby".tr(),
-                              errorText: state.babyTypeError,
-                              items: tripProvider.babyOptions,
-                              selectedItems: tripProvider.selectedBabyTypes,
-                              onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved) {
-                                  return;
-                                }
-                                tripProvider.updateBabyTypes(values);
-                                context
-                                    .read<RoomDetailsState>()
-                                    .setBabyTypeError(null);
-                                context
-                                    .read<RoomDetailsState>()
-                                    .setBabyCountError(null);
-                              },
-                              titleText: "Baby".tr(),
-                              showRadio: true,
-                            ),
-                          ),
-                          SizedBox(height: 22.h),
-                          IgnorePointer(
-                            ignoring: bookingProvider.isRoomPreferenceSaved,
-                            child: CustomMultiSelectDropdown(
-                              labelText: "No. of Baby".tr(),
-                              hintText: "Select No. of Baby".tr(),
-                              errorText: state.babyCountError,
-                              items: tripProvider.numberOfBaby,
-                              selectedItems: [
-                                bookingProvider.babyCount.toString().padLeft(
-                                  2,
-                                  '0',
-                                ),
-                              ],
-                              onChanged: (values) {
-                                if (bookingProvider.isRoomPreferenceSaved) {
-                                  return;
-                                }
-                                if (values.isNotEmpty) {
-                                  bookingProvider.updateBabyCount(
-                                    int.tryParse(values.first) ?? 0,
-                                  );
-                                  context
-                                      .read<RoomDetailsState>()
-                                      .setBabyCountError(null);
-                                  context
-                                      .read<RoomDetailsState>()
-                                      .setBabyTypeError(null);
-                                }
-                              },
-                              titleText: "Select Baby Count".tr(),
-                              showRadio: true,
-                            ),
+                          _ChoicePicker(
+                            label: 'No. of Baby'.tr(),
+                            hint: 'Select No. of Baby'.tr(),
+                            emptyText: 'No baby counts available'.tr(),
+                            options: tripProvider.numberOfBaby,
+                            selected: bookingProvider.babyCount
+                                .toString()
+                                .padLeft(2, '0'),
+                            errorText: state.babyCountError,
+                            readOnly: bookingProvider.isRoomPreferenceSaved,
+                            onSelected: (value) {
+                              if (bookingProvider.isRoomPreferenceSaved) return;
+                              bookingProvider.updateBabyCount(
+                                int.tryParse(value) ?? 0,
+                              );
+                              context
+                                  .read<RoomDetailsState>()
+                                  .setBabyCountError(null);
+                              context.read<RoomDetailsState>().setBabyTypeError(
+                                null,
+                              );
+                            },
                           ),
                           SizedBox(height: 22.h),
                           AppTextField(
@@ -601,9 +484,6 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                                   final success = await bookingProvider
                                       .saveRoomPreference();
                                   if (success) {
-                                    ToastHelper.showSuccess(
-                                      "Preferences saved successfully".tr(),
-                                    );
                                     if (context.mounted) {
                                       context.pushNamed(
                                         UserAppRoutes
@@ -630,6 +510,759 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
           );
         },
       ),
+    );
+  }
+}
+
+class _RoomTypePicker extends StatefulWidget {
+  final List<RoomDetailModel> rooms;
+  final String? selectedRoomId;
+  final String? errorText;
+  final bool readOnly;
+  final ValueChanged<String?> onSelected;
+
+  const _RoomTypePicker({
+    required this.rooms,
+    required this.selectedRoomId,
+    required this.errorText,
+    required this.readOnly,
+    required this.onSelected,
+  });
+
+  @override
+  State<_RoomTypePicker> createState() => _RoomTypePickerState();
+}
+
+class _RoomTypePickerState extends State<_RoomTypePicker> {
+  bool _isOpen = false;
+
+  void _toggle() {
+    if (widget.readOnly) return;
+    setState(() {
+      _isOpen = !_isOpen;
+    });
+  }
+
+  void _selectRoom(String? roomId) {
+    if (widget.readOnly) return;
+    widget.onSelected(roomId);
+    setState(() {
+      _isOpen = false;
+    });
+  }
+
+  String _priceText(double price) {
+    if (price == price.roundToDouble()) {
+      return '€${price.toInt()}';
+    }
+    return '€${price.toStringAsFixed(1)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    RoomDetailModel? selectedRoom;
+    for (final room in widget.rooms) {
+      if (room.id == widget.selectedRoomId) {
+        selectedRoom = room;
+        break;
+      }
+    }
+
+    final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
+    final headerText = selectedRoom == null
+        ? 'Select Room Type'.tr()
+        : selectedRoom.roomType;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(
+          text: 'Room Type'.tr(),
+          style: textStyle14Medium.copyWith(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        8.h.verticalSpace,
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(
+              color: hasError
+                  ? Theme.of(context).colorScheme.error
+                  : Colors.transparent,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.shadow.withValues(alpha: 0.1),
+                blurRadius: 1,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: _toggle,
+                borderRadius: BorderRadius.circular(8.r),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 16.h,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AppText(
+                          text: headerText,
+                          style: textStyle14Regular.copyWith(
+                            color: selectedRoom == null
+                                ? Theme.of(context).colorScheme.onSurfaceVariant
+                                : Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                      AnimatedRotation(
+                        turns: _isOpen ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: _isOpen
+                    ? _roomList(context, selectedRoom)
+                    : const SizedBox(width: double.infinity),
+              ),
+            ],
+          ),
+        ),
+        if (hasError) ...[
+          6.h.verticalSpace,
+          AppText(
+            text: widget.errorText!,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.error,
+              fontSize: 12.sp,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _roomList(BuildContext context, RoomDetailModel? selectedRoom) {
+    if (widget.rooms.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+        child: AppText(
+          text: 'No room types available'.tr(),
+          style: textStyle14Regular.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Divider(
+          height: 1,
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+        for (var i = 0; i < widget.rooms.length; i++)
+          _roomRow(
+            context,
+            widget.rooms[i],
+            widget.rooms[i].id != null &&
+                widget.rooms[i].id == selectedRoom?.id,
+            i < widget.rooms.length - 1,
+          ),
+      ],
+    );
+  }
+
+  Widget _roomRow(
+    BuildContext context,
+    RoomDetailModel room,
+    bool isSelected,
+    bool showDivider,
+  ) {
+    return InkWell(
+      onTap: () => _selectRoom(room.id),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              children: [
+                Icon(
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  size: 22.w,
+                  color: isSelected
+                      ? AppColors.secondary
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.45),
+                ),
+                12.w.horizontalSpace,
+                Expanded(
+                  child: AppText(
+                    text: room.roomType,
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                AppText(
+                  text: _priceText(room.roomPrice),
+                  style: textStyle14Medium.copyWith(
+                    color: isSelected
+                        ? AppColors.secondary
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showDivider)
+            Divider(
+              height: 1,
+              indent: 16.w,
+              endIndent: 16.w,
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.15),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChoicePicker extends StatefulWidget {
+  final String label;
+  final String hint;
+  final String emptyText;
+  final List<String> options;
+  final String? selected;
+  final String? errorText;
+  final bool readOnly;
+  final ValueChanged<String> onSelected;
+
+  const _ChoicePicker({
+    required this.label,
+    required this.hint,
+    required this.emptyText,
+    required this.options,
+    required this.selected,
+    required this.errorText,
+    required this.readOnly,
+    required this.onSelected,
+  });
+
+  @override
+  State<_ChoicePicker> createState() => _ChoicePickerState();
+}
+
+class _ChoicePickerState extends State<_ChoicePicker> {
+  bool _isOpen = false;
+
+  void _toggle() {
+    if (widget.readOnly) return;
+    setState(() {
+      _isOpen = !_isOpen;
+    });
+  }
+
+  void _select(String value) {
+    if (widget.readOnly) return;
+    widget.onSelected(value);
+    setState(() {
+      _isOpen = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
+    final hasSelection = widget.selected != null && widget.selected!.isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(
+          text: widget.label,
+          style: textStyle14Medium.copyWith(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        8.h.verticalSpace,
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(
+              color: hasError
+                  ? Theme.of(context).colorScheme.error
+                  : Colors.transparent,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.shadow.withValues(alpha: 0.1),
+                blurRadius: 1,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: _toggle,
+                borderRadius: BorderRadius.circular(8.r),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 16.h,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AppText(
+                          text: hasSelection ? widget.selected! : widget.hint,
+                          style: textStyle14Regular.copyWith(
+                            color: hasSelection
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      AnimatedRotation(
+                        turns: _isOpen ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: _isOpen
+                    ? _optionList(context)
+                    : const SizedBox(width: double.infinity),
+              ),
+            ],
+          ),
+        ),
+        if (hasError) ...[
+          6.h.verticalSpace,
+          AppText(
+            text: widget.errorText!,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.error,
+              fontSize: 12.sp,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _optionList(BuildContext context) {
+    if (widget.options.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+        child: AppText(
+          text: widget.emptyText,
+          style: textStyle14Regular.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Divider(
+          height: 1,
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+        for (var i = 0; i < widget.options.length; i++)
+          _optionRow(
+            context,
+            widget.options[i],
+            widget.options[i] == widget.selected,
+            i < widget.options.length - 1,
+          ),
+      ],
+    );
+  }
+
+  Widget _optionRow(
+    BuildContext context,
+    String title,
+    bool isSelected,
+    bool showDivider,
+  ) {
+    return InkWell(
+      onTap: () => _select(title),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              children: [
+                Icon(
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  size: 22.w,
+                  color: isSelected
+                      ? AppColors.secondary
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.45),
+                ),
+                12.w.horizontalSpace,
+                Expanded(
+                  child: AppText(
+                    text: title,
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showDivider)
+            Divider(
+              height: 1,
+              indent: 16.w,
+              endIndent: 16.w,
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.15),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChildPicker extends StatefulWidget {
+  final List<ChildDetailModel> children;
+  final String? selectedChildId;
+  final String? errorText;
+  final bool readOnly;
+  final ValueChanged<String?> onSelected;
+
+  const _ChildPicker({
+    required this.children,
+    required this.selectedChildId,
+    required this.errorText,
+    required this.readOnly,
+    required this.onSelected,
+  });
+
+  @override
+  State<_ChildPicker> createState() => _ChildPickerState();
+}
+
+class _ChildPickerState extends State<_ChildPicker> {
+  bool _isOpen = false;
+
+  void _toggle() {
+    if (widget.readOnly) return;
+    setState(() {
+      _isOpen = !_isOpen;
+    });
+  }
+
+  void _selectChild(String? childId) {
+    if (widget.readOnly) return;
+    widget.onSelected(childId);
+    setState(() {
+      _isOpen = false;
+    });
+  }
+
+  String _priceText(double price) {
+    if (price == price.roundToDouble()) {
+      return '€${price.toInt()}';
+    }
+    return '€${price.toStringAsFixed(1)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ChildDetailModel? selectedChild;
+    for (final child in widget.children) {
+      if (child.id == widget.selectedChildId) {
+        selectedChild = child;
+        break;
+      }
+    }
+
+    final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
+    final headerText = selectedChild == null
+        ? 'Select Child'.tr()
+        : selectedChild.childName;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(
+          text: 'Child'.tr(),
+          style: textStyle14Medium.copyWith(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        8.h.verticalSpace,
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(
+              color: hasError
+                  ? Theme.of(context).colorScheme.error
+                  : Colors.transparent,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.shadow.withValues(alpha: 0.1),
+                blurRadius: 1,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: _toggle,
+                borderRadius: BorderRadius.circular(8.r),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 16.h,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AppText(
+                          text: headerText,
+                          style: textStyle14Regular.copyWith(
+                            color: selectedChild == null
+                                ? Theme.of(context).colorScheme.onSurfaceVariant
+                                : Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                      AnimatedRotation(
+                        turns: _isOpen ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: _isOpen
+                    ? _childList(context, selectedChild)
+                    : const SizedBox(width: double.infinity),
+              ),
+            ],
+          ),
+        ),
+        if (hasError) ...[
+          6.h.verticalSpace,
+          AppText(
+            text: widget.errorText!,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.error,
+              fontSize: 12.sp,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _childList(BuildContext context, ChildDetailModel? selectedChild) {
+    if (widget.children.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+        child: AppText(
+          text: 'No child options available'.tr(),
+          style: textStyle14Regular.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Divider(
+          height: 1,
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+        for (var i = 0; i < widget.children.length; i++)
+          _childRow(
+            context,
+            widget.children[i],
+            widget.children[i].id != null &&
+                widget.children[i].id == selectedChild?.id,
+            i < widget.children.length - 1,
+          ),
+      ],
+    );
+  }
+
+  Widget _childRow(
+    BuildContext context,
+    ChildDetailModel child,
+    bool isSelected,
+    bool showDivider,
+  ) {
+    return InkWell(
+      onTap: () => _selectChild(child.id),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              children: [
+                Icon(
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  size: 22.w,
+                  color: isSelected
+                      ? AppColors.secondary
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.45),
+                ),
+                12.w.horizontalSpace,
+                Expanded(
+                  child: AppText(
+                    text: child.childName,
+                    style: textStyle14Medium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                AppText(
+                  text: _priceText(child.childPrice),
+                  style: textStyle14Medium.copyWith(
+                    color: isSelected
+                        ? AppColors.secondary
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showDivider)
+            Divider(
+              height: 1,
+              indent: 16.w,
+              endIndent: 16.w,
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.15),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReadOnlyValue extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _ReadOnlyValue({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(
+          text: label,
+          style: textStyle14Medium.copyWith(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        8.h.verticalSpace,
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.shadow.withValues(alpha: 0.1),
+                blurRadius: 1,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: AppText(
+            text: value,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

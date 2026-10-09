@@ -20,6 +20,35 @@ class ProfileProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
+  int _requestId = 0;
+
+  /// Removes the profile Contact number so the next login does not show it.
+  Future<void> clearProfileContact() async {
+    final current = _profile;
+    if (current == null || current.phoneNumber.trim().isEmpty) return;
+    if (!PrefHelper.isLoggedIn()) return;
+    final cleared = current.copyWith(phoneNumber: '');
+    try {
+      await UserProfileService.instance.editProfile(
+        profile: cleared,
+        showErrorToast: false,
+      );
+    } catch (_) {}
+    _profile = cleared;
+    notifyListeners();
+  }
+
+  /// Drops the signed-in user's profile so the next login cannot show it.
+  void clearProfile() {
+    _requestId++;
+    _profile = null;
+    selectedLanguages = [];
+    _error = null;
+    _loading = false;
+    _updatingProfileImage = false;
+    notifyListeners();
+  }
+
   List<String> languageOptions = ["Dutch", "English", "French", "Arabic"];
 
   List<String> selectedLanguages = [];
@@ -62,33 +91,40 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<void> loadProfile({bool force = false}) async {
     if (!PrefHelper.isLoggedIn()) {
-      _profile = null;
-      _loading = false;
-      notifyListeners();
+      clearProfile();
       return;
     }
     if (_loading) return;
     if (!force && _profile != null) return;
+    if (force) {
+      _profile = null;
+      selectedLanguages = [];
+    }
+    final requestId = ++_requestId;
     _loading = true;
     _error = null;
     notifyListeners();
     try {
       final p = await UserProfileService.instance.getUserDetails();
+      if (requestId != _requestId) return;
       _profile = p;
       if (p != null) {
         selectedLanguages = normalizeSelectedLanguages(p.languages);
-        selectedLanguages = normalizeSelectedLanguages(p.languages);
       }
     } catch (e) {
+      if (requestId != _requestId) return;
       _error = e.toString();
       // Do not spam toasts on startup; UI can show placeholders.
-    } finally {
-      _loading = false;
-      notifyListeners();
     }
+    if (requestId != _requestId) return;
+    _loading = false;
+    notifyListeners();
   }
 
-  Future<bool> saveProfile(UserProfile updated) async {
+  Future<bool> saveProfile(
+    UserProfile updated, {
+    bool showSuccess = true,
+  }) async {
     _loading = true;
     _error = null;
     notifyListeners();
@@ -98,7 +134,9 @@ class ProfileProvider extends ChangeNotifier {
       selectedLanguages = normalizeSelectedLanguages(
         _profile?.languages ?? selectedLanguages,
       );
-      ToastHelper.showSuccess('Profile updated successfully'.tr());
+      if (showSuccess) {
+        ToastHelper.showSuccess('Profile updated successfully'.tr());
+      }
       return true;
     } catch (e) {
       _error = e.toString();

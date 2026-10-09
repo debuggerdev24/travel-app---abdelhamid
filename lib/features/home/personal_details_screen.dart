@@ -9,6 +9,7 @@ import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text_filed.dart';
+import 'package:travel_app_abdelhamid/core/widgets/nationality_dropdown.dart';
 import 'package:travel_app_abdelhamid/core/utils/validators.dart';
 import 'package:travel_app_abdelhamid/provider/home/person_details_provider.dart';
 import 'package:travel_app_abdelhamid/provider/booking/trip_booking_provider.dart';
@@ -131,232 +132,220 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Consumer<PersonDetailsProvider>(
-            builder: (context, provider, child) {
-              // If profile arrives after this screen, prefill once.
-              if (!_didPrefillFromProfile) {
-                final profile = context.watch<ProfileProvider>().profile;
-                if (profile != null) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted && !_didPrefillFromProfile) {
-                      _provider.prefillFromUserProfile(profile);
-                      _didPrefillFromProfile = true;
-                    }
-                  });
-                }
+          builder: (context, provider, child) {
+            // If profile arrives after this screen, prefill once.
+            if (!_didPrefillFromProfile) {
+              final profile = context.watch<ProfileProvider>().profile;
+              if (profile != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted && !_didPrefillFromProfile) {
+                    _provider.prefillFromUserProfile(profile);
+                    _didPrefillFromProfile = true;
+                  }
+                });
               }
-              return SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    40.h.verticalSpace,
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15.5.w),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: GestureDetector(
-                              onTap: () => context.pop(),
-                              child: SvgIcon(
-                                AppAssets.backIcon,
-                                size: 28.5.w,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
+            }
+            return SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  40.h.verticalSpace,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 11.w),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: () => context.pop(),
+                            child: SvgIcon(
+                              AppAssets.backIcon,
+                              size: 28.5.w,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                          AppText(
-                            text: "Person Details".tr(),
-                            style: textStyle32Bold.copyWith(
-                              fontSize: 26.sp,
-                              color: AppColors.secondary,
-                            ),
+                        ),
+                        AppText(
+                          text: "Person Details".tr(),
+                          style: textStyle32Bold.copyWith(
+                            fontSize: 26.sp,
+                            color: AppColors.secondary,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: Form(
-                        key: _formKey,
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.symmetric(horizontal: 15.5.w),
-                          child: Column(
-                            spacing: 22.h,
-                            children: [
-                              4.h.verticalSpace,
-                              Align(
-                                alignment: Alignment.bottomLeft,
-                                child: AppText(
-                                  text: "Personal details of the main booker"
-                                      .tr(),
-                                  style: textStyle14Medium.copyWith(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                  ),
+                  Expanded(
+                    child: Form(
+                      key: _formKey,
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(horizontal: 11.w),
+                        child: Column(
+                          spacing: 22.h,
+                          children: [
+                            4.h.verticalSpace,
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: AppText(
+                                text: "Personal details of the main booker"
+                                    .tr(),
+                                style: textStyle14Medium.copyWith(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              AppTextField(
-                                labelText: "First Name".tr(),
-                                hintText: "Enter Your First Name".tr(),
-                                controller: provider.firstNameController,
-                                validator: (v) => Validator.validatePersonName(
-                                  v,
-                                  'First name',
-                                ),
+                            ),
+                            AppTextField(
+                              labelText: "First Name".tr(),
+                              hintText: "Enter Your First Name".tr(),
+                              controller: provider.firstNameController,
+                              validator: (v) =>
+                                  Validator.validatePersonName(v, 'First name'),
+                            ),
+                            AppTextField(
+                              labelText: "Surname".tr(),
+                              hintText: "Enter Your Surname".tr(),
+                              controller: provider.surnameController,
+                              validator: (v) =>
+                                  Validator.validatePersonName(v, 'Surname'),
+                            ),
+                            AppTextField(
+                              labelText: "Date of Birth".tr(),
+                              hintText: "Select Date of Birth".tr(),
+                              controller: provider.dateOfBirthController,
+                              fieldKey: _dateOfBirthFieldKey,
+                              validator: Validator.validateIsoDateOfBirth,
+                              readOnly: true,
+                              onTap: () => _pickDob(provider),
+                              suffixIcon: Padding(
+                                padding: EdgeInsets.all(13.0),
+                                child: SvgIcon(AppAssets.date, size: 24.w),
                               ),
-                              AppTextField(
-                                labelText: "Surname".tr(),
-                                hintText: "Enter Your Surname".tr(),
-                                controller: provider.surnameController,
-                                validator: (v) =>
-                                    Validator.validatePersonName(v, 'Surname'),
+                            ),
+                            AppTextField(
+                              labelText: "Place of birth".tr(),
+                              hintText: "Enter Your Place of birth".tr(),
+                              controller: provider.placeOfBirthController,
+                              validator: (v) => Validator.validateRequiredText(
+                                v,
+                                'Place of birth',
                               ),
-                              AppTextField(
-                                labelText: "Date of Birth".tr(),
-                                hintText: "Select Date of Birth".tr(),
-                                controller: provider.dateOfBirthController,
-                                fieldKey: _dateOfBirthFieldKey,
-                                validator: Validator.validateIsoDateOfBirth,
-                                readOnly: true,
-                                onTap: () => _pickDob(provider),
-                                suffixIcon: Padding(
-                                  padding: EdgeInsets.all(13.0),
-                                  child: SvgIcon(AppAssets.date, size: 24.w),
-                                ),
+                            ),
+                            NationalityDropdown(
+                              labelText: 'Nationality'.tr(),
+                              hintText: 'Select nationality'.tr(),
+                              controller: provider.nationalityController,
+                              validator: (v) => Validator.validateRequiredText(
+                                v,
+                                'Nationality',
                               ),
-                              AppTextField(
-                                labelText: "Place of birth".tr(),
-                                hintText: "Enter Your Place of birth".tr(),
-                                controller: provider.placeOfBirthController,
-                                validator: (v) =>
-                                    Validator.validateRequiredText(
-                                      v,
-                                      'Place of birth',
-                                    ),
+                            ),
+                            AppTextField(
+                              labelText: "Email Address".tr(),
+                              hintText: "Enter Your Email Address".tr(),
+                              controller: provider.emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: Validator.validateEmail,
+                            ),
+                            AppTextField(
+                              labelText: "Address".tr(),
+                              hintText: "Enter Your Address".tr(),
+                              controller: provider.addressController,
+                              validator: (v) =>
+                                  Validator.validateRequiredText(v, 'Address'),
+                            ),
+                            AppTextField(
+                              labelText: "House number".tr(),
+                              hintText: "Enter Your House number".tr(),
+                              controller: provider.houseNumberController,
+                              validator: (v) => Validator.validateRequiredText(
+                                v,
+                                'House number',
+                                minLen: 1,
+                                maxLen: 20,
                               ),
-                              AppTextField(
-                                labelText: "Nationality".tr(),
-                                hintText: "Enter Your Nationality".tr(),
-                                controller: provider.nationalityController,
-                                validator: (v) =>
-                                    Validator.validateRequiredText(
-                                      v,
-                                      'Nationality',
-                                    ),
+                            ),
+                            AppTextField(
+                              labelText: "Postal code".tr(),
+                              hintText: "Enter Postal code".tr(),
+                              controller: provider.postalCodeController,
+                              validator: (v) => Validator.validateRequiredText(
+                                v,
+                                'Postal code',
+                                minLen: 2,
+                                maxLen: 20,
                               ),
-                              AppTextField(
-                                labelText: "Email Address".tr(),
-                                hintText: "Enter Your Email Address".tr(),
-                                controller: provider.emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: Validator.validateEmail,
+                            ),
+                            AppTextField(
+                              labelText: "Place of residence".tr(),
+                              hintText: "Enter Place of residence".tr(),
+                              controller: provider.placeOfResidenceController,
+                              validator: (v) => Validator.validateRequiredText(
+                                v,
+                                'Place of residence',
                               ),
-                              AppTextField(
-                                labelText: "Address".tr(),
-                                hintText: "Enter Your Address".tr(),
-                                controller: provider.addressController,
-                                validator: (v) =>
-                                    Validator.validateRequiredText(
-                                      v,
-                                      'Address',
-                                    ),
-                              ),
-                              AppTextField(
-                                labelText: "House number".tr(),
-                                hintText: "Enter Your House number".tr(),
-                                controller: provider.houseNumberController,
-                                validator: (v) =>
-                                    Validator.validateRequiredText(
-                                      v,
-                                      'House number',
-                                      minLen: 1,
-                                      maxLen: 20,
-                                    ),
-                              ),
-                              AppTextField(
-                                labelText: "Postal code".tr(),
-                                hintText: "Enter Postal code".tr(),
-                                controller: provider.postalCodeController,
-                                validator: (v) =>
-                                    Validator.validateRequiredText(
-                                      v,
-                                      'Postal code',
-                                      minLen: 2,
-                                      maxLen: 20,
-                                    ),
-                              ),
-                              AppTextField(
-                                labelText: "Place of residence".tr(),
-                                hintText: "Enter Place of residence".tr(),
-                                controller: provider.placeOfResidenceController,
-                                validator: (v) =>
-                                    Validator.validateRequiredText(
-                                      v,
-                                      'Place of residence',
-                                    ),
-                              ),
-                              AppTextField(
-                                labelText: "Phone Number".tr(),
-                                hintText: "Enter Your Phone Number".tr(),
-                                controller: provider.phoneNumberController,
-                                keyboardType: TextInputType.phone,
-                                validator:
-                                    Validator.validatePersonPhoneFlexible,
-                              ),
+                            ),
+                            AppTextField(
+                              labelText: "Phone Number".tr(),
+                              hintText: "Enter Your Phone Number".tr(),
+                              controller: provider.phoneNumberController,
+                              keyboardType: TextInputType.phone,
+                              validator: Validator.validatePersonPhoneFlexible,
+                            ),
 
-                              2.h.verticalSpace,
-                              AppButton(
-                                title: provider.isLoading
-                                    ? "Saving...".tr()
-                                    : "Add Second Person Details".tr(),
-                                onTap: provider.isLoading
-                                    ? null
-                                    : () async {
-                                        if (!(_formKey.currentState
-                                                ?.validate() ??
-                                            false)) {
-                                          return;
+                            2.h.verticalSpace,
+                            AppButton(
+                              title: provider.isLoading
+                                  ? "Saving...".tr()
+                                  : "Add Second Person Details".tr(),
+                              onTap: provider.isLoading
+                                  ? null
+                                  : () async {
+                                      if (!(_formKey.currentState?.validate() ??
+                                          false)) {
+                                        return;
+                                      }
+
+                                      final success = await provider
+                                          .savePersonDetails();
+
+                                      debugPrint(
+                                        success
+                                            ? '✅ [PersonalDetailsScreen] Save successful'
+                                            : '❌ [PersonalDetailsScreen] Save failed',
+                                      );
+
+                                      if (success && context.mounted) {
+                                        // Store person details in TripBookingProvider for later submission
+                                        if (provider.localPersonDetailsData !=
+                                            null) {
+                                          context
+                                              .read<TripBookingProvider>()
+                                              .setLocalPersonDetails(
+                                                provider
+                                                    .localPersonDetailsData!,
+                                              );
                                         }
-
-                                        final success = await provider
-                                            .savePersonDetails();
-
-                                        debugPrint(
-                                          success
-                                              ? '✅ [PersonalDetailsScreen] Save successful'
-                                              : '❌ [PersonalDetailsScreen] Save failed',
+                                        context.pushNamed(
+                                          UserAppRoutes
+                                              .personalDetailsScreen2
+                                              .name,
                                         );
-
-                                        if (success && context.mounted) {
-                                          // Store person details in TripBookingProvider for later submission
-                                          if (provider.localPersonDetailsData !=
-                                              null) {
-                                            context
-                                                .read<TripBookingProvider>()
-                                                .setLocalPersonDetails(
-                                                  provider
-                                                      .localPersonDetailsData!,
-                                                );
-                                          }
-                                          context.pushNamed(
-                                            UserAppRoutes
-                                                .personalDetailsScreen2
-                                                .name,
-                                          );
-                                        }
-                                      },
-                              ),
-                              10.h.verticalSpace,
-                            ],
-                          ),
+                                      }
+                                    },
+                            ),
+                            10.h.verticalSpace,
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

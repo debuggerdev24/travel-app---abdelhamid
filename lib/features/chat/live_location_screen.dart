@@ -149,7 +149,7 @@ class _LiveLocationViewState extends State<_LiveLocationView> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 24.w),
+              padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 11.w),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -192,7 +192,7 @@ class _LiveLocationViewState extends State<_LiveLocationView> {
 
             /// Button
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
               child: AppButton(
                 title: "Share My Location".tr(),
                 onTap: () {

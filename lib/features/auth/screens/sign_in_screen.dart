@@ -49,7 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 50.h, horizontal: 13.5.w),
+            padding: EdgeInsets.symmetric(vertical: 50.h, horizontal: 11.w),
             child: Consumer<AuthProvider>(
               builder: (context, authProvider, child) {
                 return Column(
@@ -79,7 +79,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       text:
                           "“Access your trips, bookings, and adventures in one place.”"
                               .tr(),
-                      style: textStyle14Italic,
+                      style: textStyle14Italic.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                     36.h.verticalSpace,
                     Form(
@@ -181,7 +183,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           );
 
                           if (success && context.mounted) {
-                            ToastService.showSuccess("Welcome back!");
+                            ToastService.showSuccess("Login successfully");
                             context.goNamed(UserAppRoutes.tabScreen.name);
                           }
                         }
@@ -193,7 +195,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         text: "Don’t have an account? ".tr(),
                         style: textStyle14Regular.copyWith(
                           letterSpacing: 0.4,
-                          color: Colors.black.withValues(alpha: 0.7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         children: [
                           TextSpan(

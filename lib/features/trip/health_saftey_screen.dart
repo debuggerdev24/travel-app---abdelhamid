@@ -68,7 +68,7 @@ class _HealthSafetyScreenView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 20.h),
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -113,7 +113,7 @@ class _HealthSafetyScreenView extends StatelessWidget {
     }
     if (state.error != null) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+        padding: EdgeInsets.symmetric(horizontal: 11.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -176,7 +176,7 @@ class _HealthSafetyScreenView extends StatelessWidget {
       onRefresh: () => context.read<HealthSafetyState>().load(),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 13.5.w, vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 8.h),
         itemCount: state.tips.length,
         separatorBuilder: (_, __) => SizedBox(height: 14.h),
         itemBuilder: (context, index) {
@@ -292,7 +292,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

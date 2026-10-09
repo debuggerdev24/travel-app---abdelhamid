@@ -19,7 +19,7 @@ class PaymentFailedScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 13.5.w),
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 11.w),
             child: Column(
               children: [
                 56.h.verticalSpace,

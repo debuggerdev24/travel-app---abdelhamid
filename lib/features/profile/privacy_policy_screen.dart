@@ -175,8 +175,8 @@ class _PrivacyPolicyViewState extends State<_PrivacyPolicyView> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 13.5.w),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -205,48 +205,61 @@ class _PrivacyPolicyViewState extends State<_PrivacyPolicyView> {
                 ],
               ),
               if (state.loading)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 48.h),
+                Expanded(
                   child: Center(
                     child: CircularProgressIndicator(
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 )
-              else if (state.error != null)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText(
-                        text: state.error!,
-                        style: textStyle14Regular.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: _load,
-                        child: AppText(
-                          text: "Retry".tr(),
-                          style: textStyle14Medium.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              else if (!_hasRenderableContent(state.sections))
-                _emptyState()
               else
-                ...state.sections.expand((section) {
-                  return [
-                    _sectionTitle(section.title),
-                    ...section.terms.map(_bullet),
-                  ];
-                }),
-              40.h.verticalSpace,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (state.error != null)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AppText(
+                                  text: state.error!,
+                                  style: textStyle14Regular.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: _load,
+                                  child: AppText(
+                                    text: "Retry".tr(),
+                                    style: textStyle14Medium.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else if (!_hasRenderableContent(state.sections))
+                          _emptyState()
+                        else
+                          ...state.sections.expand((section) {
+                            return [
+                              _sectionTitle(section.title),
+                              ...section.terms.map(_bullet),
+                            ];
+                          }),
+                        40.h.verticalSpace,
+                      ],
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
