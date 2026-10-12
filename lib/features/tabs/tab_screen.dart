@@ -113,7 +113,12 @@ class _TabScreenViewState extends State<_TabScreenView> {
         body: IndexedStack(
           index: state.currentIndex,
           children: [
-            const HomeScreen(),
+            HomeScreen(
+              onProfileTap: () {
+                setState(() => _loadedTabs.add(3));
+                context.read<TabState>().setIndex(3);
+              },
+            ),
             _loadedTabs.contains(1)
                 ? TripScreen(
                     onShowTripDetails: (show) {

@@ -8,6 +8,8 @@
     "nationality": "الجنسية",
     "passport_number": "رقم الجواز",
     "contact": "جهة الاتصال",
+    "emergency_full_name": "الاسم الكامل للطوارئ",
+    "emergency_contact": "جهة اتصال الطوارئ",
     "language": "اللغة",
     "prayer_times": "مواقيت الصلاة",
     "currency_converter": "تحويل العملات",

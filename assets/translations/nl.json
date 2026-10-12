@@ -8,6 +8,8 @@
     "nationality": "Nationaliteit",
     "passport_number": "Paspoortnummer",
     "contact": "Contact",
+    "emergency_full_name": "Volledige naam noodcontact",
+    "emergency_contact": "Noodcontact",
     "language": "Taal",
     "prayer_times": "Gebedstijden",
     "currency_converter": "Valutacalculator",

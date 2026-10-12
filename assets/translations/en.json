@@ -8,6 +8,8 @@
     "nationality": "Nationality",
     "passport_number": "Passport Number",
     "contact": "Contact",
+    "emergency_full_name": "Emergency Full Name",
+    "emergency_contact": "Emergency Contact",
     "language": "Language",
     "prayer_times": "Prayer Times",
     "currency_converter": "Currency Converter",

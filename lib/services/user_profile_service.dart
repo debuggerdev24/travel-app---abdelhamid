@@ -42,6 +42,8 @@ class UserProfileService {
       'placeOfBirth': profile.placeOfBirth,
       'placeOfResidence': profile.placeOfResidence,
       'postalCode': profile.postalCode,
+      'emergencyFullName': profile.emergencyFullName,
+      'emergencyContact': profile.emergencyContact,
     };
     if (profile.age != null) map['age'] = profile.age;
     return map;

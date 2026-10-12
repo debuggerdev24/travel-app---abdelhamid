@@ -32,6 +32,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _gender = TextEditingController(text: 'male');
   final _nationality = TextEditingController();
   final _passport = TextEditingController();
+  final _phone = TextEditingController();
+  final _emergencyFullName = TextEditingController();
+  final _emergencyContact = TextEditingController();
 
   bool _didPrefill = false;
 
@@ -43,6 +46,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _gender.dispose();
     _nationality.dispose();
     _passport.dispose();
+    _phone.dispose();
+    _emergencyFullName.dispose();
+    _emergencyContact.dispose();
     super.dispose();
   }
 
@@ -59,6 +65,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _gender.text = savedGender.isEmpty ? 'male' : savedGender;
     _nationality.text = p.nationality;
     _passport.text = p.passportNumber;
+    _phone.text = p.phoneNumber;
+    _emergencyFullName.text = p.emergencyFullName;
+    _emergencyContact.text = p.emergencyContact;
   }
 
   Future<void> _pickDob() async {
@@ -120,6 +129,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ToastHelper.showError('Full name is required'.tr());
       return;
     }
+    final phone = _phone.text.trim();
+    if (phone.isEmpty) {
+      ToastHelper.showError('Phone number is required'.tr());
+      return;
+    }
+    if (phone.length < 10 || phone.length > 15) {
+      ToastHelper.showError('Enter a valid phone number (10–15 digits)'.tr());
+      return;
+    }
+    final emergencyName = _emergencyFullName.text.trim();
+    if (emergencyName.isEmpty) {
+      ToastHelper.showError('Emergency full name is required'.tr());
+      return;
+    }
+    final emergencyContact = _emergencyContact.text.trim();
+    if (emergencyContact.isEmpty) {
+      ToastHelper.showError('Emergency contact is required'.tr());
+      return;
+    }
+    if (emergencyContact.length < 10 || emergencyContact.length > 15) {
+      ToastHelper.showError('Enter a valid phone number (10–15 digits)'.tr());
+      return;
+    }
     if (provider.selectedLanguages.isEmpty) {
       ToastHelper.showError('Select a language'.tr());
       return;
@@ -152,6 +184,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       gender: _gender.text.trim(),
       nationality: _nationality.text.trim(),
       passportNumber: _passport.text.trim(),
+      phoneNumber: phone,
+      emergencyFullName: emergencyName,
+      emergencyContact: emergencyContact,
       languages: provider.selectedLanguages,
     );
     final ok = await provider.saveProfile(updated);
@@ -378,6 +413,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               keyboardType: TextInputType.number,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(7),
+                              ],
+                            ),
+                            18.h.verticalSpace,
+                            AppTextField(
+                              hintText: "Phone Number".tr(),
+                              controller: _phone,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(15),
+                              ],
+                            ),
+                            18.h.verticalSpace,
+                            AppTextField(
+                              hintText: "Emergency Full Name".tr(),
+                              controller: _emergencyFullName,
+                            ),
+                            18.h.verticalSpace,
+                            AppTextField(
+                              hintText: "Emergency Contact".tr(),
+                              controller: _emergencyContact,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(15),
                               ],
                             ),
                             18.h.verticalSpace,

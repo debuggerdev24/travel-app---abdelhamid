@@ -17,41 +17,47 @@ class DocumentCard extends StatelessWidget {
   /// Secondary action (Map / Helpline / Download). Defaults to [onTap].
   final VoidCallback? onSecondaryTap;
 
+  /// Uploaded passport, visa, and medical files show the photo across the card.
+  final bool imageOnTop;
+
   const DocumentCard({
     super.key,
     required this.doc,
     required this.onTap,
     this.onSecondaryTap,
+    this.imageOnTop = false,
   });
 
   Widget _buildThumbnail() {
-    final w = 88.w;
-    final h = 88.w;
-    if (doc.fileImage != null) {
-      return _thumbnailBox(
-        w,
-        h,
-        Image.file(doc.fileImage!, width: w, height: h, fit: BoxFit.contain),
-      );
-    }
-    final url = doc.networkThumbnailUrl;
-    if (url != null && url.isNotEmpty) {
-      return _thumbnailBox(
-        w,
-        h,
-        NetworkImageWithShimmer(
-          imageUrl: url,
-          width: w,
-          height: h,
-          fit: BoxFit.contain,
+    if (imageOnTop) {
+      return SizedBox(
+        width: double.infinity,
+        height: 180.h,
+        child: ColoredBox(
+          color: Colors.white,
+          child: _thumbnailImage(BoxFit.cover, double.infinity, 180.h),
         ),
       );
     }
-    return _thumbnailBox(
-      w,
-      h,
-      Image.asset(doc.image, width: w, height: h, fit: BoxFit.contain),
-    );
+    final w = 88.w;
+    final h = 88.w;
+    return _thumbnailBox(w, h, _thumbnailImage(BoxFit.contain, w, h));
+  }
+
+  Widget _thumbnailImage(BoxFit fit, [double? w, double? h]) {
+    if (doc.fileImage != null) {
+      return Image.file(doc.fileImage!, width: w, height: h, fit: fit);
+    }
+    final url = doc.networkThumbnailUrl;
+    if (url != null && url.isNotEmpty) {
+      return NetworkImageWithShimmer(
+        imageUrl: url,
+        width: w,
+        height: h,
+        fit: fit,
+      );
+    }
+    return Image.asset(doc.image, width: w, height: h, fit: fit);
   }
 
   Widget _thumbnailBox(double w, double h, Widget child) {
@@ -62,6 +68,38 @@ class DocumentCard extends StatelessWidget {
         color: Colors.white,
         child: Center(child: child),
       ),
+    );
+  }
+
+  Widget _documentDetails(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (doc.subtitle != null) ...[
+          AppText(
+            text: doc.subtitle!.tr(),
+            style: textStyle14Medium.copyWith(
+              fontSize: 12.sp,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          4.h.verticalSpace,
+        ],
+        AppText(
+          text: doc.title,
+          style: textStyle16SemiBold.copyWith(
+            fontSize: 16.sp,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        8.h.verticalSpace,
+        if (doc.info != null)
+          ...doc.info!.entries.map(
+            (entry) => _buildInfoRow(context, entry.key.tr(), entry.value),
+          ),
+      ],
     );
   }
 
@@ -113,53 +151,27 @@ class DocumentCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
-                child: _buildThumbnail(),
-              ),
-
-              14.w.horizontalSpace,
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (doc.subtitle != null) ...[
-                      AppText(
-                        text: doc.subtitle!.tr(),
-                        style: textStyle14Medium.copyWith(
-                          fontSize: 12.sp,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      4.h.verticalSpace,
-                    ],
-
-                    AppText(
-                      text: doc.title,
-                      style: textStyle16SemiBold.copyWith(
-                        fontSize: 16.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-
-                    8.h.verticalSpace,
-                    if (doc.info != null)
-                      ...doc.info!.entries.map(
-                        (entry) =>
-                            _buildInfoRow(context, entry.key.tr(), entry.value),
-                      ),
-                  ],
+          if (imageOnTop) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.r),
+              child: _buildThumbnail(),
+            ),
+            12.h.verticalSpace,
+            _documentDetails(context),
+          ] else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: _buildThumbnail(),
                 ),
-              ),
-            ],
-          ),
+                14.w.horizontalSpace,
+                Expanded(child: _documentDetails(context)),
+              ],
+            ),
           16.h.verticalSpace,
 
           Row(

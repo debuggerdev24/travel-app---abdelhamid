@@ -25,35 +25,6 @@ class BaseApiService {
     );
 
     _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          try {
-            // Never send a stale Bearer token on login/register — the server may
-            // reject the request with 401 before it even reads credentials.
-            if (!_isAuthPath(options.uri.path)) {
-              final token = PrefHelper.getAccessToken();
-
-              if (token != null && token.isNotEmpty) {
-                options.headers[HttpHeaders.authorizationHeader] =
-                    'Bearer $token';
-              }
-            }
-            handler.next(options);
-          } catch (e) {
-            handler.next(options);
-          }
-        },
-        onError: (error, handler) async {
-          final response = await _retryAfterRefresh(error);
-          if (response != null) {
-            return handler.resolve(response);
-          }
-          handler.next(error);
-        },
-      ),
-    );
-
-    _dio.interceptors.add(
       TalkerDioLogger(
         settings: const TalkerDioLoggerSettings(
           printRequestHeaders: true,
@@ -67,6 +38,59 @@ class BaseApiService {
           printErrorMessage: true,
           // hiddenHeaders: {'Authorization'},
         ),
+      ),
+    );
+
+    // Added last so a 401 is handled here before it is treated as a final error.
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          try {
+            // Login and refresh must not send the old access token.
+            if (!_isAuthPath(options.uri.path)) {
+              final token = PrefHelper.getAccessToken();
+              if (token != null && token.isNotEmpty) {
+                options.headers[HttpHeaders.authorizationHeader] =
+                    'Bearer $token';
+              }
+            }
+            handler.next(options);
+          } catch (e) {
+            handler.next(options);
+          }
+        },
+        onError: (error, handler) async {
+          if (!_isExpiredToken(error)) {
+            handler.next(error);
+            return;
+          }
+          if (error.requestOptions.extra['retried'] == true) {
+            handler.next(error);
+            return;
+          }
+          if (error.requestOptions.path.contains('refresh-token')) {
+            handler.next(error);
+            return;
+          }
+
+          final newToken = await _refreshAccessToken();
+          if (newToken == null || newToken.isEmpty) {
+            handler.next(error);
+            return;
+          }
+
+          try {
+            final options = error.requestOptions;
+            options.extra['retried'] = true;
+            options.headers[HttpHeaders.authorizationHeader] =
+                'Bearer $newToken';
+            final response = await _dio.fetch<dynamic>(options);
+            handler.resolve(response);
+          } catch (e) {
+            LogHelper.instance.error('Retry after refresh token failed', e);
+            handler.next(error);
+          }
+        },
       ),
     );
   }
@@ -544,38 +568,17 @@ class BaseApiService {
     return path.contains('/auth/');
   }
 
-  bool _isInvalidToken(DioException error) {
+  /// Server returns 401 and message "jwt expired" when the access token is old.
+  bool _isExpiredToken(DioException error) {
     if (error.response?.statusCode != 401) return false;
     final data = error.response?.data;
     if (data is! Map) return false;
-    return data['message']?.toString().trim() == 'Invalid or Expired Token' ||
-        error.response?.statusCode == 401;
-  }
-
-  /// Gets a new access token, then sends the failed request one more time.
-  Future<Response<dynamic>?> _retryAfterRefresh(DioException error) async {
-    if (!_isInvalidToken(error)) return null;
-    if (error.requestOptions.extra['retried'] == true) return null;
-    if (error.requestOptions.path.contains('refresh-token')) return null;
-
-    try {
-      final accessToken = await _refreshAccessToken();
-      if (accessToken == null || accessToken.isEmpty) return null;
-
-      final options = error.requestOptions;
-      options.extra['retried'] = true;
-      options.headers[HttpHeaders.authorizationHeader] = 'Bearer $accessToken';
-      return await _dio.fetch<dynamic>(options);
-    } catch (e) {
-      LogHelper.instance.error('Retry after refresh token failed', e);
-      return null;
-    }
+    final message = data['message']?.toString().trim().toLowerCase() ?? '';
+    return message == 'jwt expired';
   }
 
   Future<String?> _refreshAccessToken() async {
-    if (_refreshCall != null) {
-      return _refreshCall;
-    }
+    if (_refreshCall != null) return _refreshCall;
 
     _refreshCall = _requestNewAccessToken();
     try {
@@ -588,6 +591,8 @@ class BaseApiService {
   Future<String?> _requestNewAccessToken() async {
     final refreshToken = PrefHelper.getRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) return null;
+
+    LogHelper.instance.debug('Access token expired. Calling refresh token API.');
 
     try {
       final response = await _dio.post<dynamic>(

@@ -28,16 +28,20 @@ class HomeTabState extends ChangeNotifier {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onProfileTap;
+
+  const HomeScreen({super.key, this.onProfileTap});
 
   @override
   Widget build(BuildContext context) {
-    return const _HomeView();
+    return _HomeView(onProfileTap: onProfileTap);
   }
 }
 
 class _HomeView extends StatefulWidget {
-  const _HomeView();
+  final VoidCallback? onProfileTap;
+
+  const _HomeView({this.onProfileTap});
 
   @override
   State<_HomeView> createState() => _HomeViewState();
@@ -83,6 +87,7 @@ class _HomeViewState extends State<_HomeView> {
                         : null;
                     return CustomHeaders(
                       profileImageUrl: url,
+                      onProfileTap: widget.onProfileTap,
                       onNotificationTap: () {
                         context.pushNamed(
                           UserAppRoutes.notificationScreen.name,

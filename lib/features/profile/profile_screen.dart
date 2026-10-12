@@ -193,6 +193,32 @@ class ProfileScreen extends StatelessWidget {
 
                           _infoRow(
                             context,
+                            "profile.emergency_full_name".tr(),
+                            p?.emergencyFullName.isNotEmpty == true
+                                ? p!.emergencyFullName
+                                : "—",
+                          ),
+                          Divider(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
+                          ),
+
+                          _infoRow(
+                            context,
+                            "profile.emergency_contact".tr(),
+                            p?.emergencyContact.isNotEmpty == true
+                                ? p!.emergencyContact
+                                : "—",
+                          ),
+                          Divider(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.2),
+                          ),
+
+                          _infoRow(
+                            context,
                             "profile.language".tr(),
                             p?.languages.isNotEmpty == true
                                 ? p!.languages.join(', ')
@@ -351,8 +377,8 @@ class ProfileScreen extends StatelessWidget {
                           _logoutMenuItem(context),
                         ]),
 
-                        10.h.verticalSpace,
-                        _buildNotificationSwitch(context),
+                        // 10.h.verticalSpace,
+                        // _buildNotificationSwitch(context),
 
                         15.h.verticalSpace,
                         Align(

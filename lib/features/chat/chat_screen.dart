@@ -310,7 +310,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             child: AppText(
                               text: data.unread > 99 ? '99+' : '${data.unread}',
                               style: textStyle18Bold.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: AppColors.whiteColor,
                                 fontSize: 11.sp,
                               ),
                             ),

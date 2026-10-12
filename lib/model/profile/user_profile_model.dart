@@ -20,6 +20,8 @@ class UserProfile {
     this.placeOfBirth = '',
     this.placeOfResidence = '',
     this.postalCode = '',
+    this.emergencyFullName = '',
+    this.emergencyContact = '',
   });
 
   final String firstName;
@@ -27,12 +29,14 @@ class UserProfile {
   final String email;
   final String phoneNumber;
   final int? age;
+
   /// ISO string or display string as returned by backend.
   final String dateOfBirth;
   final String gender;
   final String nationality;
   final String passportNumber;
   final List<String> languages;
+
   /// Can be URL/path/filename depending on backend.
   final String profileImageRaw;
 
@@ -44,6 +48,8 @@ class UserProfile {
   final String placeOfBirth;
   final String placeOfResidence;
   final String postalCode;
+  final String emergencyFullName;
+  final String emergencyContact;
 
   String get fullName {
     final f = firstName.trim();
@@ -96,7 +102,10 @@ class UserProfile {
     String derivedFirst = first;
     String derivedSur = sur;
     if (derivedFirst.isEmpty && derivedSur.isEmpty && full.isNotEmpty) {
-      final parts = full.split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+      final parts = full
+          .split(RegExp(r'\s+'))
+          .where((e) => e.isNotEmpty)
+          .toList();
       if (parts.isNotEmpty) {
         derivedFirst = parts.first;
         derivedSur = parts.length > 1 ? parts.sublist(1).join(' ') : '';
@@ -128,11 +137,12 @@ class UserProfile {
       ),
       gender: (json['gender'] ?? '').toString(),
       nationality: (json['nationality'] ?? '').toString(),
-      passportNumber:
-          (json['passportNumber'] ?? json['passportNo'] ?? '').toString(),
+      passportNumber: (json['passportNumber'] ?? json['passportNo'] ?? '')
+          .toString(),
       // Your API uses `language: "english"`; support both `language` and `languages`.
       languages: parseLanguages(json['languages'] ?? json['language']),
-      profileImageRaw: (json['profileImage'] ?? json['profilePicture'] ?? '').toString(),
+      profileImageRaw: (json['profileImage'] ?? json['profilePicture'] ?? '')
+          .toString(),
       travellerCode: (json['travellerCode'] ?? '').toString(),
       isVerified: parseVerified(json['isVerified']),
       address: (json['address'] ?? '').toString(),
@@ -140,6 +150,8 @@ class UserProfile {
       placeOfBirth: (json['placeOfBirth'] ?? '').toString(),
       placeOfResidence: (json['placeOfResidence'] ?? '').toString(),
       postalCode: (json['postalCode'] ?? '').toString(),
+      emergencyFullName: (json['EmergencyUser'] ?? '').toString(),
+      emergencyContact: (json['EmergencyContact'] ?? '').toString(),
     );
   }
 
@@ -162,6 +174,8 @@ class UserProfile {
     String? placeOfBirth,
     String? placeOfResidence,
     String? postalCode,
+    String? emergencyFullName,
+    String? emergencyContact,
   }) {
     return UserProfile(
       firstName: firstName ?? this.firstName,
@@ -182,7 +196,8 @@ class UserProfile {
       placeOfBirth: placeOfBirth ?? this.placeOfBirth,
       placeOfResidence: placeOfResidence ?? this.placeOfResidence,
       postalCode: postalCode ?? this.postalCode,
+      emergencyFullName: emergencyFullName ?? this.emergencyFullName,
+      emergencyContact: emergencyContact ?? this.emergencyContact,
     );
   }
 }
-

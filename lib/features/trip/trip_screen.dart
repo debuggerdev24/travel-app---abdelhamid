@@ -897,15 +897,10 @@ class _TripScreenViewState extends State<_TripScreenView>
 
         if (flights.isEmpty) {
           debugPrint('❌ [TripScreen] No flights found');
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 40.h),
-              child: _EmptyState(
-                icon: Icons.flight_outlined,
-                title: 'No flight details available'.tr(),
-                subtitle: 'Flight information will appear here.'.tr(),
-              ),
-            ),
+          return _centeredEmptyState(
+            icon: Icons.flight_outlined,
+            title: 'No flight details available'.tr(),
+            subtitle: 'Flight information will appear here.'.tr(),
           );
         }
         return SafeArea(
@@ -984,15 +979,10 @@ class _TripScreenViewState extends State<_TripScreenView>
     }
 
     if (vouchers.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 40.h),
-          child: _EmptyState(
-            icon: Icons.hotel_outlined,
-            title: 'No hotel details available'.tr(),
-            subtitle: 'Hotel vouchers will appear here.'.tr(),
-          ),
-        ),
+      return _centeredEmptyState(
+        icon: Icons.hotel_outlined,
+        title: 'No hotel details available'.tr(),
+        subtitle: 'Hotel vouchers will appear here.'.tr(),
       );
     }
 
@@ -1045,6 +1035,14 @@ class _TripScreenViewState extends State<_TripScreenView>
     final activities = (today?.itinerary.activities ?? []).toList()
       ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
 
+    if (!isLoading && error == null && activities.isEmpty) {
+      return _centeredEmptyState(
+        icon: Icons.event_note_outlined,
+        title: 'No itinerary listed for today'.tr(),
+        subtitle: 'There is nothing planned for today yet.'.tr(),
+      );
+    }
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 20.h),
       child: isLoading
@@ -1070,14 +1068,6 @@ class _TripScreenViewState extends State<_TripScreenView>
                         ),
                 ),
               ],
-            )
-          : activities.isEmpty
-          ? Center(
-              child: _EmptyState(
-                icon: Icons.event_note_outlined,
-                title: 'No itinerary listed for today'.tr(),
-                subtitle: 'There is nothing planned for today yet.'.tr(),
-              ),
             )
           : ItineraryPlanCard(
               title: today?.itinerary.dayTitle ?? '',
@@ -1113,6 +1103,28 @@ class _TripScreenViewState extends State<_TripScreenView>
       default:
         return AppAssets.location;
     }
+  }
+
+  Widget _centeredEmptyState({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    final media = MediaQuery.of(context);
+    final spaceAbove = media.padding.top + 70.h + 250.h + 120.h + 52.h;
+    final left = media.size.height - spaceAbove - media.padding.bottom;
+    final height = left < 220.h ? 220.h : left;
+
+    return SizedBox(
+      width: double.infinity,
+      height: height,
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 11.w),
+          child: _EmptyState(icon: icon, title: title, subtitle: subtitle),
+        ),
+      ),
+    );
   }
 
   Widget _essentialsSection() {
@@ -1295,6 +1307,7 @@ class _TripScreenViewState extends State<_TripScreenView>
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: DocumentCard(
+        imageOnTop: true,
         doc: DocumentModel(
           image: AppAssets.hotel4,
           networkThumbnailUrl: doc.resolvedViewUrl,
@@ -1715,6 +1728,7 @@ class _TripScreenViewState extends State<_TripScreenView>
                         (doc) => Padding(
                           padding: EdgeInsets.only(bottom: 12.h),
                           child: DocumentCard(
+                            imageOnTop: true,
                             doc: DocumentModel(
                               image: AppAssets.hotel4,
                               title: doc["name"],
@@ -1811,6 +1825,7 @@ class _TripScreenViewState extends State<_TripScreenView>
                         (doc) => Padding(
                           padding: EdgeInsets.only(bottom: 12.h),
                           child: DocumentCard(
+                            imageOnTop: true,
                             doc: DocumentModel(
                               image: AppAssets.hotel2,
                               title: "Medical Certificate".tr(),
