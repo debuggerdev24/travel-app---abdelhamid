@@ -28,6 +28,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool _hidePassword = true;
 
   @override
   void dispose() {
@@ -120,7 +121,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           AppTextField(
                             controller: signUpPasswordController,
                             hintText: "Password".tr(),
-                            obSecureText: true,
+                            obSecureText: _hidePassword,
+                            suffixIcon: IconButton(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              onPressed: () {
+                                setState(() {
+                                  _hidePassword = !_hidePassword;
+                                });
+                              },
+                              icon: Icon(
+                                _hidePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                              ),
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return "Password is required";

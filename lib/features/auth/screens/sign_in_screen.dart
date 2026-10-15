@@ -25,6 +25,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController personalCodeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _hidePassword = true;
 
   @override
   void dispose() {
@@ -118,7 +119,20 @@ class _SignInScreenState extends State<SignInScreen> {
                           AppTextField(
                             controller: passwordController,
                             hintText: "Password".tr(),
-                            obSecureText: true,
+                            obSecureText: _hidePassword,
+                            suffixIcon: IconButton(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              onPressed: () {
+                                setState(() {
+                                  _hidePassword = !_hidePassword;
+                                });
+                              },
+                              icon: Icon(
+                                _hidePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                              ),
+                            ),
                             validator: Validator.validatePassword,
                           ),
                         ],
