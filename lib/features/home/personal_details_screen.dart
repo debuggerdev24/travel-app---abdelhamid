@@ -198,21 +198,21 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             ),
                             AppTextField(
                               labelText: "First Name".tr(),
-                              hintText: "Enter Your First Name".tr(),
+                              hintText: "Enter your first name".tr(),
                               controller: provider.firstNameController,
                               validator: (v) =>
                                   Validator.validatePersonName(v, 'First name'),
                             ),
                             AppTextField(
                               labelText: "Surname".tr(),
-                              hintText: "Enter Your Surname".tr(),
+                              hintText: "Enter your surname".tr(),
                               controller: provider.surnameController,
                               validator: (v) =>
                                   Validator.validatePersonName(v, 'Surname'),
                             ),
                             AppTextField(
                               labelText: "Date of Birth".tr(),
-                              hintText: "Select Date of Birth".tr(),
+                              hintText: "Select your date of birth".tr(),
                               controller: provider.dateOfBirthController,
                               fieldKey: _dateOfBirthFieldKey,
                               validator: Validator.validateIsoDateOfBirth,
@@ -225,7 +225,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             ),
                             AppTextField(
                               labelText: "Place of birth".tr(),
-                              hintText: "Enter Your Place of birth".tr(),
+                              hintText: "Enter your place of birth".tr(),
                               controller: provider.placeOfBirthController,
                               validator: (v) => Validator.validateRequiredText(
                                 v,
@@ -234,7 +234,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             ),
                             NationalityDropdown(
                               labelText: 'Nationality'.tr(),
-                              hintText: 'Select nationality'.tr(),
+                              hintText: 'Select your nationality'.tr(),
                               controller: provider.nationalityController,
                               validator: (v) => Validator.validateRequiredText(
                                 v,
@@ -243,21 +243,21 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             ),
                             AppTextField(
                               labelText: "Email Address".tr(),
-                              hintText: "Enter Your Email Address".tr(),
+                              hintText: "Enter your email address".tr(),
                               controller: provider.emailController,
                               keyboardType: TextInputType.emailAddress,
                               validator: Validator.validateEmail,
                             ),
                             AppTextField(
                               labelText: "Address".tr(),
-                              hintText: "Enter Your Address".tr(),
+                              hintText: "Enter your address".tr(),
                               controller: provider.addressController,
                               validator: (v) =>
                                   Validator.validateRequiredText(v, 'Address'),
                             ),
                             AppTextField(
                               labelText: "House number".tr(),
-                              hintText: "Enter Your House number".tr(),
+                              hintText: "Enter your house number".tr(),
                               controller: provider.houseNumberController,
                               validator: (v) => Validator.validateRequiredText(
                                 v,
@@ -268,7 +268,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             ),
                             AppTextField(
                               labelText: "Postal code".tr(),
-                              hintText: "Enter Postal code".tr(),
+                              hintText: "Enter your postal code".tr(),
                               controller: provider.postalCodeController,
                               validator: (v) => Validator.validateRequiredText(
                                 v,
@@ -279,7 +279,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             ),
                             AppTextField(
                               labelText: "Place of residence".tr(),
-                              hintText: "Enter Place of residence".tr(),
+                              hintText: "Enter your place of residence".tr(),
                               controller: provider.placeOfResidenceController,
                               validator: (v) => Validator.validateRequiredText(
                                 v,
@@ -288,7 +288,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             ),
                             AppTextField(
                               labelText: "Phone Number".tr(),
-                              hintText: "Enter Your Phone Number".tr(),
+                              hintText: "Enter your phone number".tr(),
                               controller: provider.phoneNumberController,
                               keyboardType: TextInputType.phone,
                               validator: Validator.validatePersonPhoneFlexible,

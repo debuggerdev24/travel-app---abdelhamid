@@ -191,7 +191,8 @@ class _FeedbackViewState extends State<_FeedbackView> {
                         ),
                         child: AppTextField(
                           controller: reviewController,
-                          hintText: "Enter Comment Here...".tr(),
+                          labelText: "Comment".tr(),
+                          hintText: "Enter your comment".tr(),
                           maxLines: 4,
                         ),
                       ),

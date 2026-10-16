@@ -568,13 +568,42 @@ class BaseApiService {
     return path.contains('/auth/');
   }
 
-  /// Server returns 401 and message "jwt expired" when the access token is old.
+  /// Server returns 401 with messages like "jwt expired" or
+  /// "Invalid or Expired Token" when the access token is no longer valid.
   bool _isExpiredToken(DioException error) {
     if (error.response?.statusCode != 401) return false;
+
+    final path = error.requestOptions.uri.path;
+    // Login / register / OTP failures are not session-expiry — do not refresh.
+    if (path.contains('/auth/') && !path.contains('refresh-token')) {
+      return false;
+    }
+
     final data = error.response?.data;
-    if (data is! Map) return false;
-    final message = data['message']?.toString().trim().toLowerCase() ?? '';
-    return message == 'jwt expired';
+    final message = (data is Map ? data['message']?.toString() : null)
+            ?.trim()
+            .toLowerCase() ??
+        '';
+
+    if (message.isEmpty) return true;
+    return message.contains('jwt expired') ||
+        message.contains('invalid or expired') ||
+        message.contains('expired token') ||
+        message.contains('token expired') ||
+        message.contains('invalid token');
+  }
+
+  /// Refreshes the access token when it is missing or past JWT exp.
+  /// Used on app start so the user stays on the dashboard after a restart.
+  Future<bool> ensureValidAccessToken() async {
+    final access = PrefHelper.getAccessToken();
+    if (access != null &&
+        access.isNotEmpty &&
+        !PrefHelper.isJwtExpired(access)) {
+      return true;
+    }
+    final newToken = await _refreshAccessToken();
+    return newToken != null && newToken.isNotEmpty;
   }
 
   Future<String?> _refreshAccessToken() async {
@@ -605,8 +634,12 @@ class BaseApiService {
       final data = body['data'];
       if (data is! Map) return null;
 
-      final accessToken = data['accessToken']?.toString() ?? '';
-      final newRefreshToken = data['refreshToken']?.toString() ?? '';
+      final accessToken = data['accessToken']?.toString() ??
+          data['access_token']?.toString() ??
+          '';
+      final newRefreshToken = data['refreshToken']?.toString() ??
+          data['refresh_token']?.toString() ??
+          '';
       if (accessToken.isEmpty) return null;
 
       await PrefHelper.saveAccessToken(accessToken);

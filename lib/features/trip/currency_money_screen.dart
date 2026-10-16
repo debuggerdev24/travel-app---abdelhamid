@@ -19,20 +19,27 @@ class CurrencyMoneyScreen extends StatefulWidget {
 }
 
 class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
-  final TextEditingController _amountController = TextEditingController(
-    text: '1',
-  );
+  late final TextEditingController _amountController;
 
   @override
   void initState() {
     super.initState();
-    // Backend API doesn't return currency data, so skip loading from backend
-    // Currency converter works entirely with frontend implementation
+    // Keep the amount that is already in the provider when returning to this screen.
     final provider = Provider.of<CurrencyConverterProvider>(
       context,
       listen: false,
     );
+    _amountController = TextEditingController(
+      text: _amountText(provider.amount),
+    );
     provider.fetchExchangeRates();
+  }
+
+  String _amountText(double amount) {
+    if (amount == amount.roundToDouble()) {
+      return amount.toInt().toString();
+    }
+    return amount.toString();
   }
 
   @override
@@ -184,11 +191,14 @@ class _CurrencyMoneyScreenState extends State<CurrencyMoneyScreen> {
               ),
             ),
             onChanged: (value) {
-              final amount = double.tryParse(value);
+              final trimmed = value.trim();
+              if (trimmed.isEmpty || trimmed == '.' || trimmed == '-') {
+                provider.setAmount(0);
+                return;
+              }
+              final amount = double.tryParse(trimmed);
               if (amount != null) {
                 provider.setAmount(amount);
-              } else if (value.isEmpty) {
-                provider.setAmount(0);
               }
             },
           ),

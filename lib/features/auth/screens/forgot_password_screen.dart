@@ -67,9 +67,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       children: [
                         TextSpan(
-                          text: "Password ? ".tr(),
+                          text: "Password ?".tr(),
                           style: textStyle32Bold.copyWith(
-                            color: AppColors.secondary,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -79,15 +79,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 6.h.verticalSpace,
                 AppText(
                   textAlign: TextAlign.center,
-                  text: "We'll send you instructions to reset your code.",
-                  style: textStyle14Italic,
+                  text: "We'll send you instructions to reset your code.".tr(),
+                  style: textStyle14Italic.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 36.h.verticalSpace,
                 Form(
                   key: _formKey,
                   child: AppTextField(
-                    hintText: "Email Address".tr(),
+                    labelText: "Email Address / Phone".tr(),
+                    hintText: "Enter your email or phone".tr(),
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
                     validator: Validator.validateEmail,
                   ),
                 ),

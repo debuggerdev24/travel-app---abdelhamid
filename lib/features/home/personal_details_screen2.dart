@@ -142,7 +142,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                             ),
                             AppTextField(
                               labelText: "First Name".tr(),
-                              hintText: "Enter Your First Name".tr(),
+                              hintText: "Enter your first name".tr(),
                               controller:
                                   personProvider.familyFirstNameController,
                               validator: (v) =>
@@ -152,7 +152,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                             ),
                             AppTextField(
                               labelText: "Surname".tr(),
-                              hintText: "Enter Your Surname".tr(),
+                              hintText: "Enter your surname".tr(),
                               controller:
                                   personProvider.familySurnameController,
                               validator: (v) =>
@@ -162,7 +162,7 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                             ),
                             AppTextField(
                               labelText: "Phone Number".tr(),
-                              hintText: "Enter Your Phone Number".tr(),
+                              hintText: "Enter your phone number".tr(),
                               controller:
                                   personProvider.familyPhoneNumberController,
                               keyboardType: TextInputType.phone,
@@ -172,8 +172,8 @@ class _FamilyMembersScreenState extends State<FamilyMembersScreen> {
                             ),
                             AppTextField(
                               labelText: "Relationship".tr(),
-                              hintText: "Enter a relationship with this person."
-                                  .tr(),
+                              hintText: "Enter your relationship".tr(),
+
                               controller:
                                   personProvider.familyRelationshipController,
                               validator: (v) => Validator.validateRequiredText(

@@ -204,7 +204,8 @@ class _ProfileFeedbackViewState extends State<_ProfileFeedbackView> {
                           ),
                           child: AppTextField(
                             controller: reviewController,
-                            hintText: "Write your feedback here...".tr(),
+                            labelText: "Feedback".tr(),
+                            hintText: "Enter your feedback".tr(),
                             maxLines: 4,
                           ),
                         ),

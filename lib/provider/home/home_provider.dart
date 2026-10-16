@@ -535,9 +535,11 @@ class TripProvider extends ChangeNotifier {
 
   final List<String> numberOfChildren = ["00", "01", "02"];
 
-  final List<String> babyOptions = ["Baby (0–2 yrs) No Bed - €500".tr()];
-
-  final List<String> numberOfBaby = ["00", "01", "02"];
+  // Baby temporarily disabled
+  // final List<String> babyOptions = ["Baby (0–2 yrs) No Bed - €500".tr()];
+  // final List<String> numberOfBaby = ["00", "01", "02"];
+  final List<String> babyOptions = <String>[];
+  final List<String> numberOfBaby = <String>[];
 
   // -------------------------------
   // Past Payments for TripPaymentSection

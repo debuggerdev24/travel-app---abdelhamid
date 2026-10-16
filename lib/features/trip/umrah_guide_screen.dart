@@ -6,12 +6,10 @@ import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/extensions/color_extensions.dart';
-import 'package:travel_app_abdelhamid/core/extensions/routes_extensions.dart';
 import 'package:travel_app_abdelhamid/core/utils/api_error_message.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app_abdelhamid/model/umrah/umrah_guide_step_model.dart';
-import 'package:travel_app_abdelhamid/routes/user_routes.dart';
 import 'package:travel_app_abdelhamid/services/umrah_guide_service.dart';
 
 class UmrahGuideState extends ChangeNotifier {
@@ -189,75 +187,32 @@ class _UmrahGuideScreenView extends StatelessWidget {
   }
 
   Widget _bottomButtons(BuildContext con) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 48.h,
-            decoration: BoxDecoration(
-              color: Theme.of(con).colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.blueColor.setOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 12),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(25.r),
-              border: Border.all(color: AppColors.blueColor),
-            ),
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgIcon(AppAssets.save, size: 20.w),
-                10.w.horizontalSpace,
-                AppText(
-                  text: " Download".tr(),
-                  style: textStyle14Medium.copyWith(color: AppColors.blueColor),
-                ),
-              ],
-            ),
+    return Container(
+      height: 48.h,
+      decoration: BoxDecoration(
+        color: Theme.of(con).colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.blueColor.setOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 12),
           ),
-        ),
-        14.w.horizontalSpace,
-        Expanded(
-          child: GestureDetector(
-            onTap: () => con.pushNamed(
-              UserAppRoutes.duaListScreen.name,
-              extra: freshRouteNonce(),
-            ),
-            child: Container(
-              height: 48.h,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.blueColor.setOpacity(0.1),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-                color: AppColors.blueColor,
-                borderRadius: BorderRadius.circular(25.r),
-              ),
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgIcon(AppAssets.eye, size: 20.w),
-                  10.w.horizontalSpace,
-                  AppText(
-                    text: " View Dua List".tr(),
-                    style: textStyle14Medium.copyWith(
-                      color: AppColors.whiteColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        ],
+        borderRadius: BorderRadius.circular(25.r),
+        border: Border.all(color: AppColors.blueColor),
+      ),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgIcon(AppAssets.save, size: 20.w),
+          10.w.horizontalSpace,
+          AppText(
+            text: " Download".tr(),
+            style: textStyle14Medium.copyWith(color: AppColors.blueColor),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

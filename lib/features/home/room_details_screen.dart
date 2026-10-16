@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -19,16 +20,13 @@ class RoomDetailsState extends ChangeNotifier {
   String? _roomTypeError;
   String? _bedTypeError;
   String? _childTypeError;
-  String? _childCountError;
-  String? _babyTypeError;
-  String? _babyCountError;
+  // Baby temporarily disabled
+  // String? _babyTypeError;
 
   String? get roomTypeError => _roomTypeError;
   String? get bedTypeError => _bedTypeError;
   String? get childTypeError => _childTypeError;
-  String? get childCountError => _childCountError;
-  String? get babyTypeError => _babyTypeError;
-  String? get babyCountError => _babyCountError;
+  // String? get babyTypeError => _babyTypeError;
 
   void setRoomTypeError(String? error) {
     _roomTypeError = error;
@@ -45,20 +43,10 @@ class RoomDetailsState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setChildCountError(String? error) {
-    _childCountError = error;
-    notifyListeners();
-  }
-
-  void setBabyTypeError(String? error) {
-    _babyTypeError = error;
-    notifyListeners();
-  }
-
-  void setBabyCountError(String? error) {
-    _babyCountError = error;
-    notifyListeners();
-  }
+  // void setBabyTypeError(String? error) {
+  //   _babyTypeError = error;
+  //   notifyListeners();
+  // }
 }
 
 class RoomDetailsScreen extends StatelessWidget {
@@ -80,6 +68,9 @@ class _RoomDetailsView extends StatefulWidget {
 class _RoomDetailsViewState extends State<_RoomDetailsView> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _personController;
+  late TextEditingController _childCountController;
+  // Baby temporarily disabled
+  // late TextEditingController _babyCountController;
 
   @override
   void initState() {
@@ -88,6 +79,15 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
     _personController = TextEditingController(
       text: bookingProvider.adultCount.toString(),
     );
+    _childCountController = TextEditingController(
+      text: bookingProvider.selectedChildCount.toString(),
+    );
+    // _babyCountController = TextEditingController(
+    //   text: bookingProvider.babyCount.toString(),
+    // );
+    // Clear any existing baby selection while baby fields are hidden
+    bookingProvider.updateBabyCount(0);
+    context.read<hp.TripProvider>().updateBabyTypes([]);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Only fetch package options from backend if no package is selected locally
       // With the new flow, package is stored locally until payment
@@ -104,6 +104,10 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
         await bookingProvider.fetchSavedRoomPreference();
         if (mounted) {
           _personController.text = bookingProvider.adultCount.toString();
+          _childCountController.text =
+              bookingProvider.selectedChildCount.toString();
+          // _babyCountController.text = bookingProvider.babyCount.toString();
+          bookingProvider.updateBabyCount(0);
         }
       }
     });
@@ -112,12 +116,14 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
   @override
   void dispose() {
     _personController.dispose();
+    _childCountController.dispose();
+    // _babyCountController.dispose();
     super.dispose();
   }
 
   bool _validateDropdowns() {
     final bookingProvider = context.read<TripBookingProvider>();
-    final tripProvider = context.read<hp.TripProvider>();
+    // final tripProvider = context.read<hp.TripProvider>(); // baby temporarily disabled
     bool isValid = true;
 
     final state = context.read<RoomDetailsState>();
@@ -136,14 +142,6 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
       state.setBedTypeError(null);
     }
 
-    if (bookingProvider.selectedChildDetailsId != null &&
-        bookingProvider.selectedChildCount == 0) {
-      state.setChildCountError("Please select number of child".tr());
-      isValid = false;
-    } else {
-      state.setChildCountError(null);
-    }
-
     if (bookingProvider.selectedChildCount > 0 &&
         bookingProvider.selectedChildDetailsId == null) {
       state.setChildTypeError("Please select child type".tr());
@@ -152,21 +150,14 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
       state.setChildTypeError(null);
     }
 
-    if (tripProvider.selectedBabyTypes.isNotEmpty &&
-        bookingProvider.babyCount == 0) {
-      state.setBabyCountError("Please select number of baby".tr());
-      isValid = false;
-    } else {
-      state.setBabyCountError(null);
-    }
-
-    if (bookingProvider.babyCount > 0 &&
-        tripProvider.selectedBabyTypes.isEmpty) {
-      state.setBabyTypeError("Please select baby type".tr());
-      isValid = false;
-    } else {
-      state.setBabyTypeError(null);
-    }
+    // Baby temporarily disabled
+    // if (bookingProvider.babyCount > 0 &&
+    //     tripProvider.selectedBabyTypes.isEmpty) {
+    //   state.setBabyTypeError("Please select baby type".tr());
+    //   isValid = false;
+    // } else {
+    //   state.setBabyTypeError(null);
+    // }
 
     return isValid;
   }
@@ -200,7 +191,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
         builder: (context, tripProvider, bookingProvider, child) {
           final selectedPackage = bookingProvider.selectedPackage;
 
-          // Update person controller when adult count changes (e.g., after fetching saved data)
+          // Keep person field in sync after fetching saved data
           if (_personController.text != bookingProvider.adultCount.toString()) {
             _personController.text = bookingProvider.adultCount.toString();
           }
@@ -246,7 +237,7 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                         children: [
                           AppTextField(
                             labelText: "Person".tr(),
-                            hintText: "Enter Person Number".tr(),
+                            hintText: "Enter your person number".tr(),
                             keyboardType: TextInputType.number,
                             controller: _personController,
                             validator: (value) {
@@ -327,30 +318,43 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                               context
                                   .read<RoomDetailsState>()
                                   .setChildTypeError(null);
-                              context
-                                  .read<RoomDetailsState>()
-                                  .setChildCountError(null);
                             },
                           ),
                           SizedBox(height: 22.h),
-                          _ChoicePicker(
-                            label: 'No. of Child'.tr(),
-                            hint: 'Select Child Count'.tr(),
-                            emptyText: 'No child counts available'.tr(),
-                            options: tripProvider.numberOfChildren,
-                            selected: bookingProvider.selectedChildCount
-                                .toString()
-                                .padLeft(2, '0'),
-                            errorText: state.childCountError,
+                          AppTextField(
+                            labelText: 'No. of Child'.tr(),
+                            hintText: 'Enter your child number'.tr(),
+                            keyboardType: TextInputType.number,
+                            controller: _childCountController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(2),
+                            ],
                             readOnly: bookingProvider.isRoomPreferenceSaved,
-                            onSelected: (value) {
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                if (bookingProvider.selectedChildDetailsId !=
+                                    null) {
+                                  return 'Please enter number of child'.tr();
+                                }
+                                return null;
+                              }
+                              final n = int.tryParse(value);
+                              if (n == null || n < 0) {
+                                return 'Please enter a valid number'.tr();
+                              }
+                              if (bookingProvider.selectedChildDetailsId !=
+                                      null &&
+                                  n == 0) {
+                                return 'Please enter number of child'.tr();
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
                               if (bookingProvider.isRoomPreferenceSaved) return;
                               bookingProvider.updateSelectedChildCount(
-                                int.tryParse(value) ?? 0,
+                                int.tryParse(value ?? '') ?? 0,
                               );
-                              context
-                                  .read<RoomDetailsState>()
-                                  .setChildCountError(null);
                               context
                                   .read<RoomDetailsState>()
                                   .setChildTypeError(null);
@@ -364,64 +368,79 @@ class _RoomDetailsViewState extends State<_RoomDetailsView> {
                               selectedPackage,
                             ),
                           ),
-                          SizedBox(height: 22.h),
-                          _ChoicePicker(
-                            label: 'Baby'.tr(),
-                            hint: 'Select Baby'.tr(),
-                            emptyText: 'No baby options available'.tr(),
-                            options: tripProvider.babyOptions,
-                            selected: tripProvider.selectedBabyTypes.isEmpty
-                                ? null
-                                : tripProvider.selectedBabyTypes.first,
-                            errorText: state.babyTypeError,
-                            readOnly: bookingProvider.isRoomPreferenceSaved,
-                            onSelected: (value) {
-                              if (bookingProvider.isRoomPreferenceSaved) return;
-                              tripProvider.updateBabyTypes([value]);
-                              context.read<RoomDetailsState>().setBabyTypeError(
-                                null,
-                              );
-                              context
-                                  .read<RoomDetailsState>()
-                                  .setBabyCountError(null);
-                            },
-                          ),
-                          SizedBox(height: 22.h),
-                          _ChoicePicker(
-                            label: 'No. of Baby'.tr(),
-                            hint: 'Select No. of Baby'.tr(),
-                            emptyText: 'No baby counts available'.tr(),
-                            options: tripProvider.numberOfBaby,
-                            selected: bookingProvider.babyCount
-                                .toString()
-                                .padLeft(2, '0'),
-                            errorText: state.babyCountError,
-                            readOnly: bookingProvider.isRoomPreferenceSaved,
-                            onSelected: (value) {
-                              if (bookingProvider.isRoomPreferenceSaved) return;
-                              bookingProvider.updateBabyCount(
-                                int.tryParse(value) ?? 0,
-                              );
-                              context
-                                  .read<RoomDetailsState>()
-                                  .setBabyCountError(null);
-                              context.read<RoomDetailsState>().setBabyTypeError(
-                                null,
-                              );
-                            },
-                          ),
-                          SizedBox(height: 22.h),
-                          AppTextField(
-                            labelText: "Baby Price".tr(),
-                            hintText: bookingProvider.babyCount > 0
-                                ? "€${500 * bookingProvider.babyCount}"
-                                : "Auto filled",
-                            hintStyle: textStyle14Regular.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                            keyboardType: TextInputType.number,
-                            readOnly: true,
-                          ),
+                          // Baby temporarily disabled — keep only Child for now
+                          // SizedBox(height: 22.h),
+                          // _ChoicePicker(
+                          //   label: 'Baby'.tr(),
+                          //   hint: 'Select Baby'.tr(),
+                          //   emptyText: 'No baby options available'.tr(),
+                          //   options: tripProvider.babyOptions,
+                          //   selected: tripProvider.selectedBabyTypes.isEmpty
+                          //       ? null
+                          //       : tripProvider.selectedBabyTypes.first,
+                          //   errorText: state.babyTypeError,
+                          //   readOnly: bookingProvider.isRoomPreferenceSaved,
+                          //   onSelected: (value) {
+                          //     if (bookingProvider.isRoomPreferenceSaved) return;
+                          //     tripProvider.updateBabyTypes([value]);
+                          //     context.read<RoomDetailsState>().setBabyTypeError(
+                          //       null,
+                          //     );
+                          //   },
+                          // ),
+                          // SizedBox(height: 22.h),
+                          // AppTextField(
+                          //   labelText: 'No. of Baby'.tr(),
+                          //   hintText: 'Enter your baby number'.tr(),
+                          //   keyboardType: TextInputType.number,
+                          //   controller: _babyCountController,
+                          //   inputFormatters: [
+                          //     FilteringTextInputFormatter.digitsOnly,
+                          //     LengthLimitingTextInputFormatter(2),
+                          //   ],
+                          //   readOnly: bookingProvider.isRoomPreferenceSaved,
+                          //   validator: (value) {
+                          //     final tripProvider =
+                          //         context.read<hp.TripProvider>();
+                          //     if (value == null || value.isEmpty) {
+                          //       if (tripProvider
+                          //           .selectedBabyTypes.isNotEmpty) {
+                          //         return 'Please enter number of baby'.tr();
+                          //       }
+                          //       return null;
+                          //     }
+                          //     final n = int.tryParse(value);
+                          //     if (n == null || n < 0) {
+                          //       return 'Please enter a valid number'.tr();
+                          //     }
+                          //     if (tripProvider.selectedBabyTypes.isNotEmpty &&
+                          //         n == 0) {
+                          //       return 'Please enter number of baby'.tr();
+                          //     }
+                          //     return null;
+                          //   },
+                          //   onChanged: (value) {
+                          //     if (bookingProvider.isRoomPreferenceSaved) return;
+                          //     bookingProvider.updateBabyCount(
+                          //       int.tryParse(value ?? '') ?? 0,
+                          //     );
+                          //     context
+                          //         .read<RoomDetailsState>()
+                          //         .setBabyTypeError(null);
+                          //   },
+                          // ),
+                          // SizedBox(height: 22.h),
+                          // AppTextField(
+                          //   labelText: "Baby Price".tr(),
+                          //   hintText: bookingProvider.babyCount > 0
+                          //       ? "€${500 * bookingProvider.babyCount}"
+                          //       : "Auto filled",
+                          //   hintStyle: textStyle14Regular.copyWith(
+                          //     color: Theme.of(context).colorScheme.onSurface,
+                          //   ),
+                          //   keyboardType: TextInputType.number,
+                          //   readOnly: true,
+                          // ),
                           SizedBox(height: 27.h),
                           if (bookingProvider.isRoomPreferenceSaved) ...[
                             Container(

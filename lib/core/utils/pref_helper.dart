@@ -80,15 +80,25 @@ class PrefHelper {
     }
   }
 
-  /// Checks if the user is logged in by checking for a valid, non-expired access token
+  /// True when we still have a session (valid access token, or a refresh token
+  /// we can use to get a new access token). Does not clear storage — splash /
+  /// refresh flow decide when to log the user out.
   static bool isLoggedIn() {
     final token = getAccessToken();
-    if (token == null || token.isEmpty) return false;
-    if (isJwtExpired(token)) {
-      clearTokens();
-      return false;
+    if (token == 'static_guide_token') return true;
+    if (token != null && token.isNotEmpty && !isJwtExpired(token)) {
+      return true;
     }
-    return true;
+    final refresh = getRefreshToken();
+    return refresh != null && refresh.isNotEmpty;
+  }
+
+  /// True when the stored access token is missing or past its JWT exp.
+  static bool isAccessTokenExpiredOrMissing() {
+    final token = getAccessToken();
+    if (token == null || token.isEmpty) return true;
+    if (token == 'static_guide_token') return false;
+    return isJwtExpired(token);
   }
 
   /// Saves the theme mode to local storage

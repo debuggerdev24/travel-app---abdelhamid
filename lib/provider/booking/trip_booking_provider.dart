@@ -269,7 +269,9 @@ class TripBookingProvider extends ChangeNotifier {
     adultCount =
         data['adultCount'] ?? data['adult_count'] ?? data['adult'] ?? 1;
     selectedChildCount = data['childCount'] ?? data['child_count'] ?? 0;
-    babyCount = data['babyCount'] ?? data['baby_count'] ?? 0;
+    // Baby temporarily disabled — ignore saved baby count
+    // babyCount = data['babyCount'] ?? data['baby_count'] ?? 0;
+    babyCount = 0;
 
     // Handle roomTypeId - might be in roomPreference or need to extract from package
     selectedRoomTypeId =
@@ -420,7 +422,8 @@ class TripBookingProvider extends ChangeNotifier {
 
     total += (room?.roomPrice ?? 0) * adultCount;
     total += (child?.childPrice ?? 0) * selectedChildCount;
-    total += 500 * babyCount; // Fixed baby price €500
+    // Baby temporarily disabled
+    // total += 500 * babyCount; // Fixed baby price €500
 
     return total;
   }
@@ -506,8 +509,11 @@ class TripBookingProvider extends ChangeNotifier {
         "childDetailsId": selectedChildDetailsId,
         "childCount": selectedChildCount,
         "childPrice": "€${child?.childPrice ?? 0}",
-        "babyCount": babyCount,
-        "babyPrice": "€${500 * babyCount}",
+        // Baby temporarily disabled — always send 0
+        "babyCount": 0,
+        "babyPrice": "€0",
+        // "babyCount": babyCount,
+        // "babyPrice": "€${500 * babyCount}",
       };
       _hasUnsavedData = true;
       notifyListeners();

@@ -359,12 +359,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Column(
                           children: [
                             AppTextField(
-                              hintText: "Full Name".tr(),
+                              labelText: "Full Name".tr(),
+                              hintText: "Enter your full name".tr(),
                               controller: _fullName,
                             ),
                             18.h.verticalSpace,
                             AppTextField(
-                              hintText: "Date of Birth".tr(),
+                              labelText: "Date of Birth".tr(),
+                              hintText: "Select your date of birth".tr(),
                               controller: _dob,
                               readOnly: true,
                               onTap: _pickDob,
@@ -382,13 +384,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             18.h.verticalSpace,
 
                             AppTextField(
-                              hintText: "Age (Auto Generated)".tr(),
+                              labelText: "Age".tr(),
+                              hintText: "Auto generated".tr(),
                               controller: _age,
                               readOnly: true,
                             ),
                             18.h.verticalSpace,
                             _LanguagePicker(
-                              hint: 'gender',
+                              hint: 'Gender'.tr(),
+                              emptyHint: 'Select your gender'.tr(),
                               options: _genderOptions(),
                               selected: _gender.text.trim().isEmpty
                                   ? null
@@ -402,13 +406,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             18.h.verticalSpace,
 
                             NationalityDropdown(
-                              hintText: 'Select nationality'.tr(),
+                              labelText: 'Nationality'.tr(),
+                              hintText: 'Select your nationality'.tr(),
                               controller: _nationality,
                             ),
                             18.h.verticalSpace,
 
                             AppTextField(
-                              hintText: "Passport Number".tr(),
+                              labelText: "Passport Number".tr(),
+                              hintText: "Enter your passport number".tr(),
                               controller: _passport,
                               keyboardType: TextInputType.number,
                               inputFormatters: [
@@ -417,7 +423,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             18.h.verticalSpace,
                             AppTextField(
-                              hintText: "Phone Number".tr(),
+                              labelText: "Phone Number".tr(),
+                              hintText: "Enter your phone number".tr(),
                               controller: _phone,
                               keyboardType: TextInputType.number,
                               inputFormatters: [
@@ -427,12 +434,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             18.h.verticalSpace,
                             AppTextField(
-                              hintText: "Emergency Full Name".tr(),
+                              labelText: "Emergency Full Name".tr(),
+                              hintText: "Enter your emergency full name".tr(),
                               controller: _emergencyFullName,
                             ),
                             18.h.verticalSpace,
                             AppTextField(
-                              hintText: "Emergency Contact".tr(),
+                              labelText: "Emergency Contact".tr(),
+                              hintText: "Enter your emergency contact".tr(),
                               controller: _emergencyContact,
                               keyboardType: TextInputType.number,
                               inputFormatters: [
@@ -444,6 +453,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                             _LanguagePicker(
                               hint: 'Language'.tr(),
+                              emptyHint: 'Select your language'.tr(),
                               options: provider.languageOptions,
                               selected: provider.selectedLanguages.isEmpty
                                   ? null
@@ -478,12 +488,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
 class _LanguagePicker extends StatefulWidget {
   final String hint;
+  final String emptyHint;
   final List<String> options;
   final String? selected;
   final ValueChanged<String> onSelected;
 
   const _LanguagePicker({
     required this.hint,
+    required this.emptyHint,
     required this.options,
     required this.selected,
     required this.onSelected,
@@ -507,80 +519,109 @@ class _LanguagePickerState extends State<_LanguagePicker> {
     final selected = widget.selected;
     final hasSelection = selected != null && selected.isNotEmpty;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8.r),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
-            blurRadius: 1,
-            offset: const Offset(0, 2),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.hint,
+          style: textStyle14Medium.copyWith(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () {
-              setState(() {
-                _isOpen = !_isOpen;
-              });
-            },
-            borderRadius: BorderRadius.circular(8.r),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: AppText(
-                      text: hasSelection ? selected : widget.hint,
-                      style: textStyle14Regular.copyWith(
-                        color: hasSelection
-                            ? Theme.of(context).colorScheme.onSurface
-                            : Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: _isOpen ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    child: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
+        ),
+        SizedBox(height: 8.h),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(10.r),
+            border: Border.all(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.18),
+              width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context)
+                    .colorScheme
+                    .shadow
+                    .withValues(alpha: 0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeInOut,
-            alignment: Alignment.topCenter,
-            child: _isOpen
-                ? Column(
+          child: Column(
+            children: [
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _isOpen = !_isOpen;
+                  });
+                },
+                borderRadius: BorderRadius.circular(10.r),
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  child: Row(
                     children: [
-                      Divider(
-                        height: 1,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.outline.withValues(alpha: 0.2),
-                      ),
-                      for (var i = 0; i < widget.options.length; i++)
-                        _languageRow(
-                          widget.options[i],
-                          widget.options[i].toLowerCase() ==
-                              (selected ?? '').toLowerCase(),
-                          i < widget.options.length - 1,
+                      Expanded(
+                        child: AppText(
+                          text: hasSelection ? selected : widget.emptyHint,
+                          style: textStyle14Regular.copyWith(
+                            color: hasSelection
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.45),
+                          ),
                         ),
+                      ),
+                      AnimatedRotation(
+                        turns: _isOpen ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                     ],
-                  )
-                : const SizedBox(width: double.infinity),
+                  ),
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: _isOpen
+                    ? Column(
+                        children: [
+                          Divider(
+                            height: 1,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withValues(alpha: 0.2),
+                          ),
+                          for (var i = 0; i < widget.options.length; i++)
+                            _languageRow(
+                              widget.options[i],
+                              widget.options[i].toLowerCase() ==
+                                  (selected ?? '').toLowerCase(),
+                              i < widget.options.length - 1,
+                            ),
+                        ],
+                      )
+                    : const SizedBox(width: double.infinity),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

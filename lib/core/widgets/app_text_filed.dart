@@ -36,6 +36,7 @@ class AppTextField extends StatelessWidget {
     this.bottomTextStyle,
     this.readOnly = false,
     this.fieldKey,
+    this.borderOpacity = 0.18,
   });
 
   final String? labelText;
@@ -68,6 +69,15 @@ class AppTextField extends StatelessWidget {
   final TextStyle? bottomTextStyle;
   final bool readOnly;
   final GlobalKey<FormFieldState<String>>? fieldKey;
+  final double borderOpacity;
+
+  bool _looksLikeHint(String value) {
+    final lower = value.toLowerCase();
+    return lower.startsWith('enter') ||
+        lower.startsWith('select') ||
+        lower.startsWith('write') ||
+        lower.startsWith('type');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,36 +91,47 @@ class AppTextField extends StatelessWidget {
     final Color errorLineColor =
         errorBorder?.borderSide.color ?? Theme.of(context).colorScheme.error;
 
+    final rawLabel = labelText?.trim() ?? '';
+    final rawHint = hintText?.trim() ?? '';
+
+    // Label above the field. If only a field name was passed as hintText, use it as label.
+    String fieldLabel = rawLabel;
+    String? fieldHint = rawHint.isEmpty ? null : rawHint;
+    if (fieldLabel.isEmpty && rawHint.isNotEmpty && !_looksLikeHint(rawHint)) {
+      fieldLabel = rawHint;
+      fieldHint = null;
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (labelText?.isNotEmpty ?? false)
-          Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(46.r),
-            ),
-            alignment: Alignment.centerLeft,
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: labelText,
-                    style:
-                        labelStyle ??
-                        textStyle14Medium.copyWith(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+        if (fieldLabel.isNotEmpty) ...[
+          RichText(
+            text: TextSpan(
+              text: fieldLabel,
+              style:
+                  labelStyle ??
+                  textStyle14Regular.copyWith(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                ],
-              ),
+              children: [
+                if (isRequired)
+                  TextSpan(
+                    text: ' *',
+                    style: textStyle14Regular.copyWith(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+              ],
             ),
-          )
-        else
-          const SizedBox.shrink(),
+          ),
+          SizedBox(height: 8.h),
+        ],
         FormField<String>(
           key: fieldKey,
           initialValue: controller?.text,
@@ -129,18 +150,22 @@ class AppTextField extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(10.r),
                     border: Border.all(
                       color: field.hasError
                           ? errorLineColor
-                          : Colors.transparent,
+                          : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: borderOpacity),
+                      width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: Theme.of(
                           context,
-                        ).colorScheme.shadow.withValues(alpha: 0.1),
-                        blurRadius: 1,
+                        ).colorScheme.shadow.withValues(alpha: 0.08),
+                        blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ],
@@ -171,13 +196,13 @@ class AppTextField extends StatelessWidget {
                       suffixIcon: suffixIcon,
                       suffix: suffix,
                       prefix: prefix,
-                      hintText: hintText,
+                      hintText: fieldHint,
                       hintStyle:
                           hintStyle ??
                           textStyle14Regular.copyWith(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurfaceVariant,
+                            ).colorScheme.onSurface.withValues(alpha: 0.45),
                           ),
                       contentPadding:
                           contentPadding ??

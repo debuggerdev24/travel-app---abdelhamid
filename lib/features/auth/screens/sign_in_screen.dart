@@ -92,7 +92,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         children: [
                           AppTextField(
                             controller: personalCodeController,
-                            hintText: "Enter Your Personal Code".tr(),
+                            labelText: "Personal Code".tr(),
+                            hintText: "Enter your personal code".tr(),
                             onChanged: (value) {
                               if (value != null) {
                                 final trimmedValue = value.trim();
@@ -112,13 +113,15 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           AppTextField(
                             controller: emailController,
-                            hintText: "Email Address / Phone".tr(),
+                            labelText: "Email Address / Phone".tr(),
+                            hintText: "Enter your email or phone".tr(),
                             keyboardType: TextInputType.emailAddress,
                             validator: Validator.validateEmailOrMobile,
                           ),
                           AppTextField(
                             controller: passwordController,
-                            hintText: "Password".tr(),
+                            labelText: "Password".tr(),
+                            hintText: "Enter your password".tr(),
                             obSecureText: _hidePassword,
                             suffixIcon: IconButton(
                               color: Theme.of(context).colorScheme.onSurface,

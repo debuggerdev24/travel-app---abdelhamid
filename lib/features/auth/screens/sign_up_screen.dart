@@ -87,7 +87,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           AppTextField(
                             controller: signUpEmailController,
-                            hintText: "Email Address".tr(),
+                            labelText: "Email Address".tr(),
+                            hintText: "Enter your email address".tr(),
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -103,7 +104,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           AppTextField(
                             controller: signUpPhoneController,
-                            hintText: "Phone Number".tr(),
+                            labelText: "Phone Number".tr(),
+                            hintText: "Enter your phone number".tr(),
                             keyboardType: TextInputType.phone,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -120,7 +122,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           AppTextField(
                             controller: signUpPasswordController,
-                            hintText: "Password".tr(),
+                            labelText: "Password".tr(),
+                            hintText: "Enter your password".tr(),
                             obSecureText: _hidePassword,
                             suffixIcon: IconButton(
                               color: Theme.of(context).colorScheme.onSurface,

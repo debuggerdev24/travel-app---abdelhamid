@@ -280,7 +280,8 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                           double adultTotal = roomPrice * provider.adultCount;
                           double childTotal =
                               childPrice * provider.selectedChildCount;
-                          double babyTotal = 500.0 * provider.babyCount;
+                          // Baby temporarily disabled
+                          // double babyTotal = 500.0 * provider.babyCount;
 
                           return Column(
                             children: [
@@ -294,11 +295,11 @@ class _PackageSummaryScreenState extends State<PackageSummaryScreen> {
                                   "${provider.selectedChildCount} ${'Child'.tr()}",
                                   "€${childTotal.toStringAsFixed(0)}",
                                 ),
-                              if (provider.babyCount > 0)
-                                _priceRow(
-                                  "${provider.babyCount} ${'Baby'.tr()}",
-                                  "€${babyTotal.toStringAsFixed(0)}",
-                                ),
+                              // if (provider.babyCount > 0)
+                              //   _priceRow(
+                              //     "${provider.babyCount} ${'Baby'.tr()}",
+                              //     "€${babyTotal.toStringAsFixed(0)}",
+                              //   ),
                             ],
                           );
                         },

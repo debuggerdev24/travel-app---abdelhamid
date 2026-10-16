@@ -370,7 +370,7 @@ class CurrencyConverterProvider extends ChangeNotifier {
                 baseCurrency,
               );
               if (rate != null) {
-                final key = '${from.code}_$to';
+                final key = '${from.code}_${to.code}';
                 _exchangeRates[key] = ExchangeRate(
                   fromCurrency: from.code,
                   toCurrency: to.code,

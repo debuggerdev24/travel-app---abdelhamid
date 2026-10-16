@@ -73,24 +73,26 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
   @override
   Widget build(BuildContext context) {
     final selected = widget.controller.text.trim();
-    final hint = widget.hintText ?? 'Select nationality'.tr();
+    final fieldLabel = (widget.labelText?.trim().isNotEmpty ?? false)
+        ? widget.labelText!.trim()
+        : 'Nationality'.tr();
+    final emptyHint = (widget.hintText?.trim().isNotEmpty ?? false)
+        ? widget.hintText!.trim()
+        : 'Select your nationality'.tr();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.labelText != null && widget.labelText!.isNotEmpty)
-          Padding(
-            padding: EdgeInsets.only(bottom: 5.h),
-            child: AppText(
-              text: widget.labelText!,
-              style: textStyle14Medium.copyWith(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
+        Text(
+          fieldLabel,
+          style: textStyle14Medium.copyWith(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
+        ),
+        SizedBox(height: 8.h),
         FormField<String>(
           key: widget.fieldKey,
           initialValue: selected,
@@ -112,18 +114,22 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
                     ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(8.r),
+                      borderRadius: BorderRadius.circular(10.r),
                       border: Border.all(
                         color: field.hasError
                             ? Theme.of(context).colorScheme.error
-                            : Colors.transparent,
+                            : Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.18),
+                        width: 1,
                       ),
                       boxShadow: [
                         BoxShadow(
                           color: Theme.of(
                             context,
-                          ).colorScheme.shadow.withValues(alpha: 0.1),
-                          blurRadius: 1,
+                          ).colorScheme.shadow.withValues(alpha: 0.08),
+                          blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
                       ],
@@ -132,14 +138,15 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
                       children: [
                         Expanded(
                           child: AppText(
-                            text: selected.isEmpty ? hint : selected,
+                            text: selected.isEmpty ? emptyHint : selected,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: textStyle14Regular.copyWith(
                               color: selected.isEmpty
-                                  ? Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.45)
                                   : Theme.of(context).colorScheme.onSurface,
                             ),
                           ),

@@ -92,13 +92,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     spacing: 22.h,
                     children: [
                       AppTextField(
-                        hintText: "New Password".tr(),
+                        labelText: "New Password".tr(),
+                        hintText: "Enter your new password".tr(),
                         controller: passwordController,
                         obSecureText: true,
                         validator: Validator.validatePassword,
                       ),
                       AppTextField(
-                        hintText: "Confirm Password".tr(),
+                        labelText: "Confirm Password".tr(),
+                        hintText: "Enter your confirm password".tr(),
                         controller: confirmPasswordController,
                         obSecureText: true,
                         validator: (value) {

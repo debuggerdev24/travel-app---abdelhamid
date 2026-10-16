@@ -89,8 +89,12 @@ class AuthService {
       throw Exception('Invalid refresh token response');
     }
 
-    final accessToken = data['accessToken']?.toString() ?? '';
-    final newRefreshToken = data['refreshToken']?.toString() ?? '';
+    final accessToken = data['accessToken']?.toString() ??
+        data['access_token']?.toString() ??
+        '';
+    final newRefreshToken = data['refreshToken']?.toString() ??
+        data['refresh_token']?.toString() ??
+        '';
     if (accessToken.isEmpty) {
       throw Exception('Refresh token response has no access token');
     }
