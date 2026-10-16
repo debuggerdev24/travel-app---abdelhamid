@@ -38,11 +38,9 @@ class AppAssets {
   static const hotel = "$_iconPath/hotel.svg";
   static const map = "$_iconPath/map.svg";
   static const info = "$_iconPath/info.svg";
-  static const attachment = "$_iconPath/attachment.svg";
   static const itinerary = "$_iconPath/itinerary.svg";
   static const document = "$_iconPath/document.svg";
   static const essential = "$_iconPath/essential.svg";
-  static const pastCheck = "$_iconPath/pastcheck.svg";
   static const download = "$_iconPath/downlaod.svg";
   static const plane = "$_iconPath/plane.svg";
   static const truck = "$_iconPath/truck.svg";
@@ -52,8 +50,6 @@ class AppAssets {
   static const location = "$_iconPath/location.svg";
   static const share = "$_iconPath/share.svg";
   static const landmark = "$_iconPath/landmark.svg";
-  static const weather = "$_iconPath/weather.svg";
-  static const sim = "$_iconPath/sim.svg";
   static const save = "$_iconPath/download.svg";
   static const call = "$_iconPath/call.svg";
   static const eye = "$_iconPath/eye.svg";
@@ -65,11 +61,9 @@ class AppAssets {
   static const kitchen = "$_iconPath/kitchen.svg";
   static const breakfast = "$_iconPath/breakfast.svg";
   static const search = "$_iconPath/search.svg";
-  static const microphone = "$_iconPath/micphone.svg";
   static const exit = "$_iconPath/exit.svg";
   static const delete = "$_iconPath/delete.svg";
   static const send = "$_iconPath/send.svg";
-  static const trash = "$_iconPath/trash.svg";
   static const photo = "$_iconPath/photo.svg";
   static const camera = "$_iconPath/camera.svg";
   static const faq = "$_iconPath/faq.svg";
@@ -81,31 +75,17 @@ class AppAssets {
   // images
   static const _imagePath = "assets/images";
   static const profilePhoto = "$_imagePath/profile.png";
-  static const trip1 = "$_imagePath/trip1.png";
-  static const trip2 = "$_imagePath/trip2.png";
   static const currency = "$_imagePath/currency.png";
-  static const trip3 = "$_imagePath/trip3.png";
-  static const trip4 = "$_imagePath/trip4.png";
   static const paymentFailed = "$_imagePath/paymentfailed.png";
   static const paymentSuccessful = "$_imagePath/paymentsuccessfull.png";
-  static const health1 = "$_imagePath/health1.png";
-  static const health2 = "$_imagePath/health2.png";
-  static const health3 = "$_imagePath/health3.png";
-  static const health4 = "$_imagePath/health4.png";
   static const hotel1 = "$_imagePath/hotel1.png";
   static const hotel2 = "$_imagePath/hotel2.png";
   static const hotel3 = "$_imagePath/hotel3.png";
   static const hotel4 = "$_imagePath/hotel4.png";
   static const upload = "$_imagePath/upload.png";
   static const hotelVoucher = "$_imagePath/hotelvoucher.png";
-  static const hotelVoucher1 = "$_imagePath/hotelvoucher1.png";
   static const travelInsurance = "$_imagePath/travelinsurance.png";
-  static const profile1 = "$_imagePath/profile1.png";
-  static const profile2 = "$_imagePath/profile2.png";
-  static const profile3 = "$_imagePath/profile3.png";
   static const splashLogo = "$_imagePath/splash_logo.png";
-
-  // static const _imagePath = "assets/images";
 }
 
 class SvgIcon extends StatelessWidget {
