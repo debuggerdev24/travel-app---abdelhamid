@@ -89,13 +89,12 @@ class TripCard extends StatelessWidget {
                     ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Title row with clipboard icon
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: AppText(
@@ -107,82 +106,20 @@ class TripCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      8.w.horizontalSpace,
-                      Icon(
-                        Icons.assignment_outlined,
-                        size: 20.w,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ],
-                  ),
-                  12.h.verticalSpace,
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                SvgIcon(
-                                  AppAssets.location,
-                                  size: 16.w,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ),
-                                8.w.horizontalSpace,
-                                Expanded(
-                                  child: AppText(
-                                    text: location,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: textStyle14Regular.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            12.h.verticalSpace,
-                            Row(
-                              children: [
-                                SvgIcon(
-                                  AppAssets.calendar,
-                                  size: 16.w,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ),
-                                8.w.horizontalSpace,
-                                Expanded(
-                                  child: AppText(
-                                    text: date,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: textStyle14Regular.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (status.isNotEmpty) ...[
-                        12.w.horizontalSpace,
+                      10.w.horizontalSpace,
+                      if (status.isNotEmpty)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             AppText(
                               text: 'Status'.tr(),
                               style: textStyle12Regular.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.7),
                               ),
                             ),
-                            4.h.verticalSpace,
+                            2.h.verticalSpace,
                             AppText(
                               text: status,
                               style: textStyle14Medium.copyWith(
@@ -191,8 +128,33 @@ class TripCard extends StatelessWidget {
                               ),
                             ),
                           ],
+                        )
+                      else
+                        Icon(
+                          Icons.assignment_outlined,
+                          size: 22.w,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
-                      ],
+                    ],
+                  ),
+                  14.h.verticalSpace,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _infoChip(
+                          context,
+                          iconPath: AppAssets.location,
+                          text: location,
+                        ),
+                      ),
+                      12.w.horizontalSpace,
+                      Expanded(
+                        child: _infoChip(
+                          context,
+                          iconPath: AppAssets.calendar,
+                          text: date,
+                        ),
+                      ),
                     ],
                   ),
 
@@ -249,6 +211,34 @@ class TripCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _infoChip(
+    BuildContext context, {
+    required String iconPath,
+    required String text,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SvgIcon(
+          iconPath,
+          size: 16.w,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        8.w.horizontalSpace,
+        Expanded(
+          child: AppText(
+            text: text,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textStyle14Regular.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

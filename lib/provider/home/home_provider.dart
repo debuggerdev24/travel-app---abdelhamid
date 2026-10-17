@@ -467,6 +467,13 @@ class TripProvider extends ChangeNotifier {
     }
   }
 
+  /// Keeps the selected trip in sync with trip details (for details screen).
+  /// Home list stays list-API-only (no status/description from details).
+  void updateTripFromDetails(TripModel trip) {
+    selectedTrip = trip;
+    notifyListeners();
+  }
+
   void setRating(int value) {
     rating = value;
     notifyListeners();

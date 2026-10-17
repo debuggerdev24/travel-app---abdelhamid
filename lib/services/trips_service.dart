@@ -8,6 +8,7 @@ import 'package:travel_app_abdelhamid/core/utils/payment_flow_log.dart';
 import 'package:travel_app_abdelhamid/core/network/network_errors.dart';
 import 'package:travel_app_abdelhamid/model/home/hotel_voucher_model.dart';
 import 'package:travel_app_abdelhamid/model/home/payment_receipt_detail.dart';
+import 'package:travel_app_abdelhamid/model/home/trip_details_model.dart';
 import 'package:travel_app_abdelhamid/model/home/trip_model.dart';
 import 'package:travel_app_abdelhamid/model/home/user_payment_history_item.dart';
 import 'package:travel_app_abdelhamid/model/home/user_itinerary_model.dart';
@@ -83,7 +84,7 @@ class TripsService {
       if (data is List) {
         return data
             .whereType<Map>()
-            .map((e) => TripModel.fromJson(Map<String, dynamic>.from(e)))
+            .map((e) => TripModel.fromListJson(Map<String, dynamic>.from(e)))
             .toList();
       }
       // Without `type`, `data` is { upcoming: [...], past: [...] }.
@@ -92,7 +93,7 @@ class TripsService {
         final list = data[key] as List<dynamic>? ?? [];
         return list
             .whereType<Map>()
-            .map((e) => TripModel.fromJson(Map<String, dynamic>.from(e)))
+            .map((e) => TripModel.fromListJson(Map<String, dynamic>.from(e)))
             .toList();
       }
       return [];

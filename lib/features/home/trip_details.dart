@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:travel_app_abdelhamid/core/constants/app_assets.dart';
+import 'package:travel_app_abdelhamid/core/constants/app_colors.dart';
 import 'package:travel_app_abdelhamid/core/constants/text_style.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_button.dart';
 import 'package:travel_app_abdelhamid/core/widgets/app_text.dart';
@@ -27,10 +28,18 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    Future.microtask(() async {
       final trip = context.read<TripProvider>().selectedTrip;
-      if (trip?.id != null) {
-        context.read<TripBookingProvider>().loadTripDetails(trip!.id!);
+      if (trip?.id == null) return;
+
+      final booking = context.read<TripBookingProvider>();
+      await booking.loadTripDetails(trip!.id!);
+      if (!mounted) return;
+
+      final details = booking.tripDetails;
+      if (details != null) {
+        // Keep home card status in sync with trip details API (e.g. "upcoming").
+        context.read<TripProvider>().updateTripFromDetails(details);
       }
     });
   }
@@ -52,9 +61,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       );
     }
 
-    final isUpcoming = tripProvider.upcomingTripList.contains(trip);
     final details = bookingProvider.tripDetails;
     final display = details ?? trip;
+    final isUpcoming = tripProvider.upcomingTripList.any(
+      (item) => item.id != null && item.id == trip.id,
+    );
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -112,13 +123,24 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                               children: [
                                 12.h.verticalSpace,
 
-                                AppText(
-                                  text: display.title,
-                                  style: textStyle16SemiBold.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
-                                  ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: AppText(
+                                        text: display.title,
+                                        style: textStyle16SemiBold.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                        ),
+                                      ),
+                                    ),
+                                    if (display.status.trim().isNotEmpty) ...[
+                                      12.w.horizontalSpace,
+                                      statusTag(display.status),
+                                    ],
+                                  ],
                                 ),
 
                                 14.h.verticalSpace,
@@ -271,8 +293,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
 
                                 // Past Trip Section
                                 if (!isUpcoming) ...[
-                                  statusTag(trip.status),
-                                  22.h.verticalSpace,
                                   simpleCard(
                                     title: "Payment Summary".tr(),
                                     rows: [
@@ -379,30 +399,63 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   }
 
   Widget statusTag(String status) {
+    final raw = status.trim();
+    if (raw.isEmpty) return const SizedBox.shrink();
+
+    final color = _statusColor(raw);
+    final label = _statusLabel(raw);
+
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26.r),
-        border: Border.all(color: Theme.of(context).colorScheme.secondary),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgIcon(
-            AppAssets.check,
-            size: 17.w,
-            color: Theme.of(context).colorScheme.onSurface,
+          Container(
+            width: 8.w,
+            height: 8.w,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
           ),
-          10.w.horizontalSpace,
+          8.w.horizontalSpace,
           AppText(
-            text: status,
-            style: textPoppinsMedium.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+            text: label,
+            style: textStyle14Medium.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _statusLabel(String status) {
+    final lower = status.toLowerCase();
+    if (lower.isEmpty) return status;
+    return lower[0].toUpperCase() + lower.substring(1);
+  }
+
+  Color _statusColor(String status) {
+    final lower = status.toLowerCase();
+    if (lower.contains('upcoming')) return AppColors.secondary;
+    if (lower.contains('ongoing') || lower.contains('active')) {
+      return AppColors.blueColor;
+    }
+    if (lower.contains('complete') ||
+        lower.contains('completed') ||
+        lower.contains('past') ||
+        lower.contains('done')) {
+      return const Color(0xFF2E7D32);
+    }
+    if (lower.contains('cancel')) return AppColors.redColor;
+    return AppColors.blueColor;
   }
 
   Widget simpleCard({String? title, required List<Widget> rows}) {

@@ -23,21 +23,45 @@ class TripModel {
     this.packages,
   });
 
-  factory TripModel.fromJson(Map<String, dynamic> json) {
-    final rawId = json['_id'];
+  /// Home list API (`/trips/list`): only these fields are returned.
+  /// `_id`, `tripName`, `startDate`, `endDate`, `location`, `bannerImage`
+  factory TripModel.fromListJson(Map<String, dynamic> json) {
     return TripModel(
-      id: rawId?.toString(),
-      title: (json['tripName'] ?? json['name'] ?? '').toString(),
-      location: json['location'] ?? '',
-      image: json['bannerImage'] ?? '',
+      id: json['_id']?.toString(),
+      title: (json['tripName'] ?? '').toString(),
+      location: (json['location'] ?? '').toString(),
+      image: (json['bannerImage'] ?? '').toString(),
       date: _formatDate(json['startDate'], json['endDate']),
-      status: json['status'] ?? 'ongoing',
-      description: json['description'] ?? '',
-      packages: json['packages'] != null
-          ? (json['packages'] as List)
-                .map((p) => PackageDetails.fromJson(p))
-                .toList()
-          : null,
+      status: '',
+      description: '',
+      packages: null,
+    );
+  }
+
+  /// Trip details API (`/trips/details`): uses nested `tripDetails` when present.
+  factory TripModel.fromJson(Map<String, dynamic> json) {
+    final data = json['tripDetails'] is Map
+        ? Map<String, dynamic>.from(json['tripDetails'] as Map)
+        : Map<String, dynamic>.from(json);
+
+    List<PackageDetails>? packages;
+    final rawPackages = data['packages'];
+    if (rawPackages is List) {
+      packages = rawPackages
+          .whereType<Map>()
+          .map((p) => PackageDetails.fromJson(Map<String, dynamic>.from(p)))
+          .toList();
+    }
+
+    return TripModel(
+      id: (data['_id'] ?? data['id'] ?? data['tripId'])?.toString(),
+      title: (data['tripName'] ?? data['name'] ?? '').toString(),
+      location: (data['location'] ?? '').toString(),
+      image: (data['bannerImage'] ?? '').toString(),
+      date: _formatDate(data['startDate'], data['endDate']),
+      status: (data['status'] ?? '').toString().trim(),
+      description: (data['description'] ?? '').toString(),
+      packages: packages,
     );
   }
 
@@ -56,19 +80,9 @@ class TripModel {
     };
   }
 
-  /// Nested `trip` from `GET /api/user-payment/my-trip` (`name`, `bannerImage`, dates — may omit `_id`).
+  /// Same as [fromJson] — kept so older call sites stay clear.
   factory TripModel.fromUserPaymentMyTripJson(Map<String, dynamic> json) {
-    final rawId = json['_id'] ?? json['tripId'];
-    return TripModel(
-      id: rawId?.toString(),
-      title: (json['tripName'] ?? json['name'] ?? '').toString(),
-      location: json['location']?.toString() ?? '',
-      image: json['bannerImage']?.toString() ?? '',
-      date: _formatDate(json['startDate'], json['endDate']),
-      status: json['status']?.toString() ?? 'ongoing',
-      description: json['description']?.toString() ?? '',
-      packages: null,
-    );
+    return TripModel.fromJson(json);
   }
 
   String get imageUrl {
@@ -532,50 +546,6 @@ class TripPaymentDetails {
       pendingAmount: pending,
       isFullyPaid: isFully,
     );
-  }
-}
-
-/// Result of `GET /api/user/trips/details` (`data.isBooked` + nested `tripDetails`).
-class TripDetailsLoadResult {
-  final TripModel trip;
-  final bool isBooked;
-  final String? bookingId;
-
-  TripDetailsLoadResult({
-    required this.trip,
-    this.isBooked = false,
-    this.bookingId,
-  });
-
-  factory TripDetailsLoadResult.fromDetailsResponse(Map<String, dynamic> data) {
-    final map = Map<String, dynamic>.from(data);
-    final tripJson = map['tripDetails'] ?? map;
-    if (tripJson is! Map) {
-      throw Exception('Trip details not found');
-    }
-
-    String? bookingId = map['bookingId']?.toString();
-    if (bookingId == null || bookingId.isEmpty) {
-      final booking = map['booking'];
-      if (booking is Map) {
-        bookingId = booking['_id']?.toString();
-      }
-    }
-
-    return TripDetailsLoadResult(
-      trip: TripModel.fromJson(Map<String, dynamic>.from(tripJson)),
-      isBooked: _parseBool(map['isBooked']),
-      bookingId: (bookingId != null && bookingId.isNotEmpty) ? bookingId : null,
-    );
-  }
-
-  static bool _parseBool(dynamic value) {
-    if (value == true || value == 1) return true;
-    if (value is String) {
-      final v = value.toLowerCase();
-      return v == 'true' || v == '1';
-    }
-    return false;
   }
 }
 

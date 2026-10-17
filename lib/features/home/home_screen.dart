@@ -276,7 +276,8 @@ class _HomeViewState extends State<_HomeView> {
             title: item.title,
             location: item.location,
             date: item.date,
-            status: item.status,
+            // List API has no status — do not show a fallback value on home.
+            status: '',
             onTap: () {
               provider.selectTrip(item);
               context.pushNamed(UserAppRoutes.tripDetailsScreen.name);
